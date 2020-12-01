@@ -90,7 +90,10 @@ class _PrivateHomeScreenState extends State<PrivateHomeScreen> with TickerProvid
     }
     else{
       var resProduct = await FunctionHelper().baseProduct('perpage=$perpage&tenant=${widget.id}');
-      if(resProduct.length>0){
+      print('URL ${resProduct}');
+
+      if(resProduct[0]['total']>0){
+
         setState(() {
           productTenantModel = resProduct[0]['data'];
           total=resProduct[0]['total'];
@@ -100,6 +103,7 @@ class _PrivateHomeScreenState extends State<PrivateHomeScreen> with TickerProvid
         await FunctionHelper().insertProduct(widget.id);
       }
       else{
+        print('kurang ti 0');
         setState(() {
           isLoading=false;
           isTimeout=true;
@@ -285,27 +289,6 @@ class _PrivateHomeScreenState extends State<PrivateHomeScreen> with TickerProvid
                           ),
                           child: SliderWidget(),
                         ),
-                        // isLoading?Container(
-                        //     height: MediaQuery.of(context).size.height/3.0,
-                        //     width: widthSize,
-                        //     padding: EdgeInsets.only(top:10),
-                        //     child:LoadingSecondProduct()
-                        // ):resFavoriteProduct.length>0?Container(
-                        //   height: MediaQuery.of(context).size.height/2.3,
-                        //   width: widthSize,
-                        //   padding: EdgeInsets.only(left: 0,right:0,bottom:0),
-                        //   child: Column(
-                        //     children: [
-                        //       WidgetHelper().titleQ("Wujudkan Barang Favorite Kamu",param: '',callback: (){},icon: Icon(
-                        //         UiIcons.heart,
-                        //         color: site?Colors.white:Theme.of(context).hintColor,
-                        //       ),color: site?Colors.white:SiteConfig().secondColor),
-                        //       Expanded(
-                        //         child:SecondProductsWidget(data: resFavoriteProduct),
-                        //       )
-                        //     ],
-                        //   ),
-                        // ):Container(),
                         isLoading?Container(
                           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
                           child: LoadingProductTenant(tot: 10),

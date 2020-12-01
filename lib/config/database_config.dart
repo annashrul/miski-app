@@ -21,21 +21,20 @@ class DatabaseConfig {
     CategoryQuery.CREATE_TABLE,
     GroupQuery.CREATE_TABLE,
     BrandQuery.CREATE_TABLE,
+    TicketQuery.CREATE_TABLE,
   ];
 
   Future<Database> openDB() async {
     final dbPath = await sqlite.getDatabasesPath();
-    print("PATH DB ${path.join(dbPath, 'netindo_shop.db')}");
     return sqlite.openDatabase(path.join(dbPath, 'netindo_shop.db'),
         onCreate: (db, version) {
           tables.forEach((table) async {
             await db.execute(table).then((value) {
-              print("berashil ");
+              print("berashil $table");
             }).catchError((err) {
               print("errornya ${err.toString()}");
             });
           });
-          print('Table Created');
         }, version: 1);
   }
 
@@ -143,10 +142,10 @@ class DatabaseConfig {
       return false;
     }
   }
-  Future<bool> delete(table,int id) async{
+  Future<bool> delete(table,column,value) async{
     try{
       final db = await openDB();
-      await db.rawDelete('DELETE FROM $table WHERE id=?', [id]);
+      await db.rawDelete('DELETE FROM $table WHERE $column=?', [value]);
       return true;
     }
     catch(_){
@@ -193,11 +192,14 @@ class DatabaseConfig {
     var result = await db.rawQuery('SELECT * FROM $tableName WHERE $column=? and id_tenant=?',[value,id_tenant]);
     return result.toList();
   }
-  Future<List> getWhere(String tableName,String column,String value,String limit) async {
+  Future<List> getWhere(String tableName,String column,String value,String limit,{orderBy=''}) async {
     final db = await openDB();
     var result;
+    if(orderBy!=''){
+      orderBy='ORDER BY $orderBy DESC';
+    }
     if(column!=""){
-      result = await db.rawQuery("SELECT * FROM $tableName WHERE $column=?",[value]);
+      result = await db.rawQuery("SELECT * FROM $tableName WHERE $column=? $orderBy",[value]);
     }
     if(column!=""&&limit!=""){
       result = await db.rawQuery("SELECT * FROM $tableName WHERE $column=? LIMIT $limit",[value]);

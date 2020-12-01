@@ -50,3 +50,10 @@ class BrandQuery {
       " CREATE TABLE IF NOT EXISTS $TABLE_NAME ( id INTEGER PRIMARY KEY AUTOINCREMENT, id_brand TEXT, title TEXT , image TEXT, status TEXT) ";
   static const String SELECT = "select * from $TABLE_NAME";
 }
+
+class TicketQuery {
+  static const String TABLE_NAME = "ticket";
+  static const String CREATE_TABLE =
+      " CREATE TABLE IF NOT EXISTS $TABLE_NAME ( id INTEGER PRIMARY KEY AUTOINCREMENT, id_ticket TEXT, id_master TEXT , id_member TEXT, member TEXT, id_user TEXT, users TEXT, msg TEXT, created_at TEXT, updated_at TEXT) ";
+  static const String SELECT = "select * from $TABLE_NAME";
+}

@@ -1,3 +1,5 @@
+import 'package:animated_widgets/widgets/rotation_animated.dart';
+import 'package:animated_widgets/widgets/shake_animated_widget.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +12,15 @@ import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/helper/user_helper.dart';
 
 class WidgetHelper{
-
+  animWidget(BuildContext context,Widget child){
+    return ShakeAnimatedWidget(
+        enabled: true,
+        duration: Duration(milliseconds: 1500),
+        shakeAngle: Rotation.deg(z: 10),
+        curve: Curves.linear,
+        child:child
+    );
+  }
   void myRefresh(Key key,Widget widget, Function callback){
     LiquidPullToRefresh(
       child: widget,

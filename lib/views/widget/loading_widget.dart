@@ -4,6 +4,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/skeleton_helper.dart';
+import 'package:netindo_shop/helper/widget_helper.dart';
 
 class LoadingTenant extends StatefulWidget {
   @override
@@ -595,6 +596,8 @@ class _LoadingSecondProductState extends State<LoadingSecondProduct> {
 
 
 class LoadingTicket extends StatelessWidget {
+  int total;
+  LoadingTicket({this.total});
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -607,7 +610,7 @@ class LoadingTicket extends StatelessWidget {
               padding: EdgeInsets.symmetric(vertical: 15),
               shrinkWrap: true,
               primary: false,
-              itemCount: 10,
+              itemCount: total,
               separatorBuilder: (context, index) {
                 return SizedBox(height: 7);
               },
@@ -660,6 +663,49 @@ class LoadingTicket extends StatelessWidget {
   }
 }
 
+class LoadingRoomTicket extends StatelessWidget {
+  final _myListKey = GlobalKey<AnimatedListState>();
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      children: <Widget>[
+        Expanded(
+          flex: 3,
+          child:LoadingTicket(total: 1),
+        ),
+        Expanded(
+          flex: 16,
+          child: AnimatedList(
+            key: _myListKey,
+            reverse: true,
+            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+            initialItemCount: 100,
+            itemBuilder: (context, index, Animation<double> animation) {
+              return new SizeTransition(
+                sizeFactor: new CurvedAnimation(parent: animation, curve: Curves.decelerate),
+                child: Align(
+                  alignment: index%2==0?Alignment.centerRight:Alignment.centerLeft,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: index%2==0?Theme.of(context).focusColor.withOpacity(0.2):Theme.of(context).accentColor.withOpacity(0.2),
+                        borderRadius: index%2==0?BorderRadius.only(topLeft: Radius.circular(15), bottomLeft: Radius.circular(15), bottomRight: Radius.circular(15)):BorderRadius.only(topRight: Radius.circular(15), bottomLeft: Radius.circular(15), bottomRight: Radius.circular(15))),
+                    padding: EdgeInsets.symmetric(vertical: 7, horizontal: 10),
+                    margin: EdgeInsets.symmetric(vertical: 5),
+                    child: SkeletonFrame(width: 100,height: 20),
+                  ),
+                ),
+                // child:index%2==0 ? getSentMessageLayout(context) : getReceivedMessageLayout(context),
+                // child: getReceivedMessageLayout(context),
+              );
+            },
+          ),
+        ),
+
+      ],
+    );
+  }
+}
 
 
 

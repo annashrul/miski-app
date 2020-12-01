@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:animated_widgets/widgets/rotation_animated.dart';
+import 'package:animated_widgets/widgets/shake_animated_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -11,8 +13,10 @@ import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/database_helper.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
+import 'package:netindo_shop/helper/user_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/general_model.dart';
+import 'package:netindo_shop/model/ticket/detail_ticket_model.dart';
 import 'package:netindo_shop/model/ticket/list_ticket_model.dart';
 import 'package:netindo_shop/provider/base_provider.dart';
 import 'package:netindo_shop/views/screen/checkout/detail_checkout_screen.dart';
@@ -87,7 +91,7 @@ class _TicketScreenState extends State<TicketScreen> {
 
   @override
   Widget build(BuildContext context){
-    return isLoading?LoadingTicket():RefreshWidget(
+    return isLoading?LoadingTicket(total: 10):RefreshWidget(
       widget: Stack(
         // alignment: FractionalOffset.bottomCenter,
 
@@ -114,8 +118,12 @@ class _TicketScreenState extends State<TicketScreen> {
                         var val = listTicketModel.result.data[index];
                         return InkWell(
                           onTap: () {
-                            WidgetHelper().myPushAndLoad(context,RoomTicketScreen(mode:widget.mode),(){loadTicket();});
-                            // Navigator.of(context).pushNamed('/Tabs', arguments: 5);
+                            // print(val.id);
+                            print(listTicketModel.result.data);
+                            WidgetHelper().myPush(context,RoomTicketScreen(
+                                mode:widget.mode,id: val.id,
+                                tenant:val.tenant,title:val.title,desc:val.deskripsi,createdAt:val.createdAt,status:val.status
+                            ));
                           },
                           child: Container(
                             color: Theme.of(context).focusColor.withOpacity(0.15),
@@ -214,110 +222,257 @@ class _TicketScreenState extends State<TicketScreen> {
                         }
                       },));
                     },
-                    child: Container(
+                    child:WidgetHelper().animWidget(context,Container(
                       padding: EdgeInsets.all(20.0),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(50.0),
                         color: widget.mode?Theme.of(context).focusColor.withOpacity(0.15):SiteConfig().mainColor,
                       ),
-                      child:isLoadmore?CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.grey), backgroundColor: Colors.white): Icon(UiIcons.cursor,color: Colors.white),
-                    )
+
+                      child:isLoadmore?CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.grey), backgroundColor: Colors.white): Icon(UiIcons.message,color: Colors.white),
+                    )),
                 )
             ),
           )
         ],
       ),
       callback: (){
-        print("refresh");
         FunctionHelper().handleRefresh((){loadTicket();});
       },
     );
   }
 
-
 }
 
 class RoomTicketScreen extends StatefulWidget {
   bool mode;
-  RoomTicketScreen({this.mode});
+  String id;
+  String tenant;
+  String title;
+  String desc;
+  DateTime createdAt;
+  int status;
+  RoomTicketScreen({this.mode,this.id,this.tenant,this.title,this.desc,this.createdAt,this.status});
   @override
   _RoomTicketScreenState createState() => _RoomTicketScreenState();
 }
 
 class _RoomTicketScreenState extends State<RoomTicketScreen> {
-  final _myListKey = GlobalKey<AnimatedListState>();
-  final myController = TextEditingController();
+  final msgController = TextEditingController();
+  final FocusNode msgFocus = FocusNode();
   List myTicket=[];
-  ListTicketModel listTicketModel;
-
+  DetailTicketModel detailTicketModel;
   bool isLoading=false,isLoadmore=false,isError=false;
-  Future loadTicket()async{
-    var res = await BaseProvider().getProvider("chat?page=1", listTicketModelFromJson);
-    if(res==SiteConfig().errTimeout||res==SiteConfig().errSocket){
+  DatabaseConfig db = DatabaseConfig();
+  ScrollController _scrollController = ScrollController();
+  bool _keyboardVisible = false;
+  _scrollToBottom() {
+    if (_scrollController != null && _scrollController.positions.isNotEmpty)
+      _scrollController.animateTo(
+        -0.0,
+        curve: Curves.easeOut,
+        duration: const Duration(milliseconds: 1000),
+      );
+  }
+  Future loadDetailTicket(param)async{
+    print("####################### PARAM $param #############################");
+    final countTicket = await db.queryRowCountWhere(TicketQuery.TABLE_NAME,"id_master", widget.id);
+    if(countTicket>0){
+      if(param!=''){
+        await db.delete(TicketQuery.TABLE_NAME,"id_ticket", widget.id);
+        var res = await BaseProvider().getProvider("chat/${widget.id}", detailTicketModelFromJson);
+        DetailTicketModel result = res;
+        setState(() {
+          detailTicketModel = DetailTicketModel.fromJson(result.toJson());
+        });
+        await storeTicket();
+      }
+      var res = await db.getWhere(TicketQuery.TABLE_NAME, "id_master", widget.id,"",orderBy: 'created_at');
       setState(() {
+        myTicket = res;
         isLoading=false;
+        isError=false;
         isLoadmore=false;
-        isError=true;
       });
     }
     else{
-      ListTicketModel result = res;
-      if(result.status=='success'){
+      var res = await BaseProvider().getProvider("chat/${widget.id}", detailTicketModelFromJson);
+      if(res==SiteConfig().errTimeout||res==SiteConfig().errSocket){
         setState(() {
-          listTicketModel = ListTicketModel.fromJson(result.toJson());
           isLoading=false;
-          isError=false;
           isLoadmore=false;
+          isError=true;
         });
       }
+      else{
+        DetailTicketModel result = res;
+        if(result.status=='success'){
+          setState(() {
+            detailTicketModel = DetailTicketModel.fromJson(result.toJson());
+            isLoading=false;
+            isError=false;
+            isLoadmore=false;
+          });
+          storeTicket();
+        }
+      }
+    }
+
+  }
+  Future replyTicket()async{
+    if(msgController.text==''){
+      msgFocus.requestFocus();
+    }
+    else{
+      final id_member = await UserHelper().getDataUser("id_user");
+      final member = await UserHelper().getDataUser("nama");
+      final data={
+        "id_master":widget.id,
+        "id_member":id_member,
+        "msg":"${msgController.text}"
+      };
+      final dataLocal =  {
+        "id_ticket": widget.id.toString(),
+        "id_master": widget.id.toString(),
+        "id_member": id_member.toString(),
+        "member":member.toString(),
+        "id_user": "null",
+        "users": "null",
+        "msg": "${msgController.text}",
+        "created_at": "${DateFormat().format(DateTime.now()).toString()}",
+        "updated_at": "${DateFormat().format(DateTime.now()).toString()}"
+      };
+      await db.insert(TicketQuery.TABLE_NAME,dataLocal);
+      loadDetailTicket('');
+      msgController.text='';
+      msgFocus.unfocus();
+      await BaseProvider().postProvider("chat/reply", data);
+
     }
   }
+  Future storeTicket()async{
+    print(widget.id);
+    // await db.delete(TicketQuery.TABLE_NAME,"id_master", widget.id);
+    var res = await BaseProvider().getProvider("chat/${widget.id}", detailTicketModelFromJson);
 
+    detailTicketModel.result.detail.forEach((element)async {
+      final data =  {
+        "id_ticket": widget.id.toString(),
+        "id_master": widget.id.toString(),
+        "id_member": element.idMember==null?"null":element.idMember.toString(),
+        "member":element.member==null?"null":element.member.toString(),
+        "id_user": element.idUser==null?"null":element.idUser.toString(),
+        "users": element.users==null?"null":element.users.toString(),
+        "msg": element.msg.toString(),
+        "created_at": element.createdAt.toString(),
+        "updated_at": element.updatedAt.toString()
+      };
+      var insert = await db.insert(TicketQuery.TABLE_NAME,data);
+    });
+  }
   @override
   void dispose() {
-    myController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
-  void load(){
-    for(var i=0;i<20;i++){
-      setState(() {
-        myTicket.add({
-          "nama":"acuy $i",
-          "desc":"blabla"
-        });
-      });
-    }
-  }
+
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    load();
     isLoading=true;
-    loadTicket();
+    Timer.periodic(Duration(milliseconds: 100), (timer) {
+      if (mounted) {
+        _scrollToBottom();
+        timer.cancel();
+      }
+    });
+
+    loadDetailTicket('pertama');
+
   }
+
   @override
   Widget build(BuildContext context) {
+    _keyboardVisible = MediaQuery.of(context).viewInsets.bottom != 0;
     return Scaffold(
       backgroundColor: widget.mode?SiteConfig().darkMode:Colors.white,
-      appBar: WidgetHelper().appBarWithButton(context,"Room ${isLoading?"...":listTicketModel.result.data.length}",(){Navigator.pop(context);},<Widget>[],brightness: widget.mode?Brightness.dark:Brightness.light),
-      body: Column(
-        mainAxisSize: MainAxisSize.max,
-        children: <Widget>[
-          Expanded(
-            child: AnimatedList(
-              key: _myListKey,
-              reverse: true,
-              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-              initialItemCount: myTicket.length,
-              itemBuilder: (context, index, Animation<double> animation) {
-                return new SizeTransition(
-                  sizeFactor: new CurvedAnimation(parent: animation, curve: Curves.decelerate),
-                  child:index%2==0 ? getSentMessageLayout(context) : getReceivedMessageLayout(context),
-                  // child: getReceivedMessageLayout(context),
-                );
-              },
+      appBar: WidgetHelper().appBarWithButton(context,"",(){Navigator.pop(context);},<Widget>[],brightness: widget.mode?Brightness.dark:Brightness.light),
+      body: isLoading?WidgetHelper().loadingWidget(context):Column(
+        children: [
+          Container(
+            color: Theme.of(context).focusColor.withOpacity(0.15),
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Stack(
+                  children: <Widget>[
+                    SizedBox(
+                      width: 60,
+                      height: 60,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(50)),
+                          color:Theme.of(context).focusColor.withOpacity(0.15),
+                          // border: Border.all(color:SiteConfig().accentDarkColor)
+                        ),
+                        child: Center(
+                          child: WidgetHelper().textQ("${DateFormat().add_yMMMd().format(widget.createdAt)} \n${DateFormat().add_jm().format(widget.createdAt)}", 8, widget.mode?Colors.white:SiteConfig().darkMode,FontWeight.normal,textAlign: TextAlign.center),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 3,
+                      right: 3,
+                      width: 12,
+                      height: 12,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          // color: widget.message.user.userState == UserState.available ? Colors.green : widget.message.user.userState == UserState.away ? Colors.orange : Colors.red,
+                          color: widget.status==0?Colors.green:Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                SizedBox(width: 15),
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      Stack(
+                        alignment: AlignmentDirectional.topEnd,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.only(right:10.0),
+                            child: WidgetHelper().textQ("${widget.tenant}", 12, SiteConfig().mainColor, FontWeight.bold),
+                          ),
+                          Positioned(
+                            child:Icon(UiIcons.home,color:SiteConfig().mainColor,size: 8),
+                          )
+                        ],
+                      ),
+                      WidgetHelper().textQ("${widget.title}",12,widget.mode?Colors.white:Colors.grey,FontWeight.bold),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: <Widget>[
+                          Expanded(
+                            child:  WidgetHelper().textQ("${widget.desc}",10,widget.mode?Colors.grey[200]:Colors.grey,FontWeight.normal),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                )
+              ],
             ),
+          ),
+          Expanded(
+            child: myTicket.length>0?buildLocal(context):buildServer(context)
           ),
           Container(
             decoration: BoxDecoration(
@@ -327,11 +482,9 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
               ],
             ),
             child: TextField(
-              onTap: (){
-                WidgetHelper().myModal(context, ModalTicket(mode: widget.mode));
-              },
-              readOnly: true,
-              controller: myController,
+              controller: msgController,
+              focusNode: msgFocus,
+              style:TextStyle(color: Theme.of(context).focusColor.withOpacity(0.8),fontFamily: SiteConfig().fontStyle),
               decoration: InputDecoration(
                 contentPadding: EdgeInsets.all(20),
                 hintText: 'Tulis sesuatu disini ...',
@@ -341,7 +494,36 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
                 focusedBorder: UnderlineInputBorder(borderSide: BorderSide.none),
                 suffixIcon: IconButton(
                   padding: EdgeInsets.only(right: 30),
-                  onPressed: () {},
+                  onPressed: () {
+                    FocusScope.of(context).unfocus();
+                    // scrollToBottom();
+                    replyTicket();
+                    _scrollToBottom();
+                    // _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+                    //     duration: Duration(milliseconds: 500), curve: Curves.ease);
+                    // final idMember = await UserHelper().getDataUser("id_user");
+                    // final member = await UserHelper().getDataUser("nama");
+                    // final dataLocal =  {
+                    //   "id_ticket": widget.id.toString(),
+                    //   "id_master": widget.id.toString(),
+                    //   "id_member": idMember.toString(),
+                    //   "member":member.toString(),
+                    //   "id_user": "null",
+                    //   "users": "null",
+                    //   "msg": "${msgController.text.toString()}",
+                    //   "created_at": "${DateFormat().format(DateTime.now()).toString()}",
+                    //   "updated_at": "${DateFormat().format(DateTime.now()).toString()}"
+                    // };
+                    //
+                    // // myTicket.add(dataLocal);
+                    // print("MY TICKET $myTicket");
+                    // await db.insert(TicketQuery.TABLE_NAME,dataLocal);
+                    // msgFocus.unfocus();
+                    // msgController.text='';
+                    // setState(() {});
+
+                    // loadDetailTicket('');
+                  },
                   icon: Icon(
                     UiIcons.cursor,
                     color:Theme.of(context).focusColor.withOpacity(0.8),
@@ -355,131 +537,98 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
       ),
     );
   }
-  Widget getSentMessageLayout(context) {
-    return Align(
-      alignment: Alignment.centerRight,
-      child: Container(
-          width:MediaQuery.of(context).size.width/1.5,
-        decoration: BoxDecoration(
-            color: Theme.of(context).focusColor.withOpacity(0.2),
-            borderRadius: BorderRadius.only(topLeft: Radius.circular(15), bottomLeft: Radius.circular(15), bottomRight: Radius.circular(15))
-        ),
-        padding: EdgeInsets.symmetric(vertical: 7, horizontal: 10),
-        margin: EdgeInsets.symmetric(vertical: 5),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            new Flexible(
-              child: new Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+  
+  Widget buildLocal(BuildContext context){
+    return ListView.builder(
+        padding: EdgeInsets.only(left:20,right:20),
+        controller: _scrollController,
+        itemCount: myTicket.length,
+        reverse: true,
+        itemBuilder: (context,index){
+          var val = myTicket[index];
+          return Align(
+            alignment: val['id_member']=='null'?Alignment.centerRight:Alignment.centerLeft,
+            child: Container(
+              decoration: BoxDecoration(
+                  color: Theme.of(context).accentColor.withOpacity(0.2),
+                  borderRadius: val['id_member']=='null'?BorderRadius.only(
+                      topLeft: Radius.circular(15),
+                      bottomLeft: Radius.circular(15),
+                      bottomRight: Radius.circular(15)):BorderRadius.only(
+                      topRight: Radius.circular(15),
+                      bottomLeft: Radius.circular(15),
+                      bottomRight: Radius.circular(15)
+                  )
+              ),
+              padding: EdgeInsets.symmetric(vertical: 7, horizontal: 10),
+              margin: EdgeInsets.symmetric(vertical: 5),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  InkWell(
-                    onTap: (){
-                      WidgetHelper().myModal(context,previewImage(SiteConfig().noImage));
-                    },
-                    child: new Container(
-                      height:  MediaQuery.of(context).size.height/3,
-                      decoration: BoxDecoration(
-                        color: Color(0xFF9FA6B0),
-                        borderRadius: BorderRadius.only(topLeft: Radius.circular(15), bottomLeft: Radius.circular(15), bottomRight: Radius.circular(15)),
-                        image: DecorationImage(
-                          image: NetworkImage(SiteConfig().noImage),
-                          fit: BoxFit.cover,
+                  new Flexible(
+                    child: new Column(
+                      crossAxisAlignment: val['id_member']=='null'?CrossAxisAlignment.end:CrossAxisAlignment.start,
+                      children: <Widget>[
+                        new Container(
+                          margin: const EdgeInsets.only(top: 5.0),
+                          child: WidgetHelper().textQ(val['msg'], 10, Colors.white,FontWeight.normal),
                         ),
-                      ),
+                        WidgetHelper().textQ("1 bulan yang lalu",8, Colors.grey,FontWeight.normal),
+                      ],
                     ),
                   ),
-                  new Container(
-                    margin: const EdgeInsets.only(top: 5.0),
-                    child: WidgetHelper().textQ("haiii", 10, Colors.white,FontWeight.normal),
-                  ),
-                  WidgetHelper().textQ("1 bulan yang lalu",8, Colors.grey,FontWeight.normal),
                 ],
               ),
             ),
-
-          ],
-        ),
-      ),
+          );
+        }
     );
   }
-  Widget getReceivedMessageLayout(context) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Container(
-        width:MediaQuery.of(context).size.width/1.5,
-        decoration: BoxDecoration(
-            color: Theme.of(context).accentColor.withOpacity(0.2),
-            borderRadius: BorderRadius.only(topRight: Radius.circular(15), bottomLeft: Radius.circular(15), bottomRight: Radius.circular(15))),
-        padding: EdgeInsets.symmetric(vertical: 7, horizontal: 10),
-        margin: EdgeInsets.symmetric(vertical: 5),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-
-            new Flexible(
-              child: new Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+  
+  Widget buildServer(BuildContext context){
+    return ListView.builder(
+        padding: EdgeInsets.only(left:20,right:20),
+        controller: _scrollController,
+        itemCount: detailTicketModel.result.detail.length,
+        reverse: true,
+        itemBuilder: (context,index){
+          var val = detailTicketModel.result.detail[index];
+          return Align(
+            alignment: val.idMember==null?Alignment.centerRight:Alignment.centerLeft,
+            child: Container(
+              decoration: BoxDecoration(
+                  color: Theme.of(context).accentColor.withOpacity(0.2),
+                  borderRadius: val.idMember==null?BorderRadius.only(
+                      topLeft: Radius.circular(15),
+                      bottomLeft: Radius.circular(15),
+                      bottomRight: Radius.circular(15)):BorderRadius.only(
+                      topRight: Radius.circular(15),
+                      bottomLeft: Radius.circular(15),
+                      bottomRight: Radius.circular(15)
+                  )
+              ),
+              padding: EdgeInsets.symmetric(vertical: 7, horizontal: 10),
+              margin: EdgeInsets.symmetric(vertical: 5),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  InkWell(
-                    onTap: (){
-                      WidgetHelper().myModal(context,previewImage(SiteConfig().noImage));
-                    },
-                    child: new Container(
-                      height:  MediaQuery.of(context).size.height/3,
-                      decoration: BoxDecoration(
-                        color: Color(0xFF9FA6B0),
-                        borderRadius: BorderRadius.only(topRight: Radius.circular(15), bottomLeft: Radius.circular(15), bottomRight: Radius.circular(15)),
-                        image: DecorationImage(
-                          image: NetworkImage(SiteConfig().noImage),
-                          fit: BoxFit.cover,
+                  new Flexible(
+                    child: new Column(
+                      crossAxisAlignment: val.idMember==null?CrossAxisAlignment.end:CrossAxisAlignment.start,
+                      children: <Widget>[
+                        new Container(
+                          margin: const EdgeInsets.only(top: 5.0),
+                          child: WidgetHelper().textQ(val.msg, 10, Colors.white,FontWeight.normal),
                         ),
-                      ),
+                        WidgetHelper().textQ("1 bulan yang lalu",8, Colors.grey,FontWeight.normal),
+                      ],
                     ),
                   ),
-                  new Container(
-                    margin: const EdgeInsets.only(top: 5.0),
-                    child: WidgetHelper().textQ("blablablablablablablablablablablablablablablablablablablablablablablablablablablablablablablablablablablablablablablablablablablablablablablablablabla", 10, Colors.white,FontWeight.normal),
-                  ),
-                  WidgetHelper().textQ("1 bulan yang lalu",8, Colors.grey,FontWeight.normal),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-  Widget previewImage(String img){
-    return Container(
-      height: MediaQuery.of(context).size.height/1.2,
-      padding: EdgeInsets.only(top:10.0,left:0,right:0),
-      decoration: BoxDecoration(
-        color: widget.mode?SiteConfig().darkMode:Colors.white,
-        borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0),topRight:Radius.circular(10.0) ),
-      ),
-      // color: Colors.white,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            alignment: Alignment.center,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Hero(
-                  tag: 'imageHero',
-                  child: Image.asset(
-                      "assets/img/hp_samsung.jpg"
-                  ),
-                )
-              ],
-            ),
-          )
-        ],
-      ),
+          );
+        }
     );
   }
 
