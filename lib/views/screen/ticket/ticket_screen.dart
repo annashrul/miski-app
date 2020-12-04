@@ -93,9 +93,6 @@ class _TicketScreenState extends State<TicketScreen> {
   Widget build(BuildContext context){
     return isLoading?LoadingTicket(total: 10):RefreshWidget(
       widget: Stack(
-        // alignment: FractionalOffset.bottomCenter,
-
-        // alignment: isLoadmore?Alignment.bottomCenter:Alignment.bottomCenter,
         children: [
           Align(
             alignment: Alignment.topCenter,
@@ -112,7 +109,7 @@ class _TicketScreenState extends State<TicketScreen> {
                       primary: false,
                       itemCount: listTicketModel.result.data.length,
                       separatorBuilder: (context, index) {
-                        return SizedBox(height: 7);
+                        return Divider(height:1);
                       },
                       itemBuilder: (context, index) {
                         var val = listTicketModel.result.data[index];
@@ -126,7 +123,7 @@ class _TicketScreenState extends State<TicketScreen> {
                             ));
                           },
                           child: Container(
-                            color: Theme.of(context).focusColor.withOpacity(0.15),
+                            color: widget.mode?Theme.of(context).focusColor.withOpacity(0.15):Colors.white,
                             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -180,7 +177,7 @@ class _TicketScreenState extends State<TicketScreen> {
                                           )
                                         ],
                                       ),
-                                      WidgetHelper().textQ("${val.title}",12,widget.mode?Colors.white:Colors.grey,FontWeight.bold),
+                                      WidgetHelper().textQ("${val.title}",12,widget.mode?Colors.white:SiteConfig().darkMode,FontWeight.normal),
                                       Row(
                                         crossAxisAlignment: CrossAxisAlignment.end,
                                         children: <Widget>[
@@ -197,9 +194,9 @@ class _TicketScreenState extends State<TicketScreen> {
                           ),
                         );
                       },
+
                     ),
                   ),
-
                 ],
               ),
             ),
@@ -209,29 +206,29 @@ class _TicketScreenState extends State<TicketScreen> {
             right: 20,
             child: new Align(
                 alignment: Alignment.bottomRight,
-                child:InkWell(
-                    borderRadius: BorderRadius.circular(50.0),
-                    onTap: (){
-                      WidgetHelper().myModal(context, ModalTicket(mode: widget.mode,callback:(String par){
-                        if(par=='berhasil'){
-                          loadTicket();
-                          WidgetHelper().showFloatingFlushbar(context,"success","ticket komplain berhasil dikirim");
-                        }
-                        else{
-                          WidgetHelper().showFloatingFlushbar(context,"success","ticket komplain gagal dikirim");
-                        }
-                      },));
-                    },
-                    child:WidgetHelper().animWidget(context,Container(
-                      padding: EdgeInsets.all(20.0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50.0),
-                        color: widget.mode?Theme.of(context).focusColor.withOpacity(0.15):SiteConfig().mainColor,
-                      ),
+                child:WidgetHelper().animShakeWidget(context,InkWell(
+                  borderRadius: BorderRadius.circular(50.0),
+                  onTap: (){
+                    WidgetHelper().myModal(context, ModalTicket(mode: widget.mode,callback:(String par){
+                      if(par=='berhasil'){
+                        loadTicket();
+                        WidgetHelper().showFloatingFlushbar(context,"success","ticket komplain berhasil dikirim");
+                      }
+                      else{
+                        WidgetHelper().showFloatingFlushbar(context,"success","ticket komplain gagal dikirim");
+                      }
+                    },));
+                  },
+                  child:Container(
+                    padding: EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.0),
+                      color: widget.mode?Theme.of(context).focusColor.withOpacity(0.15):SiteConfig().mainColor,
+                    ),
 
-                      child:isLoadmore?CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.grey), backgroundColor: Colors.white): Icon(UiIcons.message,color: Colors.white),
-                    )),
-                )
+                    child:isLoadmore?CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.grey), backgroundColor: Colors.white): Icon(UiIcons.message,color: Colors.white,size: 30),
+                  ),
+                ))
             ),
           )
         ],
@@ -287,7 +284,7 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
         });
         await storeTicket();
       }
-      var res = await db.getWhere(TicketQuery.TABLE_NAME, "id_master", widget.id,"",orderBy: 'created_at');
+      var res = await db.getWhere(TicketQuery.TABLE_NAME, "id_master", widget.id,"",orderBy: 'id');
       setState(() {
         myTicket = res;
         isLoading=false;
@@ -339,13 +336,13 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
         "id_user": "null",
         "users": "null",
         "msg": "${msgController.text}",
-        "created_at": "${DateFormat().format(DateTime.now()).toString()}",
-        "updated_at": "${DateFormat().format(DateTime.now()).toString()}"
+        "created_at": "${DateFormat("dd-MM-yyyy h:mma").format(DateTime.now()).toString()}",
+        "updated_at": "${DateFormat("dd-MM-yyyy h:mma").format(DateTime.now()).toString()}"
       };
       await db.insert(TicketQuery.TABLE_NAME,dataLocal);
       loadDetailTicket('');
       msgController.text='';
-      msgFocus.unfocus();
+      // msgFocus.unfocus();
       await BaseProvider().postProvider("chat/reply", data);
 
     }
@@ -364,8 +361,8 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
         "id_user": element.idUser==null?"null":element.idUser.toString(),
         "users": element.users==null?"null":element.users.toString(),
         "msg": element.msg.toString(),
-        "created_at": element.createdAt.toString(),
-        "updated_at": element.updatedAt.toString()
+        "created_at": "${DateFormat("dd-MM-yyyy h:mma").format(element.createdAt).toString()}",
+        "updated_at": "${DateFormat("dd-MM-yyyy h:mma").format(element.createdAt).toString()}"
       };
       var insert = await db.insert(TicketQuery.TABLE_NAME,data);
     });
@@ -398,7 +395,7 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
     _keyboardVisible = MediaQuery.of(context).viewInsets.bottom != 0;
     return Scaffold(
       backgroundColor: widget.mode?SiteConfig().darkMode:Colors.white,
-      appBar: WidgetHelper().appBarWithButton(context,"",(){Navigator.pop(context);},<Widget>[],brightness: widget.mode?Brightness.dark:Brightness.light),
+      appBar: WidgetHelper().appBarWithButton(context,widget.tenant,(){Navigator.pop(context);},<Widget>[],brightness: widget.mode?Brightness.dark:Brightness.light),
       body: isLoading?WidgetHelper().loadingWidget(context):Column(
         children: [
           Container(
@@ -444,27 +441,8 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
-                      Stack(
-                        alignment: AlignmentDirectional.topEnd,
-                        children: [
-                          Container(
-                            padding: EdgeInsets.only(right:10.0),
-                            child: WidgetHelper().textQ("${widget.tenant}", 12, SiteConfig().mainColor, FontWeight.bold),
-                          ),
-                          Positioned(
-                            child:Icon(UiIcons.home,color:SiteConfig().mainColor,size: 8),
-                          )
-                        ],
-                      ),
-                      WidgetHelper().textQ("${widget.title}",12,widget.mode?Colors.white:Colors.grey,FontWeight.bold),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: <Widget>[
-                          Expanded(
-                            child:  WidgetHelper().textQ("${widget.desc}",10,widget.mode?Colors.grey[200]:Colors.grey,FontWeight.normal),
-                          ),
-                        ],
-                      )
+                      WidgetHelper().textQ("${widget.title}",12,widget.mode?Colors.white:SiteConfig().darkMode,FontWeight.bold),
+                      WidgetHelper().textQ("${widget.desc}",10,widget.mode?Colors.grey[200]:Colors.grey,FontWeight.normal,maxLines: null)
                     ],
                   ),
                 )
@@ -476,12 +454,21 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
           ),
           Container(
             decoration: BoxDecoration(
-              color:Theme.of(context).focusColor.withOpacity(0.15),
+              color:widget.mode?Theme.of(context).focusColor.withOpacity(0.15):SiteConfig().secondColor,
               boxShadow: [
                 BoxShadow(color: Theme.of(context).hintColor.withOpacity(0.10), offset: Offset(0, -4), blurRadius: 10)
               ],
             ),
-            child: TextField(
+            child: TextFormField(
+              textInputAction: TextInputAction.newline,
+              keyboardType: TextInputType.multiline,
+              cursorColor: Theme.of(context).focusColor.withOpacity(0.8),
+              toolbarOptions: ToolbarOptions(
+                copy: true,
+                cut: true,
+                paste: true,
+                selectAll: true
+              ),
               controller: msgController,
               focusNode: msgFocus,
               style:TextStyle(color: Theme.of(context).focusColor.withOpacity(0.8),fontFamily: SiteConfig().fontStyle),
@@ -495,34 +482,8 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
                 suffixIcon: IconButton(
                   padding: EdgeInsets.only(right: 30),
                   onPressed: () {
-                    FocusScope.of(context).unfocus();
-                    // scrollToBottom();
                     replyTicket();
                     _scrollToBottom();
-                    // _scrollController.animateTo(_scrollController.position.maxScrollExtent,
-                    //     duration: Duration(milliseconds: 500), curve: Curves.ease);
-                    // final idMember = await UserHelper().getDataUser("id_user");
-                    // final member = await UserHelper().getDataUser("nama");
-                    // final dataLocal =  {
-                    //   "id_ticket": widget.id.toString(),
-                    //   "id_master": widget.id.toString(),
-                    //   "id_member": idMember.toString(),
-                    //   "member":member.toString(),
-                    //   "id_user": "null",
-                    //   "users": "null",
-                    //   "msg": "${msgController.text.toString()}",
-                    //   "created_at": "${DateFormat().format(DateTime.now()).toString()}",
-                    //   "updated_at": "${DateFormat().format(DateTime.now()).toString()}"
-                    // };
-                    //
-                    // // myTicket.add(dataLocal);
-                    // print("MY TICKET $myTicket");
-                    // await db.insert(TicketQuery.TABLE_NAME,dataLocal);
-                    // msgFocus.unfocus();
-                    // msgController.text='';
-                    // setState(() {});
-
-                    // loadDetailTicket('');
                   },
                   icon: Icon(
                     UiIcons.cursor,
@@ -546,11 +507,12 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
         reverse: true,
         itemBuilder: (context,index){
           var val = myTicket[index];
+          print(val);
           return Align(
             alignment: val['id_member']=='null'?Alignment.centerRight:Alignment.centerLeft,
             child: Container(
               decoration: BoxDecoration(
-                  color: Theme.of(context).accentColor.withOpacity(0.2),
+                  color: widget.mode?Theme.of(context).accentColor.withOpacity(0.2):SiteConfig().secondColor,
                   borderRadius: val['id_member']=='null'?BorderRadius.only(
                       topLeft: Radius.circular(15),
                       bottomLeft: Radius.circular(15),
@@ -573,7 +535,7 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
                           margin: const EdgeInsets.only(top: 5.0),
                           child: WidgetHelper().textQ(val['msg'], 10, Colors.white,FontWeight.normal),
                         ),
-                        WidgetHelper().textQ("1 bulan yang lalu",8, Colors.grey,FontWeight.normal),
+                        WidgetHelper().textQ(TimeAgo.timeAgoSinceDate(val['created_at']),8, Colors.grey,FontWeight.normal),
                       ],
                     ),
                   ),
@@ -662,9 +624,11 @@ class _ModalTicketState extends State<ModalTicket> {
   }
   Future postTicket()async{
     if(resTenant.length<1){
-      setState(() {
-        isErrorTenant=true;
+      setState(() {isErrorTenant=true;});
+      Timer(Duration(seconds:1), (){
+        setState(() {isErrorTenant=false;});
       });
+      print(isErrorTenant);
     }else if(titleController.text==''){
       titleFocus.requestFocus();
     }
@@ -723,6 +687,7 @@ class _ModalTicketState extends State<ModalTicket> {
         backgroundImage: NetworkImage(resTenant[idx]['logo']),
       );
     }
+
     return Container(
       height: _image==null?MediaQuery.of(context).size.height/1.7:MediaQuery.of(context).size.height/1.0,
       padding: EdgeInsets.only(top:10.0,left:0,right:0),
@@ -774,7 +739,7 @@ class _ModalTicketState extends State<ModalTicket> {
           Expanded(
             child: ListView(
               children: [
-                Container(
+                WidgetHelper().animShakeWidget(context,Container(
                     padding: EdgeInsets.all(10.0),
                     child: Container(
                       decoration: BoxDecoration(
@@ -789,17 +754,17 @@ class _ModalTicketState extends State<ModalTicket> {
                           messageFocus.unfocus();
                           FocusScope.of(context).unfocus();
                           WidgetHelper().myModal(context,ModalTenant(
-                              mode: widget.mode,
-                              callback: (index)async{
-                                WidgetHelper().loadingDialog(context);
-                                setState(() {
-                                  idx=index;
-                                  isErrorTenant=false;
-                                });
-                                await getTenant();
-                                Navigator.pop(context);
-                                Navigator.pop(context);
-                              },
+                            mode: widget.mode,
+                            callback: (index)async{
+                              WidgetHelper().loadingDialog(context);
+                              setState(() {
+                                idx=index;
+                                isErrorTenant=false;
+                              });
+                              await getTenant();
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                            },
                             index: idx,
                           ));
                         },
@@ -809,7 +774,7 @@ class _ModalTicketState extends State<ModalTicket> {
                         trailing: Icon(Icons.arrow_forward_ios,size: 15,color: Colors.grey),
                       ),
                     )
-                ),
+                ),enable: isErrorTenant),
                 Container(
                     padding: EdgeInsets.all(10.0),
                     child: Container(
@@ -882,7 +847,7 @@ class _ModalTicketState extends State<ModalTicket> {
                         child: Column(
                           children: [
                             Icon(UiIcons.upload,color: widget.mode?Colors.white:SiteConfig().darkMode),
-                            WidgetHelper().textQ("Lampirkan File",10,Colors.white,FontWeight.bold)
+                            WidgetHelper().textQ("Lampirkan File",10,widget.mode?Colors.white:SiteConfig().darkMode,FontWeight.bold)
                           ],
                         ),
                       )
@@ -1004,3 +969,33 @@ class _ModalTenantState extends State<ModalTenant> {
 
 }
 
+class TimeAgo{
+  static String timeAgoSinceDate(String dateString, {bool numericDates = true}) {
+    DateTime notificationDate = DateFormat("dd-MM-yyyy h:mma").parse(dateString);
+    final date2 = DateTime.now();
+    final difference = date2.difference(notificationDate);
+
+    if (difference.inDays > 8) {
+      return dateString;
+    } else if ((difference.inDays / 7).floor() >= 1) {
+      return (numericDates) ? '1 minggu yang lalu' : 'minggu lalu';
+    } else if (difference.inDays >= 2) {
+      return '${difference.inDays} hari yang lalu';
+    } else if (difference.inDays >= 1) {
+      return (numericDates) ? '1 hari yang lalu' : 'kemari';
+    } else if (difference.inHours >= 2) {
+      return '${difference.inHours} jam yang lalu';
+    } else if (difference.inHours >= 1) {
+      return (numericDates) ? '1 jam yang lalu' : '1 jam yang lalu';
+    } else if (difference.inMinutes >= 2) {
+      return '${difference.inMinutes} menit yang lalu';
+    } else if (difference.inMinutes >= 1) {
+      return (numericDates) ? '1 menit yang lalu' : 'menit yang lalu';
+    } else if (difference.inSeconds >= 3) {
+      return '${difference.inSeconds} detik yang lalu';
+    } else {
+      return 'Just now';
+    }
+  }
+
+}

@@ -151,7 +151,7 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
                                 SizedBox(
                                   height: Platform.isIOS ? 50 : 50,
                                 ),
-                                Image.asset("assets/img/secure.png",height:100),
+                                Image.asset("assets/img/secure.png",height:70),
                                 // WidgetHelper().textQ(widget.title,18,Colors.black,FontWeight.bold),
                                 SizedBox(
                                   height: Platform.isIOS ? 40 : 15,
@@ -219,8 +219,8 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
                       child: GridView.count(
                         crossAxisCount: 3,
                         childAspectRatio: 1.6,
-                        mainAxisSpacing: 35,
-                        padding: EdgeInsets.all(8),
+                        mainAxisSpacing: 10,
+                        padding: EdgeInsets.all(5),
                         children: <Widget>[
                           buildContainerCircle(1),
                           buildContainerCircle(2),
@@ -279,7 +279,7 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
             ),
         child: Center(
           // child:RichText(overflow: TextOverflow.ellipsis, text: TextSpan(style:TextStyle(fontFamily:'Poppins',fontWeight:FontWeight.bold,color:Colors.black,fontSize: 16), children: [TextSpan(text:number.toString())])),
-          child:WidgetHelper().textQ(number.toString(), 16,SiteConfig().secondColor,FontWeight.bold),
+          child:WidgetHelper().textQ(number.toString(), 16,SiteConfig().darkMode,FontWeight.bold),
           // child: Text(number.toString(), style: TextStyle(fontFamily:ThaibahFont().fontQ, fontSize:  ScreenUtilQ.getInstance().setSp(40), fontWeight: FontWeight.bold, color: widget.numColor),),
         ),
       ),
@@ -306,7 +306,7 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
 
             ),
         child: Center(
-          child:Icon(Icons.cancel,color: SiteConfig().secondColor),
+          child:Icon(Icons.cancel,color: SiteConfig().darkMode),
           // child: Text('Ulangi',style:TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(40),color:widget.numColor,fontWeight:FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
         ),
       ),
@@ -330,24 +330,15 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
       },
       child: Container(
         margin: EdgeInsets.all(10.0),
-
         height: 50,
         width: 50,
         decoration: BoxDecoration(
             color: circleColor,
             shape: BoxShape.rectangle,
             borderRadius:  BorderRadius.circular(10.0),
-            //
-            // boxShadow: [
-            //   BoxShadow(
-            //     color: Colors.grey[200],
-            //     blurRadius: 10,
-            //     spreadRadius: 0,
-            //   )
-            // ]
         ),
         child: Center(
-          child:Icon(Icons.backspace,color: SiteConfig().secondColor),
+          child:Icon(Icons.backspace,color: SiteConfig().darkMode),
         ),
       ),
     );
@@ -396,7 +387,6 @@ class CodePanel extends StatelessWidget {
             child: new Container(
               decoration: new BoxDecoration(
                 borderRadius:  BorderRadius.circular(10.0),
-
                 shape: BoxShape.rectangle,
                 border: new Border.all(color: color, width: 1.0),
                 color: Colors.green.shade500,

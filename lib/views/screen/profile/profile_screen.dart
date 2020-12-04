@@ -2,12 +2,16 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
+import 'package:netindo_shop/helper/database_helper.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/user_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/main.dart';
+import 'package:netindo_shop/views/screen/address/address_screen.dart';
+import 'package:netindo_shop/views/screen/auth/signin_screen.dart';
 import 'package:netindo_shop/views/screen/history/history_transaction_screen.dart';
 import 'package:netindo_shop/views/screen/wrapper_screen.dart';
 import 'package:netindo_shop/views/widget/profile/profile_dialog_form_widget.dart';
@@ -24,6 +28,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String foto='',name='',email='',gender='';
   DateTime birthDate;
   final userRepository = UserHelper();
+  DatabaseConfig db = DatabaseConfig();
   Future loadData() async{
     final var_foto = await userRepository.getDataUser('foto');
     final var_nama = await userRepository.getDataUser('nama');
@@ -444,7 +449,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ListTile(
                     contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
 
-                    onTap: () {},
+                    onTap: () {
+                      WidgetHelper().myPush(context,AddressScreen(mode:site));
+                    },
                     dense: true,
                     title: Row(
                       children: <Widget>[
@@ -473,6 +480,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         SizedBox(width: 10),
                         WidgetHelper().textQ("Kebijakan & Privasi",10,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal)
+
+                      ],
+                    ),
+                  ),
+                  ListTile(
+                    contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
+                    onTap: ()async {
+                      await db.deleteAll(UserQuery.TABLE_NAME);
+                      WidgetHelper().myPushRemove(context,SigninScreen());
+                    },
+                    dense: true,
+                    title: Row(
+                      children: <Widget>[
+                        Icon(
+                          Icons.exit_to_app,
+                          size: 22,
+                          color: Theme.of(context).focusColor,
+                        ),
+                        SizedBox(width: 10),
+                        WidgetHelper().textQ("Keluar",10,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal)
 
                       ],
                     ),

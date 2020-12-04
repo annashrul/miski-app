@@ -31,9 +31,6 @@ class _FormReviewWidgetState extends State<FormReviewWidget> {
     });
   }
   Future sendReview(rate,txt,kdBrg)async{
-    print(rate);
-    print(txt);
-    print(kdBrg);
     WidgetHelper().loadingDialog(context);
     var res = await BaseProvider().postProvider("review",{
       "id_member":widget.detailHistoryTransactionModel.result.idMember,
@@ -325,7 +322,7 @@ class _ReviewContentState extends State<ReviewContent> {
   final FocusNode captionFocus = FocusNode();
   Color color;
   void rateWithCaption(rating)async{
-    final nama=await userRepository.getDataUser("name");
+    final nama=await userRepository.getDataUser("nama");
     setState(() {rate=rating;});
     if(rating==1.0){
       setState(() {

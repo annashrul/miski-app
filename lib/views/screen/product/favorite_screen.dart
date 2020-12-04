@@ -103,24 +103,42 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
       itemCount: resFavoriteProduct.length,
       itemBuilder: (context,index){
         var val = resFavoriteProduct[index];
-        return Padding(
-          padding: EdgeInsets.only(bottom: 10.0),
-          child: Stack(
-            alignment: AlignmentDirectional.topEnd,
-            children: [
-              InkWell(
+        return Dismissible(
+          key: Key(hashCode.toString()),
+          background: Container(
+            color: Colors.red,
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Icon(
+                  UiIcons.trash,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          onDismissed: (direction) {
+            deleteFavorite(val['id']);
+          },
+          child: Padding(
+            padding: EdgeInsets.only(bottom: 10.0),
+            child: Stack(
+              alignment: AlignmentDirectional.topEnd,
+              children: [
+                InkWell(
                   onTap: (){},
                   child: Container(
 
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 7),
                     decoration: BoxDecoration(
-                        color: Theme.of(context).focusColor.withOpacity(0.15),
+                      color: Theme.of(context).focusColor.withOpacity(0.15),
 
-                        // color: widget.mode?Colors.white:Theme.of(context).primaryColor.withOpacity(0.9),
-                        boxShadow: [
-                          BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.1), blurRadius: 5, offset: Offset(0, 2)),
-                        ],
-                        // borderRadius: BorderRadius.circular(10.0)
+                      // color: widget.mode?Colors.white:Theme.of(context).primaryColor.withOpacity(0.9),
+                      boxShadow: [
+                        BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.1), blurRadius: 5, offset: Offset(0, 2)),
+                      ],
+                      // borderRadius: BorderRadius.circular(10.0)
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -181,23 +199,24 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                       ],
                     ),
                   ),
-              ),
-
-              Positioned(
-                right: 10,
-                child: IconButton(
-                  onPressed: (){
-                    deleteFavorite(val['id']);
-                    // deleted(cartModel.result[index].id,'');
-                  },
-                  iconSize: 30,
-                  padding: EdgeInsets.symmetric(horizontal: 5),
-                  icon: Icon(UiIcons.heart),
-                  color: Colors.red,
                 ),
-              )
-            ],
-          ),
+
+                Positioned(
+                  right: 10,
+                  child: IconButton(
+                    onPressed: (){
+                      deleteFavorite(val['id']);
+                      // deleted(cartModel.result[index].id,'');
+                    },
+                    iconSize: 30,
+                    padding: EdgeInsets.symmetric(horizontal: 5),
+                    icon: Icon(UiIcons.heart),
+                    color: Colors.red,
+                  ),
+                )
+              ],
+            ),
+          )
         );
       }
     );

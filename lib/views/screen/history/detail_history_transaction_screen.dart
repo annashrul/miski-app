@@ -205,7 +205,7 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          WidgetHelper().textQ("Status",12.0,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal),
+                          WidgetHelper().textQ("Status",12.0,site?Colors.grey[200]:SiteConfig().darkMode,FontWeight.normal),
                           WidgetHelper().myStatus(context,detailHistoryTransactionModel.result.status),
                         ],
                       ),
@@ -214,17 +214,15 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          WidgetHelper().textQ("Tanggal Pembelian",12.0,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal),
+                          WidgetHelper().textQ("Tanggal Pembelian",12.0,site?Colors.grey[200]:SiteConfig().darkMode,FontWeight.normal),
                           WidgetHelper().textQ("${DateFormat.yMMMMEEEEd('id').format(detailHistoryTransactionModel.result.createdAt)} ${DateFormat.Hms().format(detailHistoryTransactionModel.result.createdAt)}",10.0,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal),
                         ],
                       ),
-                      SizedBox(height: 0.0),
                       Divider(),
-                      SizedBox(height: 0.0),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          WidgetHelper().textQ("No.Invoice",12.0,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal),
+                          WidgetHelper().textQ("No.Invoice",12.0,site?Colors.grey[200]:SiteConfig().darkMode,FontWeight.normal),
                           WidgetHelper().textQ("${detailHistoryTransactionModel.result.kdTrx}",10.0,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal),
                         ],
                       ),
@@ -238,7 +236,7 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      WidgetHelper().textQ("Daftar Produk",14.0,site?Colors.white:SiteConfig().secondColor,FontWeight.bold),
+                      WidgetHelper().textQ("Daftar Produk",14.0,site?Colors.white:SiteConfig().darkMode,FontWeight.bold),
                     ],
                   ),
                 ),
@@ -256,7 +254,7 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      WidgetHelper().textQ("Detail Pengiriman",14.0,site?Colors.white:SiteConfig().secondColor,FontWeight.bold),
+                      WidgetHelper().textQ("Detail Pengiriman",14.0,site?Colors.white:SiteConfig().darkMode,FontWeight.bold),
                     ],
                   ),
                 ),
@@ -267,7 +265,7 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          WidgetHelper().textQ("Nama Toko",12.0,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal),
+                          WidgetHelper().textQ("Nama Toko",12.0,site?Colors.grey[200]:SiteConfig().darkMode,FontWeight.normal),
                           WidgetHelper().textQ("${detailHistoryTransactionModel.result.tenant}",10.0,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal),
                         ],
                       ),
@@ -275,7 +273,7 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          WidgetHelper().textQ("Kurir Pengiriman",12.0,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal),
+                          WidgetHelper().textQ("Kurir Pengiriman",12.0,site?Colors.grey[200]:SiteConfig().darkMode,FontWeight.normal),
                           WidgetHelper().textQ("${detailHistoryTransactionModel.result.kurir}",10.0,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal),
                         ],
                       ),
@@ -283,7 +281,7 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          WidgetHelper().textQ("No.Resi",12.0,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal),
+                          WidgetHelper().textQ("No.Resi",12.0,site?Colors.grey[200]:SiteConfig().darkMode,FontWeight.normal),
                           WidgetHelper().textQ("${detailHistoryTransactionModel.result.resi=="-"?"Belum ada No.Resi":detailHistoryTransactionModel.result.resi}",10.0,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal),
                         ],
                       ),
@@ -301,9 +299,9 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
                       ) ,
 
                       Divider(),
-                      WidgetHelper().textQ("Alamat Pengiriman",12.0,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal),
+                      WidgetHelper().textQ("Alamat Pengiriman",12.0,site?Colors.grey[200]:SiteConfig().darkMode,FontWeight.bold),
                       SizedBox(height: 5.0,),
-                      WidgetHelper().textQ("jalan kebon manggu rt 02/04 kelurahan padasuka kecamatan cimahi tengah kota cimahi",10.0,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal),
+                      WidgetHelper().textQ("jalan kebon manggu rt 02/04 kelurahan padasuka kecamatan cimahi tengah kota cimahi",10.0,site?Colors.grey[200]:SiteConfig().darkMode,FontWeight.normal),
                     ],
                   ),
                 ),
@@ -314,7 +312,7 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      WidgetHelper().textQ("Informasi Pembayaran",14.0,site?Colors.white:SiteConfig().secondColor,FontWeight.bold),
+                      WidgetHelper().textQ("Informasi Pembayaran",14.0,site?Colors.white:SiteConfig().darkMode,FontWeight.bold),
                     ],
                   ),
                 ),
@@ -324,7 +322,7 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          WidgetHelper().textQ("Metode Pembayaran",12.0,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal),
+                          WidgetHelper().textQ("Metode Pembayaran",12.0,site?Colors.grey[200]:SiteConfig().darkMode,FontWeight.normal),
                           WidgetHelper().textQ("Transfer",10.0,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal),
                         ],
                       ),
@@ -333,7 +331,7 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          WidgetHelper().textQ("Total Harga",12.0,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal),
+                          WidgetHelper().textQ("Total Harga",12.0,site?Colors.grey[200]:SiteConfig().darkMode,FontWeight.normal),
                           WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(detailHistoryTransactionModel.result.subtotal))}",12.0,Colors.green,FontWeight.bold),
                         ],
                       ),
@@ -341,7 +339,7 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          WidgetHelper().textQ("Total Ongkos Kirim",12.0,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal),
+                          WidgetHelper().textQ("Total Ongkos Kirim",12.0,site?Colors.grey[200]:SiteConfig().darkMode,FontWeight.normal),
                           WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(detailHistoryTransactionModel.result.ongkir))}",12.0,Colors.green,FontWeight.bold),
                         ],
                       ),
@@ -359,7 +357,7 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          WidgetHelper().textQ("Total Pembayaran",12.0,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal),
+                          WidgetHelper().textQ("Total Pembayaran",12.0,site?Colors.grey[200]:SiteConfig().darkMode,FontWeight.normal),
                           WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(detailHistoryTransactionModel.result.grandtotal))}",12.0,Colors.green,FontWeight.bold),
                         ],
                       ),

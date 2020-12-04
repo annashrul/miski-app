@@ -1,14 +1,21 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/helper/secure_code_helper.dart';
+import 'package:netindo_shop/helper/widget_helper.dart';
+import 'package:netindo_shop/provider/base_provider.dart';
 
 
 class SecureCodeScreen extends StatefulWidget {
   final Function(BuildContext context, bool isTrue) callback;
-  final String code;
+  String code;
   final String param;
   final String desc;
-  SecureCodeScreen({this.callback,this.code,this.param,this.desc});
+  final Map<String, Object> data;
+  // final Widget child;
+
+  SecureCodeScreen({this.callback,this.code,this.param,this.desc,this.data});
   @override
   _SecureCodeScreenState createState() => _SecureCodeScreenState();
 }
@@ -22,10 +29,67 @@ class _SecureCodeScreenState extends State<SecureCodeScreen> {
     });
     print("############## OTP ABI = $cek #######################");
   }
+  int timeCounter = 0;
+  bool timeUpFlag = false;
+
+  _timerUpdate() {
+    Timer(const Duration(seconds: 1), () async {
+      setState(() {
+        timeCounter--;
+      });
+      if (timeCounter != 0)
+        _timerUpdate();
+      else
+        timeUpFlag = true;
+    });
+  }
+  @override
+  void initState() {
+    super.initState();
+    timeCounter = 10;
+    _timerUpdate();
+  }
+  bool isLoadingReOtp=false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
+      bottomNavigationBar:!timeUpFlag?FlatButton(
+        onPressed: ()async{
+          WidgetHelper().showFloatingFlushbar(context,"failed","proses pengiriman otp sedang berlangsung");
+        },
+        child: WidgetHelper().textQ("$timeCounter detik", 12,Colors.black,FontWeight.bold)
+      ):FlatButton(
+          onPressed: ()async{
+            print(timeUpFlag);
+            WidgetHelper().loadingDialog(context);
+            var res = await BaseProvider().postProvider("auth/otp",widget.data);
+            if(res==SiteConfig().errTimeout||res==SiteConfig().errSocket){
+              Navigator.pop(context);
+              setState(() {
+                timeUpFlag=true;
+              });
+              WidgetHelper().showFloatingFlushbar(context,"failed","Terjadi kesalahan jaringan");
+            }
+            else{
+              print("result ${res['result']['otp']}");
+              Navigator.pop(context);
+              if(timeUpFlag){
+                setState(() {
+                  timeUpFlag=!timeUpFlag;
+                  timeCounter=10;
+                  widget.code = "${res['result']['otp']}";
+                });
+                _timerUpdate();
+              }
+              else{
+                print('false');
+              }
+            }
+
+          },
+          child: WidgetHelper().textQ("${!timeUpFlag ?'$timeCounter detik':'kirim ulang otp'}", 12,Colors.black,FontWeight.bold)
+      ),
       body: widget.param=='otp'?SecureCodeHelper(
           showFingerPass: false,
           forgotPin: 'Lupa OTP ? Klik Disini',
@@ -79,6 +143,7 @@ class _SecureCodeScreenState extends State<SecureCodeScreen> {
             widget.callback(context,true);
           }
       ),
+
     );
   }
 }

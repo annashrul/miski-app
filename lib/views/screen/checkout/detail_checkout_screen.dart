@@ -68,7 +68,7 @@ class _DetailCheckoutScreenState extends State<DetailCheckoutScreen> {
     final key = new GlobalKey<ScaffoldState>();
     return WillPopScope(
       child: Scaffold(
-            backgroundColor: site?SiteConfig().darkMode:Colors.transparent,
+            backgroundColor: site?SiteConfig().darkMode:Colors.white,
             key: key,
             appBar: WidgetHelper().appBarWithButton(context, "INVOICE ${widget.invoice_no}",(){
               Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WrapperScreen(currentTab: 2)), (Route<dynamic> route) => false);

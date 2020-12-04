@@ -94,33 +94,29 @@ class _ProductWidgetState extends State<ProductWidget> {
     return Stack(
       alignment: AlignmentDirectional.topCenter,
       children: [
-        InkWell(
-          highlightColor: Colors.transparent,
-          splashColor: Theme.of(context).accentColor.withOpacity(0.08),
-          onTap: () async{
-            await insertProductClick();
-            WidgetHelper().myPushAndLoad(context, DetailProducrScreen(id: widget.id), widget.countCart);
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
-              borderRadius: BorderRadius.circular(6),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey[600].withOpacity(0.5),
-                  blurRadius: 4,
-                  offset: Offset(0, 1),
-                ),
-              ],
-            ),
+        Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColor,
+            borderRadius: BorderRadius.circular(6),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey[600].withOpacity(0.5),
+                blurRadius: 4,
+                offset: Offset(0, 1),
+              ),
+            ],
+          ),
+          child: InkWell(
+            onTap: () async{
+              await insertProductClick();
+              WidgetHelper().myPushAndLoad(context, DetailProducrScreen(id: widget.id), widget.countCart);
+            },
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Container(
                   height:  MediaQuery.of(context).size.height/6,
                   decoration: BoxDecoration(
-                    // borderRadius: BorderRadius.circular(10),
-                    color: Color(0xFF9FA6B0),
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(6),
                       topRight: Radius.circular(6),
@@ -130,18 +126,8 @@ class _ProductWidgetState extends State<ProductWidget> {
                       fit: BoxFit.cover,
                     ),
                   ),
-                  // child: Hero(
-                  //   tag: 'HEROPRODUCT${widget.id}$random_number',
-                  //   child:  Container(
-                  //     decoration: BoxDecoration(
-                  //       borderRadius: BorderRadius.circular(10),
-                  //     ),
-                  //     child: Image.network(widget.gambar),
-                  //   ),
-                  // ),
                   padding: EdgeInsets.all(1.5),
-                )
-                ,
+                ),
                 SizedBox(height: 12),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
@@ -161,7 +147,7 @@ class _ProductWidgetState extends State<ProductWidget> {
                   padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 5),
                   child: WidgetHelper().textQ("${widget.stockSales} terjual", 12,Colors.grey,FontWeight.bold),
                 ),
-                Padding(
+                double.parse(widget.rating)>0?Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child:  RatingBar.builder(
                     itemSize: 15.0,
@@ -202,14 +188,13 @@ class _ProductWidgetState extends State<ProductWidget> {
                     },
                     onRatingUpdate:null,
                   ),
-                ),
+                ):Container(),
                 SizedBox(height: 15),
               ],
             ),
           ),
         ),
         child
-
       ],
     );
   }

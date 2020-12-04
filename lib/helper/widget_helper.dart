@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:animated_widgets/widgets/rotation_animated.dart';
+import 'package:animated_widgets/widgets/scale_animated.dart';
 import 'package:animated_widgets/widgets/shake_animated_widget.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
@@ -12,13 +15,24 @@ import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/helper/user_helper.dart';
 
 class WidgetHelper{
-  animWidget(BuildContext context,Widget child){
+  animShakeWidget(BuildContext context,Widget child,{bool enable=true}){
+
     return ShakeAnimatedWidget(
-        enabled: true,
+        enabled: enable,
         duration: Duration(milliseconds: 1500),
         shakeAngle: Rotation.deg(z: 10),
         curve: Curves.linear,
         child:child
+    );
+  }
+  animScaleWidget(BuildContext context,Widget child,{bool enable=true}){
+    return ScaleAnimatedWidget.tween(
+      enabled: true,
+      duration: Duration(milliseconds: 600),
+      scaleDisabled: 0.5,
+      scaleEnabled: 1,
+      //your widget
+      child: child,
     );
   }
   void myRefresh(Key key,Widget widget, Function callback){
@@ -174,11 +188,11 @@ class WidgetHelper{
       ),
     );
   }
-  textQ(String txt,double size,Color color,FontWeight fontWeight,{TextDecoration textDecoration,TextAlign textAlign = TextAlign.left}){
+  textQ(String txt,double size,Color color,FontWeight fontWeight,{TextDecoration textDecoration,TextAlign textAlign = TextAlign.left,int maxLines=2}){
     return RichText(
         textAlign: textAlign,
-        maxLines: 2,
-        overflow: TextOverflow.clip,
+        maxLines: maxLines,
+        overflow: TextOverflow.ellipsis,
         softWrap: true,
         text: TextSpan(
           text:txt,

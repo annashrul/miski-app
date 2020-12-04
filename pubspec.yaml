@@ -48,6 +48,7 @@ dependencies:
   shared_preferences: ^0.5.12+4
   country_code_picker: ^1.2.2
   animated_widgets: ^1.0.6
+  scrollable_positioned_list: ^0.1.8
 
 
 #  flutter_login_facebook: ^0.4.0+1

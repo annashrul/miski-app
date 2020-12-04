@@ -57,3 +57,30 @@ class TicketQuery {
       " CREATE TABLE IF NOT EXISTS $TABLE_NAME ( id INTEGER PRIMARY KEY AUTOINCREMENT, id_ticket TEXT, id_master TEXT , id_member TEXT, member TEXT, id_user TEXT, users TEXT, msg TEXT, created_at TEXT, updated_at TEXT) ";
   static const String SELECT = "select * from $TABLE_NAME";
 }
+
+class SearchingQuery {
+  static const String TABLE_NAME = "searching";
+  static const String CREATE_TABLE =
+      " CREATE TABLE IF NOT EXISTS $TABLE_NAME ( id INTEGER PRIMARY KEY AUTOINCREMENT,id_product TEXT, title TEXT) ";
+  static const String SELECT = "select * from $TABLE_NAME";
+}
+
+
+class ProvinceQuery {
+  static const String TABLE_NAME = "province";
+  static const String CREATE_TABLE = " CREATE TABLE IF NOT EXISTS $TABLE_NAME ( id INTEGER PRIMARY KEY AUTOINCREMENT,id_province TEXT, name TEXT) ";
+  static const String SELECT = "select * from $TABLE_NAME";
+}
+
+
+class CityQuery {
+  static const String TABLE_NAME = "city";
+  static const String CREATE_TABLE = " CREATE TABLE IF NOT EXISTS $TABLE_NAME ( id INTEGER PRIMARY KEY AUTOINCREMENT,id_city TEXT,id_province TEXT, name TEXT,postal_code TEXT) ";
+  static const String SELECT = "select * from $TABLE_NAME";
+}
+
+class DistrictQuery {
+  static const String TABLE_NAME = "district";
+  static const String CREATE_TABLE = " CREATE TABLE IF NOT EXISTS $TABLE_NAME ( id INTEGER PRIMARY KEY AUTOINCREMENT,id_district TEXT,id_city TEXT, name TEXT) ";
+  static const String SELECT = "select * from $TABLE_NAME";
+}

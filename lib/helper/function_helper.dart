@@ -8,6 +8,9 @@ import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/helper/database_helper.dart';
 import 'package:netindo_shop/helper/user_helper.dart';
+import 'package:netindo_shop/model/address/kecamatan_model.dart';
+import 'package:netindo_shop/model/address/kota_model.dart';
+import 'package:netindo_shop/model/address/provinsi_model.dart';
 import 'package:netindo_shop/model/cart/harga_bertingkat_model.dart';
 import 'package:netindo_shop/model/config/config_auth.dart';
 import 'package:netindo_shop/model/tenant/listGroupProductModel.dart';
@@ -196,48 +199,47 @@ class FunctionHelper{
 
 
   Future insertProduct(idTenant)async{
+    print("INSERT");
     final countTableProduct = await _helper.queryRowCount(ProductQuery.TABLE_NAME);
-    if(countTableProduct<1){
-      ListProductTenantModel productTenantModel;
-      final perPage = await FunctionHelper().getSession("perPage");
-      final lastPage = await FunctionHelper().getSession("lastPage");
-      int perpage = int.parse(perPage)*int.parse(lastPage);
-      var resProduct = await FunctionHelper().baseProduct('perpage=$perpage&tenant=$idTenant');
-      if(resProduct.length>0){
-        productTenantModel = resProduct[0]['data'];
-        productTenantModel.result.data.forEach((element)async {
-          final data = {
-            "id_product": element.id.toString(),
-            "id_tenant": element.idTenant.toString(),
-            "kode": element.kode.toString(),
-            "title": element.title.toString(),
-            "tenant": element.tenant.toString(),
-            "id_kelompok": element.idKelompok.toString(),
-            "kelompok": element.kelompok.toString(),
-            "id_brand":element.idBrand.toString(),
-            "brand": element.brand.toString(),
-            "deskripsi": element.deskripsi.toString(),
-            "harga": element.harga.toString(),
-            "harga_coret": element.hargaCoret.toString(),
-            "berat": element.berat.toString(),
-            "pre_order": element.preOrder.toString(),
-            "free_return": element.freeReturn.toString(),
-            "gambar": element.gambar.toString(),
-            "disc1": element.disc1.toString(),
-            "disc2": element.disc2.toString(),
-            "stock": element.stock.toString(),
-            "stock_sales": element.stockSales,
-            "rating": element.rating.toString(),
-          };
-          var insert = await _helper.insert(ProductQuery.TABLE_NAME, data);
-          if(insert){
-            print("BERHASIL INSERT ${element.title}");
-          }
-          else{
-            print("GAGAL INSERT ${element.title}");
-          }
-        });
-      }
+    ListProductTenantModel productTenantModel;
+    // final perPage = await FunctionHelper().getSession("perPage");
+    // final lastPage = await FunctionHelper().getSession("lastPage");
+    // int perpage = int.parse(perPage)*int.parse(lastPage);
+    var resProduct = await FunctionHelper().baseProduct('perpage=100000000&tenant=$idTenant');
+    if(resProduct.length>0){
+      productTenantModel = resProduct[0]['data'];
+      productTenantModel.result.data.forEach((element)async {
+        final data = {
+          "id_product": element.id.toString(),
+          "id_tenant": element.idTenant.toString(),
+          "kode": element.kode.toString(),
+          "title": element.title.toString(),
+          "tenant": element.tenant.toString(),
+          "id_kelompok": element.idKelompok.toString(),
+          "kelompok": element.kelompok.toString(),
+          "id_brand":element.idBrand.toString(),
+          "brand": element.brand.toString(),
+          "deskripsi": element.deskripsi.toString(),
+          "harga": element.harga.toString(),
+          "harga_coret": element.hargaCoret.toString(),
+          "berat": element.berat.toString(),
+          "pre_order": element.preOrder.toString(),
+          "free_return": element.freeReturn.toString(),
+          "gambar": element.gambar.toString(),
+          "disc1": element.disc1.toString(),
+          "disc2": element.disc2.toString(),
+          "stock": element.stock.toString(),
+          "stock_sales": element.stockSales,
+          "rating": element.rating.toString(),
+        };
+        var insert = await _helper.insert(ProductQuery.TABLE_NAME, data);
+        if(insert){
+          print("BERHASIL INSERT ${element.title}");
+        }
+        else{
+          print("GAGAL INSERT ${element.title}");
+        }
+      });
     }
 
   }
@@ -264,12 +266,34 @@ class FunctionHelper{
       return result.result.data;
     }
   }
+  Future baseProvince()async{
+    var res = await BaseProvider().getProvider("kurir/provinsi",provinsiModelFromJson);
+    if(res is ProvinsiModel){
+      ProvinsiModel result = res;
+      return result.result;
+    }
+  }
+  Future baseCity()async{
+    var res = await BaseProvider().getProvider("kurir/kota",kotaModelFromJson);
+    if(res is KotaModel){
+      KotaModel result = res;
+      return result.result;
+    }
+  }
+  Future baseDistrict()async{
+    var res = await BaseProvider().getProvider("kurir/kecamatan",kecamatanModelFromJson);
+    if(res is KecamatanModel){
+      KecamatanModel result = res;
+      return result.result;
+    }
+  }
+
   Future insertCategory()async{
     final countTableCategory = await _helper.queryRowCount(CategoryQuery.TABLE_NAME);
     if(countTableCategory<1){
-      print("INSERT CATEGORY TO LOCAL");
       var resCategory = await FunctionHelper().baseCategory();
       resCategory.forEach((element)async {
+
         await _helper.insert(CategoryQuery.TABLE_NAME, {
           "id_category":element.id.toString(),
           "title":element.title.toString(),
@@ -283,7 +307,6 @@ class FunctionHelper{
   Future insertBrand()async{
     final countTableBrand = await _helper.queryRowCount(BrandQuery.TABLE_NAME);
     if(countTableBrand<1){
-      print("INSERT BRAND TO LOCAL");
       var resBrand = await FunctionHelper().baseBrand();
       resBrand.forEach((element)async {
         await _helper.insert(BrandQuery.TABLE_NAME, {
@@ -299,7 +322,6 @@ class FunctionHelper{
   Future insertGroup()async{
     final countTableGroup = await _helper.queryRowCount(GroupQuery.TABLE_NAME);
     if(countTableGroup<1){
-      print("INSERT GROUP TO LOCAL");
       var resGroup = await FunctionHelper().baseGroup();
       resGroup.forEach((element)async {
         await _helper.insert(GroupQuery.TABLE_NAME, {
@@ -317,7 +339,6 @@ class FunctionHelper{
 
   Future getFilterLocal(param)async{
     if(param!=''){
-      print('hapus filter $param');
       // await _helper.deleteAllProductByTenant(ProductQuery.TABLE_NAME,param);
       await _helper.deleteAll(CategoryQuery.TABLE_NAME);
       await _helper.deleteAll(GroupQuery.TABLE_NAME);
@@ -372,6 +393,22 @@ class FunctionHelper{
       await _helper.insert(SiteQuery.TABLE_NAME, {"onBoarding":"0","exitApp":"0","mode":"light"});
       await getSite();
     }
+  }
+
+  whereDynamic(List colWhere,List valWhere){
+    if(colWhere.length>0){
+      var buffer = StringBuffer();
+      String separator = "";
+      String separator1 = 'LIKE ';
+      for (var i=0;i<colWhere.length;i++) {
+        buffer..write(separator)..write("${colWhere[i]} ");
+        buffer..write(separator1)..write("'%${valWhere[i]}%'");
+        separator= " and ";
+      }
+      var loc = buffer.toString();
+      return loc;
+    }
+
   }
 
 

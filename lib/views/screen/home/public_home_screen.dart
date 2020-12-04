@@ -39,8 +39,60 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
     setState(() {
       site = res;
     });
+    // await _helper.deleteAll(ProvinceQuery.TABLE_NAME);
+    // await _helper.deleteAll(CityQuery.TABLE_NAME);
+    // await _helper.deleteAll(DistrictQuery.TABLE_NAME);
+    // final countTableProvince = await _helper.queryRowCount(ProvinceQuery.TABLE_NAME);
+    // final countTableCity = await _helper.queryRowCount(CityQuery.TABLE_NAME);
+    // final countTableDistrict = await _helper.queryRowCount(DistrictQuery.TABLE_NAME);
+    // var resProv = await FunctionHelper().baseProvince();
+    // var resCity = await FunctionHelper().baseCity();
+    // var resDistrict = await FunctionHelper().baseDistrict();
+    // if(countTableProvince<1){
+    //   int no=1;
+    //   var resProv = await FunctionHelper().baseProvince();
+    //   resProv.forEach((element)async {
+    //     no++;
+    //     final dataProv={
+    //       "id_province":"${element.id.toString()}",
+    //       "name":"${element.name.toString()}",
+    //     };
+    //     await _helper.insert(ProvinceQuery.TABLE_NAME, dataProv);
+    //     print("################################# $no INSERT PROVINCE ${element.name} SUCCESS ########################");
+    //   });
+    // }
+    // if(countTableCity<1){
+    //   var resCity = await FunctionHelper().baseCity();
+    //   resCity.forEach((element)async {
+    //     final dataCity={
+    //       "id_city": "${element.id.toString()}",
+    //       "id_province": "${element.provinsi.toString()}",
+    //       "name": "${element.name.toString()}",
+    //       "postal_code": ""
+    //     };
+    //     await _helper.insert(CityQuery.TABLE_NAME, dataCity);
+    //     print("################################# INSERT CITY ${element.name} SUCCESS ########################");
+    //   });
+    // }
+    // if(countTableDistrict<1){
+    //   var resDistrict = await FunctionHelper().baseDistrict();
+    //   resDistrict.forEach((element)async {
+    //     final dataDistrict={
+    //       "id_district": "${element.id.toString()}",
+    //       "id_city": "${element.kota.toString()}",
+    //       "name": "${element.kecamatan.toString()}"
+    //     };
+    //     await _helper.insert(DistrictQuery.TABLE_NAME, dataDistrict);
+    //     print("################################# INSERT DISTRICT ${element.kecamatan} SUCCESS ########################");
+    //   });
+    // }
+    // print("COUNT PROV ${resProv.length} - $countTableProvince");
+    // print("COUNT CITY ${resCity.length} - $countTableCity");
+    // print("COUNT DITSRICT ${resDistrict.length} - $countTableDistrict");
   }
   Future getTenant()async{
+    await getSite();
+    print("INSETR BERES");
     final countTbl = await _helper.queryRowCount(TenantQuery.TABLE_NAME);
     if(countTbl>1){
       final tenant = await _helper.getData(TenantQuery.TABLE_NAME);
@@ -75,7 +127,6 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
   }
 
   Future insertTenant(perpage,lastpage)async{
-
     ListTenantModel _listTenantModel;
     var res = await BaseProvider().getProvider('tenant?page=1&perpage=${perpage*lastpage}', listTenantModelFromJson);
     if(res is ListTenantModel){
@@ -113,7 +164,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
     super.initState();
     isLoading=true;
     getTenant();
-    getSite();
+    // getSite();
   }
 
   @override

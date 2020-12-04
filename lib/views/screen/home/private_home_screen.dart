@@ -13,10 +13,10 @@ import 'package:netindo_shop/model/tenant/list_product_tenant_model.dart';
 import 'package:netindo_shop/model/tenant/slider_model.dart';
 import 'package:netindo_shop/provider/base_provider.dart';
 import 'package:netindo_shop/views/screen/product/cart_screen.dart';
+import 'package:netindo_shop/views/screen/product/detail_product_screen.dart';
 import 'package:netindo_shop/views/widget/empty_widget.dart';
 import 'package:netindo_shop/views/widget/loading_widget.dart';
 import 'package:netindo_shop/views/widget/product/first_product_widget.dart';
-import 'package:netindo_shop/views/widget/product/second_product_widget.dart';
 import 'package:netindo_shop/views/widget/refresh_widget.dart';
 import 'package:netindo_shop/views/widget/slider_widget.dart';
 
@@ -43,17 +43,17 @@ class _PrivateHomeScreenState extends State<PrivateHomeScreen> with TickerProvid
   Animation appBarColorTween, iconColorTween, fieldColorTween;
   Brightness brightnessCutom = Brightness.light;
   GlobalKey key = GlobalKey();
-  GlobalKey key1 = GlobalKey();
   ScrollController scrollControlllerSingle;
   int current = 0;
   bool secondAppBar = false;
   int selectedkategori = 0;
-  double containerHeight = 80;
-  List returnGroup = [];
-  String qGroup='';
+  double containerHeight = 70;
+
   List resFavoriteProduct = [];
   final DatabaseConfig _helper = new DatabaseConfig();
   List returnProductLocal = [];
+  String q='',group='';
+  List returnGroup = [];
   Future loadGroup()async{
     var group = await _helper.getData(GroupQuery.TABLE_NAME);
     List groups = [];
@@ -73,12 +73,23 @@ class _PrivateHomeScreenState extends State<PrivateHomeScreen> with TickerProvid
     });
   }
   Future getProduct()async{
-    String col = '';
-    if(qGroup!=''){
-      col = 'kelompok';
+    var resProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? LIMIT $perpage",[widget.id]);
+    var resTotalProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=?",[widget.id]);
+    if(q!=''&&group!=''){
+      resProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and title LIKE '%$q%' and id_kelompok=?",[widget.id,group]);
+      resTotalProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and title LIKE '%$q%' and id_kelompok=?",[widget.id,group]);
     }
-    final resProductLocal = await _helper.getDataByTenantLimit(ProductQuery.TABLE_NAME,widget.id,"$perpage");
-    final resTotalProductLocal = await _helper.getDataByTenant(ProductQuery.TABLE_NAME,widget.id);
+    if(group!=''){
+      print("GROUP $group");
+      resProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and id_kelompok=?",[widget.id,group]);
+      resTotalProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and id_kelompok=?",[widget.id,group]);
+    }
+
+    if(q!=''){
+      resProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and title LIKE '%$q%'",[widget.id]);
+      resTotalProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and title LIKE '%$q%'",[widget.id]);
+    }
+
     if(resProductLocal.length>0){
       setState(() {
         returnProductLocal = resProductLocal;
@@ -86,31 +97,29 @@ class _PrivateHomeScreenState extends State<PrivateHomeScreen> with TickerProvid
         isLoading=false;
         isLoadmore=false;
       });
-      return;
+      print("RESPONSE $resProductLocal");
     }
     else{
       var resProduct = await FunctionHelper().baseProduct('perpage=$perpage&tenant=${widget.id}');
-      print('URL ${resProduct}');
-
       if(resProduct[0]['total']>0){
-
         setState(() {
+          returnProductLocal = resProductLocal;
+          total=resTotalProductLocal.length;
           productTenantModel = resProduct[0]['data'];
           total=resProduct[0]['total'];
           isLoading=false;
           isLoadmore=false;
         });
-        await FunctionHelper().insertProduct(widget.id);
       }
       else{
-        print('kurang ti 0');
         setState(() {
+          returnProductLocal = resProductLocal;
+          total=resTotalProductLocal.length;
           isLoading=false;
           isTimeout=true;
         });
       }
     }
-
   }
   Future getSlider()async{
     var resSlider = await BaseProvider().getProvider('slider?page=1', sliderModelFromJson);
@@ -121,51 +130,42 @@ class _PrivateHomeScreenState extends State<PrivateHomeScreen> with TickerProvid
       });
     }
   }
-  Future getFavorite()async{
-    final res = await _helper.getWhereByTenant(ProductQuery.TABLE_NAME,widget.id,"is_favorite","true");
-    res.forEach((element) {
-      resFavoriteProduct.add({
-        "id":element['id_product'],
-        "image":element["gambar"],
-        "disc1":element["disc1"],
-        "disc2":element["disc2"],
-        "stock":element["stock"],
-        "name":element["title"],
-        "hargaCoret":element["harga_coret"],
-        "harga":element["harga"],
-        "rating":element["rating"],
-      });
-    });
-    setState(() {
-
-    });
-    print("FAVORITE PRODUCT $resFavoriteProduct");
-
-  }
   Future countCart() async{
     final res = await BaseProvider().countCart(widget.id);
     setState(() {
       totalCart = res;
     });
-    await getFavorite();
   }
-  Future loadData()async{
+  Future loadData(param)async{
     setState(() {
       isTimeout=false;
       isLoading=true;
       isLoadingSlider=true;
     });
-    await getProduct();
-    await getFavorite();
     await getSlider();
     await countCart();
+    var totalProduct = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=?",[widget.id]);
     await FunctionHelper().setSession("id_tenant", widget.id);
+    if(totalProduct.length<1){
+      await _helper.delete(ProductQuery.TABLE_NAME, "id_tenant", widget.id);
+      print('hapus produk lokal sukses');
+      await FunctionHelper().insertProduct(widget.id);
+      print('insert produk lokal sukses');
+    }
+    if(param=='refresh'){
+      await _helper.delete(ProductQuery.TABLE_NAME, "id_tenant", widget.id);
+      await FunctionHelper().insertProduct(widget.id);
+    }
+    await getProduct();
   }
   Future<void> _handleRefresh()async {
-    await _helper.deleteProductOtherByTenant(ProductQuery.TABLE_NAME,widget.id,"false","false");
-    print('hapus produk lokal sukses');
     await FunctionHelper().getFilterLocal(widget.id);
-    await FunctionHelper().handleRefresh(()=>loadData());
+    await FunctionHelper().handleRefresh((){
+      setState(() {
+        q='';
+      });
+      loadData('refresh');
+    });
   }
   void _scrollListener() {
     if (!isLoading) {
@@ -210,7 +210,7 @@ class _PrivateHomeScreenState extends State<PrivateHomeScreen> with TickerProvid
 
         if (y > 50) {
           setState(() {
-            containerHeight = 80;
+            containerHeight = 70;
           });
         } else if (y < 20) {
           setState(() {
@@ -245,23 +245,25 @@ class _PrivateHomeScreenState extends State<PrivateHomeScreen> with TickerProvid
   void initState() {
     super.initState();
     loadGroup();
-    loadData();
+    loadData('');
     getSite();
     controller = new ScrollController()..addListener(_scrollListener);
     colorAnimationController = AnimationController(vsync: this, duration: Duration(seconds: 0));
     appBarColorTween = ColorTween(begin: Colors.transparent, end: appBar).animate(colorAnimationController);
     fieldColorTween = ColorTween(begin: Colors.transparent, end: Colors.transparent).animate(colorAnimationController);
     iconColorTween = ColorTween(begin: Colors.white, end: iconBar).animate(colorAnimationController);
-
-    // countCart();
   }
 
-  Widget child;
-  int _current = 0;
-
+  List index=[];
   @override
   Widget build(BuildContext context) {
-    // print(list);
+    List<IconData> icons = [
+      Icons.ac_unit,
+      Icons.account_balance,
+      Icons.adb,
+      Icons.add_photo_alternate,
+      Icons.format_line_spacing
+    ];
     return buildItem(context);
   }
   Widget buildItem(BuildContext context) {
@@ -320,44 +322,16 @@ class _PrivateHomeScreenState extends State<PrivateHomeScreen> with TickerProvid
                               mainAxisSpacing: 15.0,
                               crossAxisSpacing: 15.0,
                             )
-                        ):Container(
-                            padding: const EdgeInsets.only(left: 20,right:20,top:0,bottom:0),
-                            child:!isLoading?LoadingProductTenant(tot: 10):productTenantModel.result.data.length>0?new StaggeredGridView.countBuilder(
-                              primary: false,
-                              shrinkWrap: true,
-                              crossAxisCount: 4,
-                              itemCount: productTenantModel.result.data.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                return ProductWidget(
-                                  id: productTenantModel.result.data[index].id,
-                                  gambar: productTenantModel.result.data[index].gambar,
-                                  title: productTenantModel.result.data[index].title,
-                                  harga: productTenantModel.result.data[index].harga,
-                                  hargaCoret: productTenantModel.result.data[index].hargaCoret,
-                                  rating: productTenantModel.result.data[index].rating.toString(),
-                                  stock: productTenantModel.result.data[index].stock.toString(),
-                                  stockSales: productTenantModel.result.data[index].stockSales.toString(),
-                                  disc1: productTenantModel.result.data[index].disc1.toString(),
-                                  disc2: productTenantModel.result.data[index].disc2.toString(),
-                                  countCart: countCart,
-                                );
-                              },
-                              staggeredTileBuilder: (int index) => new StaggeredTile.fit(2),
-                              mainAxisSpacing: 15.0,
-                              crossAxisSpacing: 15.0,
-                            ):EmptyTenant()
-                        ),
+                        ):EmptyTenant(),
                         isLoadmore?Container(
                           padding: const EdgeInsets.only(left: 20,right:20,top:0,bottom:0),
                           child: LoadingProductTenant(tot: 4),
                         ):Container(),
-
                       ],
                     ),
                   ),
                 ),
                 createAppBarAnimation(),
-
               ],
             ),
             callback: (){_handleRefresh();},
@@ -366,6 +340,7 @@ class _PrivateHomeScreenState extends State<PrivateHomeScreen> with TickerProvid
         backgroundColor: site?SiteConfig().darkMode:Colors.white,
       ),
     );
+
   }
   // NOTE: AppBar Animation
   Widget createAppBarAnimation() => AnimatedBuilder(
@@ -428,7 +403,6 @@ class _PrivateHomeScreenState extends State<PrivateHomeScreen> with TickerProvid
                               Positioned(
                                 top: 0,
                                 right: 0,
-
                                 child: Container(
                                   child:WidgetHelper().textQ("$totalCart", 10, Theme.of(context).primaryColor, FontWeight.bold),
                                   padding: EdgeInsets.only(left:4.0),
@@ -450,7 +424,16 @@ class _PrivateHomeScreenState extends State<PrivateHomeScreen> with TickerProvid
                           width: 24,
                           child: FlatButton(
                               padding: EdgeInsets.only(right:10),
-                              onPressed: () => _scaffoldKey.currentState.openEndDrawer(),
+                              onPressed: (){
+                                WidgetHelper().myModal(
+                                  context,
+                                  ModalSearch(mode:site,idTenant:widget.id,callback:(par){
+                                    q=par;
+                                    isLoading=true;
+                                    getProduct();
+                                  })
+                                );
+                              },
                               child: Icon(UiIcons.filter, size: 24, color: iconColorTween.value)
                               // child: UiIcons.filter
                           ),
@@ -466,70 +449,295 @@ class _PrivateHomeScreenState extends State<PrivateHomeScreen> with TickerProvid
       ),
     ),
   );
+
+
 }
-class KategoriCard extends StatelessWidget {
-  final String namaKategori;
 
-  final List<Color> color;
-  final Function onTap;
-  final bool isSelected;
-  final double width;
 
-  KategoriCard(
-      {this.namaKategori,
-        this.color,
-        this.onTap,
-        this.isSelected = false,
-        this.width = 70});
 
+class ModalSearch extends StatefulWidget {
+  bool mode;
+  String idTenant;
+  Function(String q) callback;
+  ModalSearch({this.mode,this.idTenant,this.callback});
+  @override
+  _ModalSearchState createState() => _ModalSearchState();
+}
+
+class _ModalSearchState extends State<ModalSearch> {
+  DatabaseConfig db= DatabaseConfig();
+  final qController = TextEditingController();
+  List resProduct=[];
+  List resSearch=[];
+  List resClick=[];
+  Future loadData()async{
+    if(qController.text!=''){
+      var res = await db.readData(ProductQuery.TABLE_NAME, widget.idTenant,colWhere: ['title'],valWhere: ['${qController.text}']);
+      setState(() {
+        resProduct=res;
+      });
+    }else{
+      setState(() {
+        resProduct=[];
+      });
+      loadSearch();
+    }
+
+  }
+  Future loadSearch()async{
+    var res = await db.getRow("SELECT * FROM ${SearchingQuery.TABLE_NAME} ORDER BY title DESC");
+    // var res = await db.getData(SearchingQuery.TABLE_NAME,orderBy: 'title');
+    setState(() {
+      resSearch = res;
+    });
+  }
+  Future loadClick()async{
+    var res = await db.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and is_click=?",["${widget.idTenant}","true"]);
+    print("RESPONSE CLICK $res");
+    setState(() {
+      resClick=res;
+    });
+  }
+  String idProduct='';
+  Future store()async{
+    if(qController.text!=''){
+      final check = await db.getWhere(SearchingQuery.TABLE_NAME, "id_product","$idProduct", '');
+      if(check.length>0){
+        await db.delete(SearchingQuery.TABLE_NAME,"id_product","$idProduct");
+        await db.insert(SearchingQuery.TABLE_NAME,{"id_product":"${idProduct.toString()}","title":"${qController.text.toString()}"});
+      }
+      else{
+        await db.insert(SearchingQuery.TABLE_NAME,{"id_product":"${idProduct.toString()}","title":"${qController.text.toString()}"});
+      }
+    }
+
+    loadSearch();
+    Navigator.of(context).pop();
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    loadClick();
+    loadSearch();
+  }
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        if (onTap != null) {
-          onTap();
-        }
-      },
-      child: Container(
-        width: width,
-        height: double.infinity,
-        padding: EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: color,
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              height: 2,
-              width: 20,
-              margin: EdgeInsets.only(bottom: 5),
-              color: (isSelected == true) ? Colors.white : Colors.transparent,
+    return Container(
+      // height: MediaQuery.of(context).size.height/2.0,
+      decoration: BoxDecoration(
+          color:widget.mode?SiteConfig().darkMode:Colors.white,
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20.0))
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(height: 30.0),
+          Container(
+            decoration: BoxDecoration(
+              color:widget.mode?Theme.of(context).focusColor.withOpacity(0.15):SiteConfig().secondColor,
+              boxShadow: [
+                BoxShadow(color: Theme.of(context).hintColor.withOpacity(0.10), offset: Offset(0, -4), blurRadius: 10)
+              ],
             ),
-            Expanded(
-              flex: 1,
-              child: Container(
-                child: Text(
-                  namaKategori,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.white,
+            child: TextFormField(
+              textInputAction: TextInputAction.search,
+              keyboardType: TextInputType.multiline,
+              cursorColor: Theme.of(context).focusColor.withOpacity(0.8),
+              controller: qController,
+              style:TextStyle(color: Theme.of(context).focusColor.withOpacity(0.8),fontFamily: SiteConfig().fontStyle),
+              decoration: InputDecoration(
+                contentPadding: EdgeInsets.all(20),
+                hintText: 'Tulis sesuatu disini ...',
+                hintStyle: TextStyle(color: Theme.of(context).focusColor.withOpacity(0.8),fontFamily: SiteConfig().fontStyle),
+                border: UnderlineInputBorder(borderSide: BorderSide.none),
+                enabledBorder: UnderlineInputBorder(borderSide: BorderSide.none),
+                focusedBorder: UnderlineInputBorder(borderSide: BorderSide.none),
+                suffixIcon: IconButton(
+                  padding: EdgeInsets.only(right: 30),
+                  onPressed: () {
+                    // replyTicket();
+                    // _scrollToBottom();
+                    if(qController.text!=''){
+                      setState(() {
+                        qController.text='';
+                      });
+                      loadData();
+                    }
+                  },
+                  icon: Icon(
+                    qController.text==''?Icons.search:Icons.close,
+                    color:Theme.of(context).focusColor.withOpacity(0.8),
+                    size: 20,
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.fade,
-                  textAlign: TextAlign.left,
                 ),
               ),
+              onChanged: (e)async{
+                loadData();
+              },
+              onFieldSubmitted: (e){
+
+                widget.callback(qController.text);
+                store();
+
+              },
             ),
-          ],
-        ),
+          ),
+          resProduct.length>0?Expanded(
+            flex: 7,
+              child: ListView.separated(
+                  itemBuilder: (context,index){
+                    return ListTile(
+                      onTap: ()async{
+                        setState(() {
+                          qController.text = resProduct[index]['title'];
+                          idProduct = resProduct[index]['id_product'];
+                        });
+                        loadData();
+                        widget.callback(resProduct[index]['title']);
+                        store();
+                      },
+                      title: WidgetHelper().textQ("${resProduct[index]['title']}",10,Colors.white,FontWeight.bold),
+                    );
+                  },
+                  separatorBuilder:(context,index){
+                    return  Divider(height: 1);
+                  },
+                  itemCount: resProduct.length
+              )
+          ):
+          (resSearch.length>0?Expanded(
+            flex: 7,
+              child: ListView.separated(
+                  itemBuilder: (context,index){
+                    return ListTile(
+                      onTap: (){
+                        setState(() {
+                          qController.text = resSearch[index]['title'];
+                          idProduct = resSearch[index]['id_product'];
+                        });
+                        loadData();
+                        widget.callback(resSearch[index]['title']);
+                        store();
+                      },
+                      trailing: IconButton(
+                          icon: Icon(Icons.close,color:Colors.grey),
+                          onPressed:()async{
+                            await db.delete(SearchingQuery.TABLE_NAME,"id",resSearch[index]['id']);
+                            loadSearch();
+                          }
+                      ),
+                      title: WidgetHelper().textQ("${resSearch[index]['title']}",10,Colors.white,FontWeight.bold),
+                    );
+                  },
+                  separatorBuilder:(context,index){
+                    return  Divider(height: 1);
+                  },
+                  itemCount: resSearch.length
+              )
+          ):Expanded(
+            child: ListView(
+              children: [
+                EmptyTenant()
+              ],
+            ),
+          )),
+          WidgetHelper().titleQ("Barang yang pernah dilihat",param: ""),
+          Expanded(
+            flex: 13,
+            child: ListView.separated(
+              itemBuilder: (context,index){
+                var val = resClick[index];
+                return Padding(
+                  padding: EdgeInsets.only(bottom: 10.0),
+                  child: Stack(
+                    alignment: AlignmentDirectional.topEnd,
+                    children: [
+                      InkWell(
+                        onTap: (){
+                          WidgetHelper().myPush(context,DetailProducrScreen(id: val['id_product']));
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 7),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).focusColor.withOpacity(0.15),
+                            boxShadow: [
+                              BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.1), blurRadius: 5, offset: Offset(0, 2)),
+                            ],
+                            // borderRadius: BorderRadius.circular(10.0)
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Hero(
+                                tag: "${val['id']}${val['id_product']}${val['id_tenant']}",
+                                child: Container(
+                                  height: 90,
+                                  width: 90,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                                    image: DecorationImage(image: NetworkImage(val['gambar']), fit: BoxFit.cover),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 15),
+                              Flexible(
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Stack(
+                                            alignment: AlignmentDirectional.topEnd,
+                                            children: [
+                                              Container(
+                                                padding: EdgeInsets.only(right:10.0),
+                                                child: WidgetHelper().textQ("${val['tenant']}", 12, SiteConfig().mainColor, FontWeight.bold),
+                                              ),
+                                              Positioned(
+                                                child:Icon(UiIcons.home,color:SiteConfig().mainColor,size: 8),
+                                              )
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              WidgetHelper().textQ("${val['title']}", 12, widget.mode?Colors.white:SiteConfig().darkMode, FontWeight.bold),
+                                              int.parse(val['disc1'])==0?Container():SizedBox(width: 5),
+                                              int.parse(val['disc1'])==0?Container():WidgetHelper().textQ("( diskon ${val['disc1']} + ${val['disc2']} )", 10,Colors.grey,FontWeight.bold),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(val['harga_coret']))}", 10,Colors.green,FontWeight.normal,textDecoration: TextDecoration.lineThrough),
+                                              SizedBox(width: 5),
+                                              WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(val['harga']))}", 12,Colors.green,FontWeight.bold),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              separatorBuilder: (context,index){return Divider(height: 1);},
+              itemCount: resClick.length
+            )
+          )
+
+        ],
       ),
     );
   }

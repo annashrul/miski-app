@@ -14,7 +14,8 @@ class BaseProvider{
   Future getProvider(url,param)async{
     try{
       final token= await userRepository.getDataUser('token');
-      final response = await client.get("${SiteConfig().baseUrl}$url", headers: {'Authorization':token,'username': SiteConfig().username, 'password': SiteConfig().password,'myconnection':SiteConfig().connection},).timeout(Duration(seconds: SiteConfig().timeout));
+      Map<String, String> head={'Authorization':token,'username': SiteConfig().username, 'password': SiteConfig().password,'myconnection':SiteConfig().connection};
+      final response = await client.get("${SiteConfig().baseUrl}$url", headers:head).timeout(Duration(seconds: SiteConfig().timeout));
       if (response.statusCode == 200) {
         return param(response.body);
       }
@@ -24,16 +25,6 @@ class BaseProvider{
     } on SocketException catch (_) {
       print('SocketException');
       return 'SocketException';
-    }
-  }
-  Future<CartModel> getCart(var idTenant) async {
-    final token= await userRepository.getDataUser('token');
-    final url ="${SiteConfig().baseUrl}cart/$idTenant";
-    final response = await client.get(url, headers: {'Authorization':token,'username': SiteConfig().username, 'password': SiteConfig().password,'myconnection':SiteConfig().connection},).timeout(Duration(seconds: SiteConfig().timeout));
-    if (response.statusCode == 200) {
-      return cartModelFromJson(response.body);
-    } else {
-      throw Exception('Failed to load cart');
     }
   }
   Future postProvider(url,Map<String, Object> data) async {
@@ -59,13 +50,32 @@ class BaseProvider{
       return 'SocketException';
     }
   }
+  Future putProvider(url,Map<String, Object> data) async {
+    try {
+      final token= await userRepository.getDataUser('token');
+      final request = await client.put(
+          "${SiteConfig().baseUrl}$url",
+          headers: {'Authorization':token,'username': SiteConfig().username, 'password': SiteConfig().password,'myconnection':SiteConfig().connection},
+          body:data
+      ).timeout(Duration(seconds: SiteConfig().timeout));
+      print(request.body);
+      if(request.statusCode==200){
+        return jsonDecode(request.body);
+      }
+      else if(request.statusCode==400){
+        return General.fromJson(jsonDecode(request.body));
+      }
+    } on TimeoutException catch (_) {
+      return 'TimeoutException';
+    } on SocketException catch (_) {
+      return 'SocketException';
+    }
+  }
+
   Future deleteProvider(url,param) async {
     try {
       final token= await userRepository.getDataUser('token');
       String baseUrl = "${SiteConfig().baseUrl}$url";
-      if(param=='all'){
-        baseUrl+="?all=true";
-      }
       final request = await client.delete(
         baseUrl,
         headers: {'Authorization':token,'username': SiteConfig().username, 'password': SiteConfig().password,'myconnection':SiteConfig().connection},
@@ -82,6 +92,17 @@ class BaseProvider{
       return 'SocketException';
     }
 
+  }
+
+  Future<CartModel> getCart(var idTenant) async {
+    final token= await userRepository.getDataUser('token');
+    final url ="${SiteConfig().baseUrl}cart/$idTenant";
+    final response = await client.get(url, headers: {'Authorization':token,'username': SiteConfig().username, 'password': SiteConfig().password,'myconnection':SiteConfig().connection},).timeout(Duration(seconds: SiteConfig().timeout));
+    if (response.statusCode == 200) {
+      return cartModelFromJson(response.body);
+    } else {
+      throw Exception('Failed to load cart');
+    }
   }
 
 

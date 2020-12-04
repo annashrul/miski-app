@@ -89,7 +89,14 @@ class _CartScreenState extends State<CartScreen> {
     }, ()async{
       Navigator.pop(context);
       WidgetHelper().loadingDialog(context);
-      var res = await BaseProvider().deleteProvider("cart/$id", generalFromJson);
+      var url='';
+      if(param=='all'){
+        url+='cart/$id?all=true';
+      }
+      else{
+        url+='cart/$id';
+      }
+      var res = await BaseProvider().deleteProvider(url, generalFromJson);
       if(res==SiteConfig().errSocket||res==SiteConfig().errTimeout){
         Navigator.pop(context);
         WidgetHelper().showFloatingFlushbar(context,"failed","terjadi kesalahan");
@@ -175,7 +182,7 @@ class _CartScreenState extends State<CartScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
-                  isLoading?LoadingCart():cartModel.result.length>0?Padding(
+                  isLoading?LoadingCart(total: 2):cartModel.result.length>0?Padding(
                     padding: EdgeInsets.only(left:20.0,right:20.0,top:10,bottom:10),
                     child: ListView.separated(
                       padding: EdgeInsets.symmetric(vertical: 15),
@@ -260,8 +267,8 @@ class _CartScreenState extends State<CartScreen> {
                       children: [
                         WidgetHelper().titleQ("Wujudkan Barang Favorite Kamu",param: '',callback: (){},icon: Icon(
                           UiIcons.heart,
-                          color: site?Colors.white:Theme.of(context).hintColor,
-                        )),
+                          color: site?Colors.white:SiteConfig().secondColor,
+                        ),color: site?Colors.white:SiteConfig().secondColor),
                         Expanded(
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
@@ -287,11 +294,11 @@ class _CartScreenState extends State<CartScreen> {
                     ),
                   ):Container(),
 
-                  resRecomendedProduct.length>0?WidgetHelper().titleQ("Kamu Sempat Lihat Barang Barang ini",param: '',callback: (){},icon: Icon(
+                  isLoading?Container():resRecomendedProduct.length>0?WidgetHelper().titleQ("Kamu Sempat Lihat Barang Barang ini",param: '',callback: (){},icon: Icon(
                     UiIcons.favorites,
                     color: site?Colors.white:Theme.of(context).hintColor,
-                  )):Container(),
-                  resRecomendedProduct.length>0?isLoading?LoadingProductTenant(tot: 4):Padding(
+                  ),color: site?Colors.white:SiteConfig().secondColor):Container(),
+                  isLoading?LoadingProductTenant(tot: 4):resRecomendedProduct.length>0?Padding(
                     padding: EdgeInsets.only(left:20.0,right:20.0,top:10.0),
                     child: new StaggeredGridView.countBuilder(
                       primary: false,
@@ -372,42 +379,42 @@ class _CartScreenState extends State<CartScreen> {
         //     ),
         //   ),
         // )
-      bottomNavigationBar:Container(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        decoration: BoxDecoration(
+        bottomNavigationBar:Container(
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          decoration: BoxDecoration(
           color: site?SiteConfig().darkMode:Colors.grey[200],
           boxShadow: [BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), blurRadius: 5, offset: Offset(0, -2)),],
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          // crossAxisAlignment: Cro,
-          children: <Widget>[
-            Expanded(
-              flex: 10,
-              child: FlatButton(
-                  onPressed: () {},
-                  padding: EdgeInsets.symmetric(vertical: 14),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            // crossAxisAlignment: Cro,
+            children: <Widget>[
+
+              Container(
+                width: MediaQuery.of(context).size.width/2.5,
+                child: FlatButton(
+                    onPressed: () {},
+                    color: Theme.of(context).accentColor,
+                    shape: StadiumBorder(),
+                    child:WidgetHelper().textQ(FunctionHelper().formatter.format(subtotal),12, Theme.of(context).primaryColor, FontWeight.bold)
+                  // child:Text("abus")
+                ),
+              ),
+
+              Container(
+                width: MediaQuery.of(context).size.width/2.5,
+                child: FlatButton(
+                  onPressed: () {
+                    WidgetHelper().myPush(context,CheckoutScreen(idTenant: widget.idTenant));
+                  },
                   color: Theme.of(context).accentColor,
                   shape: StadiumBorder(),
-                  child:WidgetHelper().textQ(FunctionHelper().formatter.format(subtotal),12, Theme.of(context).primaryColor, FontWeight.bold)
-                // child:Text("abus")
-              ),
-            ),
-            SizedBox(width: 10),
-            Expanded(
-              flex: 10,
-              child: FlatButton(
-                onPressed: () {
-                  WidgetHelper().myPush(context,CheckoutScreen(idTenant: widget.idTenant));
-                },
-                color: Theme.of(context).accentColor,
-                shape: StadiumBorder(),
-                child: WidgetHelper().textQ("Chekout", 14, SiteConfig().secondDarkColor, FontWeight.bold),
+                  child: WidgetHelper().textQ("Chekout", 14, SiteConfig().secondDarkColor, FontWeight.bold),
+                ),
               )
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
 
     );
   }
@@ -423,7 +430,7 @@ class _CartScreenState extends State<CartScreen> {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 7),
         decoration: BoxDecoration(
-          color: site?Colors.white:Theme.of(context).primaryColor.withOpacity(0.9),
+          color: site?Colors.white:Theme.of(context).focusColor.withOpacity(0.4),
           boxShadow: [
             BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.1), blurRadius: 5, offset: Offset(0, 2)),
           ],

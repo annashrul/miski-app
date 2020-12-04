@@ -32,12 +32,19 @@ class _SigninScreenState extends State<SigninScreen> {
   final DatabaseConfig _helper = new DatabaseConfig();
   String type='';
   bool _switchValue=true;
-  _callBack(BuildContext context,bool isTrue)async{
-    if(isTrue){
 
+  _callBack(BuildContext context,bool isTrue,Map<String, Object> data)async{
+    if(isTrue){
+      print("DATA USER $data");
+      final countTbl = await _helper.queryRowCount(UserQuery.TABLE_NAME);
+      if(countTbl>0){
+        await _helper.deleteAll(UserQuery.TABLE_NAME);
+      }
+      await _helper.insert(UserQuery.TABLE_NAME,data);
       WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2,));
     }
   }
+  bool isLoadingReOtp=false;
   Future login(String type) async{
     WidgetHelper().loadingDialog(context);
     var status = await OneSignal.shared.getPermissionSubscriptionState();
@@ -82,11 +89,6 @@ class _SigninScreenState extends State<SigninScreen> {
         var result =LoginModel.fromJson(res);
         if(result.status=='success'){
           setState(() {Navigator.pop(context);});
-          final countTbl = await _helper.queryRowCount(UserQuery.TABLE_NAME);
-          if(countTbl>0){
-            await _helper.deleteAll(UserQuery.TABLE_NAME);
-          }
-
           final dataUser={
             "id_user":result.result.id.toString(),
             "token":result.result.token.toString(),
@@ -105,11 +107,19 @@ class _SigninScreenState extends State<SigninScreen> {
             "exit_app":"0",
             "onesignal_id":onesignalUserId,
           };
-          await _helper.insert(UserQuery.TABLE_NAME,dataUser);
-          print("DATA USER LOKAL $countTbl");
-          print("DATA USER SERBER $dataUser");
           if(type=='otp'){
-            WidgetHelper().myPush(context, SecureCodeScreen(callback:_callBack,code:result.result.otp,param: 'otp',desc: _switchValue?'WhatsApp':'SMS'));
+            print("IEU LOGIN $dataUser");
+            WidgetHelper().myPush(context, SecureCodeScreen(
+                callback:(context,isTrue){_callBack(context, true,dataUser);},
+                code:result.result.otp,
+                param: 'otp',
+                desc: _switchValue?'WhatsApp':'SMS',
+                data: {
+                  "nomor":"${result.result.tlp}",
+                  "type":"${_switchValue?'whatsapp':'sms'}",
+                  "nama":"${result.result.nama}"
+                },
+            ));
           }
           else{
             WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2,));
