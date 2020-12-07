@@ -225,16 +225,16 @@ class WidgetHelper{
         }
     );
   }
-  titleQ(String txt,{Color color=Colors.white,String param, Function callback,Icon icon}){
+  titleQ(String txt,{Color color=Colors.white,String param, Function callback,Icon icon, TextAlign textAlign=TextAlign.left}){
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
       child: ListTile(
         dense: true,
         contentPadding: EdgeInsets.symmetric(vertical: 0),
         leading: icon,
-        title: WidgetHelper().textQ(txt, 12, color,FontWeight.bold),
+        title: WidgetHelper().textQ(txt, 12, color,FontWeight.bold,textAlign: textAlign),
         trailing: param==''?Text(''):InkWell(
-            child: WidgetHelper().textQ("Lihat Semua", 12, color,FontWeight.bold),
+            child: WidgetHelper().textQ("$param", 12, color,FontWeight.bold),
             onTap: callback
         ),
       ),
@@ -318,6 +318,19 @@ class WidgetHelper{
             child: WidgetHelper().textQ(title,14,Colors.white, FontWeight.bold),
           )
       ),
+    );
+  }
+
+  myPress(Function callback,Widget child,{Color color=Colors.black38}){
+    return InkWell(
+      highlightColor:color,
+      splashColor:color,
+      borderRadius: BorderRadius.circular(10),
+      onTap: ()async{
+        await Future.delayed(Duration(milliseconds: 90));
+        callback();
+      },
+      child: child,
     );
   }
 

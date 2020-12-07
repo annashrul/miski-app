@@ -68,11 +68,21 @@ class _ProductWidgetState extends State<ProductWidget> {
     print("update product sukses");
   }
 
+  bool mode=false;
+  Future getMode()async{
+    var res = await FunctionHelper().getSite();
+    setState(() {
+      mode=res;
+    });
+  }
+
+
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    getMode();
 
   }
   @override
@@ -96,104 +106,100 @@ class _ProductWidgetState extends State<ProductWidget> {
       children: [
         Container(
           decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor,
-            borderRadius: BorderRadius.circular(6),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey[600].withOpacity(0.5),
-                blurRadius: 4,
-                offset: Offset(0, 1),
-              ),
-            ],
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(width:2.0,color: mode?Colors.grey:Colors.grey[200])
           ),
-          child: InkWell(
-            onTap: () async{
-              await insertProductClick();
-              WidgetHelper().myPushAndLoad(context, DetailProducrScreen(id: widget.id), widget.countCart);
-            },
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  height:  MediaQuery.of(context).size.height/6,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(6),
-                      topRight: Radius.circular(6),
+          child:  WidgetHelper().myPress(
+                  ()async{
+                await Future.delayed(Duration(milliseconds: 90));
+                await insertProductClick();
+                WidgetHelper().myPushAndLoad(context, DetailProducrScreen(id: widget.id), widget.countCart);
+              },
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    height:  MediaQuery.of(context).size.height/6,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(6),
+                        topRight: Radius.circular(6),
+                      ),
+                      image: DecorationImage(
+                        image: NetworkImage(widget.gambar),
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                    image: DecorationImage(
-                      image: NetworkImage(widget.gambar),
-                      fit: BoxFit.cover,
+                    padding: EdgeInsets.all(1.5),
+                  ),
+                  SizedBox(height: 12),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                    child: WidgetHelper().textQ(widget.title, 12,mode?Colors.white:SiteConfig().secondColor,FontWeight.bold),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child: Row(
+                      children: [
+                        WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.hargaCoret))}", 10,Colors.green,FontWeight.normal,textDecoration: TextDecoration.lineThrough),
+                        SizedBox(width: 5),
+                        WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.harga))}", 12,Colors.green,FontWeight.bold),
+                      ],
                     ),
                   ),
-                  padding: EdgeInsets.all(1.5),
-                ),
-                SizedBox(height: 12),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                  child: WidgetHelper().textQ(widget.title, 12,SiteConfig().secondColor,FontWeight.bold),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: Row(
-                    children: [
-                      WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.hargaCoret))}", 10,Colors.green,FontWeight.normal,textDecoration: TextDecoration.lineThrough),
-                      SizedBox(width: 5),
-                      WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.harga))}", 12,Colors.green,FontWeight.bold),
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 5),
+                    child: WidgetHelper().textQ("${widget.stockSales} terjual", 12,Colors.grey,FontWeight.bold),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 5),
-                  child: WidgetHelper().textQ("${widget.stockSales} terjual", 12,Colors.grey,FontWeight.bold),
-                ),
-                double.parse(widget.rating)>0?Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child:  RatingBar.builder(
-                    itemSize: 15.0,
-                    initialRating: double.parse(widget.rating),
-                    direction: Axis.horizontal,
-                    itemCount: 5,
-                    itemPadding: EdgeInsets.only(right: 4.0),
-                    itemBuilder: (context, index) {
-                      switch (index) {
-                        case 0:
-                          return Icon(
-                            Icons.sentiment_very_dissatisfied,
-                            color: Colors.red,
-                          );
-                        case 1:
-                          return Icon(
-                            Icons.sentiment_dissatisfied,
-                            color: Colors.redAccent,
-                          );
-                        case 2:
-                          return Icon(
-                            Icons.sentiment_neutral,
-                            color: Colors.amber,
-                          );
-                        case 3:
-                          return Icon(
-                            Icons.sentiment_satisfied,
-                            color: Colors.lightGreen,
-                          );
-                        case 4:
-                          return Icon(
-                            Icons.sentiment_very_satisfied,
-                            color: Colors.green,
-                          );
-                        default:
-                          return Container();
-                      }
-                    },
-                    onRatingUpdate:null,
-                  ),
-                ):Container(),
-                SizedBox(height: 15),
-              ],
-            ),
+                  double.parse(widget.rating)>0?Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child:  RatingBar.builder(
+                      itemSize: 15.0,
+                      initialRating: double.parse(widget.rating),
+                      direction: Axis.horizontal,
+                      itemCount: 5,
+                      itemPadding: EdgeInsets.only(right: 4.0),
+                      itemBuilder: (context, index) {
+                        switch (index) {
+                          case 0:
+                            return Icon(
+                              Icons.sentiment_very_dissatisfied,
+                              color: Colors.red,
+                            );
+                          case 1:
+                            return Icon(
+                              Icons.sentiment_dissatisfied,
+                              color: Colors.redAccent,
+                            );
+                          case 2:
+                            return Icon(
+                              Icons.sentiment_neutral,
+                              color: Colors.amber,
+                            );
+                          case 3:
+                            return Icon(
+                              Icons.sentiment_satisfied,
+                              color: Colors.lightGreen,
+                            );
+                          case 4:
+                            return Icon(
+                              Icons.sentiment_very_satisfied,
+                              color: Colors.green,
+                            );
+                          default:
+                            return Container();
+                        }
+                      },
+                      onRatingUpdate:null,
+                    ),
+                  ):Container(),
+                  SizedBox(height: 15),
+                ],
+              ),
+            color: mode?Colors.grey[200]:Colors.black38
           ),
         ),
+
         child
       ],
     );
@@ -239,12 +245,21 @@ class _FirstProductWidgetState extends State<FirstProductWidget> {
     await _helper.updateData(ProductQuery.TABLE_NAME,"is_click", "true", idTenant, widget.id.toString());
     print("update product sukses");
   }
+  bool mode=false;
+  Future getMode()async{
+    var res = await FunctionHelper().getSite();
+    setState(() {
+      mode=res;
+    });
+  }
+
 
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    getMode();
 
   }
   @override
@@ -275,100 +290,94 @@ class _FirstProductWidgetState extends State<FirstProductWidget> {
       }
       else{
         child = BadgesQ(val: 'Stock habis',);
-
       }
-
     }
     return Stack(
       alignment: AlignmentDirectional.topCenter,
       children: [
-        InkWell(
-          highlightColor: Colors.transparent,
-          splashColor: Theme.of(context).accentColor.withOpacity(0.08),
-          onTap: () async{
-            await insertProductClick();
-            WidgetHelper().myPushAndLoad(context, DetailProducrScreen(id: widget.id), widget.countCart);
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: [
-                BoxShadow(color: Theme.of(context).hintColor.withOpacity(0.10), offset: Offset(0, 4), blurRadius: 10)
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Hero(
-                  tag: 'HEROPRODUCT${widget.id}$random_number',
-                  child: Image.network(widget.gambar),
-                ),
-                SizedBox(height: 12),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                  child: WidgetHelper().textQ(widget.title, 12,SiteConfig().secondColor,FontWeight.bold),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: Row(
-                    children: [
-                      int.parse(widget.stock)<0?Container():WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.hargaCoret))}", 10,SiteConfig().accentDarkColor,FontWeight.bold,textDecoration: TextDecoration.lineThrough),
-                      int.parse(widget.stock)<0?Container():SizedBox(width: 5),
-                      WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.harga))}", 12,Colors.green,FontWeight.bold),
-                    ],
+        WidgetHelper().myPress(
+            ()async{
+              // print(widget.id);
+              // await insertProductClick();
+              // WidgetHelper().myPushAndLoad(context, DetailProducrScreen(id: widget.id), widget.countCart);
+            },
+            Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(width:3.0,color: mode?Colors.white:Colors.grey[200])
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Hero(
+                    tag: 'HEROPRODUCT${widget.id}$random_number',
+                    child: Image.network(widget.gambar),
                   ),
-                ),
-                int.parse(widget.stock)>0?Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child:WidgetHelper().textQ("${widget.stockSales} terjual", 12,Colors.grey,FontWeight.bold),
-                ):Container(),
-                int.parse(widget.rating)>0?Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 5),
-                  child:RatingBar.builder(
-                      itemSize: 15.0,
-                      initialRating: double.parse(widget.rating),
-                      direction: Axis.horizontal,
-                      itemCount: 5,
-                      itemPadding: EdgeInsets.only(right: 4.0),
-                      itemBuilder: (context,index){
-                        switch (index) {
-                          case 0:
-                            return Icon(
-                              Icons.sentiment_very_dissatisfied,
-                              color: Colors.red,
-                            );
-                          case 1:
-                            return Icon(
-                              Icons.sentiment_dissatisfied,
-                              color: Colors.redAccent,
-                            );
-                          case 2:
-                            return Icon(
-                              Icons.sentiment_neutral,
-                              color: Colors.amber,
-                            );
-                          case 3:
-                            return Icon(
-                              Icons.sentiment_satisfied,
-                              color: Colors.lightGreen,
-                            );
-                          case 4:
-                            return Icon(
-                              Icons.sentiment_very_satisfied,
-                              color: Colors.green,
-                            );
-                          default:
-                            return Container();
-                        }
-                      },
-                      onRatingUpdate: null
+                  SizedBox(height: 12),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                    child: WidgetHelper().textQ(widget.title, 12,SiteConfig().secondColor,FontWeight.bold),
                   ),
-                ):Container(),
-                SizedBox(height: 15),
-              ],
-            ),
-          ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child: Row(
+                      children: [
+                        int.parse(widget.stock)<0?Container():WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.hargaCoret))}", 10,SiteConfig().accentDarkColor,FontWeight.bold,textDecoration: TextDecoration.lineThrough),
+                        int.parse(widget.stock)<0?Container():SizedBox(width: 5),
+                        WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.harga))}", 12,Colors.green,FontWeight.bold),
+                      ],
+                    ),
+                  ),
+                  int.parse(widget.stock)>0?Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child:WidgetHelper().textQ("${widget.stockSales} terjual", 12,Colors.grey,FontWeight.bold),
+                  ):Container(),
+                  int.parse(widget.rating)>0?Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 5),
+                    child:RatingBar.builder(
+                        itemSize: 15.0,
+                        initialRating: double.parse(widget.rating),
+                        direction: Axis.horizontal,
+                        itemCount: 5,
+                        itemPadding: EdgeInsets.only(right: 4.0),
+                        itemBuilder: (context,index){
+                          switch (index) {
+                            case 0:
+                              return Icon(
+                                Icons.sentiment_very_dissatisfied,
+                                color: Colors.red,
+                              );
+                            case 1:
+                              return Icon(
+                                Icons.sentiment_dissatisfied,
+                                color: Colors.redAccent,
+                              );
+                            case 2:
+                              return Icon(
+                                Icons.sentiment_neutral,
+                                color: Colors.amber,
+                              );
+                            case 3:
+                              return Icon(
+                                Icons.sentiment_satisfied,
+                                color: Colors.lightGreen,
+                              );
+                            case 4:
+                              return Icon(
+                                Icons.sentiment_very_satisfied,
+                                color: Colors.green,
+                              );
+                            default:
+                              return Container();
+                          }
+                        },
+                        onRatingUpdate: null
+                    ),
+                  ):Container(),
+                  SizedBox(height: 15),
+                ],
+              ),
+            )
         ),
         child
       ],

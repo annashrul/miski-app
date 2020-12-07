@@ -40,6 +40,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
 
   Future getDetail()async{
     var res = await BaseProvider().getProvider("barang/${widget.id}", detailProductTenantModelFromJson);
+    // print(res);
     if(res==SiteConfig().errTimeout||res==SiteConfig().errSocket){
       setState(() {
         isLoading=false;isError=true;

@@ -14,6 +14,7 @@ import 'package:netindo_shop/model/general_id_model.dart';
 import 'package:netindo_shop/model/general_model.dart';
 import 'package:netindo_shop/provider/base_provider.dart';
 import 'package:netindo_shop/views/screen/checkout/checkout_screen.dart';
+import 'package:netindo_shop/views/screen/product/detail_product_screen.dart';
 import 'package:netindo_shop/views/screen/wrapper_screen.dart';
 import 'package:netindo_shop/views/widget/empty_widget.dart';
 import 'package:netindo_shop/views/widget/loading_widget.dart';
@@ -153,7 +154,6 @@ class _CartScreenState extends State<CartScreen> {
         backgroundColor: site?SiteConfig().darkMode:Colors.white,
         appBar: WidgetHelper().appBarWithButton(context,"Daftar Belanjaan",(){Navigator.pop(context);},<Widget>[
           Container(
-            // width: 30,
               height: 30,
               margin: EdgeInsets.only(top: 12.5, bottom: 12.5, right: 0),
               child: Row(
@@ -253,16 +253,6 @@ class _CartScreenState extends State<CartScreen> {
                     height: MediaQuery.of(context).size.height/2.3,
                     width: widthSize,
                     padding: EdgeInsets.only(left: 0,right:0,bottom:25),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          site?SiteConfig().darkMode:Colors.grey[100],
-                          site?SiteConfig().darkMode:SiteConfig().secondColor.withOpacity(0.2),
-                        ],
-                      ),
-                    ),
                     child: Column(
                       children: [
                         WidgetHelper().titleQ("Wujudkan Barang Favorite Kamu",param: '',callback: (){},icon: Icon(
@@ -331,54 +321,6 @@ class _CartScreenState extends State<CartScreen> {
           ),
           callback:(){ _handleRefresh();},
         ),
-        // bottomNavigationBar:Container(
-        //   height: MediaQuery.of(context).size.height/6,
-        //   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        //   decoration: BoxDecoration(
-        //       color: Theme.of(context).primaryColor,
-        //       borderRadius: BorderRadius.only(topRight: Radius.circular(20), topLeft: Radius.circular(20)),
-        //       boxShadow: [
-        //         BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), offset: Offset(0, -2), blurRadius: 5.0)
-        //       ]),
-        //   child: SizedBox(
-        //     width: MediaQuery.of(context).size.width - 40,
-        //     child: Column(
-        //       crossAxisAlignment: CrossAxisAlignment.center,
-        //       mainAxisSize: MainAxisSize.max,
-        //       children: <Widget>[
-        //         Row(
-        //           children: <Widget>[
-        //             Expanded(
-        //               child: WidgetHelper().textQ('Subtotal', 12, SiteConfig().secondColor, FontWeight.bold),
-        //             ),
-        //             WidgetHelper().textQ('${FunctionHelper().formatter.format(subtotal)}', 12, SiteConfig().secondColor, FontWeight.bold)
-        //           ],
-        //         ),
-        //
-        //         SizedBox(height: 10),
-        //         Stack(
-        //           fit: StackFit.loose,
-        //           alignment: AlignmentDirectional.centerEnd,
-        //           children: <Widget>[
-        //             SizedBox(
-        //               width: MediaQuery.of(context).size.width - 40,
-        //               child: FlatButton(
-        //                 onPressed: () {
-        //                   WidgetHelper().myPush(context,CheckoutScreen(idTenant: widget.idTenant));
-        //                 },
-        //                 padding: EdgeInsets.symmetric(vertical: 14),
-        //                 color: Theme.of(context).accentColor,
-        //                 shape: StadiumBorder(),
-        //                 child: WidgetHelper().textQ('Checkout', 12, SiteConfig().secondDarkColor, FontWeight.bold),
-        //               ),
-        //             ),
-        //
-        //           ],
-        //         ),
-        //       ],
-        //     ),
-        //   ),
-        // )
         bottomNavigationBar:Container(
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           decoration: BoxDecoration(
@@ -424,129 +366,133 @@ class _CartScreenState extends State<CartScreen> {
       splashColor: Theme.of(context).accentColor,
       focusColor: Theme.of(context).accentColor,
       highlightColor: Theme.of(context).primaryColor,
+      borderRadius: BorderRadius.circular(10.0),
       onTap: () {
         // Navigator.of(context).pushNamed('/Product', arguments: RouteArgument(id: widget.product.id, argumentsList: [widget.product, widget.heroTag]));
       },
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 7),
-        decoration: BoxDecoration(
-          color: site?Colors.white:Theme.of(context).focusColor.withOpacity(0.4),
-          boxShadow: [
-            BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.1), blurRadius: 5, offset: Offset(0, 2)),
-          ],
-          borderRadius: BorderRadius.circular(10.0)
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Hero(
-              tag: id,
-              child: Container(
-                height: 90,
-                width: 90,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
-                  image: DecorationImage(image: NetworkImage(image), fit: BoxFit.cover),
-                ),
-              ),
+      child: WidgetHelper().myPress(
+          (){
+            WidgetHelper().myPushAndLoad(context, DetailProducrScreen(id:idBarang),()=>loadCart());
+          },
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 7),
+            decoration: BoxDecoration(
+                border: Border.all(width:2.0,color: site?Colors.grey:Colors.grey),
+                borderRadius: BorderRadius.circular(10.0)
             ),
-            SizedBox(width: 15),
-            Flexible(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          children: [
-                            WidgetHelper().textQ("$name", 12, SiteConfig().darkMode, FontWeight.bold),
-                            int.parse(disc1)==0?Container():SizedBox(width: 5),
-                            int.parse(disc1)==0?Container():WidgetHelper().textQ("( diskon $disc1 + $disc2 )", 10,Colors.grey,FontWeight.bold),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(hargaCoret))}", 10,Colors.green,FontWeight.normal,textDecoration: TextDecoration.lineThrough),
-                            SizedBox(width: 5),
-                            WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(price))}", 12,Colors.green,FontWeight.bold),
-                          ],
-                        ),
-                        varian==null?Container():WidgetHelper().textQ("warna $varian,ukuran $subVarian", 12, Colors.grey, FontWeight.normal),
-                        // int.parse(disc1)==0?Container():WidgetHelper().textQ("${int.parse(cartModel.result[index].disc1)>0?"diskon 1 = ${cartModel.result[index].disc1} %\ndiskon 2 = ${cartModel.result[index].disc2} %":0}", 12,Colors.grey, FontWeight.bold),
-                      ],
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Hero(
+                  tag: id,
+                  child: Container(
+                    height: 90,
+                    width: 90,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(5)),
+                      image: DecorationImage(image: NetworkImage(image), fit: BoxFit.cover),
                     ),
                   ),
-                  SizedBox(width: 8),
-                  Column(
+                ),
+                SizedBox(width: 15),
+                Flexible(
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      IconButton(
-                        onPressed: (){
-                          setState(() {
-                            anying+=1;
-                            // cartModel.result[index].qty = anying.toString();
-                            getSubtotal();
-                          });
-                          checkingPrice(
-                              widget.idTenant,
-                              idBarang,
-                              kodeBarang,
-                              idVarian,
-                              idSubVarian,
-                              anying.toString(),
-                              harga,
-                              disc1,
-                              disc2,
-                              isTrue,
-                              hargaMaster,
-                              hargaVarian,
-                              hargaSubVarian
-                          );
-                        },
-                        iconSize: 30,
-                        padding: EdgeInsets.symmetric(horizontal: 5),
-                        icon: Icon(Icons.add_circle_outline),
-                        color: Theme.of(context).hintColor,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Row(
+                              children: [
+                                WidgetHelper().textQ("$name", 12, SiteConfig().darkMode, FontWeight.bold),
+                                int.parse(disc1)==0?Container():SizedBox(width: 5),
+                                int.parse(disc1)==0?Container():WidgetHelper().textQ("( diskon $disc1 + $disc2 )", 10,Colors.grey,FontWeight.bold),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(hargaCoret))}", 10,Colors.green,FontWeight.normal,textDecoration: TextDecoration.lineThrough),
+                                SizedBox(width: 5),
+                                WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(price))}", 12,Colors.green,FontWeight.bold),
+                              ],
+                            ),
+                            varian==null?Container():WidgetHelper().textQ("warna $varian,ukuran $subVarian", 12, Colors.grey, FontWeight.normal),
+                            // int.parse(disc1)==0?Container():WidgetHelper().textQ("${int.parse(cartModel.result[index].disc1)>0?"diskon 1 = ${cartModel.result[index].disc1} %\ndiskon 2 = ${cartModel.result[index].disc2} %":0}", 12,Colors.grey, FontWeight.bold),
+                          ],
+                        ),
                       ),
-                      WidgetHelper().textQ('$qty', 12, SiteConfig().secondColor, FontWeight.bold),
-                      IconButton(
-                        onPressed: () async {
-                          if(int.parse(cartModel.result[index].qty)>1){
-                            anying-=1;
-                            cartModel.result[index].qty = anying.toString();
-                            getSubtotal();
-                            checkingPrice(
-                                widget.idTenant,
-                                idBarang,
-                                kodeBarang,
-                                idVarian,
-                                idSubVarian,
-                                anying.toString(),
-                                harga,
-                                disc1,
-                                disc2,
-                                isTrue,
-                                hargaMaster,
-                                hargaVarian,
-                                hargaSubVarian
-                            );
-                          }
-                          setState(() {});
-                        },
-                        iconSize: 30,
-                        padding: EdgeInsets.symmetric(horizontal: 5),
-                        icon: Icon(Icons.remove_circle_outline),
-                        color: Theme.of(context).hintColor,
+                      SizedBox(width: 8),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          IconButton(
+                            onPressed: (){
+                              setState(() {
+                                anying+=1;
+                                // cartModel.result[index].qty = anying.toString();
+                                getSubtotal();
+                              });
+                              checkingPrice(
+                                  widget.idTenant,
+                                  idBarang,
+                                  kodeBarang,
+                                  idVarian,
+                                  idSubVarian,
+                                  anying.toString(),
+                                  harga,
+                                  disc1,
+                                  disc2,
+                                  isTrue,
+                                  hargaMaster,
+                                  hargaVarian,
+                                  hargaSubVarian
+                              );
+                            },
+                            iconSize: 30,
+                            padding: EdgeInsets.symmetric(horizontal: 5),
+                            icon: Icon(Icons.add_circle_outline),
+                            color: Theme.of(context).hintColor,
+                          ),
+                          WidgetHelper().textQ('$qty', 12, SiteConfig().secondColor, FontWeight.bold),
+                          IconButton(
+                            onPressed: () async {
+                              if(int.parse(cartModel.result[index].qty)>1){
+                                anying-=1;
+                                cartModel.result[index].qty = anying.toString();
+                                getSubtotal();
+                                checkingPrice(
+                                    widget.idTenant,
+                                    idBarang,
+                                    kodeBarang,
+                                    idVarian,
+                                    idSubVarian,
+                                    anying.toString(),
+                                    harga,
+                                    disc1,
+                                    disc2,
+                                    isTrue,
+                                    hargaMaster,
+                                    hargaVarian,
+                                    hargaSubVarian
+                                );
+                              }
+                              setState(() {});
+                            },
+                            iconSize: 30,
+                            padding: EdgeInsets.symmetric(horizontal: 5),
+                            icon: Icon(Icons.remove_circle_outline),
+                            color: Theme.of(context).hintColor,
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
-            )
-          ],
-        ),
+                )
+              ],
+            ),
+          ),
+          color: site?Colors.grey[200]:Colors.black38
       ),
     );
   }

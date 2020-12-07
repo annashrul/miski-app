@@ -198,33 +198,30 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                   scrollDirection: Axis.horizontal,
                   itemCount: arrFilter.length,
                   itemBuilder: (context,index){
-                    return  InkWell(
-                      onTap: (){
-                        if(index==0||index==1){
-                          index==0?_showDatePicker('1'):_showDatePicker('2');
-                        }
-                        else{
-                          modalFilter(context,index);
-                        }
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).primaryColor.withOpacity(0.9),
-                          borderRadius: BorderRadius.circular(20.0),
-                          boxShadow: [
-                            BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), blurRadius: 5, offset: Offset(0, -2)),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            WidgetHelper().textQ("${arrFilter[index]}", 10,Colors.grey, FontWeight.bold),
-                            Icon(Icons.keyboard_arrow_down,size: 17.0,color: Colors.grey,),
-                          ],
-                        ),
-                      ),
+                    return  WidgetHelper().myPress(
+                            (){
+                          if(index==0||index==1){
+                            index==0?_showDatePicker('1'):_showDatePicker('2');
+                          }
+                          else{
+                            modalFilter(context,index);
+                          }
+                        },
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                          decoration: BoxDecoration(
+                            border: Border.all(width:3.0,color: site?Colors.white:Colors.grey[200]),
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              WidgetHelper().textQ("${arrFilter[index]}", 10,Colors.grey, FontWeight.bold),
+                              Icon(Icons.keyboard_arrow_down,size: 17.0,color: Colors.grey,),
+                            ],
+                          ),
+                        )
                     );
                   },
                 )
@@ -236,7 +233,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
               flex: 19,
               child: isLoading?LoadingHistory(tot: 10):historyTransactionModel.result.data.length>0?Column(
                 children: [
-                  Expanded(flex:16,child: ListView.builder(
+                  Expanded(flex:16,child: ListView.separated(
                       key: PageStorageKey<String>('HistoryPembelianScreen'),
                       primary: false,
                       physics: ScrollPhysics(),
@@ -245,137 +242,143 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                       itemBuilder: (context,index){
                         final val=historyTransactionModel.result.data[index];
                         final valDet = historyTransactionModel.result.data[index].detail;
-                        return InkWell(
-                          onTap: (){
-                            WidgetHelper().myPush(context,DetailHistoryTransactoinScreen(noInvoice:base64.encode(utf8.encode(val.kdTrx))));
-                          },
-                          child: Card(
-                            elevation: 1.0,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.only(left:10,right:10,top:10),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        child: Column(
-                                          children: [
-                                            Column(
-                                              mainAxisAlignment: MainAxisAlignment.start,
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                WidgetHelper().textQ("( ${val.kdTrx} )",10,SiteConfig().secondColor,FontWeight.bold),
-                                                SizedBox(height: 5.0),
-                                                WidgetHelper().textQ("${DateFormat.yMd().format(val.createdAt.toLocal())} ${DateFormat.Hm().format(val.createdAt.toLocal())}",10,SiteConfig().accentColor,FontWeight.bold),
-                                              ],
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                      WidgetHelper().myStatus(context,val.status)
-
-                                    ],
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(left: 10,right:10,top:5,bottom:5),
-                                  child: Container(
-                                    color: Colors.grey[200],
-                                    height: 1.0,
-                                    width: double.infinity,
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(left:10,right:10,top:0),
-                                  child: Row(
-                                    children: [
-                                      Image.network("https://i.pinimg.com/originals/4e/be/50/4ebe50e2495b17a79c31e48a0e54883f.png",height: 50,width: 50),
-                                      SizedBox(width: 10.0),
-                                      Column(
-                                        children: [
-                                          Container(
-                                            width: MediaQuery.of(context).size.width/1.5,
-                                            child: WidgetHelper().textQ(valDet[0].barang,12,Colors.black,FontWeight.bold),
-                                          ),
-                                          WidgetHelper().textQ("${valDet.length} barang",10,Colors.grey,FontWeight.bold),
-                                          WidgetHelper().textQ("Ukuran ${valDet[0].subvarian!=null?valDet[0].subvarian:"-"} Warna ${valDet[0].varian!=null?valDet[0].varian:"-"}",10,Colors.grey,FontWeight.bold),
-                                        ],
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(height: 10),
-                                Padding(
-                                  padding: EdgeInsets.only(left:10,right:10),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        child: Column(
-                                          children: [
-                                            Column(
-                                              mainAxisAlignment: MainAxisAlignment.start,
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                WidgetHelper().textQ("Total Belanja",10,Colors.black,FontWeight.bold),
-                                                WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(val.grandtotal))}",10,Colors.green,FontWeight.bold),
-                                              ],
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                      Container(
-                                        padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                                        child:InkWell(
-                                          onTap: (){
-                                            if(val.status==0){
-                                              WidgetHelper().myPush(context,DetailCheckoutScreen(
-                                                param:"bisa",
-                                                invoice_no:"${val.kdTrx}",
-                                                grandtotal:"${val.grandtotal}",
-                                                kode_unik:"${val.kodeUnik}",
-                                                total_transfer:"${int.parse(val.jumlahTf)}",
-                                                bank_logo:"${val.bankLogo}",
-                                                bank_name:"${val.bankTujuan}",
-                                                bank_atas_nama:"${val.atasNama}",
-                                                bank_acc:"${val.rekeningTujuan}",
-                                                bank_code:"${val.bankCode}",
-                                              ));
-                                            }
-                                            else{
-
-                                            }
-                                          },
-                                          child: Container(
-                                              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                              decoration: BoxDecoration(
-                                                  color: SiteConfig().mainColor,
-                                                  borderRadius: BorderRadius.circular(10.0),
-                                                  boxShadow: [
-                                                    BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), offset: Offset(0, -2), blurRadius: 5.0)
-                                                  ]),
-                                              child: Center(
-                                                child: WidgetHelper().textQ(val.status==0?"Upload Bukti Transfer":"Beri Ulasan",10,Colors.white, FontWeight.bold),
+                        return WidgetHelper().myPress(
+                                (){
+                              WidgetHelper().myPush(context,DetailHistoryTransactoinScreen(noInvoice:base64.encode(utf8.encode(val.kdTrx))));
+                            },
+                            Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(width:3.0,color: site?Colors.white:Colors.grey[200]),
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.only(left:10,right:10,top:10),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          child: Column(
+                                            children: [
+                                              Column(
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  WidgetHelper().textQ("( ${val.kdTrx} )",10,SiteConfig().secondColor,FontWeight.bold),
+                                                  SizedBox(height: 5.0),
+                                                  WidgetHelper().textQ("${DateFormat.yMd().format(val.createdAt.toLocal())} ${DateFormat.Hm().format(val.createdAt.toLocal())}",10,SiteConfig().accentColor,FontWeight.bold),
+                                                ],
                                               )
+                                            ],
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                        WidgetHelper().myStatus(context,val.status)
+
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                SizedBox(height: 10),
-                              ],
-                            ),
-                          ),
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 10,right:10,top:5,bottom:5),
+                                    child: Container(
+                                      color: Colors.grey[200],
+                                      height: 1.0,
+                                      width: double.infinity,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(left:10,right:10,top:0),
+                                    child: Row(
+                                      children: [
+                                        Image.network("https://i.pinimg.com/originals/4e/be/50/4ebe50e2495b17a79c31e48a0e54883f.png",height: 50,width: 50),
+                                        SizedBox(width: 10.0),
+                                        Column(
+                                          children: [
+                                            Container(
+                                              width: MediaQuery.of(context).size.width/1.5,
+                                              child: WidgetHelper().textQ(valDet[0].barang,12,Colors.black,FontWeight.bold),
+                                            ),
+                                            WidgetHelper().textQ("${valDet.length} barang",10,Colors.grey,FontWeight.bold),
+                                            WidgetHelper().textQ("Ukuran ${valDet[0].subvarian!=null?valDet[0].subvarian:"-"} Warna ${valDet[0].varian!=null?valDet[0].varian:"-"}",10,Colors.grey,FontWeight.bold),
+                                          ],
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Padding(
+                                    padding: EdgeInsets.only(left:10,right:10),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          child: Column(
+                                            children: [
+                                              Column(
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  WidgetHelper().textQ("Total Belanja",10,Colors.black,FontWeight.bold),
+                                                  WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(val.grandtotal))}",10,Colors.green,FontWeight.bold),
+                                                ],
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                        Container(
+                                          padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                                          child:InkWell(
+                                            onTap: (){
+                                              if(val.status==0){
+                                                WidgetHelper().myPush(context,DetailCheckoutScreen(
+                                                  param:"bisa",
+                                                  invoice_no:"${val.kdTrx}",
+                                                  grandtotal:"${val.grandtotal}",
+                                                  kode_unik:"${val.kodeUnik}",
+                                                  total_transfer:"${int.parse(val.jumlahTf)}",
+                                                  bank_logo:"${val.bankLogo}",
+                                                  bank_name:"${val.bankTujuan}",
+                                                  bank_atas_nama:"${val.atasNama}",
+                                                  bank_acc:"${val.rekeningTujuan}",
+                                                  bank_code:"${val.bankCode}",
+                                                ));
+                                              }
+                                              else{
+
+                                              }
+                                            },
+                                            child: Container(
+                                                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                                decoration: BoxDecoration(
+                                                    color: SiteConfig().mainColor,
+                                                    borderRadius: BorderRadius.circular(10.0),
+                                                    boxShadow: [
+                                                      BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), offset: Offset(0, -2), blurRadius: 5.0)
+                                                    ]),
+                                                child: Center(
+                                                  child: WidgetHelper().textQ(val.status==0?"Upload Bukti Transfer":"Beri Ulasan",10,Colors.white, FontWeight.bold),
+                                                )
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+                                ],
+                              ),
+                            )
                         );
-                      }
+                      },
+                    separatorBuilder: (context,index){
+                        return SizedBox(height: 10.0);
+                    },
                   )),
                   isLoadmore?Expanded(flex:4,child: LoadingHistory(tot: 1)):Container()
                 ],

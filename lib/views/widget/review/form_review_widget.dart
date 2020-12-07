@@ -114,14 +114,12 @@ class _FormReviewWidgetState extends State<FormReviewWidget> {
         appBar: WidgetHelper().appBarWithButton(context, "Ulasan", (){Navigator.pop(context);},<Widget>[],brightness: site?Brightness.dark:Brightness.light),
         body:Container(
           padding: EdgeInsets.all(10.0),
-          child: ListView.builder(
+          child: ListView.separated(
+            separatorBuilder: (context,index){return SizedBox(height:10.0);},
             itemCount: widget.detailHistoryTransactionModel.result.barang.length,
             itemBuilder: (context,index){
-              return Card(
-                shadowColor: Colors.black,
-                elevation: 1.0,
-                child: ListTile(
-                  onTap: (){
+              return WidgetHelper().myPress(
+                  (){
                     onShowModal(
                         5.0,
                         widget.detailHistoryTransactionModel.result.barang[index].gambar,
@@ -129,61 +127,68 @@ class _FormReviewWidgetState extends State<FormReviewWidget> {
                         widget.detailHistoryTransactionModel.result.barang[index].kodeBarang
                     );
                   },
-                  contentPadding: EdgeInsets.all(10.0),
-                  leading: Image.network(SiteConfig().noImage),
-                  title: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      WidgetHelper().textQ("${DateFormat.yMMMMEEEEd('id').format(widget.detailHistoryTransactionModel.result.barang[index].createdAt)}",10.0,Colors.grey,FontWeight.bold),
-                      SizedBox(height: 2.0),
-                      WidgetHelper().textQ(widget.detailHistoryTransactionModel.result.barang[index].barang,12.0,SiteConfig().secondColor,FontWeight.bold),
-                      SizedBox(height: 5.0),
-                      RatingBar.builder(
-                        itemSize: 15.0,
-                        initialRating: 5,
-                        direction: Axis.horizontal,
-                        itemCount: 5,
-                        itemPadding: EdgeInsets.only(right: 4.0),
-                        itemBuilder: (context, index) {
-                          switch (index) {
-                            case 0:
-                              return Icon(
-                                Icons.sentiment_very_dissatisfied,
-                                color: Colors.red,
-                              );
-                            case 1:
-                              return Icon(
-                                Icons.sentiment_dissatisfied,
-                                color: Colors.redAccent,
-                              );
-                            case 2:
-                              return Icon(
-                                Icons.sentiment_neutral,
-                                color: Colors.amber,
-                              );
-                            case 3:
-                              return Icon(
-                                Icons.sentiment_satisfied,
-                                color: Colors.lightGreen,
-                              );
-                            case 4:
-                              return Icon(
-                                Icons.sentiment_very_satisfied,
-                                color: Colors.green,
-                              );
-                            default:
-                              return Container();
-                          }
-                        },
-                        onRatingUpdate: (rating) {
-                          onShowModal(rating,widget.detailHistoryTransactionModel.result.barang[index].gambar,widget.detailHistoryTransactionModel.result.barang[index].barang,widget.detailHistoryTransactionModel.result.barang[index].kodeBarang);
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(width:3.0,color: site?Colors.white:Colors.grey[200]),
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: ListTile(
+                      contentPadding: EdgeInsets.all(10.0),
+                      leading: Image.network(SiteConfig().noImage),
+                      title: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          WidgetHelper().textQ("${DateFormat.yMMMMEEEEd('id').format(widget.detailHistoryTransactionModel.result.barang[index].createdAt)}",10.0,Colors.grey,FontWeight.bold),
+                          SizedBox(height: 2.0),
+                          WidgetHelper().textQ(widget.detailHistoryTransactionModel.result.barang[index].barang,12.0,SiteConfig().secondColor,FontWeight.bold),
+                          SizedBox(height: 5.0),
+                          RatingBar.builder(
+                            itemSize: 15.0,
+                            initialRating: 5,
+                            direction: Axis.horizontal,
+                            itemCount: 5,
+                            itemPadding: EdgeInsets.only(right: 4.0),
+                            itemBuilder: (context, index) {
+                              switch (index) {
+                                case 0:
+                                  return Icon(
+                                    Icons.sentiment_very_dissatisfied,
+                                    color: Colors.red,
+                                  );
+                                case 1:
+                                  return Icon(
+                                    Icons.sentiment_dissatisfied,
+                                    color: Colors.redAccent,
+                                  );
+                                case 2:
+                                  return Icon(
+                                    Icons.sentiment_neutral,
+                                    color: Colors.amber,
+                                  );
+                                case 3:
+                                  return Icon(
+                                    Icons.sentiment_satisfied,
+                                    color: Colors.lightGreen,
+                                  );
+                                case 4:
+                                  return Icon(
+                                    Icons.sentiment_very_satisfied,
+                                    color: Colors.green,
+                                  );
+                                default:
+                                  return Container();
+                              }
+                            },
+                            onRatingUpdate: (rating) {
+                              onShowModal(rating,widget.detailHistoryTransactionModel.result.barang[index].gambar,widget.detailHistoryTransactionModel.result.barang[index].barang,widget.detailHistoryTransactionModel.result.barang[index].kodeBarang);
 
-                        },
-                      )
-                    ],
-                  ),
-                ),
+                            },
+                          )
+                        ],
+                      ),
+                    ),
+                  )
               );
             },
           ),

@@ -296,10 +296,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
               decoration: BoxDecoration(
                 color: site?SiteConfig().darkMode:Colors.white,
-                borderRadius: BorderRadius.circular(6),
-                boxShadow: [
-                  BoxShadow(color: site?Colors.transparent:Theme.of(context).hintColor.withOpacity(0.15), offset: Offset(0, 3), blurRadius: 10)
-                ],
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(width:3.0,color: site?Colors.transparent:Colors.grey[200])
               ),
               child: ListView(
                 shrinkWrap: true,
@@ -323,7 +321,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   FlatButton(
                     padding: EdgeInsets.all(site?0.0:0.0),
-                    onPressed: (){
+                    highlightColor:Colors.black38,
+                    splashColor:Colors.black38,
+                    onPressed: ()async{
+                      await Future.delayed(Duration(milliseconds: 90));
                       WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 0));
                     },
                     child: ListTile(
@@ -335,8 +336,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   FlatButton(
                     padding: EdgeInsets.all(0.0),
-
-                    onPressed: (){
+                    highlightColor:Colors.black38,
+                    splashColor:Colors.black38,
+                    onPressed: ()async{
+                      await Future.delayed(Duration(milliseconds: 90));
                       WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 1));
                     },
                     child: ListTile(
@@ -349,8 +352,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   FlatButton(
                     padding: EdgeInsets.all(0.0),
-
-                    onPressed: (){
+                    highlightColor:Colors.black38,
+                    splashColor:Colors.black38,
+                    onPressed: ()async{
+                      await Future.delayed(Duration(milliseconds: 90));
                       WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 2));
 
                     },
@@ -363,8 +368,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   FlatButton(
                     padding: EdgeInsets.all(0.0),
-
-                    onPressed: (){
+                    highlightColor:Colors.black38,
+                    splashColor:Colors.black38,
+                    onPressed: ()async{
+                      await Future.delayed(Duration(milliseconds: 90));
                       WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 3));
 
                     },
@@ -378,8 +385,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   FlatButton(
                     padding: EdgeInsets.all(0.0),
-
-                    onPressed: (){
+                    highlightColor:Colors.black38,
+                    splashColor:Colors.black38,
+                    onPressed: ()async{
+                      await Future.delayed(Duration(milliseconds: 90));
                       WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 4));
                     },
                     child: ListTile(
@@ -404,7 +413,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: ListView(
                 padding: EdgeInsets.all(0.0),
-
                 shrinkWrap: true,
                 primary: false,
                 children: <Widget>[
@@ -413,42 +421,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     leading: Icon(UiIcons.settings_1,color: site?Colors.white:Colors.grey),
                     title: WidgetHelper().textQ("Pengaturan Umum",12,site?Colors.white:SiteConfig().secondColor,FontWeight.bold),
                   ),
-                  ListTile(
-                    contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
-                    onTap: () {},
-                    dense: true,
-                    title: Row(
-                      children: <Widget>[
-                        Icon(
-                          site?UiIcons.cloud_computing:UiIcons.cloud_computing_1,
-                          size: 22,
-                          color: Theme.of(context).focusColor,
-                        ),
-                        SizedBox(width: 10),
-                        WidgetHelper().textQ("Warna Tema ${site?'Gelap':'Cerah'}",10,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal)
+                  WidgetHelper().myPress(
+                    ()async{
+                      WidgetHelper().myPush(context,MyApp());
+                      await FunctionHelper().storeSite(!site);
+                      setState(() {
+                        site = !site;
+                      });
+                    },
+                    ListTile(
+                      contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
+                      dense: true,
+                      title: Row(
+                        children: <Widget>[
+                          Icon(
+                            site?UiIcons.cloud_computing:UiIcons.cloud_computing_1,
+                            size: 22,
+                            color: Theme.of(context).focusColor,
+                          ),
+                          SizedBox(width: 10),
+                          WidgetHelper().textQ("Warna Tema ${site?'Gelap':'Cerah'}",10,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal)
 
-                      ],
+                        ],
+                      ),
+                      trailing: SizedBox(
+                          width: 70,
+                          height: 10,
+                          child: Switch(
+                            activeColor: site?Colors.white:SiteConfig().mainDarkColor,
+                            value: site,
+                            onChanged: (value) async{
+                              WidgetHelper().myPush(context,MyApp());
+                              await FunctionHelper().storeSite(value);
+                              setState(() {
+                                site = value;
+                              });
+                            },
+                          )
+                      ),
                     ),
-                    trailing: SizedBox(
-                        width: 70,
-                        height: 10,
-                        child: Switch(
-                          activeColor: site?Colors.white:SiteConfig().mainDarkColor,
-                          value: site,
-                          onChanged: (value) async{
-
-                            WidgetHelper().myPush(context,MyApp());
-                            await FunctionHelper().storeSite(value);
-                            setState(() {
-                              site = value;
-                            });
-                          },
-                        )
-                    ),
+                    color: site?Colors.grey[200]:Colors.black38
                   ),
                   ListTile(
                     contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
-
                     onTap: () {
                       WidgetHelper().myPush(context,AddressScreen(mode:site));
                     },
@@ -467,7 +482,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   ListTile(
                     contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
-
                     onTap: () {
                     },
                     dense: true,
@@ -486,9 +500,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   ListTile(
                     contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
-                    onTap: ()async {
-                      await db.deleteAll(UserQuery.TABLE_NAME);
-                      WidgetHelper().myPushRemove(context,SigninScreen());
+                    onTap: () {
+                      WidgetHelper().notifDialog(context,"Perhatian !!","Anda yakin akan keluar dari aplikas ??", (){Navigator.pop(context);}, ()async{
+                        final id = await UserHelper().getDataUser('id');
+                        await db.update(UserQuery.TABLE_NAME, {'id':"${id.toString()}","is_login":"0"});
+                        // await db.deleteAll(UserQuery.TABLE_NAME);
+                        WidgetHelper().myPushRemove(context,SigninScreen());
+                      });
                     },
                     dense: true,
                     title: Row(

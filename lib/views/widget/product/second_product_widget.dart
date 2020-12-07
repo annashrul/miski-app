@@ -38,6 +38,25 @@ class _SecondProductWidgetState extends State<SecondProductWidget> {
 
   double width;
   double height;
+
+  bool mode=false;
+  Future getMode()async{
+    var res = await FunctionHelper().getSite();
+    setState(() {
+      mode=res;
+    });
+  }
+
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getMode();
+
+  }
+
   @override
   Widget build(BuildContext context) {
     double widthSize = MediaQuery.of(context).size.width;
@@ -57,153 +76,138 @@ class _SecondProductWidgetState extends State<SecondProductWidget> {
             width: 120,
             height: height,
             decoration: BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey[600].withOpacity(0.5),
-                  blurRadius: 4,
-                  offset: Offset(0, 1),
-                ),
-              ],
+                border: Border.all(width:2.0,color: Colors.grey),
+                borderRadius: BorderRadius.circular(10.0)
             ),
-            child: InkWell(
-              hoverColor: Colors.green,
-              highlightColor: Colors.green,
-              focusColor: Colors.green,
-              onTap: (){
-                WidgetHelper().myPush(context, DetailProducrScreen(id: widget.id));
-              },
-              child: Column(
-                children: [
-                  Container(
-                    height:  MediaQuery.of(context).size.height/6,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Color(0xFF9FA6B0),
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(8),
-                        topRight: Radius.circular(8),
-                      ),
-                      image: DecorationImage(
-                        image: NetworkImage(SiteConfig().noImage),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.all(10),
+            child: WidgetHelper().myPress(
+                (){WidgetHelper().myPush(context, DetailProducrScreen(id: widget.id));},
+                Column(
+                  children: [
+                    Container(
+                      height:  MediaQuery.of(context).size.height/6,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: Colors.white,
                         borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(8),
-                          bottomRight: Radius.circular(8),
+                          topLeft: Radius.circular(8),
+                          topRight: Radius.circular(8),
+                        ),
+                        image: DecorationImage(
+                          image: NetworkImage(SiteConfig().noImage),
+                          fit: BoxFit.cover,
                         ),
                       ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          int.parse(widget.disc1)>0?Container(
-                            width: double.infinity,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.all(4),
-                                  margin: EdgeInsets.only(right: 5),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(4),
-                                    color: SiteConfig().mainColor,
-                                  ),
-                                  child: WidgetHelper().textQ("10 %", 10,SiteConfig().secondDarkColor, FontWeight.w600),
-                                ),
-                                Container(
-                                  padding: EdgeInsets.all(4),
-                                  margin: EdgeInsets.only(right: 5),
-                                  decoration: BoxDecoration(
+                    ),
+                    Expanded(
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        width: double.infinity,
+
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            int.parse(widget.disc1)>0?Container(
+                              width: double.infinity,
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.all(4),
+                                    margin: EdgeInsets.only(right: 5),
+                                    decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(4),
-                                      color: SiteConfig().mainColor
+                                      color: SiteConfig().mainColor,
+                                    ),
+                                    child: WidgetHelper().textQ("10 %", 10,SiteConfig().secondDarkColor, FontWeight.w600),
                                   ),
-                                  child: WidgetHelper().textQ("+", 10, SiteConfig().secondDarkColor, FontWeight.w600),
-                                ),
-                                Container(
-                                  padding: EdgeInsets.all(4),
-                                  margin: EdgeInsets.only(right: 5),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(4),
-                                      color: SiteConfig().mainColor
+                                  Container(
+                                    padding: EdgeInsets.all(4),
+                                    margin: EdgeInsets.only(right: 5),
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(4),
+                                        color: SiteConfig().mainColor
+                                    ),
+                                    child: WidgetHelper().textQ("+", 10, SiteConfig().secondDarkColor, FontWeight.w600),
                                   ),
-                                  child: WidgetHelper().textQ("10 %", 10, SiteConfig().secondDarkColor, FontWeight.w600),
-                                ),
-                              ],
+                                  Container(
+                                    padding: EdgeInsets.all(4),
+                                    margin: EdgeInsets.only(right: 5),
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(4),
+                                        color: SiteConfig().mainColor
+                                    ),
+                                    child: WidgetHelper().textQ("10 %", 10, SiteConfig().secondDarkColor, FontWeight.w600),
+                                  ),
+                                ],
+                              ),
+                            ):int.parse(widget.stock)>0?Container(
+                              padding: EdgeInsets.all(4),
+                              margin: EdgeInsets.only(right: 5),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(4),
+                                  color: SiteConfig().mainColor
+                              ),
+                              child: WidgetHelper().textQ("Stock ${widget.stock}", 10, SiteConfig().secondDarkColor, FontWeight.w600),
+                            ):Container(),
+                            Container(
+                                child: WidgetHelper().textQ(widget.title, 12, mode?Colors.white:Colors.black, FontWeight.w400)
                             ),
-                          ):int.parse(widget.stock)>0?Container(
-                            padding: EdgeInsets.all(4),
-                            margin: EdgeInsets.only(right: 5),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(4),
-                                color: SiteConfig().mainColor
+                            Container(
+                              child: Row(
+                                children: [
+                                  WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.hargaCoret))}", 10, Colors.green, FontWeight.normal,textDecoration: TextDecoration.lineThrough),
+                                  SizedBox(width: 10.0),
+                                  WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.harga))}", 12,Colors.green, FontWeight.bold)
+                                ],
+                              ),
                             ),
-                            child: WidgetHelper().textQ("Stock ${widget.stock}", 10, SiteConfig().secondDarkColor, FontWeight.w600),
-                          ):Container(),
-                          Container(
-                              child: WidgetHelper().textQ(widget.title, 12, Colors.black, FontWeight.w400)
-                          ),
-                          Container(
-                            child: Row(
-                              children: [
-                                WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.hargaCoret))}", 10, Colors.green, FontWeight.normal,textDecoration: TextDecoration.lineThrough),
-                                SizedBox(width: 10.0),
-                                WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.harga))}", 12,Colors.green, FontWeight.bold)
-                              ],
-                            ),
-                          ),
-                          RatingBar.builder(
-                              itemSize: 15.0,
-                              initialRating: double.parse(widget.rating),
-                              direction: Axis.horizontal,
-                              itemCount: 5,
-                              itemPadding: EdgeInsets.only(right: 4.0),
-                              itemBuilder: (context,index){
-                                switch (index) {
-                                  case 0:
-                                    return Icon(
-                                      Icons.sentiment_very_dissatisfied,
-                                      color: Colors.red,
-                                    );
-                                  case 1:
-                                    return Icon(
-                                      Icons.sentiment_dissatisfied,
-                                      color: Colors.redAccent,
-                                    );
-                                  case 2:
-                                    return Icon(
-                                      Icons.sentiment_neutral,
-                                      color: Colors.amber,
-                                    );
-                                  case 3:
-                                    return Icon(
-                                      Icons.sentiment_satisfied,
-                                      color: Colors.lightGreen,
-                                    );
-                                  case 4:
-                                    return Icon(
-                                      Icons.sentiment_very_satisfied,
-                                      color: Colors.green,
-                                    );
-                                  default:
-                                    return Container();
-                                }
-                              },
-                              onRatingUpdate: null
-                          )
-                        ],
+                            RatingBar.builder(
+                                itemSize: 12.0,
+                                initialRating: double.parse(widget.rating),
+                                direction: Axis.horizontal,
+                                itemCount: 5,
+                                unratedColor: Colors.grey,
+                                itemPadding: EdgeInsets.only(right: 4.0),
+                                itemBuilder: (context,index){
+                                  switch (index) {
+                                    case 0:
+                                      return Icon(
+                                        Icons.sentiment_very_dissatisfied,
+                                        color: Colors.red,
+                                      );
+                                    case 1:
+                                      return Icon(
+                                        Icons.sentiment_dissatisfied,
+                                        color: Colors.redAccent,
+                                      );
+                                    case 2:
+                                      return Icon(
+                                        Icons.sentiment_neutral,
+                                        color: Colors.amber,
+                                      );
+                                    case 3:
+                                      return Icon(
+                                        Icons.sentiment_satisfied,
+                                        color: Colors.lightGreen,
+                                      );
+                                    case 4:
+                                      return Icon(
+                                        Icons.sentiment_very_satisfied,
+                                        color: Colors.green,
+                                      );
+                                    default:
+                                      return Container();
+                                  }
+                                },
+                                onRatingUpdate: null
+                            )
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
+              color: mode?Colors.grey[200]:Colors.black38
             ),
           ),
           int.parse(widget.stock)>0?Container():BadgesQ(val:'Stock habis')
