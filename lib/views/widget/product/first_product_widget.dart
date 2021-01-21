@@ -106,8 +106,12 @@ class _ProductWidgetState extends State<ProductWidget> {
       children: [
         Container(
           decoration: BoxDecoration(
+              color: Theme.of(context).focusColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(width:2.0,color: mode?Colors.grey:Colors.grey[200])
+            boxShadow: [
+              BoxShadow(color: mode?Colors.transparent:Theme.of(context).hintColor.withOpacity(0.1), offset: Offset(0, 3), blurRadius: 10)
+            ],
+              // border: Border.all(width:1.0,color: mode?Colors.white10:Colors.grey[200])
           ),
           child:  WidgetHelper().myPress(
                   ()async{
@@ -119,23 +123,23 @@ class _ProductWidgetState extends State<ProductWidget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Container(
-                    height:  MediaQuery.of(context).size.height/6,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(6),
                         topRight: Radius.circular(6),
                       ),
-                      image: DecorationImage(
-                        image: NetworkImage(widget.gambar),
-                        fit: BoxFit.cover,
-                      ),
+                      // image: DecorationImage(
+                      //   image: NetworkImage(widget.gambar),
+                      //   fit: BoxFit.contain,
+                      // ),
                     ),
-                    padding: EdgeInsets.all(1.5),
+                    // padding: EdgeInsets.all(1.5),
+                    child: Image.network(widget.gambar, fit:BoxFit.fill,width: double.infinity,),
                   ),
                   SizedBox(height: 12),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                    child: WidgetHelper().textQ(widget.title, 12,mode?Colors.white:SiteConfig().secondColor,FontWeight.bold),
+                    child: WidgetHelper().textQ(widget.title, 12,mode?Colors.white:SiteConfig().secondColor,FontWeight.normal,maxLines:3 ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -143,13 +147,13 @@ class _ProductWidgetState extends State<ProductWidget> {
                       children: [
                         WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.hargaCoret))}", 10,Colors.green,FontWeight.normal,textDecoration: TextDecoration.lineThrough),
                         SizedBox(width: 5),
-                        WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.harga))}", 12,Colors.green,FontWeight.bold),
+                        WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.harga))}", 12,Colors.green,FontWeight.normal),
                       ],
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 5),
-                    child: WidgetHelper().textQ("${widget.stockSales} terjual", 12,Colors.grey,FontWeight.bold),
+                    child: WidgetHelper().textQ("${widget.stockSales} terjual", 12,Colors.grey,FontWeight.normal),
                   ),
                   double.parse(widget.rating)>0?Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -196,7 +200,7 @@ class _ProductWidgetState extends State<ProductWidget> {
                   SizedBox(height: 15),
                 ],
               ),
-            color: mode?Colors.grey[200]:Colors.black38
+            color: mode?Colors.white10:Colors.black38
           ),
         ),
 
@@ -303,8 +307,9 @@ class _FirstProductWidgetState extends State<FirstProductWidget> {
             },
             Container(
               decoration: BoxDecoration(
+                  color: Theme.of(context).focusColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(width:3.0,color: mode?Colors.white:Colors.grey[200])
+                  // border: Border.all(width:1.0,color: mode?Colors.white10:Colors.grey[200])
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -316,7 +321,7 @@ class _FirstProductWidgetState extends State<FirstProductWidget> {
                   SizedBox(height: 12),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                    child: WidgetHelper().textQ(widget.title, 12,SiteConfig().secondColor,FontWeight.bold),
+                    child: WidgetHelper().textQ(widget.title, 12,mode?Colors.white:SiteConfig().secondColor,FontWeight.normal),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -324,7 +329,7 @@ class _FirstProductWidgetState extends State<FirstProductWidget> {
                       children: [
                         int.parse(widget.stock)<0?Container():WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.hargaCoret))}", 10,SiteConfig().accentDarkColor,FontWeight.bold,textDecoration: TextDecoration.lineThrough),
                         int.parse(widget.stock)<0?Container():SizedBox(width: 5),
-                        WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.harga))}", 12,Colors.green,FontWeight.bold),
+                        WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.harga))}", 12,Colors.green,FontWeight.normal),
                       ],
                     ),
                   ),
@@ -377,7 +382,8 @@ class _FirstProductWidgetState extends State<FirstProductWidget> {
                   SizedBox(height: 15),
                 ],
               ),
-            )
+            ),
+            color: mode?Colors.white10:Colors.black38
         ),
         child
       ],

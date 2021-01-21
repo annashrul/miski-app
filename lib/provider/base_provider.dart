@@ -17,6 +17,7 @@ class BaseProvider{
       Map<String, String> head={'Authorization':token,'username': SiteConfig().username, 'password': SiteConfig().password,'myconnection':SiteConfig().connection};
       final response = await client.get("${SiteConfig().baseUrl}$url", headers:head).timeout(Duration(seconds: SiteConfig().timeout));
       if (response.statusCode == 200) {
+        print("GET PROVIDER RESPONSE $url ${response.body}");
         return param(response.body);
       }
     }on TimeoutException catch (_) {
@@ -34,7 +35,13 @@ class BaseProvider{
       final token= await userRepository.getDataUser('token');
       final request = await client.post(
           "${SiteConfig().baseUrl}$url",
-          headers: {'Authorization':token,'username': SiteConfig().username, 'password': SiteConfig().password,'myconnection':SiteConfig().connection},
+          headers: {
+            'Authorization':token,
+            'username': SiteConfig().username,
+            'password': SiteConfig().password,
+            'myconnection':SiteConfig().connection,
+            "HttpHeaders.contentTypeHeader": "application/json"
+          },
           body:data
       ).timeout(Duration(seconds: SiteConfig().timeout));
       print(request.body);

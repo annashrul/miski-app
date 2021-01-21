@@ -76,7 +76,7 @@ class _SecondProductWidgetState extends State<SecondProductWidget> {
             width: 120,
             height: height,
             decoration: BoxDecoration(
-                border: Border.all(width:2.0,color: Colors.grey),
+                color: Theme.of(context).focusColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10.0)
             ),
             child: WidgetHelper().myPress(
@@ -147,17 +147,17 @@ class _SecondProductWidgetState extends State<SecondProductWidget> {
                                   borderRadius: BorderRadius.circular(4),
                                   color: SiteConfig().mainColor
                               ),
-                              child: WidgetHelper().textQ("Stock ${widget.stock}", 10, SiteConfig().secondDarkColor, FontWeight.w600),
+                              child: WidgetHelper().textQ("Stock ${widget.stock}", 10, SiteConfig().secondDarkColor, FontWeight.normal),
                             ):Container(),
                             Container(
-                                child: WidgetHelper().textQ(widget.title, 12, mode?Colors.white:Colors.black, FontWeight.w400)
+                                child: WidgetHelper().textQ(widget.title, 12, mode?Colors.white:Colors.black, FontWeight.normal)
                             ),
                             Container(
                               child: Row(
                                 children: [
                                   WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.hargaCoret))}", 10, Colors.green, FontWeight.normal,textDecoration: TextDecoration.lineThrough),
                                   SizedBox(width: 10.0),
-                                  WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.harga))}", 12,Colors.green, FontWeight.bold)
+                                  WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.harga))}", 12,Colors.green, FontWeight.normal)
                                 ],
                               ),
                             ),
@@ -207,7 +207,7 @@ class _SecondProductWidgetState extends State<SecondProductWidget> {
                     ),
                   ],
                 ),
-              color: mode?Colors.grey[200]:Colors.black38
+              color: mode?Colors.white10:Colors.black38
             ),
           ),
           int.parse(widget.stock)>0?Container():BadgesQ(val:'Stock habis')
@@ -349,7 +349,7 @@ class _SecondProductsWidgetState extends State<SecondProductsWidget> {
                                   children: [
                                     WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.data[index]['hargaCoret']))}", 10, Colors.green, FontWeight.normal,textDecoration: TextDecoration.lineThrough),
                                     SizedBox(width: 10.0),
-                                    WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.data[index]['harga']))}", 12,Colors.green, FontWeight.bold)
+                                    WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.data[index]['harga']))}", 12,Colors.green, FontWeight.normal)
                                   ],
                                 ),
                               ),

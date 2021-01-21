@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:animated_widgets/widgets/rotation_animated.dart';
 import 'package:animated_widgets/widgets/scale_animated.dart';
 import 'package:animated_widgets/widgets/shake_animated_widget.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -150,8 +151,6 @@ class WidgetHelper{
   }
   myPushAndLoad(BuildContext context, Widget widget,Function callback){
     return Navigator.push(context, CupertinoPageRoute(builder: (context) => widget)).whenComplete(callback);
-
-    // return Navigator.push(context, CupertinoPageRoute(builder: (context) => widget)).whenComplete(() => callback);
   }
   loadingDialog(BuildContext context,{title='tunggu sebentar'}){
     return showDialog(
@@ -258,22 +257,6 @@ class WidgetHelper{
       actions:widget,// status bar brightness
     );
   }
-  myAppBar(BuildContext context, title,Function callback,List<Widget> widget){
-    ScreenUtilHelper.instance = ScreenUtilHelper.getInstance()..init(context);
-    ScreenUtilHelper.instance = ScreenUtilHelper(allowFontScaling: false)..init(context);
-    return AppBar(
-      automaticallyImplyLeading: false,
-      leading: new IconButton(
-        icon: new Icon(UiIcons.return_icon, color: Theme.of(context).hintColor),
-        onPressed: callback,
-      ),
-      backgroundColor: Colors.white,
-      elevation: 1.0,
-      title: textQ(title,16,Theme.of(context).hintColor,FontWeight.bold),
-      actions:widget,
-    );
-  }
-
   myAppBarNoButton(BuildContext context,String title,List<Widget> widget,{Brightness brightness=Brightness.light}){
     return AppBar(
       automaticallyImplyLeading: false,
@@ -291,6 +274,23 @@ class WidgetHelper{
     );
 
   }
+
+  myAppBar(BuildContext context, title,Function callback,List<Widget> widget){
+    ScreenUtilHelper.instance = ScreenUtilHelper.getInstance()..init(context);
+    ScreenUtilHelper.instance = ScreenUtilHelper(allowFontScaling: false)..init(context);
+    return AppBar(
+      automaticallyImplyLeading: false,
+      leading: new IconButton(
+        icon: new Icon(UiIcons.return_icon, color: Theme.of(context).hintColor),
+        onPressed: callback,
+      ),
+      backgroundColor: Colors.white,
+      elevation: 1.0,
+      title: textQ(title,16,Theme.of(context).hintColor,FontWeight.bold),
+      actions:widget,
+    );
+  }
+
   pembatas(BuildContext context){
     return Container(
       width: MediaQuery.of(context).size.width,
@@ -331,6 +331,17 @@ class WidgetHelper{
         callback();
       },
       child: child,
+    );
+  }
+
+  myImage(String img,double width, double height, BoxFit boxFit){
+    return CachedNetworkImage(
+      width: width,
+      height: height,
+      fit: boxFit,
+      imageUrl: img,
+      progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
+      errorWidget: (context, url, error) => Icon(Icons.error),
     );
   }
 

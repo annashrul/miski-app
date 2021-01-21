@@ -33,6 +33,7 @@ class _SecureCodeScreenState extends State<SecureCodeScreen> {
   bool timeUpFlag = false;
 
   _timerUpdate() {
+
     Timer(const Duration(seconds: 1), () async {
       setState(() {
         timeCounter--;

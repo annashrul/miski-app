@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
@@ -7,7 +9,10 @@ import 'package:netindo_shop/helper/database_helper.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/views/screen/auth/signin_screen.dart';
 import 'package:netindo_shop/views/screen/splash_screen.dart';
+import 'package:netindo_shop/views/screen/wrapper_screen.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:flutter/services.dart' show PlatformException;
+import 'package:uni_links/uni_links.dart';
 
 void main(){
   runApp(MyApp());
@@ -20,10 +25,10 @@ class MyApp extends StatefulWidget {
     return _MyAppState();
   }
 }
+enum UniLinksType { string, uri }
 
 class _MyAppState extends State<MyApp> {
   final DatabaseConfig _db = new DatabaseConfig();
-
   @override
   void initState() {
     // TODO: implement initState

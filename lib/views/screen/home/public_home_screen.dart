@@ -48,7 +48,6 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
   }
   Future getTenant()async{
     await getSite();
-    print("INSETR BERES");
     final countTbl = await _helper.queryRowCount(TenantQuery.TABLE_NAME);
     if(countTbl>1){
       final tenant = await _helper.getData(TenantQuery.TABLE_NAME);
@@ -69,17 +68,17 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
       }
       else{
         if(res is ListTenantModel){
+          listTenantModel = ListTenantModel.fromJson(res.toJson());
+          insertTenant(listTenantModel.result.perPage,listTenantModel.result.lastPage);
+          print("INSETR BERES");
           setState(() {
             isTimeout=false;
             isLoading=false;
-            listTenantModel = ListTenantModel.fromJson(res.toJson());
           });
-          insertTenant(listTenantModel.result.perPage,listTenantModel.result.lastPage);
         }
       }
       await FunctionHelper().getFilterLocal('');
     }
-
   }
 
   Future insertTenant(perpage,lastpage)async{
@@ -122,7 +121,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
     if(res==SiteConfig().errSocket||res==SiteConfig().errTimeout){
       setState(() {
         isLoadingPromo=false;
-        isTimeoutPromo=false;
+        isTimeoutPromo=true;
       });
     }
     else{
@@ -160,17 +159,20 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
        setState(() {
          isTimeout=false;
          isLoading=true;
+         isTimeoutPromo=false;
+         isLoadingPromo=true;
        });
        getTenant();
+       getPromo();
      }):ListView(
        children: <Widget>[
-         Container(
+         isLoadingPromo?Padding(padding: EdgeInsets.all(20.0),child: SkeletonFrame(width: double.infinity,height:250),):Container(
            height: 250,
            width: MediaQuery.of(context).size.width,
            decoration: BoxDecoration(
              color: Colors.grey[200],
            ),
-           child:isLoadingPromo?SkeletonFrame(width: double.infinity,height:250):Stack(
+           child:Stack(
              alignment: AlignmentDirectional.bottomEnd,
              children: <Widget>[
                CarouselSlider(
@@ -252,50 +254,50 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
              shrinkWrap: true,
              primary: false,
              crossAxisCount: 3,
-             itemCount: 10,
+             itemCount: 2,
              itemBuilder: (BuildContext context, int index) {
                return WidgetHelper().myPress(
-                   (){
-                     WidgetHelper().myPush(context,CartScreen(idTenant: '272da72e-0287-4ab9-ac9f-ee3498fcdc97'));
-                   },
-                   Container(
-                     padding: EdgeInsets.all(10.0),
-                     decoration: BoxDecoration(
-                       borderRadius: BorderRadius.circular(10),
-                       color: Theme.of(context).focusColor.withOpacity(0.4),
-                     ),
-                     child: Column(
-                       children: [
-                         Stack(
-                           alignment: AlignmentDirectional.center,
-                           children: <Widget>[
-                             Padding(
-                               padding: const EdgeInsets.symmetric(horizontal: 0),
-                               child: Icon(
-                                 UiIcons.shopping_cart,
-                                 color:site?Colors.white:Theme.of(context).hintColor,
-                                 size: 40,
-                               ),
-                             ),
-                             Positioned(
-                                 right: 0.0,
-                                 top:5.0,
-                                 child: Container(
-                                   child: WidgetHelper().textQ("1",9,Theme.of(context).primaryColor, FontWeight.bold,textAlign: TextAlign.center),
-                                   padding: EdgeInsets.only(top:0.0),
-                                   decoration: BoxDecoration(color: Theme.of(context).accentColor, borderRadius: BorderRadius.all(Radius.circular(10))),
-                                   constraints: BoxConstraints(minWidth: 15, maxWidth: 15, minHeight: 15, maxHeight: 15),
-                                 )
-                             ),
-                             // WidgetHelper().textQ("NAMA TENANT",12,Colors.grey[200], FontWeight.bold,textAlign: TextAlign.center),
-                           ],
-                         ),
-                         SizedBox(height:5.0),
-                         WidgetHelper().textQ("Bandung Trade Mall",10,site?Colors.grey[200]:Colors.grey, FontWeight.bold,textAlign: TextAlign.center),
-                       ],
-                     ),
+                 (){
+                   WidgetHelper().myPush(context,CartScreen(idTenant: '272da72e-0287-4ab9-ac9f-ee3498fcdc97'));
+                 },
+                 Container(
+                   padding: EdgeInsets.all(10.0),
+                   decoration: BoxDecoration(
+                     borderRadius: BorderRadius.circular(10),
+                     color: Theme.of(context).focusColor.withOpacity(0.4),
                    ),
-                   color: site?Colors.grey[200]:Colors.black38
+                   child: Column(
+                     children: [
+                       Stack(
+                         alignment: AlignmentDirectional.center,
+                         children: <Widget>[
+                           Padding(
+                             padding: const EdgeInsets.symmetric(horizontal: 0),
+                             child: Icon(
+                               UiIcons.shopping_cart,
+                               color:site?Colors.white:Theme.of(context).hintColor,
+                               size: 40,
+                             ),
+                           ),
+                           Positioned(
+                               right: 0.0,
+                               top:5.0,
+                               child: Container(
+                                 child: WidgetHelper().textQ("1",9,Theme.of(context).primaryColor, FontWeight.bold,textAlign: TextAlign.center),
+                                 padding: EdgeInsets.only(top:0.0),
+                                 decoration: BoxDecoration(color: Theme.of(context).accentColor, borderRadius: BorderRadius.all(Radius.circular(10))),
+                                 constraints: BoxConstraints(minWidth: 15, maxWidth: 15, minHeight: 15, maxHeight: 15),
+                               )
+                           ),
+                           // WidgetHelper().textQ("NAMA TENANT",12,Colors.grey[200], FontWeight.bold,textAlign: TextAlign.center),
+                         ],
+                       ),
+                       SizedBox(height:5.0),
+                       WidgetHelper().textQ("Bandung Trade Mall",10,site?Colors.grey[200]:Colors.grey, FontWeight.bold,textAlign: TextAlign.center),
+                     ],
+                   ),
+                 ),
+                 color: site?Colors.white10:Colors.black38
                );
              },
              staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
@@ -311,52 +313,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
   }
 
 
-  Widget tenantServer(){
-    return listTenantModel.result.data.length>0?StaggeredGridView.countBuilder(
-      shrinkWrap: true,
-      primary: false,
-      crossAxisCount: 3,
-      itemCount: listTenantModel.result.data.length,
-      itemBuilder: (BuildContext context, int index) {
-        return new InkWell(
-          highlightColor: Colors.transparent,
-          splashColor: Theme.of(context).accentColor.withOpacity(0.08),
-          onTap: (){
-            WidgetHelper().myPush(context,PrivateHomeScreen(id: listTenantModel.result.data[index].id,nama:listTenantModel.result.data[index].nama));
-          },
-          child: Container(
-            padding: EdgeInsets.only(bottom:5.0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.grey[200]),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                ClipRRect(
-                  borderRadius: BorderRadius.only(topLeft:Radius.circular(10),topRight:Radius.circular(10)),
-                  child: Image.network(
-                    listTenantModel.result.data[index].logo,
-                    width: MediaQuery.of(context).size.width/1,
-                    height: 110.0,
-                    fit: BoxFit.fill,
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(left:10,top:5,right:10),
-                  child: WidgetHelper().textQ(listTenantModel.result.data[index].nama, 12, site?Colors.white:SiteConfig().darkMode,FontWeight.normal),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-      staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
-      mainAxisSpacing: 15.0,
-      crossAxisSpacing: 15.0,
-    ):EmptyTenant();
-  }
+
   Widget tenantLocal(){
     return returnTenant.length>0?StaggeredGridView.countBuilder(
       shrinkWrap: true,
@@ -369,16 +326,15 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
               WidgetHelper().myPush(context,PrivateHomeScreen(id: returnTenant[index]['id_tenant'],nama:returnTenant[index]['nama']));
             },
             Container(
-              padding: EdgeInsets.only(bottom:5.0),
+              padding: EdgeInsets.all(5.0),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                  border: Border.all(width:2.0,color: site?Colors.grey:Colors.grey[200])
-
-                  // border: Border.all(width:3.0,color: Colors.grey[200]),
+                  color: Theme.of(context).focusColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
+                  // border: Border.all(width:1.0,color: site?Colors.grey:Colors.grey[200])
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   ClipRRect(
                     borderRadius: BorderRadius.only(topLeft:Radius.circular(10),topRight:Radius.circular(10)),
@@ -386,17 +342,58 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                       returnTenant[index]['logo'],
                       width: MediaQuery.of(context).size.width/1,
                       height: 110.0,
-                      fit: BoxFit.fill,
+                      fit: BoxFit.scaleDown,
                     ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(left:10,top:5,right:10),
-                    child: WidgetHelper().textQ(returnTenant[index]['nama'], 12, site?Colors.white:Colors.grey,FontWeight.bold,textAlign: TextAlign.center),
-                  ),
+
                 ],
               ),
             ),
-          color: site?Colors.grey[200]:Colors.black38
+            color: site?Colors.white10:Colors.black38
+        );
+      },
+      staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
+      mainAxisSpacing: 15.0,
+      crossAxisSpacing: 15.0,
+    ):EmptyTenant();
+  }
+
+  Widget tenantServer(){
+    return listTenantModel.result.data.length>0?StaggeredGridView.countBuilder(
+      shrinkWrap: true,
+      primary: false,
+      crossAxisCount: 3,
+      itemCount: listTenantModel.result.data.length,
+      itemBuilder: (BuildContext context, int index) {
+        return WidgetHelper().myPress(
+                (){
+              WidgetHelper().myPush(context,PrivateHomeScreen(id: listTenantModel.result.data[index].id,nama:listTenantModel.result.data[index].nama));
+            },
+            Container(
+              padding: EdgeInsets.all(5.0),
+              decoration: BoxDecoration(
+                color: Theme.of(context).focusColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10),
+                // border: Border.all(width:1.0,color: site?Colors.grey:Colors.grey[200])
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  ClipRRect(
+                    borderRadius: BorderRadius.only(topLeft:Radius.circular(10),topRight:Radius.circular(10)),
+                    child: Image.network(
+                      listTenantModel.result.data[index].logo,
+                      width: MediaQuery.of(context).size.width/1,
+                      height: 110.0,
+                      fit: BoxFit.scaleDown,
+                    ),
+                  ),
+
+                ],
+              ),
+            ),
+            color: site?Colors.white10:Colors.black38
         );
       },
       staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),

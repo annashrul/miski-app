@@ -114,7 +114,8 @@ class _AddressScreenState extends State<AddressScreen> {
           children: [
             Expanded(
                 flex:16,
-                child: ListView.builder(
+                child: ListView.separated(
+                  padding: EdgeInsets.all(0.0),
                     key: PageStorageKey<String>('AddressScreen'),
                     primary: false,
                     physics: ScrollPhysics(),
@@ -123,12 +124,25 @@ class _AddressScreenState extends State<AddressScreen> {
                     itemBuilder: (context,index){
                       final val=listAddressModel.result.data[index];
                       // final valDet = historyTransactionModel.result.data[index].detail;
-                      return InkWell(
-                        onTap: (){
+                      return WidgetHelper().myPress(
+                        (){
+                          WidgetHelper().myModal(context, ModalForm(id:"${val.id}",mode: widget.mode,callback:(String par){
+                            if(par=='berhasil'){
+                              loadData();
+                              WidgetHelper().showFloatingFlushbar(context,"success","data berhasil disimpan");
+                            }
+                            else{
+                              WidgetHelper().showFloatingFlushbar(context,"failed","terjadi kesalahan koneksi");
+                            }
+                          },));
                           // WidgetHelper().myPush(context,DetailHistoryTransactoinScreen(noInvoice:base64.encode(utf8.encode(val.kdTrx))));
                         },
-                        child: Card(
-                          elevation: 1.0,
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).focusColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                          ),
+                          // elevation: 0.0,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -141,7 +155,7 @@ class _AddressScreenState extends State<AddressScreen> {
                                   children: [
                                     Row(
                                       children: [
-                                        WidgetHelper().textQ("${val.title}",12,Colors.black,FontWeight.bold),
+                                        WidgetHelper().textQ("${val.title}",12,Colors.grey,FontWeight.bold),
                                         val.ismain==1?Container(
                                           padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                                           decoration: BoxDecoration(
@@ -178,9 +192,9 @@ class _AddressScreenState extends State<AddressScreen> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    WidgetHelper().textQ("${val.penerima}",10,Colors.black,FontWeight.normal),
+                                    WidgetHelper().textQ("${val.penerima}",10,Colors.grey,FontWeight.normal),
                                     SizedBox(height:5.0),
-                                    WidgetHelper().textQ("${val.noHp}",10,Colors.black,FontWeight.normal),
+                                    WidgetHelper().textQ("${val.noHp}",10,Colors.grey,FontWeight.normal),
                                     SizedBox(height:5.0),
                                     WidgetHelper().textQ("${val.mainAddress}",10,Colors.grey,FontWeight.normal,maxLines: 3),
                                     SizedBox(height:5.0),
@@ -213,8 +227,10 @@ class _AddressScreenState extends State<AddressScreen> {
                             ],
                           ),
                         ),
+                        color: widget.mode?Colors.white10:Colors.black38
                       );
-                    }
+                    },
+                  separatorBuilder: (context,index){return SizedBox(height:10.0);},
                 )
             ),
             // isLoadmore?Expanded(flex:4,child: LoadingHistory(tot: 1)):Container()
@@ -361,9 +377,11 @@ class _ModalFormState extends State<ModalForm> {
     }
     else{
       if(res is DetailAddressModel){
-        print("bus");
+
         DetailAddressModel result=res;
         String mainAdd=result.result.mainAddress;
+        print(mainAdd);
+        print(mainAdd.split(","));
         setState(() {
           detailAddressModel = DetailAddressModel.fromJson(result.toJson());
           isLoading=false;
@@ -382,7 +400,7 @@ class _ModalFormState extends State<ModalForm> {
           rt=mainAdd.split(",")[1];
           rw=mainAdd.split(",")[2];
           keluarahan=mainAdd.split(",")[3];
-          kodePos=mainAdd.split(",")[4];
+          kodePos=mainAdd.split(",")[7];
         });
       }
     }
@@ -471,7 +489,9 @@ class _ModalFormState extends State<ModalForm> {
                         SizedBox(height:5.0),
                         Container(
                           decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey[200]),
+                            color: Theme.of(context).focusColor.withOpacity(0.1),
+
+                            // border: Border.all(color: Colors.grey[200]),
                             borderRadius: BorderRadius.all(
                                 Radius.circular(10.0)
                             ),
@@ -499,7 +519,9 @@ class _ModalFormState extends State<ModalForm> {
                         SizedBox(height:5.0),
                         Container(
                           decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey[200]),
+                            color: Theme.of(context).focusColor.withOpacity(0.1),
+
+                            // border: Border.all(color: Colors.grey[200]),
                             borderRadius: BorderRadius.all(
                                 Radius.circular(10.0)
                             ),
@@ -524,7 +546,9 @@ class _ModalFormState extends State<ModalForm> {
                         SizedBox(height:5.0),
                         Container(
                           decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey[200]),
+                            color: Theme.of(context).focusColor.withOpacity(0.1),
+
+                            // border: Border.all(color: Colors.grey[200]),
                             borderRadius: BorderRadius.all(
                                 Radius.circular(10.0)
                             ),
@@ -640,7 +664,9 @@ class _ModalFormState extends State<ModalForm> {
                         SizedBox(height:5.0),
                         Container(
                           decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey[200]),
+                            color: Theme.of(context).focusColor.withOpacity(0.1),
+
+                            // border: Border.all(color: Colors.grey[200]),
                             borderRadius: BorderRadius.all(
                                 Radius.circular(10.0)
                             ),
@@ -658,7 +684,7 @@ class _ModalFormState extends State<ModalForm> {
                             ),
                             onChanged: (_){
                               if(_!=''){
-                                if(mainAddressController.text.split(",").length>5){
+                                if(mainAddressController.text.split(",").length>4){
                                   setState(() {
                                     namaJalan=mainAddressController.text.split(",")[0];
                                     rt=mainAddressController.text.split(",")[1];
@@ -687,7 +713,9 @@ class _ModalFormState extends State<ModalForm> {
                         Container(
                           width: double.infinity,
                           decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey[200]),
+                            color: Theme.of(context).focusColor.withOpacity(0.1),
+
+                            // border: Border.all(color: Colors.grey[200]),
                             borderRadius: BorderRadius.all(
                                 Radius.circular(10.0)
                             ),
@@ -783,7 +811,9 @@ class _ModalFormState extends State<ModalForm> {
         padding: EdgeInsets.only(left:0.0,right:0),
         child: Container(
           decoration: BoxDecoration(
-            border: Border.all(color: isErr?Colors.red:Colors.grey[200]),
+            color: Theme.of(context).focusColor.withOpacity(0.1),
+
+            // border: Border.all(color: isErr?Colors.red:Colors.grey[200]),
             borderRadius: BorderRadius.all(Radius.circular(10.0)),
           ),
           padding: EdgeInsets.only(left:10.0,right:10.0),
@@ -791,7 +821,7 @@ class _ModalFormState extends State<ModalForm> {
             onTap: callback,
             contentPadding: EdgeInsets.all(0.0),
             title: WidgetHelper().textQ("$title",10,Colors.grey,FontWeight.bold),
-            trailing: Icon(Icons.arrow_forward_ios,size: 15,color: Colors.grey),
+            trailing: Icon(Icons.arrow_right,size: 15,color: Colors.grey),
           ),
         )
       ),

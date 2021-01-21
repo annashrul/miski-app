@@ -72,6 +72,7 @@ class _PrivateHomeScreenState extends State<PrivateHomeScreen> with TickerProvid
       returnGroup=groups;
     });
   }
+
   Future getProduct()async{
     var resProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? LIMIT $perpage",[widget.id]);
     var resTotalProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=?",[widget.id]);
@@ -146,6 +147,7 @@ class _PrivateHomeScreenState extends State<PrivateHomeScreen> with TickerProvid
     await countCart();
     var totalProduct = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=?",[widget.id]);
     await FunctionHelper().setSession("id_tenant", widget.id);
+    print("LENGTH PRODUK ${totalProduct.length}");
     if(totalProduct.length<1){
       await _helper.delete(ProductQuery.TABLE_NAME, "id_tenant", widget.id);
       print('hapus produk lokal sukses');
@@ -156,6 +158,11 @@ class _PrivateHomeScreenState extends State<PrivateHomeScreen> with TickerProvid
       await _helper.delete(ProductQuery.TABLE_NAME, "id_tenant", widget.id);
       await FunctionHelper().insertProduct(widget.id);
     }
+    if(totalProduct.length<5&&totalProduct.length>1&&param!='refresh'){
+      await _helper.delete(ProductQuery.TABLE_NAME, "id_tenant", widget.id);
+      await FunctionHelper().insertProduct(widget.id);
+    }
+
     await getProduct();
   }
   Future<void> _handleRefresh()async {
@@ -472,7 +479,9 @@ class _ModalSearchState extends State<ModalSearch> {
   List resClick=[];
   Future loadData()async{
     if(qController.text!=''){
-      var res = await db.readData(ProductQuery.TABLE_NAME, widget.idTenant,colWhere: ['title'],valWhere: ['${qController.text}']);
+      var res = await db.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and title LIKE '%${qController.text}%' or deskripsi LIKE '%${qController.text}%'",[widget.idTenant]);
+      print(res);
+      // var res = await db.readData(ProductQuery.TABLE_NAME, widget.idTenant,colWhere: ['title'],valWhere: ['${qController.text}']);
       setState(() {
         resProduct=res;
       });
@@ -523,6 +532,7 @@ class _ModalSearchState extends State<ModalSearch> {
   }
   @override
   Widget build(BuildContext context) {
+
     return Container(
       // height: MediaQuery.of(context).size.height/2.0,
       decoration: BoxDecoration(
@@ -537,7 +547,8 @@ class _ModalSearchState extends State<ModalSearch> {
           SizedBox(height: 30.0),
           Container(
             decoration: BoxDecoration(
-              color:widget.mode?Theme.of(context).focusColor.withOpacity(0.15):SiteConfig().secondColor,
+              color: Theme.of(context).focusColor.withOpacity(0.1),
+              // color:widget.mode?Theme.of(context).focusColor.withOpacity(0.15):SiteConfig().secondColor,
               boxShadow: [
                 BoxShadow(color: Theme.of(context).hintColor.withOpacity(0.10), offset: Offset(0, -4), blurRadius: 10)
               ],
@@ -586,8 +597,8 @@ class _ModalSearchState extends State<ModalSearch> {
             ),
           ),
           resProduct.length>0?Expanded(
-            flex: 7,
-              child: ListView.separated(
+            flex: resClick.length,
+              child: Scrollbar(child: ListView.separated(
                   itemBuilder: (context,index){
                     return ListTile(
                       onTap: ()async{
@@ -599,17 +610,17 @@ class _ModalSearchState extends State<ModalSearch> {
                         widget.callback(resProduct[index]['title']);
                         store();
                       },
-                      title: WidgetHelper().textQ("${resProduct[index]['title']}",10,Colors.white,FontWeight.bold),
+                      title: WidgetHelper().textQ("${resProduct[index]['title']}",10,widget.mode?Colors.white:Colors.black87,FontWeight.normal),
                     );
                   },
                   separatorBuilder:(context,index){
                     return  Divider(height: 1);
                   },
                   itemCount: resProduct.length
-              )
+              ))
           ):
           (resSearch.length>0?Expanded(
-            flex: 7,
+            flex: resClick.length,
               child: ListView.separated(
                   itemBuilder: (context,index){
                     return ListTile(
@@ -629,7 +640,7 @@ class _ModalSearchState extends State<ModalSearch> {
                             loadSearch();
                           }
                       ),
-                      title: WidgetHelper().textQ("${resSearch[index]['title']}",10,Colors.white,FontWeight.bold),
+                      title: WidgetHelper().textQ("${resSearch[index]['title']}",10,Colors.white,FontWeight.normal),
                     );
                   },
                   separatorBuilder:(context,index){
@@ -644,7 +655,7 @@ class _ModalSearchState extends State<ModalSearch> {
               ],
             ),
           )),
-          WidgetHelper().titleQ("Barang yang pernah dilihat",param: ""),
+          resClick.length>0?WidgetHelper().titleQ("Barang yang pernah dilihat",param: ""):Container(),
           Expanded(
             flex: 13,
             child: ListView.separated(
@@ -696,7 +707,7 @@ class _ModalSearchState extends State<ModalSearch> {
                                             children: [
                                               Container(
                                                 padding: EdgeInsets.only(right:10.0),
-                                                child: WidgetHelper().textQ("${val['tenant']}", 12, SiteConfig().mainColor, FontWeight.bold),
+                                                child: WidgetHelper().textQ("${val['tenant']}", 12, SiteConfig().mainColor, FontWeight.normal),
                                               ),
                                               Positioned(
                                                 child:Icon(UiIcons.home,color:SiteConfig().mainColor,size: 8),
@@ -705,16 +716,16 @@ class _ModalSearchState extends State<ModalSearch> {
                                           ),
                                           Row(
                                             children: [
-                                              WidgetHelper().textQ("${val['title']}", 12, widget.mode?Colors.white:SiteConfig().darkMode, FontWeight.bold),
+                                              Expanded(child: WidgetHelper().textQ("${val['title']}", 12, widget.mode?Colors.white:SiteConfig().darkMode, FontWeight.normal)),
                                               int.parse(val['disc1'])==0?Container():SizedBox(width: 5),
-                                              int.parse(val['disc1'])==0?Container():WidgetHelper().textQ("( diskon ${val['disc1']} + ${val['disc2']} )", 10,Colors.grey,FontWeight.bold),
+                                              int.parse(val['disc1'])==0?Container():WidgetHelper().textQ("( diskon ${val['disc1']} + ${val['disc2']} )", 10,Colors.grey,FontWeight.normal),
                                             ],
                                           ),
                                           Row(
                                             children: [
                                               WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(val['harga_coret']))}", 10,Colors.green,FontWeight.normal,textDecoration: TextDecoration.lineThrough),
                                               SizedBox(width: 5),
-                                              WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(val['harga']))}", 12,Colors.green,FontWeight.bold),
+                                              WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(val['harga']))}", 12,Colors.green,FontWeight.normal),
                                             ],
                                           ),
                                         ],

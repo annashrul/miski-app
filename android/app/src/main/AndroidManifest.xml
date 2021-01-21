@@ -7,6 +7,7 @@
          FlutterApplication and put your custom class here. -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <application
+        android:allowBackup="false"
         android:name="io.flutter.app.FlutterApplication"
         android:label="netindo_shop"
         android:icon="@mipmap/ic_launcher">
@@ -38,6 +39,26 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <!-- Deep Links -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="https"
+                    android:host="technopark.smkn14bdg.sch.id/"/>
+            </intent-filter>
+
+            <!-- App Links -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Accepts URIs that begin with https://YOUR_HOST -->
+                <data
+                    android:scheme="https"
+                    android:host="technopark.smkn14bdg.sch.id/"/>
             </intent-filter>
         </activity>
 

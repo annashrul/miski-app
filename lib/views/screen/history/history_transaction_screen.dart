@@ -210,7 +210,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                         Container(
                           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
                           decoration: BoxDecoration(
-                            border: Border.all(width:3.0,color: site?Colors.white:Colors.grey[200]),
+                            border: Border.all(width:1.0,color: site?Colors.white10:Colors.grey[200]),
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                           child: Row(
@@ -233,7 +233,9 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
               flex: 19,
               child: isLoading?LoadingHistory(tot: 10):historyTransactionModel.result.data.length>0?Column(
                 children: [
-                  Expanded(flex:16,child: ListView.separated(
+                  Expanded(
+                      flex:16,
+                      child: ListView.separated(
                       key: PageStorageKey<String>('HistoryPembelianScreen'),
                       primary: false,
                       physics: ScrollPhysics(),
@@ -243,13 +245,18 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                         final val=historyTransactionModel.result.data[index];
                         final valDet = historyTransactionModel.result.data[index].detail;
                         return WidgetHelper().myPress(
-                                (){
+                              (){
                               WidgetHelper().myPush(context,DetailHistoryTransactoinScreen(noInvoice:base64.encode(utf8.encode(val.kdTrx))));
                             },
                             Container(
                               decoration: BoxDecoration(
-                                border: Border.all(width:3.0,color: site?Colors.white:Colors.grey[200]),
+                                // color: site?Colors.black87:Colors.transparent,
+                                color: Theme.of(context).focusColor.withOpacity(0.1),
+                                // border: Border.all(width:1.0,color: site?Colors.white10:Colors.transparent),
                                 borderRadius: BorderRadius.circular(10.0),
+                                // boxShadow: [
+                                //   BoxShadow(color: site?Colors.transparent:Theme.of(context).hintColor.withOpacity(0.15), offset: Offset(0, 3), blurRadius: 10)
+                                // ],
                               ),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
@@ -268,9 +275,14 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                                                 mainAxisAlignment: MainAxisAlignment.start,
                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
-                                                  WidgetHelper().textQ("( ${val.kdTrx} )",10,SiteConfig().secondColor,FontWeight.bold),
+                                                  Row(
+                                                    children: [
+                                                      WidgetHelper().textQ("${val.tenant}",10,site?SiteConfig().accentColor:Colors.black87,FontWeight.normal),
+                                                      WidgetHelper().textQ("( ${val.kdTrx} )",10,SiteConfig().secondColor,FontWeight.normal),
+                                                    ],
+                                                  ),
                                                   SizedBox(height: 5.0),
-                                                  WidgetHelper().textQ("${DateFormat.yMd().format(val.createdAt.toLocal())} ${DateFormat.Hm().format(val.createdAt.toLocal())}",10,SiteConfig().accentColor,FontWeight.bold),
+                                                  WidgetHelper().textQ("${DateFormat.yMd().format(val.createdAt.toLocal())} ${DateFormat.Hm().format(val.createdAt.toLocal())}",10,SiteConfig().accentColor,FontWeight.normal),
                                                 ],
                                               )
                                             ],
@@ -284,7 +296,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                                   Padding(
                                     padding: EdgeInsets.only(left: 10,right:10,top:5,bottom:5),
                                     child: Container(
-                                      color: Colors.grey[200],
+                                      color: site?Colors.white10:Colors.grey[200],
                                       height: 1.0,
                                       width: double.infinity,
                                     ),
@@ -293,16 +305,16 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                                     padding: EdgeInsets.only(left:10,right:10,top:0),
                                     child: Row(
                                       children: [
-                                        Image.network("https://i.pinimg.com/originals/4e/be/50/4ebe50e2495b17a79c31e48a0e54883f.png",height: 50,width: 50),
+                                        Image.network(valDet[0].gambar,height: 50,width: 50,fit: BoxFit.fill,),
                                         SizedBox(width: 10.0),
                                         Column(
                                           children: [
                                             Container(
                                               width: MediaQuery.of(context).size.width/1.5,
-                                              child: WidgetHelper().textQ(valDet[0].barang,12,Colors.black,FontWeight.bold),
+                                              child: WidgetHelper().textQ(valDet[0].barang,12,site?SiteConfig().accentColor:Colors.black87,FontWeight.normal),
                                             ),
-                                            WidgetHelper().textQ("${valDet.length} barang",10,Colors.grey,FontWeight.bold),
-                                            WidgetHelper().textQ("Ukuran ${valDet[0].subvarian!=null?valDet[0].subvarian:"-"} Warna ${valDet[0].varian!=null?valDet[0].varian:"-"}",10,Colors.grey,FontWeight.bold),
+                                            WidgetHelper().textQ("${valDet.length} barang",10,Colors.grey,FontWeight.normal),
+                                            WidgetHelper().textQ("Ukuran ${valDet[0].subvarian!=null?valDet[0].subvarian:"-"} Warna ${valDet[0].varian!=null?valDet[0].varian:"-"}",10,Colors.grey,FontWeight.normal),
                                           ],
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           mainAxisAlignment: MainAxisAlignment.start,
@@ -324,8 +336,8 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                                                 mainAxisAlignment: MainAxisAlignment.start,
                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
-                                                  WidgetHelper().textQ("Total Belanja",10,Colors.black,FontWeight.bold),
-                                                  WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(val.grandtotal))}",10,Colors.green,FontWeight.bold),
+                                                  WidgetHelper().textQ("Total Belanja",10,site?SiteConfig().accentColor:Colors.black87,FontWeight.normal),
+                                                  WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(val.grandtotal))}",10,Colors.green,FontWeight.normal),
                                                 ],
                                               )
                                             ],
@@ -379,7 +391,8 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                     separatorBuilder: (context,index){
                         return SizedBox(height: 10.0);
                     },
-                  )),
+                  )
+                  ),
                   isLoadmore?Expanded(flex:4,child: LoadingHistory(tot: 1)):Container()
                 ],
               ):EmptyTenant(),

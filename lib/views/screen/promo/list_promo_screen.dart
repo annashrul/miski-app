@@ -52,7 +52,15 @@ class _ListPromoScreenState extends State<ListPromoScreen> {
                         // margin: EdgeInsets.only(bottom: 10.0),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(width:3.0,color: Colors.grey[200]),
+                          // border: Border.all(width:3.0,color: Colors.grey[200]),
+                          boxShadow: [
+                            BoxShadow(
+                              color: mode?Colors.grey[200].withOpacity(0.1):Colors.grey.withOpacity(0.2),
+                              spreadRadius: 2,
+                              blurRadius: 0,
+                              offset: Offset(0, 4),
+                            ),
+                          ],
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,

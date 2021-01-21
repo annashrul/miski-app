@@ -9,6 +9,7 @@ import 'package:netindo_shop/model/general_model.dart';
 import 'package:netindo_shop/provider/base_provider.dart';
 import 'package:netindo_shop/views/screen/auth/secure_code_screen.dart';
 import 'package:netindo_shop/views/screen/auth/signin_screen.dart';
+import 'package:netindo_shop/views/widget/timeout_widget.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -35,6 +36,8 @@ class _SignupScreenState extends State<SignupScreen> {
   bool _switchValue=true;
 
   Future create() async{
+    print("############################## ANYING ############################");
+
     var status = await OneSignal.shared.getPermissionSubscriptionState();
     String onesignalUserId = status.subscriptionStatus.userId;
     final data={
@@ -50,32 +53,33 @@ class _SignupScreenState extends State<SignupScreen> {
       'type_otp'      : _switchValue?'whatsapp':'sms',
     };
     var res = await BaseProvider().postProvider("auth/register", data);
-    if(res == 'TimeoutException' || res == 'SocketException'){
+    setState(() {
       Navigator.pop(context);
+    });
+
+    if(res == 'TimeoutException' || res == 'SocketException'){
       WidgetHelper().notifDialog(context,'Oops','Terjadi kesalahan server',(){
         Navigator.pop(context);
       },(){Navigator.pop(context);});
     }
     else if(res=='Email telah terdaftar'){
-      Navigator.pop(context);
       WidgetHelper().showFloatingFlushbar(context, 'failed','Email telah terdaftar');
     }
     else{
+      print("############################## ${res is General} ############################");
       if(res is General){
         General result = res;
-        if(result.status=='success'){
+        WidgetHelper().showFloatingFlushbar(context, 'failed','${result.msg} telah terdaftar');
+        print("############################## ${result.status} ############################");
+
+      }
+      else{
+        WidgetHelper().notifDialog(context,'Berhasil','Pendaftaran berhasil dilakukan',(){
           Navigator.pop(context);
-          WidgetHelper().notifDialog(context,'Berhasil','Pendaftaran berhasil dilakukan',(){
-            Navigator.pop(context);
-          },(){
-            Navigator.pop(context);
-            WidgetHelper().myPush(context,SigninScreen());
-          });
-        }
-        else{
+        },(){
           Navigator.pop(context);
-          WidgetHelper().showFloatingFlushbar(context,'failed', result.msg);
-        }
+          WidgetHelper().myPush(context,SigninScreen());
+        });
       }
     }
   }
@@ -161,13 +165,23 @@ class _SignupScreenState extends State<SignupScreen> {
     }
   }
   bool isLoading=false;
+  bool isError=false;
   Future getConfig() async{
     var result= await FunctionHelper().getConfig();
-    print("RESULT CONFIG $result");
-    setState(() {
-      type = result;
-      isLoading=false;
-    });
+    if(result==SiteConfig().errSocket||result==SiteConfig().errTimeout){
+      setState(() {
+        isError = true;
+        isLoading=false;
+      });
+    }
+    else{
+      print("RESULT CONFIG $result");
+      setState(() {
+        type = result;
+        isLoading=false;
+      });
+    }
+
    
   }
 
@@ -184,7 +198,13 @@ class _SignupScreenState extends State<SignupScreen> {
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Theme.of(context).accentColor,
-      body: isLoading?WidgetHelper().loadingWidget(context): SingleChildScrollView(
+      body: isLoading?WidgetHelper().loadingWidget(context): isError?TimeoutWidget(callback: (){
+        setState(() {
+          isLoading=true;
+          isError=false;
+        });
+        getConfig();
+      }):SingleChildScrollView(
         child: Column(
           children: <Widget>[
             Stack(

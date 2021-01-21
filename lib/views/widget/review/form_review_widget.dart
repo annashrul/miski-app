@@ -129,7 +129,8 @@ class _FormReviewWidgetState extends State<FormReviewWidget> {
                   },
                   Container(
                     decoration: BoxDecoration(
-                      border: Border.all(width:3.0,color: site?Colors.white:Colors.grey[200]),
+                      color: Theme.of(context).focusColor.withOpacity(0.1),
+                      // border: Border.all(width:3.0,color: site?Colors.white:Colors.grey[200]),
                       borderRadius: BorderRadius.circular(10.0),
                     ),
                     child: ListTile(
@@ -374,9 +375,10 @@ class _ReviewContentState extends State<ReviewContent> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height/1.3,
+      height: MediaQuery.of(context).size.height/1.2,
       padding: EdgeInsets.only(top:10.0,left:0,right:0),
       decoration: BoxDecoration(
+
         color: widget.site?SiteConfig().darkMode:Colors.white,
         borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0),topRight:Radius.circular(10.0) ),
       ),
@@ -435,9 +437,11 @@ class _ReviewContentState extends State<ReviewContent> {
                   margin: EdgeInsets.only(left:10.0,right:10.0),
                   child: Container(
                     decoration: BoxDecoration(
-                      border: Border.all(
-                          color: widget.site?Colors.grey[200]:SiteConfig().secondColor
-                      ),
+                      color: Theme.of(context).focusColor.withOpacity(0.1),
+
+                      // border: Border.all(
+                      //     color: widget.site?Colors.grey[200]:SiteConfig().secondColor
+                      // ),
                       borderRadius: BorderRadius.all(
                           Radius.circular(10.0)
                       ),
@@ -523,7 +527,9 @@ class _ReviewContentState extends State<ReviewContent> {
                     padding: EdgeInsets.all(10.0),
                     child: Container(
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey[200]),
+                        color: Theme.of(context).focusColor.withOpacity(0.1),
+
+                        // border: Border.all(color: Colors.grey[200]),
                         borderRadius: BorderRadius.all(
                             Radius.circular(10.0)
                         ),

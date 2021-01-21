@@ -8,7 +8,6 @@ class UserHelper{
     final countTable = await _helper.queryRowCount(UserQuery.TABLE_NAME);
     if(countTable>0){
       final users = await _helper.getData(UserQuery.TABLE_NAME);
-
       print("GET DATA USER $users");
       if(param=='id'){return users[0]['id'];}
       if(param=='id_user'){return users[0]['id_user'];}

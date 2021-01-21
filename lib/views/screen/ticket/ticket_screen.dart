@@ -96,7 +96,7 @@ class _TicketScreenState extends State<TicketScreen> {
         children: [
           Align(
             alignment: Alignment.topCenter,
-            child: SingleChildScrollView(
+            child: listTicketModel.result.data.length>0?SingleChildScrollView(
               controller: controller,
               padding: EdgeInsets.symmetric(vertical: 7),
               child: Column(
@@ -194,12 +194,11 @@ class _TicketScreenState extends State<TicketScreen> {
                           ),
                         );
                       },
-
                     ),
                   ),
                 ],
               ),
-            ),
+            ):EmptyTenant(),
           ),
           new Positioned(
             bottom: 20,
@@ -618,6 +617,7 @@ class _ModalTicketState extends State<ModalTicket> {
   bool isErrorTenant=false;
   Future getTenant()async{
     final tenant = await _helper.getData(TenantQuery.TABLE_NAME);
+    print(tenant);
     setState(() {
       resTenant = tenant;
     });
@@ -678,14 +678,13 @@ class _ModalTicketState extends State<ModalTicket> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    getTenant();
   }
   @override
   Widget build(BuildContext context) {
     Widget childTenant;
     if(resTenant.length>0){
-      childTenant = CircleAvatar(
-        backgroundImage: NetworkImage(resTenant[idx]['logo']),
-      );
+      childTenant = Image.network(resTenant[idx]['logo'],fit: BoxFit.contain,width: 50,);
     }
 
     return Container(
@@ -769,7 +768,7 @@ class _ModalTicketState extends State<ModalTicket> {
                           ));
                         },
                         contentPadding: EdgeInsets.all(0.0),
-                        leading: childTenant,
+                        leading: Padding(padding: EdgeInsets.all(5.0),child: childTenant,),
                         title: WidgetHelper().textQ("${resTenant.length>0?'${resTenant[idx]['nama']}':'Silahkan pilih tenant terlebih dahulu'}",10,Colors.grey,FontWeight.bold),
                         trailing: Icon(Icons.arrow_forward_ios,size: 15,color: Colors.grey),
                       ),
@@ -908,7 +907,7 @@ class _ModalTenantState extends State<ModalTenant> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height/2,
+      height: MediaQuery.of(context).size.height/1.1,
       decoration: BoxDecoration(
           color: widget.mode?SiteConfig().darkMode:Colors.transparent,
           borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))
@@ -946,9 +945,7 @@ class _ModalTenantState extends State<ModalTenant> {
                       },
                       child: ListTile(
                         contentPadding: EdgeInsets.only(left:10,right:10,top:0,bottom:0),
-                        leading: CircleAvatar(
-                          backgroundImage: NetworkImage(resTenant[index]['logo']),
-                        ),
+                        leading: Padding(padding: EdgeInsets.all(5.0),child:  Image.network(resTenant[index]['logo'],fit: BoxFit.contain,width: 50,),),
                         // leading: Image.network(resTenant[index]['logo'],width: 30,height: 30,),
                         title: WidgetHelper().textQ("${resTenant[index]['nama']}", 14,widget.mode?Colors.white:SiteConfig().darkMode, FontWeight.bold),
                         // subtitle: WidgetHelper().textQ("${widget.kurirModel.result[index].deskripsi}", 12, SiteConfig().secondColor, FontWeight.bold),

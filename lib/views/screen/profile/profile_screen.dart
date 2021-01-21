@@ -78,62 +78,62 @@ class _ProfileScreenState extends State<ProfileScreen> {
         padding: EdgeInsets.symmetric(vertical: 7),
         child:Column(
           children: <Widget>[
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 20),
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
-                borderRadius: BorderRadius.circular(6),
-                boxShadow: [
-                  BoxShadow(color: Theme.of(context).hintColor.withOpacity(0.15), offset: Offset(0, 3), blurRadius: 10)
-                ],
-              ),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: FlatButton(
-                      padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                      onPressed: () {
-                        // Navigator.of(context).pushNamed('/Tabs', arguments: 4);
-                      },
-                      child: Column(
-                        children: <Widget>[
-                          Icon(UiIcons.heart,color: Colors.grey),
-                          WidgetHelper().textQ("Favorite",12,SiteConfig().secondColor,FontWeight.bold)
-                        ],
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: FlatButton(
-                      padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                      onPressed: () {
-                        // Navigator.of(context).pushNamed('/Tabs', arguments: 0);
-                      },
-                      child: Column(
-                        children: <Widget>[
-                          Icon(UiIcons.favorites,color: Colors.grey),
-                          WidgetHelper().textQ("Favorite",12,SiteConfig().secondColor,FontWeight.bold)
-                        ],
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: FlatButton(
-                      padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                      onPressed: () {
-                        // Navigator.of(context).pushNamed('/Tabs', arguments: 3);
-                      },
-                      child: Column(
-                        children: <Widget>[
-                          Icon(UiIcons.chat_1,color: Colors.grey),
-                          WidgetHelper().textQ("Favorite",12,SiteConfig().secondColor,FontWeight.bold)
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            // Container(
+            //   margin: EdgeInsets.symmetric(horizontal: 20),
+            //   decoration: BoxDecoration(
+            //     color: Theme.of(context).primaryColor,
+            //     borderRadius: BorderRadius.circular(6),
+            //     boxShadow: [
+            //       BoxShadow(color: Theme.of(context).hintColor.withOpacity(0.15), offset: Offset(0, 3), blurRadius: 10)
+            //     ],
+            //   ),
+            //   child: Row(
+            //     children: <Widget>[
+            //       Expanded(
+            //         child: FlatButton(
+            //           padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+            //           onPressed: () {
+            //             // Navigator.of(context).pushNamed('/Tabs', arguments: 4);
+            //           },
+            //           child: Column(
+            //             children: <Widget>[
+            //               Icon(UiIcons.heart,color: Colors.grey),
+            //               WidgetHelper().textQ("Favorite",12,SiteConfig().secondColor,FontWeight.bold)
+            //             ],
+            //           ),
+            //         ),
+            //       ),
+            //       Expanded(
+            //         child: FlatButton(
+            //           padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+            //           onPressed: () {
+            //             // Navigator.of(context).pushNamed('/Tabs', arguments: 0);
+            //           },
+            //           child: Column(
+            //             children: <Widget>[
+            //               Icon(UiIcons.favorites,color: Colors.grey),
+            //               WidgetHelper().textQ("Favorite",12,SiteConfig().secondColor,FontWeight.bold)
+            //             ],
+            //           ),
+            //         ),
+            //       ),
+            //       Expanded(
+            //         child: FlatButton(
+            //           padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+            //           onPressed: () {
+            //             // Navigator.of(context).pushNamed('/Tabs', arguments: 3);
+            //           },
+            //           child: Column(
+            //             children: <Widget>[
+            //               Icon(UiIcons.chat_1,color: Colors.grey),
+            //               WidgetHelper().textQ("Favorite",12,SiteConfig().secondColor,FontWeight.bold)
+            //             ],
+            //           ),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
             Container(
               margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
               decoration: BoxDecoration(
@@ -151,8 +151,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ListTile(
                     leading: Icon(UiIcons.user_1,color: site?Colors.white:Colors.grey),
                     title: WidgetHelper().textQ("Pengaturan Akun",12,site?Colors.white:SiteConfig().secondColor,FontWeight.bold),
-                    trailing: InkWell(
-                      onTap: (){
+                    trailing: WidgetHelper().myPress(
+                      (){
                         showDialog(
                             context: context,
                             builder: (context) {
@@ -256,7 +256,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               );
                             });
                       },
-                      child: WidgetHelper().textQ("Ubah",10,site?Colors.white:SiteConfig().secondColor,FontWeight.bold),
+                      Container(
+                        child: WidgetHelper().textQ("Ubah",10,site?Colors.white:SiteConfig().secondColor,FontWeight.bold),
+                      ),
                     ),
                     contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
                   ),
@@ -295,9 +297,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Container(
               margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
               decoration: BoxDecoration(
-                color: site?SiteConfig().darkMode:Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(width:3.0,color: site?Colors.transparent:Colors.grey[200])
+                color: site?SiteConfig().darkMode:Theme.of(context).primaryColor,
+                borderRadius: BorderRadius.circular(6),
+                boxShadow: [
+                  BoxShadow(color: site?Colors.transparent:Theme.of(context).hintColor.withOpacity(0.15), offset: Offset(0, 3), blurRadius: 10)
+                ],
               ),
               child: ListView(
                 shrinkWrap: true,
@@ -477,6 +481,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         SizedBox(width: 10),
                         WidgetHelper().textQ("Alamat",10,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal)
+                      ],
+                    ),
+                  ),
+                  ListTile(
+                    contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
+                    onTap: () async{
+                      WidgetHelper().loadingDialog(context);
+
+                      await db.deleteAll(SearchingQuery.TABLE_NAME);
+                      print("########################## DATA PENCARIAN BERHASIL DIHAPUS ##########################");
+                      await db.deleteAll(TenantQuery.TABLE_NAME);
+                      print("########################## DATA TENANT BERHASIL DIHAPUS ##########################");
+                      await db.deleteAll(ProductQuery.TABLE_NAME);
+                      print("########################## DATA PRODUCK BERHASIL DIHAPUS ##########################");
+                      await Future.delayed(Duration(seconds: 2));
+                      Navigator.of(context).pop();
+                    },
+                    dense: true,
+                    title: Row(
+                      children: <Widget>[
+                        Icon(
+                          UiIcons.folder_1,
+                          size: 22,
+                          color: Theme.of(context).focusColor,
+                        ),
+                        SizedBox(width: 10),
+                        WidgetHelper().textQ("Hapus Penyimpanan",10,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal)
                       ],
                     ),
                   ),

@@ -5,11 +5,12 @@ import 'dart:ui';
 class SiteConfig{
   // final String baseUrl        = 'http://192.168.100.10:3000/';
   final String siteName        = 'Happy Fresh';
-  final String baseUrl        = 'http://ptnetindo.com:6700/';
+  final String baseUrl        = 'http://ptnetindo.com:6698/';
   final bool showCode         = true;
   final String versionCode    = '0.0.1';
   final String username       = 'netindo';
   final String connection     = 'nshop';
+  final String localAssets    = 'assets/img/';
   final String password       = "\$2b\$08\$hLMU6rEvNILCMaQbthARK.iCmDRO7jNbUB8CcvyRStqsHD4UQxjDO";
   final String oneSignalId    = "b1057dd8-ea51-41d2-be3b-a6778ffbf5e4";
   final String noImage        = 'https://upload.wikimedia.org/wikipedia/commons/0/0a/No-image-available.png';

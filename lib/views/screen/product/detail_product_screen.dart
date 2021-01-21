@@ -268,6 +268,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
 
     }
   }
+  int maxLengthDesc=2;
   bool site=false;
   Future getSite()async{
     final res = await FunctionHelper().getSite();
@@ -440,7 +441,9 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                             contentPadding: EdgeInsets.all(0.0),
                             title: Row(
                               children: [
-                                WidgetHelper().textQ(title,14,site?SiteConfig().secondDarkColor:SiteConfig().darkMode,FontWeight.bold),
+                                Expanded(
+                                  child: WidgetHelper().textQ(title,12,site?SiteConfig().secondDarkColor:SiteConfig().darkMode,FontWeight.normal,maxLines: title.length),
+                                ),
                                 SizedBox(width: 5.0),
                                 diskon1>0?Container(
                                   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
@@ -461,7 +464,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                               onTap: (){
                                 showModalBottomSheet(
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
-                                    backgroundColor: Colors.white,
+                                    backgroundColor: site?SiteConfig().darkMode:Colors.white,
                                     context: context,
                                     isScrollControlled: true,
                                     builder: (context) => hargaBertingkat.length>0?Container(
@@ -516,17 +519,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                                     ):EmptyTenant()
                                 );
                               },
-                              child: Container(
-                                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                                decoration: BoxDecoration(
-                                  color: site?Theme.of(context).primaryColor.withOpacity(0.9):Theme.of(context).accentColor,
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  boxShadow: [
-                                    BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), blurRadius: 5, offset: Offset(0, -2)),
-                                  ],
-                                ),
-                                child: WidgetHelper().textQ("Lihat harga grosir", 10, site?SiteConfig().secondColor:Colors.white, FontWeight.bold),
-                              ),
+                              child: Icon(Icons.arrow_right,color:  site?SiteConfig().secondDarkColor:SiteConfig().secondColor,),
                             ),
                         ),
                       ),
@@ -619,14 +612,26 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   WidgetHelper().textQ("Deskripsi Produk", 14, site?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.bold),
-
+                                  WidgetHelper().myPress(
+                                    (){
+                                      setState(() {
+                                        if(maxLengthDesc==2){
+                                          maxLengthDesc = deskripsi.length;
+                                        }else{
+                                          maxLengthDesc = 2;
+                                        }
+                                      });
+                                    },
+                                    Icon(maxLengthDesc==2?Icons.arrow_drop_down:Icons.arrow_drop_up,color:  site?SiteConfig().secondDarkColor:SiteConfig().secondColor,),
+                                    // WidgetHelper().textQ("lihat selengkapnya",10, site?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.bold),
+                                  )
                                 ],
                               ),
                             ),
                           ),
                           Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                              child:WidgetHelper().textQ(deskripsi, 12, site?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.normal)
+                              child:WidgetHelper().textQ(deskripsi, 12, site?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.normal,maxLines:maxLengthDesc),
                           ),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -650,7 +655,6 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                                     onTap: (){
                                       showModalBottomSheet(
                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
-                                          backgroundColor: Colors.white,
                                           context: context,
                                           isScrollControlled: true,
                                           builder: (context) =>  Container(
@@ -663,18 +667,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                                           )
                                       );
                                     },
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                                      decoration: BoxDecoration(
-                                        color: site?Theme.of(context).primaryColor.withOpacity(0.9):Theme.of(context).accentColor,
-                                        borderRadius: BorderRadius.circular(20.0),
-                                        boxShadow: [
-                                          BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), blurRadius: 5, offset: Offset(0, -2)),
-                                        ],
-                                      ),
-                                      child: WidgetHelper().textQ("Lihat ulasan", 10, site?SiteConfig().secondColor:Colors.white, FontWeight.bold),
-                                    ),
-
+                                    child:Icon(Icons.arrow_right,color:  site?SiteConfig().secondDarkColor:SiteConfig().secondColor)
                                   )
                                 ],
                               ),
@@ -695,6 +688,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                                 separatorBuilder: (context, index) {
                                   return Divider(
                                     height: 30,
+                                    color: site?Colors.white10:Colors.grey[200],
                                   );
                                 },
                                 itemCount:review.length,
@@ -821,9 +815,9 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
         builder: (BuildContext context) {
           return Container(
             margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-            height: 100,
+            // height: 100,
             decoration: BoxDecoration(
-              image: DecorationImage(image: NetworkImage(gambar), fit: BoxFit.cover),
+              image: DecorationImage(image: NetworkImage(gambar), fit: BoxFit.fill),
               borderRadius: BorderRadius.circular(6),
               boxShadow: [
                 BoxShadow(
@@ -920,7 +914,7 @@ class _ModalReviewState extends State<ModalReview> {
         SizedBox(height: 20.0),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-          child: WidgetHelper().textQ("Ulasan Produk  ${widget.title}", 14,widget.site?Colors.white:SiteConfig().secondColor, FontWeight.bold),
+          child: WidgetHelper().textQ("Ulasan Produk  ${widget.title}", 12,widget.site?Colors.white:SiteConfig().secondColor, FontWeight.normal,maxLines: widget.title.length),
         ),
         SizedBox(height: 20.0),
         isLoading?Center(
@@ -937,13 +931,13 @@ class _ModalReviewState extends State<ModalReview> {
                 controller: controller,
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 itemBuilder: (context, index) {
-                  return ReviewWidget(
+                  return WidgetHelper().myPress((){},ReviewWidget(
                     foto: SiteConfig().noImage,
                     nama: reviewModel.result.data[index].nama,
                     tgl: "Sebulan yang lalu ${index+1}",
                     rate: reviewModel.result.data[index].rate.toString(),
                     desc: reviewModel.result.data[index].caption,
-                  );
+                  ));
                 },
                 separatorBuilder: (context, index) {
                   return Divider(
