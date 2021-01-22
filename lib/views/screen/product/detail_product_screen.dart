@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -81,11 +82,14 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
           kelompok = res.result.idKelompok;
         });
         if(varian.length>0){
+          print("VARIAN ${varian[0].id}");
+          print("SUB VARIAN ${subVarian.length}");
           getVarian(0);
-          setState(() {
-            idVarian = varian[0].id;
+          idVarian = varian[0].id;
+          if(subVarian.length>0){
             idSubVarian = subVarian[0].id;
-          });
+          }
+          setState(() {});
         }
         getCountCart();
         getReleatedProduct();
@@ -169,11 +173,11 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
         isSubVarian=false;
         hargaUkuran = 0;
         ukuran = '-';
-        getSubVarian(0);
+        if(subVarian.length>0)getSubVarian(0);
       });
     }
-    print(idVarian);
   }
+
   void getSubVarian(idx){
     setState(() {
       selectedSubVarian = idx;
@@ -297,18 +301,17 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: site?SiteConfig().darkMode:Colors.white,
+      // backgroundColor: site?Colors.transparent:Colors.white,
       key: _scaffoldKey,
       body: isLoading||isLoadingPoductOther||isLoadingReview?LoadingDetailProduct(site: site):buildContent(context),
       bottomNavigationBar: isLoading||isLoadingPoductOther||isLoadingReview?Text(''):Container(
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
-          color: site?SiteConfig().darkMode:Colors.grey[200],
+          // color: site?SiteConfig().darkMode:Colors.grey[200],
           boxShadow: [BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), blurRadius: 5, offset: Offset(0, -2)),],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          // crossAxisAlignment: Cro,
           children: <Widget>[
             Expanded(
               child: FlatButton(
@@ -321,32 +324,42 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
               ),
             ),
             SizedBox(width: 10),
-            FlatButton(
-              onPressed: () {
-                add();
-              },
-              color: Theme.of(context).accentColor,
-              shape: StadiumBorder(),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    IconButton(
-                      onPressed: () {
-                        // add();
-                      },
-                      iconSize: 30,
-                      // padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                      icon: Icon(Icons.add_circle_outline),
-                      color: Theme.of(context).primaryColor,
-                    ),
-                    WidgetHelper().textQ("Keranjang", 14, SiteConfig().secondDarkColor, FontWeight.bold),
-
-                  ],
-                ),
+            Expanded(
+              child: FlatButton(
+                  onPressed: () {add();},
+                  padding: EdgeInsets.symmetric(vertical: 14),
+                  color: Theme.of(context).accentColor,
+                  shape: StadiumBorder(),
+                  child:WidgetHelper().textQ("Keranjang", 14, SiteConfig().secondDarkColor, FontWeight.bold)
+                // child:Text("abus")
               ),
             ),
+            // FlatButton(
+            //   onPressed: () {
+            //     add();
+            //   },
+            //   color: Theme.of(context).accentColor,
+            //   shape: StadiumBorder(),
+            //   child: Container(
+            //     padding: const EdgeInsets.symmetric(horizontal: 10),
+            //     child: Row(
+            //       mainAxisSize: MainAxisSize.min,
+            //       children: <Widget>[
+            //         IconButton(
+            //           onPressed: () {
+            //             // add();
+            //           },
+            //           iconSize: 30,
+            //           // padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+            //           icon: Icon(Icons.add_circle_outline),
+            //           color: Theme.of(context).primaryColor,
+            //         ),
+            //         WidgetHelper().textQ("Keranjang", 14, SiteConfig().secondDarkColor, FontWeight.bold),
+            //
+            //       ],
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),
@@ -361,8 +374,8 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
             onStretchTrigger: (){
               return;
             },
-            brightness: site?Brightness.dark:Brightness.light,
-            backgroundColor: site?SiteConfig().darkMode:Colors.white,
+            // brightness: site?Brightness.dark:Brightness.light,
+            // backgroundColor: site?SiteConfig().darkMode:Colors.white,
             snap: true,
             floating: true,
             pinned: true,
@@ -408,14 +421,14 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                 offstage: false,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: site?SiteConfig().darkMode:Colors.white,
+                    // color: site?SiteConfig().darkMode:Colors.white,
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20),
                     ),
-                    boxShadow: [
-                      BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), blurRadius: 5, offset: Offset(0, -2)),
-                    ],
+                    // boxShadow: [
+                    //   BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), blurRadius: 5, offset: Offset(0, -2)),
+                    // ],
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -760,7 +773,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
       ],
 
       collapseMode: CollapseMode.parallax,
-      background: detailProductTenantModel.result.listImage.length>0?Stack(
+      background: detailProductTenantModel.result.listImage.length>1?Stack(
         alignment: AlignmentDirectional.bottomEnd,
         children: <Widget>[
           CarouselSlider(
@@ -780,12 +793,15 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                     return Container(
                       margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
                       height: 100,
+                      child:CachedNetworkImage(
+                        imageUrl:e.image,
+                        width: double.infinity ,
+                        fit:BoxFit.fill,
+                        // height: 110.0,
+                        placeholder: (context, url) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width: double.infinity,),
+                        errorWidget: (context, url, error) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width: double.infinity,),
+                      ),
                       decoration: BoxDecoration(
-                        image: DecorationImage(
-                            image: NetworkImage(e.image),
-                        fit: BoxFit.cover,
-                          colorFilter: new ColorFilter.mode(Colors.black, BlendMode.dstATop),
-                        ),
                         borderRadius: BorderRadius.circular(6),
 
                       ),
@@ -815,9 +831,16 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
         builder: (BuildContext context) {
           return Container(
             margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+            child: CachedNetworkImage(
+              imageUrl:gambar,
+              width: double.infinity ,
+              fit:BoxFit.contain,
+              placeholder: (context, url) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width: double.infinity,),
+              errorWidget: (context, url, error) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width: double.infinity,),
+            ),
             // height: 100,
             decoration: BoxDecoration(
-              image: DecorationImage(image: NetworkImage(gambar), fit: BoxFit.fill),
+              // image: DecorationImage(image: NetworkImage(gambar), fit: BoxFit.fill),
               borderRadius: BorderRadius.circular(6),
               boxShadow: [
                 BoxShadow(

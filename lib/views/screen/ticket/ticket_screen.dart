@@ -24,6 +24,7 @@ import 'package:netindo_shop/views/screen/wrapper_screen.dart';
 import 'package:netindo_shop/views/widget/empty_widget.dart';
 import 'package:netindo_shop/views/widget/loading_widget.dart';
 import 'package:netindo_shop/views/widget/refresh_widget.dart';
+import 'package:netindo_shop/views/widget/timeout_widget.dart';
 
 class TicketScreen extends StatefulWidget {
   bool mode;
@@ -91,150 +92,155 @@ class _TicketScreenState extends State<TicketScreen> {
 
   @override
   Widget build(BuildContext context){
-    return isLoading?LoadingTicket(total: 10):RefreshWidget(
-      widget: Stack(
-        children: [
-          Align(
-            alignment: Alignment.topCenter,
-            child: listTicketModel.result.data.length>0?SingleChildScrollView(
-              controller: controller,
-              padding: EdgeInsets.symmetric(vertical: 7),
-              child: Column(
-                children: <Widget>[
-                  Offstage(
-                    offstage: false,
-                    child: ListView.separated(
-                      padding: EdgeInsets.symmetric(vertical: 15),
-                      shrinkWrap: true,
-                      primary: false,
-                      itemCount: listTicketModel.result.data.length,
-                      separatorBuilder: (context, index) {
-                        return Divider(height:1);
-                      },
-                      itemBuilder: (context, index) {
-                        var val = listTicketModel.result.data[index];
-                        return InkWell(
-                          onTap: () {
-                            // print(val.id);
-                            print(listTicketModel.result.data);
-                            WidgetHelper().myPush(context,RoomTicketScreen(
-                                mode:widget.mode,id: val.id,
-                                tenant:val.tenant,title:val.title,desc:val.deskripsi,createdAt:val.createdAt,status:val.status
-                            ));
-                          },
-                          child: Container(
-                            color: widget.mode?Theme.of(context).focusColor.withOpacity(0.15):Colors.white,
-                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                Stack(
-                                  children: <Widget>[
-                                    SizedBox(
-                                      width: 60,
-                                      height: 60,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.all(Radius.circular(50)),
-                                          color:Theme.of(context).focusColor.withOpacity(0.15),
-                                          // border: Border.all(color:SiteConfig().accentDarkColor)
-                                        ),
-                                        child: Center(
-                                          child: WidgetHelper().textQ("${DateFormat().add_yMMMd().format(val.createdAt)} \n${DateFormat().add_jm().format(val.createdAt)}", 8, widget.mode?Colors.white:SiteConfig().darkMode,FontWeight.normal,textAlign: TextAlign.center),
-                                        ),
-                                      ),
-                                    ),
-                                    Positioned(
-                                      bottom: 3,
-                                      right: 3,
-                                      width: 12,
-                                      height: 12,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          // color: widget.message.user.userState == UserState.available ? Colors.green : widget.message.user.userState == UserState.away ? Colors.orange : Colors.red,
-                                          color: val.status==0?Colors.green:Colors.red,
-                                          shape: BoxShape.circle,
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                SizedBox(width: 15),
-                                Flexible(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+    return isLoading?LoadingTicket(total: 10):isError?TimeoutWidget(callback: ()async{
+      setState(() {
+        isLoading=true;
+      });
+      await loadTicket();
+    }):RefreshWidget(
+        widget: Stack(
+          children: [
+            Align(
+              alignment: Alignment.topCenter,
+              child: listTicketModel.result.data.length>0?SingleChildScrollView(
+                controller: controller,
+                padding: EdgeInsets.symmetric(vertical: 7),
+                child: Column(
+                  children: <Widget>[
+                    Offstage(
+                      offstage: false,
+                      child: ListView.separated(
+                        padding: EdgeInsets.symmetric(vertical: 15),
+                        shrinkWrap: true,
+                        primary: false,
+                        itemCount: listTicketModel.result.data.length,
+                        separatorBuilder: (context, index) {
+                          return Divider(height:1);
+                        },
+                        itemBuilder: (context, index) {
+                          var val = listTicketModel.result.data[index];
+                          return InkWell(
+                            onTap: () {
+                              // print(val.id);
+                              print(listTicketModel.result.data);
+                              WidgetHelper().myPush(context,RoomTicketScreen(
+                                  mode:widget.mode,id: val.id,
+                                  tenant:val.tenant,title:val.title,desc:val.deskripsi,createdAt:val.createdAt,status:val.status
+                              ));
+                            },
+                            child: Container(
+                              color: widget.mode?Theme.of(context).focusColor.withOpacity(0.15):Colors.white,
+                              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Stack(
                                     children: <Widget>[
-                                      Stack(
-                                        alignment: AlignmentDirectional.topEnd,
-                                        children: [
-                                          Container(
-                                            padding: EdgeInsets.only(right:10.0),
-                                            child: WidgetHelper().textQ("${val.tenant}", 12, SiteConfig().mainColor, FontWeight.bold),
+                                      SizedBox(
+                                        width: 60,
+                                        height: 60,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.all(Radius.circular(50)),
+                                            color:Theme.of(context).focusColor.withOpacity(0.15),
+                                            // border: Border.all(color:SiteConfig().accentDarkColor)
                                           ),
-                                          Positioned(
-                                            child:Icon(UiIcons.home,color:SiteConfig().mainColor,size: 8),
-                                          )
-                                        ],
+                                          child: Center(
+                                            child: WidgetHelper().textQ("${DateFormat().add_yMMMd().format(val.createdAt)} \n${DateFormat().add_jm().format(val.createdAt)}", 8, widget.mode?Colors.white:SiteConfig().darkMode,FontWeight.normal,textAlign: TextAlign.center),
+                                          ),
+                                        ),
                                       ),
-                                      WidgetHelper().textQ("${val.title}",12,widget.mode?Colors.white:SiteConfig().darkMode,FontWeight.normal),
-                                      Row(
-                                        crossAxisAlignment: CrossAxisAlignment.end,
-                                        children: <Widget>[
-                                          Expanded(
-                                            child:  WidgetHelper().textQ("${val.deskripsi}",10,widget.mode?Colors.grey[200]:Colors.grey,FontWeight.normal),
+                                      Positioned(
+                                        bottom: 3,
+                                        right: 3,
+                                        width: 12,
+                                        height: 12,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            // color: widget.message.user.userState == UserState.available ? Colors.green : widget.message.user.userState == UserState.away ? Colors.orange : Colors.red,
+                                            color: val.status==0?Colors.green:Colors.red,
+                                            shape: BoxShape.circle,
                                           ),
-                                        ],
+                                        ),
                                       )
                                     ],
                                   ),
-                                )
-                              ],
+                                  SizedBox(width: 15),
+                                  Flexible(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      children: <Widget>[
+                                        Stack(
+                                          alignment: AlignmentDirectional.topEnd,
+                                          children: [
+                                            Container(
+                                              padding: EdgeInsets.only(right:10.0),
+                                              child: WidgetHelper().textQ("${val.tenant}", 12, SiteConfig().mainColor, FontWeight.bold),
+                                            ),
+                                            Positioned(
+                                              child:Icon(UiIcons.home,color:SiteConfig().mainColor,size: 8),
+                                            )
+                                          ],
+                                        ),
+                                        WidgetHelper().textQ("${val.title}",12,widget.mode?Colors.white:SiteConfig().darkMode,FontWeight.normal),
+                                        Row(
+                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          children: <Widget>[
+                                            Expanded(
+                                              child:  WidgetHelper().textQ("${val.deskripsi}",10,widget.mode?Colors.grey[200]:Colors.grey,FontWeight.normal),
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ):EmptyTenant(),
-          ),
-          new Positioned(
-            bottom: 20,
-            right: 20,
-            child: new Align(
-                alignment: Alignment.bottomRight,
-                child:WidgetHelper().animShakeWidget(context,InkWell(
-                  borderRadius: BorderRadius.circular(50.0),
-                  onTap: (){
-                    WidgetHelper().myModal(context, ModalTicket(mode: widget.mode,callback:(String par){
-                      if(par=='berhasil'){
-                        loadTicket();
-                        WidgetHelper().showFloatingFlushbar(context,"success","ticket komplain berhasil dikirim");
-                      }
-                      else{
-                        WidgetHelper().showFloatingFlushbar(context,"success","ticket komplain gagal dikirim");
-                      }
-                    },));
-                  },
-                  child:Container(
-                    padding: EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                      color: widget.mode?Theme.of(context).focusColor.withOpacity(0.15):SiteConfig().mainColor,
-                    ),
-
-                    child:isLoadmore?CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.grey), backgroundColor: Colors.white): Icon(UiIcons.message,color: Colors.white,size: 30),
-                  ),
-                ))
+                  ],
+                ),
+              ):EmptyTenant(),
             ),
-          )
-        ],
-      ),
-      callback: (){
-        FunctionHelper().handleRefresh((){loadTicket();});
-      },
+            new Positioned(
+              bottom: 20,
+              right: 20,
+              child: new Align(
+                  alignment: Alignment.bottomRight,
+                  child:WidgetHelper().animShakeWidget(context,InkWell(
+                    borderRadius: BorderRadius.circular(50.0),
+                    onTap: (){
+                      WidgetHelper().myModal(context, ModalTicket(mode: widget.mode,callback:(String par){
+                        if(par=='berhasil'){
+                          loadTicket();
+                          WidgetHelper().showFloatingFlushbar(context,"success","ticket komplain berhasil dikirim");
+                        }
+                        else{
+                          WidgetHelper().showFloatingFlushbar(context,"success","ticket komplain gagal dikirim");
+                        }
+                      },));
+                    },
+                    child:Container(
+                      padding: EdgeInsets.all(10.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.0),
+                        color: widget.mode?Theme.of(context).focusColor.withOpacity(0.15):SiteConfig().mainColor,
+                      ),
+
+                      child:isLoadmore?CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.grey), backgroundColor: Colors.white): Icon(UiIcons.message,color: Colors.white,size: 30),
+                    ),
+                  ))
+              ),
+            )
+          ],
+        ),
+        callback: (){
+          FunctionHelper().handleRefresh((){loadTicket();});
+        },
     );
   }
 

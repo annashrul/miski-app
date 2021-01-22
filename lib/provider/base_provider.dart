@@ -17,7 +17,7 @@ class BaseProvider{
       Map<String, String> head={'Authorization':token,'username': SiteConfig().username, 'password': SiteConfig().password,'myconnection':SiteConfig().connection};
       final response = await client.get("${SiteConfig().baseUrl}$url", headers:head).timeout(Duration(seconds: SiteConfig().timeout));
       if (response.statusCode == 200) {
-        print("GET PROVIDER RESPONSE $url ${response.body}");
+        // print("GET PROVIDER RESPONSE $url ${response.body}");
         return param(response.body);
       }
     }on TimeoutException catch (_) {

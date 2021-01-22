@@ -22,25 +22,32 @@ class _SplashScreenState extends State<SplashScreen> {
   Future loadData() async{
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
     final countTable = await _db.queryRowCount(UserQuery.TABLE_NAME);
+    print('##################### SPLASH SCREEN ######################');
     if(countTable==0){
       WidgetHelper().myPushRemove(context, OnboardingScreen());
     }
     else{
       final onBoarding= await userHelper.getDataUser('onboarding');
       final isLogin= await userHelper.getDataUser('is_login');
+      print('##################### OBOARDING $onBoarding  ######################');
+      print('##################### ISLOGIN $isLogin  ######################');
+
       if(onBoarding==null&&isLogin==null){
         WidgetHelper().myPushRemove(context, OnboardingScreen());
       }
       else{
+        // WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2));
+
         if(onBoarding=='0'&&isLogin=='0'){
           WidgetHelper().myPushRemove(context, OnboardingScreen());
         }
         else if(onBoarding=='1'&&isLogin=='0'){
           WidgetHelper().myPushRemove(context, SigninScreen());
         }
-        else if(onBoarding=='1'&&isLogin=='1'){
+        else{
           WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2));
         }
+
       }
     }
   }
@@ -49,7 +56,7 @@ class _SplashScreenState extends State<SplashScreen> {
     FunctionHelper().getSite();
     final countTableSite = await _db.queryRowCount(SiteQuery.TABLE_NAME);
     if(countTableSite<1){
-      await _db.insert(SiteQuery.TABLE_NAME, {"onBoarding":"0","exitApp":"0","mode":"light"});
+      await _db.insert(SiteQuery.TABLE_NAME, {"onBoarding":"0","exitApp":"0","mode":"dark"});
     }
     loadData();
   }

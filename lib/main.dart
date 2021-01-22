@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
@@ -25,15 +26,22 @@ class MyApp extends StatefulWidget {
     return _MyAppState();
   }
 }
-enum UniLinksType { string, uri }
 
 class _MyAppState extends State<MyApp> {
   final DatabaseConfig _db = new DatabaseConfig();
+  bool site=false;
+  Future getSite()async{
+    final res = await FunctionHelper().getSite();
+    setState(() {
+      site = res;
+    });
+  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     // insertData();
+    getSite();
     OneSignal.shared.setInFocusDisplayType(OSNotificationDisplayType.notification);
     var settings = {
       OSiOSSettings.autoPrompt: false,
@@ -51,6 +59,7 @@ class _MyAppState extends State<MyApp> {
     ]);
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(statusBarIconBrightness: Brightness.light, statusBarColor: Colors.transparent));
     return MaterialApp(
+      // color: site?SiteConfig().darkMode:Colors.white10,
       debugShowCheckedModeBanner: false,
       // darkTheme: ThemeData(
       //   fontFamily: SiteConfig().fontStyle,
@@ -77,8 +86,8 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         visualDensity: VisualDensity.adaptivePlatformDensity,
         fontFamily: SiteConfig().fontStyle,
-        primaryColor: Colors.white,
-        brightness: Brightness.light,
+        primaryColor: site?SiteConfig().darkMode:Colors.white,
+        brightness: site?Brightness.dark:Brightness.light,
         accentColor: config.Colors().mainColor(1),
         focusColor: config.Colors().accentColor(1),
         hintColor: config.Colors().secondColor(1),

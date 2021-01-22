@@ -244,47 +244,25 @@ class FunctionHelper{
 
   }
 
-
   Future baseCategory()async{
-    var resCategory = await BaseProvider().getProvider("kategori?page=1", listCategoryProductModelFromJson);
+    var resCategory = await BaseProvider().getProvider("kategori?page=1&perpage=10000000", listCategoryProductModelFromJson);
     if(resCategory is ListCategoryProductModel){
       ListCategoryProductModel result = resCategory;
       return result.result.data;
     }
   }
   Future baseGroup()async{
-    var resGroup = await BaseProvider().getProvider("kelompok?page=1", listGroupProductModelFromJson);
+    var resGroup = await BaseProvider().getProvider("kelompok?page=1&perpage=10000000", listGroupProductModelFromJson);
     if(resGroup is ListGroupProductModel){
       ListGroupProductModel result = resGroup;
       return result.result.data;
     }
   }
   Future baseBrand()async{
-    var resBrand = await BaseProvider().getProvider("brand?page=1", listBrandProductModelFromJson);
+    var resBrand = await BaseProvider().getProvider("brand?page=1&perpage=10000000", listBrandProductModelFromJson);
     if(resBrand is ListBrandProductModel){
       ListBrandProductModel result = resBrand;
       return result.result.data;
-    }
-  }
-  Future baseProvince()async{
-    var res = await BaseProvider().getProvider("kurir/provinsi",provinsiModelFromJson);
-    if(res is ProvinsiModel){
-      ProvinsiModel result = res;
-      return result.result;
-    }
-  }
-  Future baseCity()async{
-    var res = await BaseProvider().getProvider("kurir/kota",kotaModelFromJson);
-    if(res is KotaModel){
-      KotaModel result = res;
-      return result.result;
-    }
-  }
-  Future baseDistrict()async{
-    var res = await BaseProvider().getProvider("kurir/kecamatan",kecamatanModelFromJson);
-    if(res is KecamatanModel){
-      KecamatanModel result = res;
-      return result.result;
     }
   }
 
@@ -293,7 +271,7 @@ class FunctionHelper{
     if(countTableCategory<1){
       var resCategory = await FunctionHelper().baseCategory();
       resCategory.forEach((element)async {
-
+        print("INSERT CATEGORY ${element.title.toString()}");
         await _helper.insert(CategoryQuery.TABLE_NAME, {
           "id_category":element.id.toString(),
           "title":element.title.toString(),
@@ -307,8 +285,15 @@ class FunctionHelper{
   Future insertBrand()async{
     final countTableBrand = await _helper.queryRowCount(BrandQuery.TABLE_NAME);
     if(countTableBrand<1){
+      await _helper.insert(BrandQuery.TABLE_NAME, {
+        "id_brand":"",
+        "title":"All",
+        "image":"",
+        "status":"",
+      });
       var resBrand = await FunctionHelper().baseBrand();
       resBrand.forEach((element)async {
+        print("INSERT BRAND ${element.title.toString()}");
         await _helper.insert(BrandQuery.TABLE_NAME, {
           "id_brand":element.id.toString(),
           "title":element.title.toString(),
@@ -322,8 +307,10 @@ class FunctionHelper{
   Future insertGroup()async{
     final countTableGroup = await _helper.queryRowCount(GroupQuery.TABLE_NAME);
     if(countTableGroup<1){
+
       var resGroup = await FunctionHelper().baseGroup();
       resGroup.forEach((element)async {
+        print("INSERT GROUP ${element.title.toString()}");
         await _helper.insert(GroupQuery.TABLE_NAME, {
           "id_groups":element.id.toString(),
           "id_category":element.idKategori.toString(),
@@ -334,7 +321,6 @@ class FunctionHelper{
         });
       });
     }
-
   }
 
   Future getFilterLocal(param)async{

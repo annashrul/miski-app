@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -15,10 +16,12 @@ import 'package:netindo_shop/provider/base_provider.dart';
 import 'package:netindo_shop/views/screen/product/cart_screen.dart';
 import 'package:netindo_shop/views/screen/product/detail_product_screen.dart';
 import 'package:netindo_shop/views/widget/empty_widget.dart';
+import 'package:netindo_shop/views/widget/filter_widget.dart';
 import 'package:netindo_shop/views/widget/loading_widget.dart';
 import 'package:netindo_shop/views/widget/product/first_product_widget.dart';
 import 'package:netindo_shop/views/widget/refresh_widget.dart';
 import 'package:netindo_shop/views/widget/slider_widget.dart';
+import 'package:sticky_headers/sticky_headers.dart';
 
 class PrivateHomeScreen extends StatefulWidget {
   final String id;
@@ -47,13 +50,15 @@ class _PrivateHomeScreenState extends State<PrivateHomeScreen> with TickerProvid
   int current = 0;
   bool secondAppBar = false;
   int selectedkategori = 0;
-  double containerHeight = 70;
+  double containerHeight = 60;
 
   List resFavoriteProduct = [];
   final DatabaseConfig _helper = new DatabaseConfig();
   List returnProductLocal = [];
-  String q='',group='';
+  String q='',group='',category='',brand='';
   List returnGroup = [];
+  List returnCategory = [];
+  List returnBrand = [];
   Future loadGroup()async{
     var group = await _helper.getData(GroupQuery.TABLE_NAME);
     List groups = [];
@@ -72,18 +77,47 @@ class _PrivateHomeScreenState extends State<PrivateHomeScreen> with TickerProvid
       returnGroup=groups;
     });
   }
-
+  Future loadCategory()async{
+    var cat = await _helper.getData(CategoryQuery.TABLE_NAME);
+    print(cat);
+    List catagories = [];
+    cat.forEach((element) {
+      catagories.add({
+        "id": element['id_category'],
+        "title": element['title'],
+        "isSelected":false
+      });
+    });
+    setState(() {
+      returnCategory=catagories;
+    });
+  }
+  Future loadBrand()async{
+    var br = await _helper.getData(BrandQuery.TABLE_NAME);
+    List brand = [];
+    br.forEach((element) {
+      brand.add({
+        "id": element['id_brand'],
+        "title": element['title'],
+        "image": element['image'],
+        "isSelected":false
+      });
+    });
+    setState(() {
+      returnBrand=brand;
+    });
+  }
   Future getProduct()async{
     var resProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? LIMIT $perpage",[widget.id]);
     var resTotalProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=?",[widget.id]);
-    if(q!=''&&group!=''){
-      resProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and title LIKE '%$q%' and id_kelompok=?",[widget.id,group]);
-      resTotalProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and title LIKE '%$q%' and id_kelompok=?",[widget.id,group]);
+    print("RES PRODUK LOKAL $resProductLocal");
+    if(q!=''&&brand!=''){
+      resProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and title LIKE '%$q%' and id_brand=?",[widget.id,brand]);
+      resTotalProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and title LIKE '%$q%' and id_brand=?",[widget.id,brand]);
     }
-    if(group!=''){
-      print("GROUP $group");
-      resProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and id_kelompok=?",[widget.id,group]);
-      resTotalProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and id_kelompok=?",[widget.id,group]);
+    if(brand!=''){
+      resProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and id_brand=?",[widget.id,brand]);
+      resTotalProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and id_brand=?",[widget.id,brand]);
     }
 
     if(q!=''){
@@ -98,7 +132,6 @@ class _PrivateHomeScreenState extends State<PrivateHomeScreen> with TickerProvid
         isLoading=false;
         isLoadmore=false;
       });
-      print("RESPONSE $resProductLocal");
     }
     else{
       var resProduct = await FunctionHelper().baseProduct('perpage=$perpage&tenant=${widget.id}');
@@ -147,12 +180,9 @@ class _PrivateHomeScreenState extends State<PrivateHomeScreen> with TickerProvid
     await countCart();
     var totalProduct = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=?",[widget.id]);
     await FunctionHelper().setSession("id_tenant", widget.id);
-    print("LENGTH PRODUK ${totalProduct.length}");
     if(totalProduct.length<1){
       await _helper.delete(ProductQuery.TABLE_NAME, "id_tenant", widget.id);
-      print('hapus produk lokal sukses');
       await FunctionHelper().insertProduct(widget.id);
-      print('insert produk lokal sukses');
     }
     if(param=='refresh'){
       await _helper.delete(ProductQuery.TABLE_NAME, "id_tenant", widget.id);
@@ -214,16 +244,6 @@ class _PrivateHomeScreenState extends State<PrivateHomeScreen> with TickerProvid
         setState(() {
           secondAppBar = true;
         });
-
-        if (y > 50) {
-          setState(() {
-            containerHeight = 70;
-          });
-        } else if (y < 20) {
-          setState(() {
-            containerHeight = 60;
-          });
-        }
       }
 
       return true;
@@ -251,7 +271,9 @@ class _PrivateHomeScreenState extends State<PrivateHomeScreen> with TickerProvid
   @override
   void initState() {
     super.initState();
+    loadBrand();
     loadGroup();
+    loadCategory();
     loadData('');
     getSite();
     controller = new ScrollController()..addListener(_scrollListener);
@@ -264,21 +286,20 @@ class _PrivateHomeScreenState extends State<PrivateHomeScreen> with TickerProvid
   List index=[];
   @override
   Widget build(BuildContext context) {
-    List<IconData> icons = [
-      Icons.ac_unit,
-      Icons.account_balance,
-      Icons.adb,
-      Icons.add_photo_alternate,
-      Icons.format_line_spacing
-    ];
     return buildItem(context);
   }
+
+
+
   Widget buildItem(BuildContext context) {
+    print(secondAppBar);
     double widthSize = MediaQuery.of(context).size.width;
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(statusBarColor: Colors.transparent, statusBarIconBrightness: brightnessCutom),
       child: Scaffold(
         key: _scaffoldKey,
+        // drawer: DrawerWidget(),
+        endDrawer: FilterWidget(),
         body: NotificationListener<ScrollNotification>(
           onNotification: scrollListener,
           child: RefreshWidget(
@@ -298,14 +319,51 @@ class _PrivateHomeScreenState extends State<PrivateHomeScreen> with TickerProvid
                           ),
                           child: SliderWidget(),
                         ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 0),
+                          child:Container(
+                            key: key,
+                            width: widthSize,
+                            height: containerHeight,
+                            padding: EdgeInsets.symmetric(vertical: 10),
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: returnBrand.length,
+                              itemBuilder: (_, index) {
+                                return Container(
+                                  margin: EdgeInsets.only(
+                                    left: (index == 0) ? 20 : 0,
+                                    right: (index == returnBrand.length)
+                                        ? 10
+                                        : 10,
+                                  ),
+                                  child: KategoriCard(
+                                    namaKategori:
+                                    returnBrand[index]['title'],
+                                    color: [Colors.black87,Colors.white10],
+                                    isSelected: (index == selectedkategori) ? true : false,
+                                    onTap: () {
+                                      setState(() {
+                                        isLoading=true;
+                                        brand = returnBrand[index]['id'];
+                                        selectedkategori = index;
+                                      });
+                                      getProduct();
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
                         isLoading?Container(
                           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
                           child: LoadingProductTenant(tot: 10),
                         ):returnProductLocal.length>0?Container(
-                            key: key,
                             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
                             child:new StaggeredGridView.countBuilder(
                               primary: false,
+                              physics: ClampingScrollPhysics(),
                               shrinkWrap: true,
                               crossAxisCount: 4,
                               itemCount: returnProductLocal.length,
@@ -314,7 +372,7 @@ class _PrivateHomeScreenState extends State<PrivateHomeScreen> with TickerProvid
                                 return ProductWidget(
                                   id: valProductServer['id_product'],
                                   gambar: valProductServer['gambar'],
-                                  title: valProductServer['title'],
+                                  title: '${valProductServer['title']}\n${valProductServer['brand']}',
                                   harga: valProductServer['harga'],
                                   hargaCoret: valProductServer['harga_coret'],
                                   rating: valProductServer['rating'].toString(),
@@ -339,12 +397,25 @@ class _PrivateHomeScreenState extends State<PrivateHomeScreen> with TickerProvid
                   ),
                 ),
                 createAppBarAnimation(),
+
               ],
             ),
             callback: (){_handleRefresh();},
           ),
         ),
         backgroundColor: site?SiteConfig().darkMode:Colors.white,
+        floatingActionButton: secondAppBar?FloatingActionButton(
+          onPressed: (){
+            controller.animateTo(
+              0.0,
+              curve: Curves.ease,
+              duration: const Duration(milliseconds: 5000),
+            );
+          },
+          // onPressed: () => _scaffoldKey.currentState.openEndDrawer(),
+          child: Icon(Icons.vertical_align_top, size: 24, color: Colors.white),
+          backgroundColor:SiteConfig().mainColor,
+        ):Container(),
       ),
     );
 
@@ -441,7 +512,7 @@ class _PrivateHomeScreenState extends State<PrivateHomeScreen> with TickerProvid
                                   })
                                 );
                               },
-                              child: Icon(UiIcons.filter, size: 24, color: iconColorTween.value)
+                              child: Icon(Icons.youtube_searched_for, size: 24, color: iconColorTween.value)
                               // child: UiIcons.filter
                           ),
                         ),
@@ -460,6 +531,74 @@ class _PrivateHomeScreenState extends State<PrivateHomeScreen> with TickerProvid
 
 }
 
+class KategoriCard extends StatelessWidget {
+  final String namaKategori;
+
+  final List<Color> color;
+  final Function onTap;
+  final bool isSelected;
+  // final double width;
+
+  KategoriCard(
+      {this.namaKategori,
+        this.color,
+        this.onTap,
+        this.isSelected = false,
+        // this.width = 70
+      });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        if (onTap != null) {
+          onTap();
+        }
+      },
+      child: Container(
+        // width: width,
+        height: double.infinity,
+        padding: EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: color,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: 2,
+              width: 20,
+              margin: EdgeInsets.only(bottom: 5),
+              color: (isSelected == true) ? Colors.white : Colors.transparent,
+            ),
+            Expanded(
+              flex: 1,
+              child: Container(
+                child: Text(
+                  namaKategori,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.white,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.fade,
+                  textAlign: TextAlign.left,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 
 class ModalSearch extends StatefulWidget {
@@ -480,7 +619,6 @@ class _ModalSearchState extends State<ModalSearch> {
   Future loadData()async{
     if(qController.text!=''){
       var res = await db.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and title LIKE '%${qController.text}%' or deskripsi LIKE '%${qController.text}%'",[widget.idTenant]);
-      print(res);
       // var res = await db.readData(ProductQuery.TABLE_NAME, widget.idTenant,colWhere: ['title'],valWhere: ['${qController.text}']);
       setState(() {
         resProduct=res;
@@ -502,7 +640,6 @@ class _ModalSearchState extends State<ModalSearch> {
   }
   Future loadClick()async{
     var res = await db.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and is_click=?",["${widget.idTenant}","true"]);
-    print("RESPONSE CLICK $res");
     setState(() {
       resClick=res;
     });
@@ -532,7 +669,6 @@ class _ModalSearchState extends State<ModalSearch> {
   }
   @override
   Widget build(BuildContext context) {
-
     return Container(
       // height: MediaQuery.of(context).size.height/2.0,
       decoration: BoxDecoration(
@@ -640,7 +776,7 @@ class _ModalSearchState extends State<ModalSearch> {
                             loadSearch();
                           }
                       ),
-                      title: WidgetHelper().textQ("${resSearch[index]['title']}",10,Colors.white,FontWeight.normal),
+                      title: WidgetHelper().textQ("${resSearch[index]['title']}",10,widget.mode?Colors.white:Colors.black87,FontWeight.normal),
                     );
                   },
                   separatorBuilder:(context,index){

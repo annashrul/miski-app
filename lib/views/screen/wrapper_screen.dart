@@ -100,7 +100,7 @@ class _WrapperScreenState extends State<WrapperScreen> {
     return Scaffold(
       backgroundColor: site?SiteConfig().darkMode:Colors.white,
       key: _scaffoldKey,
-      appBar: WidgetHelper().myAppBarNoButton(context,"Hai, $nama",<Widget>[
+      appBar: widget.currentTitle=='Home'?null:WidgetHelper().myAppBarNoButton(context,"Hai, $nama",<Widget>[
         // new CartWidget(iconColor: Theme.of(context).hintColor, labelColor: Theme.of(context).accentColor),
         Container(
           color: Colors.transparent,

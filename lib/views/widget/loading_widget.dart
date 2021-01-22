@@ -36,7 +36,7 @@ class _LoadingTenantState extends State<LoadingTenant> {
         return Container(
           padding: EdgeInsets.only(bottom:5.0),
           decoration: BoxDecoration(
-            color: site?Colors.transparent:Theme.of(context).primaryColor,
+            // color: site?Colors.transparent:Theme.of(context).primaryColor,
             // borderRadius: BorderRadius.only(topRight:Radius.circular(10.0),topLeft: Radius.circular(10.0)),
             border: Border.all(color: site?Colors.transparent:Colors.grey[200]),
           ),

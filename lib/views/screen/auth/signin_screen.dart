@@ -136,10 +136,11 @@ class _SigninScreenState extends State<SigninScreen> {
     final regEmail=FunctionHelper().isEmail(_emailController.text);
     if(type=='otp'){
       if(_nohpController.text==''){
+        _nohpFocus.requestFocus();
+
         WidgetHelper().showFloatingFlushbar(context, 'failed','no handphone tidak boleh kosong');
         // WidgetHelper().notifNoAction(_scaffoldKey, context, 'no handphone tidak boleh kosong');
         await Future.delayed(Duration(seconds: 0, milliseconds: 1000));
-        _nohpFocus.requestFocus();
       }else{
         login(type);
       }
@@ -256,6 +257,7 @@ class _SigninScreenState extends State<SigninScreen> {
                               controller: _nohpController,
                               keyboardType: TextInputType.number,
                               textInputAction: TextInputAction.done,
+                              focusNode: _nohpFocus,
                             ),
                           ),
                         ],

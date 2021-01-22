@@ -1,3 +1,5 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/site_config.dart';
@@ -5,9 +7,9 @@ import 'package:netindo_shop/helper/database_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 
 class FilterWidget extends StatefulWidget {
-  Function(List data) callback;
-  List idx;
-  FilterWidget({this.callback,this.idx});
+  // Function(List data) callback;
+  // List idx;
+  // FilterWidget({this.callback,this.idx});
   @override
   _FilterWidgetState createState() => _FilterWidgetState();
 }
@@ -89,9 +91,9 @@ class _FilterWidgetState extends State<FilterWidget> {
     // TODO: implement initState
     super.initState();
     loadData();
-    valueCategory=widget.idx[0];
-    valueGroup=widget.idx[1];
-    valueBrand=widget.idx[2];
+    // valueCategory=widget.idx[0];
+    // valueGroup=widget.idx[1];
+    // valueBrand=widget.idx[2];
   }
 
   @override
@@ -99,23 +101,62 @@ class _FilterWidgetState extends State<FilterWidget> {
     return Drawer(
       child: SafeArea(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.only(left: 20),
+              padding: EdgeInsets.only(left: 15.0,right:15.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  MaterialButton(
-                    onPressed: () {
-                      setState(() {
-                        clearSelection();
-                      });
-                    },
-                    child: WidgetHelper().textQ("hapus",10, SiteConfig().secondColor,FontWeight.bold),
-                  )
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  WidgetHelper().myPress(
+                      (){},
+                      Container(
+                        padding: EdgeInsets.all(10.0),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).focusColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: WidgetHelper().textQ("Simpan",10, SiteConfig().secondColor,FontWeight.bold),
+                      )
+                  ),
+                  WidgetHelper().myPress(
+                      (){},
+                      Container(
+                        padding: EdgeInsets.all(10.0),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).focusColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: WidgetHelper().textQ("Hapus",10, SiteConfig().secondColor,FontWeight.bold),
+                      )
+                  ),
                 ],
               ),
             ),
+            // Padding(
+            //   padding: const EdgeInsets.only(left: 0),
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //     children: <Widget>[
+            //       MaterialButton(
+            //         onPressed: () {
+            //           setState(() {
+            //             clearSelection();
+            //           });
+            //         },
+            //         child: WidgetHelper().textQ("hapus",10, SiteConfig().secondColor,FontWeight.bold),
+            //       ),
+            //       MaterialButton(
+            //         onPressed: () {
+            //           setState(() {
+            //             clearSelection();
+            //           });
+            //         },
+            //         child: WidgetHelper().textQ("hapus",10, SiteConfig().secondColor,FontWeight.bold,textAlign: TextAlign.right),
+            //       )
+            //     ],
+            //   ),
+            // ),
             Expanded(
               child: ListView(
                 primary: true,
@@ -123,7 +164,37 @@ class _FilterWidgetState extends State<FilterWidget> {
                 children: <Widget>[
                   ExpansionTile(
                     initiallyExpanded: true,
-                    title: WidgetHelper().textQ("Kategori",14,SiteConfig().mainColor,FontWeight.bold),
+                    title: WidgetHelper().textQ("Brand",12,SiteConfig().mainColor,FontWeight.bold),
+                    children: List.generate(returnBrand.length, (index) {
+                      return RadioListTile(
+                        value: index,
+                        groupValue: valueBrand,
+                        onChanged: (ind){
+                          setState((){
+                            valueBrand = ind;
+                            returnCallback.add({"category":valueCategory,"kelompok":valueGroup,"brand":ind});
+                            qBrand = returnBrand[index]['title'];
+                          });
+                        },
+                        secondary: SizedBox(
+                          width: 30,
+                          height: 30,
+                          child: CachedNetworkImage(
+                            imageUrl:returnBrand[index]['image'],
+                            width: double.infinity ,
+                            fit:BoxFit.contain,
+                            placeholder: (context, url) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width: double.infinity,),
+                            errorWidget: (context, url, error) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width: double.infinity,),
+                          ),
+
+                        ),
+                        title: WidgetHelper().textQ(returnBrand[index]['title'],10,SiteConfig().secondColor,FontWeight.bold),
+                      );
+                    }),
+                  ),
+                  ExpansionTile(
+                    initiallyExpanded: false,
+                    title: WidgetHelper().textQ("Kategori",12,SiteConfig().mainColor,FontWeight.bold),
                     children: List.generate(returnCategory.length, (index) {
                       return RadioListTile(
                         value: index,
@@ -137,16 +208,24 @@ class _FilterWidgetState extends State<FilterWidget> {
                         secondary: SizedBox(
                           width: 40,
                           height: 30,
-                          child: Image.network(
-                            returnCategory[index]['image'],
+                          child: CachedNetworkImage(
+                            imageUrl:returnCategory[index]['image'],
+                            width: double.infinity ,
+                            fit:BoxFit.contain,
+                            placeholder: (context, url) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width: double.infinity,),
+                            errorWidget: (context, url, error) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width: double.infinity,),
                           ),
+                          //
+                          // child: Image.network(
+                          //   returnCategory[index]['image'],
+                          // ),
                         ),
-                        title: WidgetHelper().textQ(returnCategory[index]['title'],12,SiteConfig().secondColor,FontWeight.bold),
+                        title: WidgetHelper().textQ(returnCategory[index]['title'],10,SiteConfig().secondColor,FontWeight.bold),
                       );
                     }),
                   ),
                   ExpansionTile(
-                    initiallyExpanded: true,
+                    initiallyExpanded: false,
                     title: WidgetHelper().textQ("Kelompok",14,SiteConfig().mainColor,FontWeight.bold),
                     children: List.generate(returnGroup.length, (index) {
                       return RadioListTile(
@@ -161,53 +240,35 @@ class _FilterWidgetState extends State<FilterWidget> {
                         secondary: SizedBox(
                           width: 40,
                           height: 30,
-                          child: Image.network(
-                            returnGroup[index]['image'],
+                          child: CachedNetworkImage(
+                            imageUrl:returnGroup[index]['image'],
+                            width: double.infinity ,
+                            fit:BoxFit.contain,
+                            placeholder: (context, url) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width: double.infinity,),
+                            errorWidget: (context, url, error) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width: double.infinity,),
                           ),
+                          // child: Image.network(
+                          //   returnGroup[index]['image'],
+                          // ),
                         ),
-                        title: WidgetHelper().textQ(returnGroup[index]['title'],12,SiteConfig().secondColor,FontWeight.bold),
-                      );
-                    }),
-                  ),
-                  ExpansionTile(
-                    initiallyExpanded: true,
-                    title: WidgetHelper().textQ("Brand",14,SiteConfig().mainColor,FontWeight.bold),
-                    children: List.generate(returnBrand.length, (index) {
-                      return RadioListTile(
-                        value: index,
-                        groupValue: valueBrand,
-                        onChanged: (ind){
-                          setState((){
-                            valueBrand = ind;
-                            returnCallback.add({"category":valueCategory,"kelompok":valueGroup,"brand":ind});
-                            qBrand = returnBrand[index]['title'];
-                          });
-                        },
-                        secondary: SizedBox(
-                          width: 40,
-                          height: 30,
-                          child: Image.network(
-                            returnBrand[index]['image'],
-                          ),
-                        ),
-                        title: WidgetHelper().textQ(returnBrand[index]['title'],12,SiteConfig().secondColor,FontWeight.bold),
+                        title: WidgetHelper().textQ(returnGroup[index]['title'],10,SiteConfig().secondColor,FontWeight.bold),
                       );
                     }),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 15),
-            FlatButton(
-              onPressed: () {
-                widget.callback([{"category":qCategory,"group":qGroup,"brand":qBrand,"idxCategory":valueCategory,"idxGroup":valueGroup,"idxBrand":valueBrand}]);
-              },
-              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-              color: Theme.of(context).accentColor,
-              shape: StadiumBorder(),
-              child: WidgetHelper().textQ("Simpan",12.0,Colors.white,FontWeight.bold),
-            ),
-            SizedBox(height: 15)
+            // SizedBox(height: 15),
+            // FlatButton(
+            //   onPressed: () {
+            //     // widget.callback([{"category":qCategory,"group":qGroup,"brand":qBrand,"idxCategory":valueCategory,"idxGroup":valueGroup,"idxBrand":valueBrand}]);
+            //   },
+            //   padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+            //   color: Theme.of(context).accentColor,
+            //   shape: StadiumBorder(),
+            //   child: WidgetHelper().textQ("Simpan",12.0,Colors.white,FontWeight.bold),
+            // ),
+            // SizedBox(height: 15)
           ],
         ),
       ),

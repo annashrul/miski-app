@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -134,7 +135,14 @@ class _ProductWidgetState extends State<ProductWidget> {
                       // ),
                     ),
                     // padding: EdgeInsets.all(1.5),
-                    child: Image.network(widget.gambar, fit:BoxFit.fill,width: double.infinity,),
+                    // child: Image.network(widget.gambar, fit:BoxFit.fill,width: double.infinity,),
+                    child: CachedNetworkImage(
+                      imageUrl: widget.gambar,
+                      width: double.infinity ,
+                      fit:BoxFit.fill,
+                      placeholder: (context, url) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width: double.infinity,),
+                      errorWidget: (context, url, error) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width: double.infinity,),
+                    ),
                   ),
                   SizedBox(height: 12),
                   Padding(
