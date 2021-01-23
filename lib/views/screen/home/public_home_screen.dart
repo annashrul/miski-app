@@ -26,9 +26,14 @@ import 'package:netindo_shop/views/widget/loading_widget.dart';
 import 'package:netindo_shop/views/widget/refresh_widget.dart';
 import 'package:netindo_shop/views/widget/slider_widget.dart';
 import 'package:netindo_shop/views/widget/timeout_widget.dart';
+import 'package:provider/provider.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 
+import '../../../main.dart';
+
 class PublicHomeScreen extends StatefulWidget {
+  final mode;
+  PublicHomeScreen({this.mode});
   @override
   _PublicHomeScreenState createState() => _PublicHomeScreenState();
 }
@@ -38,6 +43,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
   final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
   Position _currentPosition;
   String _currentAddress;
+  bool isLoadingLocation=false;
   _getCurrentLocation() {
     geolocator
         .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
@@ -45,7 +51,6 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
       setState(() {
         _currentPosition = position;
       });
-
       _getAddressFromLatLng();
     }).catchError((e) {
       print(e);
@@ -68,6 +73,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
       print("LOKASI ${place.thoroughfare}");
       setState(() {
         _currentAddress = "${place.thoroughfare}, ${place.subLocality}, ${place.subAdministrativeArea}, ${place.administrativeArea}";
+        isLoadingLocation=false;
       });
     } catch (e) {
       print(e);
@@ -81,15 +87,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
   int countTenant=0;
   final DatabaseConfig _helper = new DatabaseConfig();
   List returnTenant=[];
-  bool site=false;
-  Future getSite()async{
-    final res = await FunctionHelper().getSite();
-    setState(() {
-      site = res;
-    });
-  }
   Future getTenant()async{
-    await getSite();
     final countTbl = await _helper.queryRowCount(TenantQuery.TABLE_NAME);
     if(countTbl>1){
       final tenant = await _helper.getData(TenantQuery.TABLE_NAME);
@@ -184,6 +182,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
     super.initState();
     isLoading=true;
     isLoadingPromo=true;
+    isLoadingLocation=true;
     getTenant();
     getPromo();
     _getCurrentLocation();
@@ -193,200 +192,9 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
   int _current=0;
   @override
   Widget build(BuildContext context){
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(statusBarIconBrightness: Brightness.light, statusBarColor: Colors.transparent));
     return buildContents(context);
   }
 
-  Widget buildContent(BuildContext context) {
-    return RefreshWidget(
-     widget: isTimeout||isTimeoutPromo?TimeoutWidget(callback: ()async{
-       setState(() {
-         isTimeout=false;
-         isLoading=true;
-         isTimeoutPromo=false;
-         isLoadingPromo=true;
-       });
-       getTenant();
-       getPromo();
-     }):ListView(
-       children: <Widget>[
-         isLoadingPromo?Padding(padding: EdgeInsets.all(20.0),child: SkeletonFrame(width: double.infinity,height:250),):Container(
-           height: 250,
-           width: MediaQuery.of(context).size.width,
-           decoration: BoxDecoration(
-             color: Colors.grey[200],
-           ),
-           child:Stack(
-             alignment: AlignmentDirectional.bottomEnd,
-             children: <Widget>[
-               CarouselSlider(
-                 options: CarouselOptions(
-                   enableInfiniteScroll: true,
-                   height: 250,
-                   enlargeCenterPage: false,
-                   viewportFraction: 1,
-                   onPageChanged: (index, reason) {
-                     setState(() {
-                       _current = index;
-                     });
-                   },
-                 ),
-                 items: globalPromoModel.result.data.map((slide) => Container(
-                   width: double.infinity,
-                   height: 250,
-                   child: Container(
-                     width: double.infinity,
-                     child: Image.asset(
-                       "assets/img/slide1.jpg",
-                       fit: BoxFit.fill,
-                       width:
-                       MediaQuery.of(context).size.width,
-                     ),
-                   ),
-                 )).toList(),
-               ),
-               Positioned(
-                 bottom: 25,
-                 right: 41,
-                 child: Row(
-                   mainAxisAlignment: MainAxisAlignment.end,
-                   children: globalPromoModel.result.data.map((slide) {
-                     return Container(
-                       width: 20.0,
-                       height: 3.0,
-                       margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
-                       decoration: BoxDecoration(
-                           borderRadius: BorderRadius.all(
-                             Radius.circular(8),
-                           ),
-                           color: _current == globalPromoModel.result.data.indexOf(slide)
-                               ? Theme.of(context).hintColor
-                               : Theme.of(context).hintColor.withOpacity(0.3)),
-                     );
-                   }).toList(),
-                 ),
-               ),
-             ],
-           ),
-         ),
-         WidgetHelper().titleQ(
-           "",
-           color:site?Colors.white:Colors.black,
-           param: StringConfig().lihatSemuaPromo,
-           callback: (){
-             WidgetHelper().myPush(context,ListPromoScreen());
-           },
-           // icon: Icon(UiIcons.favorites, color: site?Colors.white:Theme.of(context).hintColor,)
-         ),
-         Container(
-           padding: EdgeInsets.only(left:20,right:20),
-           child: WidgetHelper().myPress((){},Container(
-             padding: EdgeInsets.all(10.0),
-             decoration: BoxDecoration(
-               color: Theme.of(context).focusColor.withOpacity(0.1),
-               borderRadius: BorderRadius.circular(10),
-               // border: Border.all(width:1.0,color: site?Colors.grey:Colors.grey[200])
-             ),
-             child: Column(
-               crossAxisAlignment: CrossAxisAlignment.center,
-               mainAxisAlignment: MainAxisAlignment.center,
-               children: <Widget>[
-                 Row(
-                   children: <Widget>[
-                     Icon(UiIcons.placeholder,color: Colors.white10),
-                     SizedBox(
-                       width: 8,
-                     ),
-                     Expanded(
-                       child: Column(
-                         crossAxisAlignment: CrossAxisAlignment.start,
-                         children: <Widget>[
-                           if (_currentPosition != null && _currentAddress != null)
-                             WidgetHelper().textQ(_currentAddress,10,Colors.white,FontWeight.normal)
-                         ],
-                       ),
-                     ),
-                     SizedBox(
-                       width: 8,
-                     ),
-                   ],
-                 ),
-
-
-               ],
-             ),
-           )),
-         ),
-         Container(
-           padding: EdgeInsets.only(left:20,right:20,top:10),
-           child: isLoading?LoadingTenant():returnTenant.length>0?tenantLocal():tenantServer(),
-         ),
-         WidgetHelper().titleQ("${StringConfig().selesaikanPesananAnda}",color:site?Colors.white:SiteConfig().secondColor,param: '',callback: (){},icon: Icon(
-           UiIcons.favorites,
-           color: site?Colors.white:Theme.of(context).hintColor,
-         )),
-         Container(
-           padding: EdgeInsets.only(left:20,right:20,top:10),
-           child: StaggeredGridView.countBuilder(
-             shrinkWrap: true,
-             primary: false,
-             crossAxisCount: 3,
-             itemCount: 2,
-             itemBuilder: (BuildContext context, int index) {
-               return WidgetHelper().myPress(
-                 (){
-                   WidgetHelper().myPush(context,CartScreen(idTenant: '272da72e-0287-4ab9-ac9f-ee3498fcdc97'));
-                 },
-                 Container(
-                   padding: EdgeInsets.all(10.0),
-                   decoration: BoxDecoration(
-                     borderRadius: BorderRadius.circular(10),
-                     color: Theme.of(context).focusColor.withOpacity(0.4),
-                   ),
-                   child: Column(
-                     children: [
-                       Stack(
-                         alignment: AlignmentDirectional.center,
-                         children: <Widget>[
-                           Padding(
-                             padding: const EdgeInsets.symmetric(horizontal: 0),
-                             child: Icon(
-                               UiIcons.shopping_cart,
-                               color:site?Colors.white:Theme.of(context).hintColor,
-                               size: 40,
-                             ),
-                           ),
-                           Positioned(
-                               right: 0.0,
-                               top:5.0,
-                               child: Container(
-                                 child: WidgetHelper().textQ("1",9,Theme.of(context).primaryColor, FontWeight.bold,textAlign: TextAlign.center),
-                                 padding: EdgeInsets.only(top:0.0),
-                                 decoration: BoxDecoration(color: Theme.of(context).accentColor, borderRadius: BorderRadius.all(Radius.circular(10))),
-                                 constraints: BoxConstraints(minWidth: 15, maxWidth: 15, minHeight: 15, maxHeight: 15),
-                               )
-                           ),
-                           // WidgetHelper().textQ("NAMA TENANT",12,Colors.grey[200], FontWeight.bold,textAlign: TextAlign.center),
-                         ],
-                       ),
-                       SizedBox(height:5.0),
-                       WidgetHelper().textQ("Bandung Trade Mall",10,site?Colors.grey[200]:Colors.grey, FontWeight.bold,textAlign: TextAlign.center),
-                     ],
-                   ),
-                 ),
-                 color: site?Colors.white10:Colors.black38
-               );
-             },
-             staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
-             mainAxisSpacing: 15.0,
-             crossAxisSpacing: 15.0,
-           ),
-         ),
-       ],
-     ),
-      callback: (){_handleRefresh();},
-    );
-  }
   Widget buildContents(BuildContext context){
     return RefreshWidget(
       widget: isTimeout||isTimeoutPromo?TimeoutWidget(callback: ()async{
@@ -405,8 +213,8 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
               onStretchTrigger: (){
                 return;
               },
-              brightness: site?Brightness.dark:Brightness.light,
-              backgroundColor: site?SiteConfig().darkMode:Colors.white,
+              brightness: widget.mode?Brightness.dark:Brightness.light,
+              backgroundColor: widget.mode?SiteConfig().darkMode:Colors.white,
               snap: true,
               floating: true,
               pinned: true,
@@ -432,7 +240,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                       children: <Widget>[
                         Container(
                           padding: EdgeInsets.only(left:20,right:20),
-                          child: WidgetHelper().myPress((){},Container(
+                          child: isLoadingLocation?SkeletonFrame(width: double.infinity,height: 40.0):WidgetHelper().myPress((){},Container(
                             padding: EdgeInsets.all(10.0),
                             decoration: BoxDecoration(
                               color: Theme.of(context).focusColor.withOpacity(0.1),
@@ -445,7 +253,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                               children: <Widget>[
                                 Row(
                                   children: <Widget>[
-                                    Icon(UiIcons.placeholder,color: site?Colors.white:SiteConfig().darkMode),
+                                    Icon(UiIcons.placeholder,color: widget.mode?Colors.white:SiteConfig().darkMode),
                                     SizedBox(
                                       width: 8,
                                     ),
@@ -454,7 +262,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: <Widget>[
                                           if (_currentPosition != null && _currentAddress != null)
-                                            WidgetHelper().textQ(_currentAddress,10,site?Colors.white:SiteConfig().darkMode,FontWeight.normal)
+                                            WidgetHelper().textQ(_currentAddress,10,widget.mode?Colors.white:SiteConfig().darkMode,FontWeight.normal)
                                         ],
                                       ),
                                     ),
@@ -463,8 +271,6 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                                     ),
                                   ],
                                 ),
-
-
                               ],
                             ),
                           )),
@@ -473,9 +279,9 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                           padding: EdgeInsets.only(left:20,right:20,top:0),
                           child: isLoading?LoadingTenant():returnTenant.length>0?tenantLocal():tenantServer(),
                         ),
-                        WidgetHelper().titleQ("${StringConfig().selesaikanPesananAnda}",color:site?Colors.white:SiteConfig().secondColor,param: '',callback: (){},icon: Icon(
+                        WidgetHelper().titleQ("${StringConfig().selesaikanPesananAnda}",color:widget.mode?Colors.white:SiteConfig().secondColor,param: '',callback: (){},icon: Icon(
                           UiIcons.favorites,
-                          color: site?Colors.white:Theme.of(context).hintColor,
+                          color: widget.mode?Colors.white:Theme.of(context).hintColor,
                         )),
                         Container(
                           padding: EdgeInsets.only(left:20,right:20,top:10),
@@ -504,7 +310,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                                               padding: const EdgeInsets.symmetric(horizontal: 0),
                                               child: Icon(
                                                 UiIcons.shopping_cart,
-                                                color:site?Colors.white:Theme.of(context).hintColor,
+                                                color:widget.mode?Colors.white:Theme.of(context).hintColor,
                                                 size: 40,
                                               ),
                                             ),
@@ -522,11 +328,11 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                                           ],
                                         ),
                                         SizedBox(height:5.0),
-                                        WidgetHelper().textQ("Bandung Trade Mall",10,site?Colors.grey[200]:Colors.grey, FontWeight.bold,textAlign: TextAlign.center),
+                                        WidgetHelper().textQ("Bandung Trade Mall",10,widget.mode?Colors.grey[200]:Colors.grey, FontWeight.bold,textAlign: TextAlign.center),
                                       ],
                                     ),
                                   ),
-                                  color: site?Colors.white10:Colors.black38
+                                  color: widget.mode?Colors.white10:Colors.black38
                               );
                             },
                             staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
@@ -628,7 +434,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
       itemBuilder: (BuildContext context, int index) {
         return WidgetHelper().myPress(
             (){
-              WidgetHelper().myPush(context,HomeScreen(id: returnTenant[index]['id_tenant'],nama:returnTenant[index]['nama']));
+              WidgetHelper().myPush(context,HomeScreen(id: returnTenant[index]['id_tenant'],nama:returnTenant[index]['nama'],mode: widget.mode));
             },
             Container(
               padding: EdgeInsets.all(5.0),
@@ -653,7 +459,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                 ],
               ),
             ),
-            color: site?Colors.white10:Colors.black38
+            color: widget.mode?Colors.white10:Colors.black38
         );
       },
       staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
@@ -671,7 +477,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
       itemBuilder: (BuildContext context, int index) {
         return WidgetHelper().myPress(
                 (){
-              WidgetHelper().myPush(context,PrivateHomeScreen(id: listTenantModel.result.data[index].id,nama:listTenantModel.result.data[index].nama));
+              WidgetHelper().myPush(context,HomeScreen(id: listTenantModel.result.data[index].id,nama:listTenantModel.result.data[index].nama,mode: widget.mode));
             },
             Container(
               padding: EdgeInsets.all(5.0),
@@ -697,7 +503,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                 ],
               ),
             ),
-            color: site?Colors.white10:Colors.black38
+            color: widget.mode?Colors.white10:Colors.black38
         );
       },
       staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),

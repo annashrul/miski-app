@@ -7,6 +7,7 @@ import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/auth/otp_model.dart';
 import 'package:netindo_shop/model/general_model.dart';
 import 'package:netindo_shop/provider/base_provider.dart';
+import 'package:netindo_shop/views/screen/auth/login_screen.dart';
 import 'package:netindo_shop/views/screen/auth/secure_code_screen.dart';
 import 'package:netindo_shop/views/screen/auth/signin_screen.dart';
 import 'package:netindo_shop/views/widget/timeout_widget.dart';
@@ -464,7 +465,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             SizedBox(height: 20),
                             FlatButton(
                               onPressed: () {
-                                WidgetHelper().myPush(context, SigninScreen());
+                                WidgetHelper().myPush(context, LoginScreen());
                               },
                               child:WidgetHelper().textQ("Sudah punya akun ? Login",14,SiteConfig().mainColor,FontWeight.bold),
                             ),

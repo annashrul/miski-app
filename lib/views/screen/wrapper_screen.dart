@@ -16,12 +16,13 @@ class WrapperScreen extends StatefulWidget {
   int currentTab = 2;
   int selectedTab = 2;
   String currentTitle = 'Home';
-  Widget currentPage = PublicHomeScreen();
+  final mode;
   int otherParam=5;
   WrapperScreen({
     Key key,
     this.currentTab,
-    this.otherParam
+    this.otherParam,
+    this.mode,
   }) : super(key: key);
   @override
   _WrapperScreenState createState() => _WrapperScreenState();
@@ -41,54 +42,48 @@ class _WrapperScreenState extends State<WrapperScreen> {
       foto = poto;
     });
   }
-  bool site=false;
-  Future getSite()async{
-    final res = await FunctionHelper().getSite();
-    setState(() {
-      site = res;
-    });
-  }
+
+  Widget currentPage;
+
   @override
   initState() {
+    currentPage = PublicHomeScreen(mode: widget.mode);
     _selectTab(widget.currentTab);
     super.initState();
     loadData();
-    getSite();
   }
-
   @override
   void didUpdateWidget(WrapperScreen oldWidget) {
+    currentPage = PublicHomeScreen(mode: widget.mode);
     _selectTab(oldWidget.currentTab);
     super.didUpdateWidget(oldWidget);
     loadData();
-    getSite();
   }
 
   void _selectTab(int tabItem) {
-    getSite();
     setState(() {
       widget.currentTab = tabItem;
       widget.selectedTab = tabItem;
       switch (tabItem) {
         case 0:
           widget.currentTitle = 'History';
-          widget.currentPage = HistoryTransactionScreen(status:widget.otherParam==null?5:widget.otherParam);
+          currentPage = HistoryTransactionScreen(status:widget.otherParam==null?5:widget.otherParam);
           break;
         case 1:
           widget.currentTitle = 'Account';
-          widget.currentPage = ProfileScreen();
+          currentPage = ProfileScreen();
           break;
         case 2:
           widget.currentTitle = 'Home';
-          widget.currentPage = PublicHomeScreen();
+          currentPage = PublicHomeScreen(mode: widget.mode);
           break;
         case 3:
           widget.currentTitle = 'Messages';
-          widget.currentPage = TicketScreen(mode: site);
+          currentPage = TicketScreen(mode: widget.mode);
           break;
         case 4:
           widget.currentTitle = 'Favorites';
-          widget.currentPage = FavoriteScreen(mode: site);
+          currentPage = FavoriteScreen(mode: widget.mode);
           break;
       }
     });
@@ -98,7 +93,7 @@ class _WrapperScreenState extends State<WrapperScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: site?SiteConfig().darkMode:Colors.white,
+      backgroundColor: widget.mode?SiteConfig().darkMode:Colors.white,
       key: _scaffoldKey,
       appBar: widget.currentTitle=='Home'?null:WidgetHelper().myAppBarNoButton(context,"Hai, $nama",<Widget>[
         // new CartWidget(iconColor: Theme.of(context).hintColor, labelColor: Theme.of(context).accentColor),
@@ -112,7 +107,7 @@ class _WrapperScreenState extends State<WrapperScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 0),
                 child: Icon(
                   UiIcons.bell,
-                  color:site?Colors.white:Theme.of(context).hintColor,
+                  color:widget.mode?Colors.white:Theme.of(context).hintColor,
                   size: 28,
                 ),
               ),
@@ -131,8 +126,8 @@ class _WrapperScreenState extends State<WrapperScreen> {
             ],
           ),
         )
-      ],brightness: site?Brightness.dark:Brightness.light),
-      body: widget.currentPage,
+      ],brightness: widget.mode?Brightness.dark:Brightness.light),
+      body:currentPage,
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Theme.of(context).accentColor,
@@ -140,9 +135,9 @@ class _WrapperScreenState extends State<WrapperScreen> {
         unselectedFontSize: 0,
         iconSize: 22,
         elevation: 0,
-        backgroundColor: site?SiteConfig().darkMode:Colors.transparent,
+        backgroundColor: widget.mode?SiteConfig().darkMode:Colors.transparent,
         selectedIconTheme: IconThemeData(size: 25),
-        unselectedItemColor: site?Colors.white:Theme.of(context).hintColor.withOpacity(1),
+        unselectedItemColor: widget.mode?Colors.white:Theme.of(context).hintColor.withOpacity(1),
         currentIndex: widget.selectedTab,
         onTap: (int i) {
           this._selectTab(i);
@@ -174,7 +169,7 @@ class _WrapperScreenState extends State<WrapperScreen> {
                         color: Theme.of(context).accentColor.withOpacity(0.4), blurRadius: 13, offset: Offset(0, 3))
                   ],
                 ),
-                child: new Icon(const IconData(0xe800, fontFamily: _kFontFam), color: Theme.of(context).primaryColor),
+                child: new Icon(const IconData(0xe800, fontFamily: _kFontFam), color: Colors.white),
               )),
           BottomNavigationBarItem(
             icon: new Icon(const IconData(0xe81c, fontFamily: _kFontFam)),

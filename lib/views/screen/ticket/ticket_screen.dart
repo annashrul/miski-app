@@ -129,7 +129,7 @@ class _TicketScreenState extends State<TicketScreen> {
                               ));
                             },
                             child: Container(
-                              color: widget.mode?Theme.of(context).focusColor.withOpacity(0.15):Colors.white,
+                              color:Theme.of(context).focusColor.withOpacity(0.1),
                               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,

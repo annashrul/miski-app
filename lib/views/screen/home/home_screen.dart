@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:netindo_shop/config/database_config.dart';
@@ -26,7 +27,8 @@ import 'package:sticky_headers/sticky_headers.dart';
 class HomeScreen extends StatefulWidget {
   final String id;
   final String nama;
-  HomeScreen({Key key,this.id,this.nama}) : super(key: key);
+  final bool mode;
+  HomeScreen({Key key,this.id,this.nama,this.mode}) : super(key: key);
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -40,27 +42,32 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
   ListProductTenantModel productTenantModel;
   GlobalPromoModel globalPromoModel;
   ScrollController controller;
-  bool isLoading=false,isLoadingSlider=false,isLoadmore=false,isTimeout=false,site=false,isShowChild=false;
+  bool isLoading=false,isLoadingSlider=false,isLoadmore=false,isTimeout=false,isShowChild=false;
   int _current=0,perpage=10,totalCart=0,total=0;
   Future getProduct()async{
+    print("################################# GET PRODUCT #####################################");
     var resProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? LIMIT $perpage",[widget.id]);
     var resTotalProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=?",[widget.id]);
-    print("RES PRODUK LOKAL $resProductLocal");
     if(q!=''&&brand!=''){
+      print("IF 1");
       resProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and title LIKE '%$q%' and id_brand=?",[widget.id,brand]);
       resTotalProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and title LIKE '%$q%' and id_brand=?",[widget.id,brand]);
     }
     if(brand!=''){
+      print("IF 2");
       resProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and id_brand=?",[widget.id,brand]);
       resTotalProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and id_brand=?",[widget.id,brand]);
     }
 
     if(q!=''){
+      print("IF 3");
+
       resProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and title LIKE '%$q%'",[widget.id]);
       resTotalProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and title LIKE '%$q%'",[widget.id]);
     }
 
     if(resProductLocal.length>0){
+      print("IF 4");
       setState(() {
         returnProductLocal = resProductLocal;
         total=resTotalProductLocal.length;
@@ -89,6 +96,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
         });
       }
     }
+    print("################################# END GET PRODUCT #####################################");
+
   }
   Future getPromo()async{
     var res = await BaseProvider().getProvider("promo?page=1", globalPromoModelFromJson);
@@ -111,18 +120,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
     }
 
   }
-  Future getSite()async{
-    final res = await FunctionHelper().getSite();
-    setState(() {
-      site = res;
-    });
-  }
+
   List returnProductLocal = [];
   String q='',group='',category='',brand='';
   List returnGroup = [];
   List returnCategory = [];
   List returnBrand = [];
   Future loadGroup()async{
+    print("LOAD GROUP");
     var group = await _helper.getData(GroupQuery.TABLE_NAME);
     List groups = [];
     group.forEach((element) {
@@ -141,6 +146,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
     });
   }
   Future loadCategory()async{
+    print("LOAD CATEGORY");
     var cat = await _helper.getData(CategoryQuery.TABLE_NAME);
     print(cat);
     List catagories = [];
@@ -156,6 +162,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
     });
   }
   Future loadBrand()async{
+    print("LOAD BRAND");
     var br = await _helper.getData(BrandQuery.TABLE_NAME);
     List brand = [];
     br.forEach((element) {
@@ -177,29 +184,39 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
     });
   }
   Future loadData(param)async{
+    print("################################# LOAD DATA #####################################");
     setState(() {
       isTimeout=false;
       isLoading=true;
       isLoadingSlider=true;
     });
+    await getProduct();
     await getPromo();
     await countCart();
     var totalProduct = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=?",[widget.id]);
     await FunctionHelper().setSession("id_tenant", widget.id);
     if(totalProduct.length<1){
+      print("IF 1");
       await _helper.delete(ProductQuery.TABLE_NAME, "id_tenant", widget.id);
       await FunctionHelper().insertProduct(widget.id);
+      await getProduct();
     }
     if(param=='refresh'){
+      print("IF 2");
+
       await _helper.delete(ProductQuery.TABLE_NAME, "id_tenant", widget.id);
       await FunctionHelper().insertProduct(widget.id);
+      await getProduct();
     }
     if(totalProduct.length<5&&totalProduct.length>1&&param!='refresh'){
+      print("IF 3");
       await _helper.delete(ProductQuery.TABLE_NAME, "id_tenant", widget.id);
       await FunctionHelper().insertProduct(widget.id);
+      await getProduct();
     }
+    print("################################# END LOAD DATA #####################################");
 
-    await getProduct();
+
   }
   Future<void> _handleRefresh()async {
     await FunctionHelper().getFilterLocal(widget.id);
@@ -228,15 +245,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
     }
   }
   @override
-  void initState() {
+  void initState(){
     // TODO: implement initState
     super.initState();
+
     loadBrand();
     loadGroup();
     loadCategory();
     loadData('');
     controller = new ScrollController()..addListener(_scrollListener);
-    getSite();
+
   }
   @override
   void dispose() {
@@ -249,6 +267,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
     return Scaffold(
       key: _scaffoldKey,
       body: buildContents(context),
+        backgroundColor: widget.mode?SiteConfig().darkMode:Colors.white,
+      floatingActionButton:FloatingActionButton(
+        backgroundColor: Colors.white,
+        onPressed: (){
+          controller.animateTo(
+            0.0,
+            curve: Curves.ease,
+            duration: const Duration(milliseconds: 5000),
+          );
+        },
+        child: Icon(Icons.vertical_align_top, size: 24, color:SiteConfig().darkMode),
+        // backgroundColor:SiteConfig().mainColor,
+      )
     );
   }
 
@@ -262,11 +293,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
               title: WidgetHelper().textQ("${widget.nama}", 12,SiteConfig().secondColor,FontWeight.bold),
               stretch: true,
               onStretchTrigger: (){
-                print("CIK");
                 return;
               },
-              // brightness: site?Brightness.dark:Brightness.light,
-              // backgroundColor: SiteConfig().darkMode,
+              brightness: widget.mode?Brightness.dark:Brightness.light,
+              backgroundColor:  widget.mode?SiteConfig().darkMode:Colors.white,
               snap: false,
               floating: false,
               pinned: true,
@@ -291,12 +321,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                     height: 30,
                     margin: EdgeInsets.only(top: 12.5, bottom: 12.5, right: 20),
                     child: InkWell(
-                      focusColor:  site?Colors.white:SiteConfig().darkMode,
+                      focusColor:  widget.mode?Colors.white:SiteConfig().darkMode,
                       borderRadius: BorderRadius.circular(300),
                       onTap: () {
                         WidgetHelper().myModal(
                             context,
-                            ModalSearch(mode:site,idTenant:widget.id,callback:(par){
+                            ModalSearch(mode:widget.mode,idTenant:widget.id,callback:(par){
                               q=par;
                               isLoading=true;
                               getProduct();
@@ -314,85 +344,79 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
               elevation: 0,
               flexibleSpace:sliderQ(context),
             ),
+            // Divider(),
             SliverStickyHeader(
               header: Container(
-                color: site?SiteConfig().darkMode:Colors.white,
+                color: widget.mode?SiteConfig().darkMode:Colors.white,
                 height: 65,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    Expanded(
-                      child: ListView.builder(
-                        padding: EdgeInsets.all(0.0),
-                        itemCount: returnBrand.length,
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          double _marginLeft = 0;
-                          (index == 0) ? _marginLeft = 12 : _marginLeft = 0;
-                          return Container(
-                            padding: EdgeInsets.symmetric(horizontal: 0),
-                            margin: EdgeInsets.only(left:_marginLeft, top: 10, bottom: 10),
-                            child: WidgetHelper().myPress((){
-                              setState(() {
-                                brand=returnBrand[index]['id'];
-                                isLoading=true;
-                              });
-                              getProduct();
-                            }, AnimatedContainer(
+                child: ListView.builder(
+                  padding: EdgeInsets.all(0.0),
+                  itemCount: returnBrand.length,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    double _marginLeft = 0;
+                    (index == 0) ? _marginLeft = 10 : _marginLeft = 0;
+                    return Container(
+                      padding: EdgeInsets.symmetric(horizontal: 0),
+                      margin: EdgeInsets.only(left:_marginLeft, top: 10, bottom: 10),
+                      child: WidgetHelper().myPress((){
+                        setState(() {
+                          brand=returnBrand[index]['id'];
+                          isLoading=true;
+                        });
+                        getProduct();
+                      }, AnimatedContainer(
+                        duration: Duration(milliseconds: 350),
+                        curve: Curves.easeInOut,
+                        padding: EdgeInsets.only(left: 10,right:10),
+                        decoration: BoxDecoration(
+                          color: brand==returnBrand[index]['id']?widget.mode?Colors.white:SiteConfig().darkMode:SiteConfig().mainColor,
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        child: Row(
+                          children: <Widget>[
+                            AnimatedSize(
                               duration: Duration(milliseconds: 350),
                               curve: Curves.easeInOut,
-                              padding: EdgeInsets.symmetric(horizontal: 15),
-                              decoration: BoxDecoration(
-                                color: brand==returnBrand[index]['id']?site?Colors.white:SiteConfig().darkMode:SiteConfig().mainColor,
-                                borderRadius: BorderRadius.circular(50),
-                              ),
-                              child: Row(
-                                children: <Widget>[
-                                  AnimatedSize(
-                                    duration: Duration(milliseconds: 350),
-                                    curve: Curves.easeInOut,
-                                    vsync: this,
-                                    child: WidgetHelper().textQ(returnBrand[index]['title'],12.0, brand==returnBrand[index]['id']?site?Colors.black87:Colors.white:Colors.white,FontWeight.bold),
-                                  )
-                                ],
-                              ),
-                            )),
-                            // child: InkWell(
-                            //   splashColor: Theme.of(context).accentColor,
-                            //   highlightColor: Theme.of(context).accentColor,
-                            //   onTap: () {
-                            //     setState(() {
-                            //       brand=returnBrand[index]['id'];
-                            //       isLoading=true;
-                            //     });
-                            //     getProduct();
-                            //   },
-                            //   child: AnimatedContainer(
-                            //     duration: Duration(milliseconds: 350),
-                            //     curve: Curves.easeInOut,
-                            //     padding: EdgeInsets.symmetric(horizontal: 15),
-                            //     decoration: BoxDecoration(
-                            //       color: brand==returnBrand[index]['id']?Theme.of(context).primaryColor:SiteConfig().mainColor,
-                            //       borderRadius: BorderRadius.circular(50),
-                            //     ),
-                            //     child: Row(
-                            //       children: <Widget>[
-                            //         AnimatedSize(
-                            //           duration: Duration(milliseconds: 350),
-                            //           curve: Curves.easeInOut,
-                            //           vsync: this,
-                            //           child: WidgetHelper().textQ(returnBrand[index]['title'],12.0, brand==returnBrand[index]['id']?Colors.black87:Colors.white,FontWeight.bold),
-                            //         )
-                            //       ],
-                            //     ),
-                            //   ),
-                            // ),
-                          );
-                        },
-                        scrollDirection: Axis.horizontal,
-                      ),
-                    ),
-                  ],
+                              vsync: this,
+                              child: WidgetHelper().textQ(returnBrand[index]['title'],12.0, brand==returnBrand[index]['id']?widget.mode?Colors.black87:Colors.white:Colors.white,FontWeight.bold,letterSpacing: 2),
+                            )
+                          ],
+                        ),
+                      )),
+                      // child: InkWell(
+                      //   splashColor: Theme.of(context).accentColor,
+                      //   highlightColor: Theme.of(context).accentColor,
+                      //   onTap: () {
+                      //     setState(() {
+                      //       brand=returnBrand[index]['id'];
+                      //       isLoading=true;
+                      //     });
+                      //     getProduct();
+                      //   },
+                      //   child: AnimatedContainer(
+                      //     duration: Duration(milliseconds: 350),
+                      //     curve: Curves.easeInOut,
+                      //     padding: EdgeInsets.symmetric(horizontal: 15),
+                      //     decoration: BoxDecoration(
+                      //       color: brand==returnBrand[index]['id']?Theme.of(context).primaryColor:SiteConfig().mainColor,
+                      //       borderRadius: BorderRadius.circular(50),
+                      //     ),
+                      //     child: Row(
+                      //       children: <Widget>[
+                      //         AnimatedSize(
+                      //           duration: Duration(milliseconds: 350),
+                      //           curve: Curves.easeInOut,
+                      //           vsync: this,
+                      //           child: WidgetHelper().textQ(returnBrand[index]['title'],12.0, brand==returnBrand[index]['id']?Colors.black87:Colors.white,FontWeight.bold),
+                      //         )
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
+                    );
+                  },
+                  scrollDirection: Axis.horizontal,
                 ),
               ),
               sliver:SliverList(
@@ -400,7 +424,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                   Offstage(
                     offstage: false,
                     child: Container(
-
+                      // color:widget.mode?SiteConfig().darkMode:Colors.white,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,

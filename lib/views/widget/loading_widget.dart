@@ -31,14 +31,14 @@ class _LoadingTenantState extends State<LoadingTenant> {
       shrinkWrap: true,
       primary: false,
       crossAxisCount: 3,
-      itemCount: 6,
+      itemCount: 9,
       itemBuilder: (BuildContext context, int index) {
         return Container(
           padding: EdgeInsets.only(bottom:5.0),
           decoration: BoxDecoration(
-            // color: site?Colors.transparent:Theme.of(context).primaryColor,
+            // color: Theme.of(context).focusColor.withOpacity(0.1),
             // borderRadius: BorderRadius.only(topRight:Radius.circular(10.0),topLeft: Radius.circular(10.0)),
-            border: Border.all(color: site?Colors.transparent:Colors.grey[200]),
+            // border: Border.all(color: site?Colors.transparent:Colors.grey[200]),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,16 +46,9 @@ class _LoadingTenantState extends State<LoadingTenant> {
             children: <Widget>[
               ClipRRect(
                 borderRadius: BorderRadius.only(topRight:Radius.circular(10.0),topLeft: Radius.circular(10.0)),
-                child: SkeletonFrame(width: double.infinity,height: 70),
+                child: SkeletonFrame(width: double.infinity,height: 100),
               ),
-              Padding(
-                padding: !site?EdgeInsets.only(left:10,top:5,right:10):EdgeInsets.only(top:10.0),
-                child: SkeletonFrame(width:MediaQuery.of(context).size.width/6,height: 10),
-              ),
-              Padding(
-                padding: !site?EdgeInsets.only(left:10,top:5,right:10):EdgeInsets.only(top:10.0),
-                child: SkeletonFrame(width:MediaQuery.of(context).size.width/4,height: 10),
-              ),
+
             ],
           ),
         );
@@ -101,11 +94,11 @@ class _LoadingProductTenantState extends State<LoadingProductTenant> {
       itemBuilder: (BuildContext context, int index) {
         return Container(
           decoration: BoxDecoration(
-            color: site?Colors.transparent:Theme.of(context).primaryColor,
+            // color: site?Colors.transparent:Theme.of(context).primaryColor,
             borderRadius: BorderRadius.circular(6),
-            boxShadow: [
-              BoxShadow(color: Theme.of(context).hintColor.withOpacity(0.10), offset: Offset(0, 4), blurRadius: 10)
-            ],
+            // boxShadow: [
+            //   BoxShadow(color: Theme.of(context).hintColor.withOpacity(0.10), offset: Offset(0, 4), blurRadius: 10)
+            // ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

@@ -12,6 +12,8 @@ import 'package:netindo_shop/views/screen/onboarding_screen.dart';
 import 'package:netindo_shop/views/screen/wrapper_screen.dart';
 
 class SplashScreen extends StatefulWidget {
+  final mode;
+  SplashScreen({this.mode});
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
@@ -45,7 +47,7 @@ class _SplashScreenState extends State<SplashScreen> {
           WidgetHelper().myPushRemove(context, SigninScreen());
         }
         else{
-          WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2));
+          WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2,mode:widget.mode));
         }
 
       }

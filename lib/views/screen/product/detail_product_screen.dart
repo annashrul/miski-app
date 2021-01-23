@@ -301,7 +301,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: site?Colors.transparent:Colors.white,
+      backgroundColor: site?Colors.transparent:Colors.white,
       key: _scaffoldKey,
       body: isLoading||isLoadingPoductOther||isLoadingReview?LoadingDetailProduct(site: site):buildContent(context),
       bottomNavigationBar: isLoading||isLoadingPoductOther||isLoadingReview?Text(''):Container(
@@ -319,7 +319,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                   padding: EdgeInsets.symmetric(vertical: 14),
                   color: Theme.of(context).accentColor,
                   shape: StadiumBorder(),
-                  child:WidgetHelper().textQ(FunctionHelper().formatter.format(total),12, Theme.of(context).primaryColor, FontWeight.bold)
+                  child:WidgetHelper().textQ(FunctionHelper().formatter.format(total),12, Colors.white, FontWeight.bold)
                   // child:Text("abus")
               ),
             ),

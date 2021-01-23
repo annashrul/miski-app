@@ -8,18 +8,31 @@ import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/helper/database_helper.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
+import 'package:netindo_shop/views/screen/auth/login_screen.dart';
 import 'package:netindo_shop/views/screen/auth/signin_screen.dart';
 import 'package:netindo_shop/views/screen/splash_screen.dart';
 import 'package:netindo_shop/views/screen/wrapper_screen.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:flutter/services.dart' show PlatformException;
+import 'package:provider/provider.dart';
 import 'package:uni_links/uni_links.dart';
+StreamController<bool> isLightTheme = StreamController();
 
-void main(){
-  runApp(MyApp());
+void main()async{
+  WidgetsFlutterBinding.ensureInitialized(); //all widgets are rendered here
+  final res = await FunctionHelper().getSite();
+  runApp(
+    ChangeNotifierProvider<ThemeModel>(
+      create: (context) => ThemeModel(),
+      child: MyApp(mode:res),
+    ),
+  );
+  // runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
+  final mode;
+  MyApp({this.mode});
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -29,19 +42,19 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final DatabaseConfig _db = new DatabaseConfig();
-  bool site=false;
-  Future getSite()async{
-    final res = await FunctionHelper().getSite();
-    setState(() {
-      site = res;
-    });
-  }
+  // bool site=false;
+  // Future getSite()async{
+  //   final res = await FunctionHelper().getSite();
+  //   setState(() {
+  //     site = res;
+  //   });
+  // }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     // insertData();
-    getSite();
+    // getSite();
     OneSignal.shared.setInFocusDisplayType(OSNotificationDisplayType.notification);
     var settings = {
       OSiOSSettings.autoPrompt: false,
@@ -49,6 +62,7 @@ class _MyAppState extends State<MyApp> {
     };
     OneSignal.shared.init(SiteConfig().oneSignalId, iOSSettings: settings);
     _db.openDB();
+    print("MODE MY APP ${widget.mode}");
   }
 
   @override
@@ -57,57 +71,86 @@ class _MyAppState extends State<MyApp> {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(statusBarIconBrightness: Brightness.light, statusBarColor: Colors.transparent));
+    // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(statusBarIconBrightness: Brightness.dark, statusBarColor: Colors.transparent));
     return MaterialApp(
-      // color: site?SiteConfig().darkMode:Colors.white10,
       debugShowCheckedModeBanner: false,
-      // darkTheme: ThemeData(
-      //   fontFamily: SiteConfig().fontStyle,
-      //   primaryColor: Colors.white,
-      //   brightness: Brightness.dark,
-      //   scaffoldBackgroundColor: Color(0xFF2C2C2C),
-      //   accentColor: config.Colors().mainDarkColor(1),
-      //   hintColor: config.Colors().secondDarkColor(1),
-      //   focusColor: config.Colors().accentDarkColor(1),
-      //   textTheme: TextTheme(
-      //     button: TextStyle(color: Color(0xFF252525)),
-      //     headline: TextStyle(fontSize: 20.0, color: config.Colors().secondDarkColor(1)),
-      //     display1: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600, color: config.Colors().secondDarkColor(1)),
-      //     display2: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600, color: config.Colors().secondDarkColor(1)),
-      //     display3: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w700, color: config.Colors().mainDarkColor(1)),
-      //     display4: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w300, color: config.Colors().secondDarkColor(1)),
-      //     subhead: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w500, color: config.Colors().secondDarkColor(1)),
-      //     title: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600, color: config.Colors().mainDarkColor(1)),
-      //     body1: TextStyle(fontSize: 12.0, color: config.Colors().secondDarkColor(1)),
-      //     body2: TextStyle(fontSize: 14.0, fontWeight: FontWeight.w600, color: config.Colors().secondDarkColor(1)),
-      //     caption: TextStyle(fontSize: 12.0, color: config.Colors().secondDarkColor(0.7)),
-      //   ),
-      // ),
+      // theme: Provider.of<ThemeModel>(context).currentTheme,
       theme: ThemeData(
+        // splashColor: Colors.black38,
+        // highlightColor: Colors.black38,
+        scaffoldBackgroundColor: widget.mode?SiteConfig().darkMode:Colors.white,
+        backgroundColor: widget.mode?SiteConfig().darkMode:Colors.white,
         visualDensity: VisualDensity.adaptivePlatformDensity,
         fontFamily: SiteConfig().fontStyle,
-        primaryColor: site?SiteConfig().darkMode:Colors.white,
-        brightness: site?Brightness.dark:Brightness.light,
+        primaryColor: widget.mode?SiteConfig().darkMode:Colors.white,
+        brightness: widget.mode?Brightness.dark:Brightness.light,
         accentColor: config.Colors().mainColor(1),
         focusColor: config.Colors().accentColor(1),
         hintColor: config.Colors().secondColor(1),
-        // textTheme: TextTheme(
-        //   button: TextStyle(color: Colors.white),
-        //   headline: TextStyle(fontSize: 20.0, color: config.Colors().secondColor(1)),
-        //   display1: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600, color: config.Colors().secondColor(1)),
-        //   display2: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600, color: config.Colors().secondColor(1)),
-        //   display3: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w700, color: config.Colors().mainColor(1)),
-        //   display4: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w300, color: config.Colors().secondColor(1)),
-        //   subhead: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w500, color: config.Colors().secondColor(1)),
-        //   title: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600, color: config.Colors().mainColor(1)),
-        //   body1: TextStyle(fontSize: 12.0, color: config.Colors().secondColor(1)),
-        //   body2: TextStyle(fontSize: 14.0, fontWeight: FontWeight.w600, color: config.Colors().secondColor(1)),
-        //   caption: TextStyle(fontSize: 12.0, color: config.Colors().secondColor(0.6)),
-        // ),
       ),
-      home:  SplashScreen(),
+      home:  SplashScreen(mode:widget.mode),
     );
+    // return StreamBuilder<bool>(
+    //     initialData: true,
+    //     stream: isLightTheme.stream,
+    //     builder: (context, snapshot) {
+    //       return MaterialApp(
+    //           theme: snapshot.data ? ThemeData.light() : ThemeData.dark(),
+    //           debugShowCheckedModeBanner: false,
+    //           home:SplashScreen()
+    //       );
+    //     }
+    // );
 
   }
 
+}
+
+
+var darkTheme = ThemeData.dark();
+var lightTheme= ThemeData.light();
+enum ThemeType { Light, Dark }
+
+class ThemeModel extends ChangeNotifier {
+  ThemeData currentTheme = darkTheme;
+  ThemeType _themeType = ThemeType.Dark;
+  toggleTheme() async{
+    if (_themeType == ThemeType.Dark) {
+      await FunctionHelper().storeSite(true);
+      currentTheme = lightTheme.copyWith(
+        scaffoldBackgroundColor: SiteConfig().darkMode,
+        backgroundColor: SiteConfig().darkMode,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+        primaryColor: SiteConfig().darkMode,
+        primaryTextTheme: TextTheme(
+          headline1: TextStyle(color: Colors.white)
+        ),
+        brightness: Brightness.dark,
+        accentColor: config.Colors().mainColor(1),
+        focusColor: config.Colors().accentColor(1),
+        hintColor: config.Colors().secondColor(1),
+      );
+      _themeType = ThemeType.Light;
+      return notifyListeners();
+    }
+
+    if (_themeType == ThemeType.Light) {
+      await FunctionHelper().storeSite(false);
+      currentTheme = darkTheme.copyWith(
+        scaffoldBackgroundColor: Colors.white,
+        backgroundColor: Colors.white,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+        primaryColor: Colors.white,
+        primaryTextTheme: TextTheme(
+            headline1: TextStyle(color: SiteConfig().darkMode)
+        ),
+        brightness:Brightness.light,
+        accentColor: config.Colors().mainColor(1),
+        focusColor: config.Colors().accentColor(1),
+        hintColor: config.Colors().secondColor(1),
+      );
+      _themeType = ThemeType.Dark;
+      return notifyListeners();
+    }
+  }
 }

@@ -17,6 +17,7 @@ import 'package:netindo_shop/views/screen/wrapper_screen.dart';
 import 'package:netindo_shop/views/widget/profile/profile_dialog_form_widget.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/views/widget/refresh_widget.dart';
+import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -137,7 +138,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Container(
               margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
               decoration: BoxDecoration(
-                color: site?SiteConfig().darkMode:Theme.of(context).primaryColor,
+                color: site?SiteConfig().darkMode:Colors.white,
                 borderRadius: BorderRadius.circular(6),
                 boxShadow: [
                   BoxShadow(color: site?Colors.transparent:Theme.of(context).hintColor.withOpacity(0.15), offset: Offset(0, 3), blurRadius: 10)
@@ -297,7 +298,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Container(
               margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
               decoration: BoxDecoration(
-                color: site?SiteConfig().darkMode:Theme.of(context).primaryColor,
+                color: site?SiteConfig().darkMode:Colors.white,
                 borderRadius: BorderRadius.circular(6),
                 boxShadow: [
                   BoxShadow(color: site?Colors.transparent:Theme.of(context).hintColor.withOpacity(0.15), offset: Offset(0, 3), blurRadius: 10)
@@ -409,7 +410,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Container(
               margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
               decoration: BoxDecoration(
-                color: site?SiteConfig().darkMode:Theme.of(context).primaryColor,
+                color: site?SiteConfig().darkMode:Colors.white,
                 borderRadius: BorderRadius.circular(6),
                 boxShadow: [
                   BoxShadow(color: site?Colors.transparent:Theme.of(context).hintColor.withOpacity(0.15), offset: Offset(0, 3), blurRadius: 10)
@@ -427,11 +428,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   WidgetHelper().myPress(
                     ()async{
-                      WidgetHelper().myPush(context,MyApp());
                       await FunctionHelper().storeSite(!site);
                       setState(() {
                         site = !site;
                       });
+                      WidgetHelper().myPush(context,MyApp(mode: site));
+
                     },
                     ListTile(
                       contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
@@ -455,11 +457,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             activeColor: site?Colors.white:SiteConfig().mainDarkColor,
                             value: site,
                             onChanged: (value) async{
-                              WidgetHelper().myPush(context,MyApp());
+                              // Provider.of<ThemeModel>(context,listen: false).toggleTheme();
                               await FunctionHelper().storeSite(value);
                               setState(() {
                                 site = value;
                               });
+                              WidgetHelper().myPush(context,MyApp(mode: site));
+
                             },
                           )
                       ),

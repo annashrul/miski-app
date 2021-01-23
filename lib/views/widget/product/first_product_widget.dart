@@ -109,9 +109,9 @@ class _ProductWidgetState extends State<ProductWidget> {
           decoration: BoxDecoration(
               color: Theme.of(context).focusColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
-            boxShadow: [
-              BoxShadow(color: mode?Colors.transparent:Theme.of(context).hintColor.withOpacity(0.1), offset: Offset(0, 3), blurRadius: 10)
-            ],
+            // boxShadow: [
+            //   BoxShadow(color: mode?Colors.transparent:Theme.of(context).hintColor.withOpacity(0.1), offset: Offset(0, 3), blurRadius: 10)
+            // ],
               // border: Border.all(width:1.0,color: mode?Colors.white10:Colors.grey[200])
           ),
           child:  WidgetHelper().myPress(
@@ -147,7 +147,7 @@ class _ProductWidgetState extends State<ProductWidget> {
                   SizedBox(height: 12),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                    child: WidgetHelper().textQ(widget.title, 12,mode?Colors.white:SiteConfig().secondColor,FontWeight.normal,maxLines:3 ),
+                    child: WidgetHelper().textQ(widget.title, 12,mode?Colors.white:SiteConfig().darkMode,FontWeight.normal,maxLines:3 ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15),

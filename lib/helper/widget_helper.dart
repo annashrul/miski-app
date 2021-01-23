@@ -187,7 +187,7 @@ class WidgetHelper{
       ),
     );
   }
-  textQ(String txt,double size,Color color,FontWeight fontWeight,{TextDecoration textDecoration,TextAlign textAlign = TextAlign.left,int maxLines=2}){
+  textQ(String txt,double size,Color color,FontWeight fontWeight,{double letterSpacing=0,TextDecoration textDecoration,TextAlign textAlign = TextAlign.left,int maxLines=2}){
     return RichText(
         textAlign: textAlign,
         maxLines: maxLines,
@@ -195,7 +195,7 @@ class WidgetHelper{
         softWrap: true,
         text: TextSpan(
           text:txt,
-          style: TextStyle(decoration: textDecoration, fontSize:size,color: color,fontFamily:SiteConfig().fontStyle,fontWeight:fontWeight,),
+          style: TextStyle(letterSpacing:letterSpacing,decoration: textDecoration, fontSize:size,color: color,fontFamily:SiteConfig().fontStyle,fontWeight:fontWeight,),
         )
     );
   }
@@ -244,7 +244,7 @@ class WidgetHelper{
     ScreenUtilHelper.instance = ScreenUtilHelper(allowFontScaling: false)..init(context);
     print("TEMA ${brightness.index}");
     return  AppBar(
-      elevation: 1.0,
+      elevation: 0.0,
       backgroundColor: brightness.index==1?Colors.white:Color(0xFF2C2C2C), // status bar color
       brightness: brightness,
       title:textQ(title,16,brightness.index==1?SiteConfig().secondColor:Colors.white,FontWeight.bold),
@@ -264,12 +264,12 @@ class WidgetHelper{
       brightness: brightness,
       title:textQ(title,16,brightness.index==0?Colors.white:SiteConfig().secondColor,FontWeight.bold),
       elevation: 0,
-      leading:Padding(
-        padding: EdgeInsets.only(left:20.0,top:10.0,bottom:10.0),
-        child:  CircleAvatar(
-          backgroundImage:NetworkImage('http://ptnetindo.com:6700/images/customer/default.png',scale: 10.0),
-        ),
-      ),
+      // leading:Padding(
+      //   padding: EdgeInsets.only(left:20.0,top:10.0,bottom:10.0),
+      //   child:  CircleAvatar(
+      //     backgroundImage:NetworkImage('http://ptnetindo.com:6700/images/customer/default.png',scale: 10.0),
+      //   ),
+      // ),
       actions:widget,
     );
 
