@@ -103,6 +103,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
       itemCount: resFavoriteProduct.length,
       itemBuilder: (context,index){
         var val = resFavoriteProduct[index];
+        print(val);
         return Dismissible(
           key: Key(hashCode.toString()),
           background: Container(
@@ -127,9 +128,10 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
               alignment: AlignmentDirectional.topEnd,
               children: [
                 InkWell(
-                  onTap: (){},
+                  onTap: (){
+                    WidgetHelper().myPush(context,DetailProducrScreen(id: val['id_product'],mode: widget.mode));
+                  },
                   child: Container(
-
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 7),
                     decoration: BoxDecoration(
                       color: Theme.of(context).focusColor.withOpacity(0.15),

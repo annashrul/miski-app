@@ -58,6 +58,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         cartModel = CartModel.fromJson(res.toJson());
         isLoading=false;
       });
+      // print("CART")
       for(var i=0;i<cartModel.result.length;i++){
         int disc1Nominal = FunctionHelper().percentToRp(int.parse(cartModel.result[i].disc1), int.parse(cartModel.result[i].hargaMaster));
         int disc2Nominal = FunctionHelper().percentToRp(int.parse(cartModel.result[i].disc2), int.parse(cartModel.result[i].hargaMaster));
@@ -90,6 +91,34 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       });
       selectedKurir(0,'-');
       print("KURIR $kurirTitle");
+    }
+  }
+  Future getAlamat()async{
+    final idUser = await UserHelper().getDataUser("id_user");
+    var res = await BaseProvider().getProvider("member_alamat?page=1&id_member=$idUser", listAddressModelFromJson);
+    if(res==SiteConfig().errSocket||res==SiteConfig().errTimeout){
+      setState(() {
+        // isError=true;
+        isLoading=false;
+        // isLoadmore=false;
+      });
+    }
+    else{
+      if(res is ListAddressModel){
+        ListAddressModel resullt = res;
+        print("ALAMAT ${resullt.toJson()}");
+        setState(() {
+          idxAddress=0;
+          title=resullt.result.data[0].title;
+          penerima = resullt.result.data[0].penerima;
+          noHp = resullt.result.data[0].noHp;
+          mainAddress = resullt.result.data[0].mainAddress;
+          isMainAddress=resullt.result.data[0].ismain;
+          // listAddressModel = ListAddressModel.fromJson(resullt.toJson());
+          // isError=false;
+          isLoading=false;
+        });
+      }
     }
   }
   Future selectedKurir(idx,param)async{
@@ -135,6 +164,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       }
       else{
         var resLayanan = CheckOngkirModel.fromJson(res);
+        print(resLayanan.toJson());
         setState(() {
           checkOngkirModel = CheckOngkirModel.fromJson(resLayanan.toJson());
           kurirDeskripsi = "${resLayanan.result.ongkir[0].service} | ${FunctionHelper().formatter.format(resLayanan.result.ongkir[0].cost)} | ${resLayanan.result.ongkir[0].estimasi}";
@@ -225,7 +255,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         ));
       }
     }
-    print(data);
   }
 
   @override
@@ -238,7 +267,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     getKurir();
     getProduct();
     getSite();
-
+    getAlamat();
   }
   int idxKurir=0;
   int idxLayanan=0;
@@ -266,7 +295,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Icon(UiIcons.map,size: 20,color: site?Colors.white:SiteConfig().darkMode),
+                          Icon(UiIcons.placeholder,size: 20,color: site?Colors.white:SiteConfig().darkMode),
                           SizedBox(width:5.0),
                           WidgetHelper().textQ("Alamat Pengiriman",12,site?Colors.white:SiteConfig().darkMode, FontWeight.bold),
                         ],
@@ -308,7 +337,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          WidgetHelper().textQ("${title==''?'Asli':'$title'}",12,site?SiteConfig().secondDarkColor:Colors.grey, FontWeight.bold),
+                          WidgetHelper().textQ(title,12,site?SiteConfig().secondDarkColor:Colors.grey, FontWeight.bold),
                           SizedBox(width: 5.0),
                           isMainAddress==1?Container(
                             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
@@ -318,8 +347,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           ):Text('')
                         ],
                       ),
-                      WidgetHelper().textQ("${penerima!=''?'$penerima':'Annashrul Yusuf'} ${noHp!=''? noHp : '(081223165037)'}",10,site?Colors.white:Colors.black87, FontWeight.normal),
-                      WidgetHelper().textQ("${mainAddress!=''?mainAddress:'Jalan kebon manggu rt 02/04 kelurahan padasuka kecamata cimahi tengah kota cimahi'}",10,site?Colors.white:Colors.black87, FontWeight.normal),
+                      WidgetHelper().textQ("$penerima ($noHp)}",10,site?Colors.white:Colors.black87, FontWeight.normal),
+                      WidgetHelper().textQ("$mainAddress",10,site?Colors.white:Colors.black87, FontWeight.normal),
                     ],
                   ),
                 ),
@@ -480,7 +509,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     hargaCoret: cartModel.result[index].hargaCoret,
                     rating: '0',
                     stock: cartModel.result[index].stock,
-                    stockSales: cartModel.result[index].stock,
+                    stockSales: '',
                     disc1: "${cartModel.result[index].qty}",
                     disc2: cartModel.result[index].disc2,
                     countCart: (){getProduct();},
@@ -510,7 +539,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               WidgetHelper().textQ("Total Tagihan",14,Colors.white, FontWeight.bold),
-              WidgetHelper().textQ(FunctionHelper().formatter.format(grandTotal),14,Colors.green, FontWeight.bold),
+              WidgetHelper().textQ(FunctionHelper().formatter.format(grandTotal),14,Colors.white, FontWeight.bold),
             ],
           ),
           Container(

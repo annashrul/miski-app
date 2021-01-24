@@ -17,10 +17,12 @@ import 'package:netindo_shop/model/tenant/list_product_tenant_model.dart';
 import 'package:netindo_shop/provider/base_provider.dart';
 import 'package:netindo_shop/views/screen/product/cart_screen.dart';
 import 'package:netindo_shop/views/screen/product/detail_product_screen.dart';
+import 'package:netindo_shop/views/screen/wrapper_screen.dart';
 import 'package:netindo_shop/views/widget/cart_widget.dart';
 import 'package:netindo_shop/views/widget/empty_widget.dart';
 import 'package:netindo_shop/views/widget/loading_widget.dart';
 import 'package:netindo_shop/views/widget/product/first_product_widget.dart';
+import 'package:netindo_shop/views/widget/product/second_product_widget.dart';
 import 'package:netindo_shop/views/widget/refresh_widget.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 
@@ -42,29 +44,29 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
   ListProductTenantModel productTenantModel;
   GlobalPromoModel globalPromoModel;
   ScrollController controller;
-  bool isLoading=false,isLoadingSlider=false,isLoadmore=false,isTimeout=false,isShowChild=false;
+  bool isLoadingFav=true,isLoading=false,isLoadingSlider=false,isLoadmore=false,isTimeout=false,isShowChild=false;
   int _current=0,perpage=10,totalCart=0,total=0;
   Future getProduct()async{
     print("################################# GET PRODUCT #####################################");
     var resProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? LIMIT $perpage",[widget.id]);
     var resTotalProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=?",[widget.id]);
-    if(q!=''&&brand!=''){
-      print("IF 1");
-      resProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and title LIKE '%$q%' and id_brand=?",[widget.id,brand]);
-      resTotalProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and title LIKE '%$q%' and id_brand=?",[widget.id,brand]);
-    }
+    // if(q!=''&&brand!=''){
+    //   print("IF 1");
+    //   resProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and title LIKE '%$q%' and id_brand=?",[widget.id,brand]);
+    //   resTotalProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and title LIKE '%$q%' and id_brand=?",[widget.id,brand]);
+    // }
     if(brand!=''){
       print("IF 2");
       resProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and id_brand=?",[widget.id,brand]);
       resTotalProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and id_brand=?",[widget.id,brand]);
     }
 
-    if(q!=''){
-      print("IF 3");
-
-      resProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and title LIKE '%$q%'",[widget.id]);
-      resTotalProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and title LIKE '%$q%'",[widget.id]);
-    }
+    // if(q!=''){
+    //   print("IF 3");
+    //
+    //   resProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and title LIKE '%$q%'",[widget.id]);
+    //   resTotalProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and title LIKE '%$q%'",[widget.id]);
+    // }
 
     if(resProductLocal.length>0){
       print("IF 4");
@@ -120,12 +122,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
     }
 
   }
-
   List returnProductLocal = [];
   String q='',group='',category='',brand='';
   List returnGroup = [];
   List returnCategory = [];
   List returnBrand = [];
+  List resFavoriteProduct = [];
+  Future getFavorite()async{
+    final res = await _helper.getWhereByTenant(ProductQuery.TABLE_NAME,widget.id,"is_favorite","true");
+    setState(() {
+      resFavoriteProduct = res;
+      isLoadingFav=false;
+    });
+    print("FAVORITE $res");
+  }
   Future loadGroup()async{
     print("LOAD GROUP");
     var group = await _helper.getData(GroupQuery.TABLE_NAME);
@@ -203,7 +213,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
     }
     if(param=='refresh'){
       print("IF 2");
-
       await _helper.delete(ProductQuery.TABLE_NAME, "id_tenant", widget.id);
       await FunctionHelper().insertProduct(widget.id);
       await getProduct();
@@ -248,7 +257,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
   void initState(){
     // TODO: implement initState
     super.initState();
-
+    getFavorite();
     loadBrand();
     loadGroup();
     loadCategory();
@@ -267,7 +276,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
     return Scaffold(
       key: _scaffoldKey,
       body: buildContents(context),
-        backgroundColor: widget.mode?SiteConfig().darkMode:Colors.white,
+      backgroundColor: widget.mode?SiteConfig().darkMode:Colors.white,
       floatingActionButton:FloatingActionButton(
         backgroundColor: Colors.white,
         onPressed: (){
@@ -290,7 +299,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
           controller: controller,
           slivers: <Widget>[
             SliverAppBar(
-              title: WidgetHelper().textQ("${widget.nama}", 12,SiteConfig().secondColor,FontWeight.bold),
+              title: Row(
+                children: [
+                  IconButton(
+                    icon: new Icon(UiIcons.home, color:widget.mode?Colors.white:SiteConfig().secondColor,size: 28,),
+                    onPressed:null,
+                  ),
+                  Expanded(child: WidgetHelper().textQ("${widget.nama.toUpperCase()}", 12,widget.mode?Colors.white:SiteConfig().secondColor,FontWeight.bold))
+                ],
+              ),
               stretch: true,
               onStretchTrigger: (){
                 return;
@@ -301,14 +318,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
               floating: false,
               pinned: true,
               automaticallyImplyLeading: false,
-              leading: new IconButton(
-                icon: new Icon(UiIcons.home, color:SiteConfig().secondColor,size: 28,),
-                onPressed:null,
-              ),
+              // leading:IconButton(
+              //   icon: new Icon(UiIcons.home, color:widget.mode?Colors.white:SiteConfig().secondColor,size: 28,),
+              //   onPressed:null,
+              // ),
               actions: <Widget>[
                 new CartWidget(
-                  iconColor: SiteConfig().secondColor,
-                  labelColor:Colors.redAccent,
+                  iconColor: widget.mode?Colors.white:SiteConfig().secondColor,
+                  labelColor: totalCart>0?Colors.redAccent:Colors.transparent,
                   labelCount: totalCart,
                   callback: (){
                     if(totalCart>0){
@@ -335,7 +352,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                         // insertFavorite();
                         // Navigator.of(context).pushNamed('/Tabs', arguments: 1);
                       },
-                      child: Icon(UiIcons.filter,size: 30,color:SiteConfig().secondColor),
+                      child: Icon(UiIcons.filter,size: 30,color:widget.mode?Colors.white:SiteConfig().secondColor),
                     )
                 ),
               ],
@@ -344,13 +361,70 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
               elevation: 0,
               flexibleSpace:sliderQ(context),
             ),
-            // Divider(),
+            SliverList(
+              delegate: SliverChildListDelegate([
+                Offstage(
+                  offstage: false,
+                  child: Container(
+                    // color:widget.mode?SiteConfig().darkMode:Colors.white,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        if(resFavoriteProduct.length>0) WidgetHelper().titleQ("Wujudkan Barang Favorite Kamu",param: 'ad',callback: (){
+                          WidgetHelper().myPush(context,WrapperScreen(currentTab: 4,mode: widget.mode));
+                        },icon: Icon(
+                          UiIcons.heart,
+                          color: widget.mode?Colors.white:SiteConfig().secondColor,
+                        )),
+                        isLoadingFav?Container(
+                          height: MediaQuery.of(context).size.height/3,
+                          width:  MediaQuery.of(context).size.width,
+                          padding: const EdgeInsets.symmetric(horizontal:0, vertical: 0),
+                          child:LoadingSecondProduct(),
+                        ):resFavoriteProduct.length>0?Container(
+                            height: MediaQuery.of(context).size.height/3,
+                            width:  MediaQuery.of(context).size.width,
+                            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                            child:ListView.builder(
+                              padding: EdgeInsets.all(0.0),
+                              scrollDirection: Axis.horizontal,
+                              itemCount: resFavoriteProduct.length,
+                              itemBuilder: (_, index) {
+                                var val=resFavoriteProduct[index];
+                                return SecondProductWidget(
+                                    id:val['id_product'],
+                                    gambar:val['gambar'],
+                                    title:val['title'],
+                                    harga:val['harga'],
+                                    hargaCoret:val['harga_coret'],
+                                    rating:val['rating'],
+                                    stock:val['stock'],
+                                    stockSales:val['stock_sales'],
+                                    disc1:val['disc1'],
+                                    disc2:val['disc2'],
+                                    countCart:(){getFavorite();countCart();}
+                                );
+                              },
+                            )
+                        ):Text(''),
+                        isLoadmore?Container(
+                          padding: const EdgeInsets.only(left: 20,right:20,top:0,bottom:0),
+                          child: LoadingProductTenant(tot: 4),
+                        ):Container(),
+                      ],
+                    ),
+                  ),
+                ),
+
+              ]),
+            ),
             SliverStickyHeader(
               header: Container(
                 color: widget.mode?SiteConfig().darkMode:Colors.white,
                 height: 65,
                 child: ListView.builder(
-                  padding: EdgeInsets.all(0.0),
+                  padding: EdgeInsets.only(left:10.0,top:5,bottom:5),
                   itemCount: returnBrand.length,
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
@@ -370,7 +444,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                         curve: Curves.easeInOut,
                         padding: EdgeInsets.only(left: 10,right:10),
                         decoration: BoxDecoration(
-                          color: brand==returnBrand[index]['id']?widget.mode?Colors.white:SiteConfig().darkMode:SiteConfig().mainColor,
+                          color: brand==returnBrand[index]['id']?widget.mode?Colors.white:SiteConfig().mainColor:SiteConfig().secondColor,
                           borderRadius: BorderRadius.circular(50),
                         ),
                         child: Row(
@@ -379,41 +453,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                               duration: Duration(milliseconds: 350),
                               curve: Curves.easeInOut,
                               vsync: this,
-                              child: WidgetHelper().textQ(returnBrand[index]['title'],12.0, brand==returnBrand[index]['id']?widget.mode?Colors.black87:Colors.white:Colors.white,FontWeight.bold,letterSpacing: 2),
+                              child: WidgetHelper().textQ(returnBrand[index]['title'],12.0, brand==returnBrand[index]['id']?widget.mode?SiteConfig().secondColor:Colors.white:Colors.white,FontWeight.bold,letterSpacing: 2),
                             )
                           ],
                         ),
                       )),
-                      // child: InkWell(
-                      //   splashColor: Theme.of(context).accentColor,
-                      //   highlightColor: Theme.of(context).accentColor,
-                      //   onTap: () {
-                      //     setState(() {
-                      //       brand=returnBrand[index]['id'];
-                      //       isLoading=true;
-                      //     });
-                      //     getProduct();
-                      //   },
-                      //   child: AnimatedContainer(
-                      //     duration: Duration(milliseconds: 350),
-                      //     curve: Curves.easeInOut,
-                      //     padding: EdgeInsets.symmetric(horizontal: 15),
-                      //     decoration: BoxDecoration(
-                      //       color: brand==returnBrand[index]['id']?Theme.of(context).primaryColor:SiteConfig().mainColor,
-                      //       borderRadius: BorderRadius.circular(50),
-                      //     ),
-                      //     child: Row(
-                      //       children: <Widget>[
-                      //         AnimatedSize(
-                      //           duration: Duration(milliseconds: 350),
-                      //           curve: Curves.easeInOut,
-                      //           vsync: this,
-                      //           child: WidgetHelper().textQ(returnBrand[index]['title'],12.0, brand==returnBrand[index]['id']?Colors.black87:Colors.white,FontWeight.bold),
-                      //         )
-                      //       ],
-                      //     ),
-                      //   ),
-                      // ),
+
                     );
                   },
                   scrollDirection: Axis.horizontal,
@@ -443,10 +488,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                                 itemCount: returnProductLocal.length,
                                 itemBuilder: (BuildContext context, int index) {
                                   var valProductServer =  returnProductLocal[index];
+                                  // print("STOCK ${valProductServer['stock']}");
+                                  // print("STOCK SALES ${valProductServer['stock_sales']}");
                                   return ProductWidget(
                                     id: valProductServer['id_product'],
                                     gambar: valProductServer['gambar'],
-                                    title: '${valProductServer['title']}\n${valProductServer['brand']}',
+                                    title: '${valProductServer['title']}',
                                     harga: valProductServer['harga'],
                                     hargaCoret: valProductServer['harga_coret'],
                                     rating: valProductServer['rating'].toString(),
@@ -454,7 +501,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                                     stockSales: valProductServer['stock_sales'].toString(),
                                     disc1: valProductServer['disc1'].toString(),
                                     disc2: valProductServer['disc2'].toString(),
-                                    countCart: countCart,
+                                    countCart: (){
+                                      countCart();
+                                      getFavorite();
+                                    },
                                   );
                                 },
                                 staggeredTileBuilder: (int index) => new StaggeredTile.fit(2),
@@ -597,6 +647,7 @@ class _ModalSearchState extends State<ModalSearch> {
   String idProduct='';
   Future store()async{
     if(qController.text!=''){
+
       final check = await db.getWhere(SearchingQuery.TABLE_NAME, "id_product","$idProduct", '');
       if(check.length>0){
         await db.delete(SearchingQuery.TABLE_NAME,"id_product","$idProduct");
@@ -609,6 +660,7 @@ class _ModalSearchState extends State<ModalSearch> {
 
     loadSearch();
     Navigator.of(context).pop();
+    WidgetHelper().myPush(context, DetailProducrScreen(id: idProduct,mode: widget.mode));
   }
   @override
   void initState() {
@@ -675,15 +727,13 @@ class _ModalSearchState extends State<ModalSearch> {
                 loadData();
               },
               onFieldSubmitted: (e){
-
                 widget.callback(qController.text);
                 store();
-
               },
             ),
           ),
           resProduct.length>0?Expanded(
-              flex: resClick.length,
+              flex: 1,
               child: Scrollbar(child: ListView.separated(
                   itemBuilder: (context,index){
                     return ListTile(
@@ -695,6 +745,7 @@ class _ModalSearchState extends State<ModalSearch> {
                         loadData();
                         widget.callback(resProduct[index]['title']);
                         store();
+
                       },
                       title: WidgetHelper().textQ("${resProduct[index]['title']}",10,widget.mode?Colors.white:Colors.black87,FontWeight.normal),
                     );
@@ -706,7 +757,7 @@ class _ModalSearchState extends State<ModalSearch> {
               ))
           ):
           (resSearch.length>0?Expanded(
-              flex: resClick.length,
+              flex: 1,
               child: ListView.separated(
                   itemBuilder: (context,index){
                     return ListTile(
@@ -741,98 +792,98 @@ class _ModalSearchState extends State<ModalSearch> {
               ],
             ),
           )),
-          resClick.length>0?WidgetHelper().titleQ("Barang yang pernah dilihat",param: ""):Container(),
-          Expanded(
-              flex: 13,
-              child: ListView.separated(
-                  itemBuilder: (context,index){
-                    var val = resClick[index];
-                    return Padding(
-                      padding: EdgeInsets.only(bottom: 10.0),
-                      child: Stack(
-                        alignment: AlignmentDirectional.topEnd,
-                        children: [
-                          InkWell(
-                            onTap: (){
-                              WidgetHelper().myPush(context,DetailProducrScreen(id: val['id_product']));
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 7),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).focusColor.withOpacity(0.15),
-                                boxShadow: [
-                                  BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.1), blurRadius: 5, offset: Offset(0, 2)),
-                                ],
-                                // borderRadius: BorderRadius.circular(10.0)
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  Hero(
-                                    tag: "${val['id']}${val['id_product']}${val['id_tenant']}",
-                                    child: Container(
-                                      height: 90,
-                                      width: 90,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.all(Radius.circular(5)),
-                                        image: DecorationImage(image: NetworkImage(val['gambar']), fit: BoxFit.cover),
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 15),
-                                  Flexible(
-                                    child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: <Widget>[
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                              Stack(
-                                                alignment: AlignmentDirectional.topEnd,
-                                                children: [
-                                                  Container(
-                                                    padding: EdgeInsets.only(right:10.0),
-                                                    child: WidgetHelper().textQ("${val['tenant']}", 12, SiteConfig().mainColor, FontWeight.normal),
-                                                  ),
-                                                  Positioned(
-                                                    child:Icon(UiIcons.home,color:SiteConfig().mainColor,size: 8),
-                                                  )
-                                                ],
-                                              ),
-                                              Row(
-                                                children: [
-                                                  Expanded(child: WidgetHelper().textQ("${val['title']}", 12, widget.mode?Colors.white:SiteConfig().darkMode, FontWeight.normal)),
-                                                  int.parse(val['disc1'])==0?Container():SizedBox(width: 5),
-                                                  int.parse(val['disc1'])==0?Container():WidgetHelper().textQ("( diskon ${val['disc1']} + ${val['disc2']} )", 10,Colors.grey,FontWeight.normal),
-                                                ],
-                                              ),
-                                              Row(
-                                                children: [
-                                                  WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(val['harga_coret']))}", 10,Colors.green,FontWeight.normal,textDecoration: TextDecoration.lineThrough),
-                                                  SizedBox(width: 5),
-                                                  WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(val['harga']))}", 12,Colors.green,FontWeight.normal),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                  separatorBuilder: (context,index){return Divider(height: 1);},
-                  itemCount: resClick.length
-              )
-          )
+          // resClick.length>0?WidgetHelper().titleQ("Barang yang pernah dilihat",param: ""):Container(),
+          // Expanded(
+          //     flex: 13,
+          //     child: ListView.separated(
+          //         itemBuilder: (context,index){
+          //           var val = resClick[index];
+          //           return Padding(
+          //             padding: EdgeInsets.only(bottom: 10.0),
+          //             child: Stack(
+          //               alignment: AlignmentDirectional.topEnd,
+          //               children: [
+          //                 InkWell(
+          //                   onTap: (){
+          //                     WidgetHelper().myPush(context,DetailProducrScreen(id: val['id_product']));
+          //                   },
+          //                   child: Container(
+          //                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 7),
+          //                     decoration: BoxDecoration(
+          //                       color: Theme.of(context).focusColor.withOpacity(0.15),
+          //                       boxShadow: [
+          //                         BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.1), blurRadius: 5, offset: Offset(0, 2)),
+          //                       ],
+          //                       // borderRadius: BorderRadius.circular(10.0)
+          //                     ),
+          //                     child: Row(
+          //                       mainAxisAlignment: MainAxisAlignment.start,
+          //                       children: <Widget>[
+          //                         Hero(
+          //                           tag: "${val['id']}${val['id_product']}${val['id_tenant']}",
+          //                           child: Container(
+          //                             height: 90,
+          //                             width: 90,
+          //                             decoration: BoxDecoration(
+          //                               borderRadius: BorderRadius.all(Radius.circular(5)),
+          //                               image: DecorationImage(image: NetworkImage(val['gambar']), fit: BoxFit.cover),
+          //                             ),
+          //                           ),
+          //                         ),
+          //                         SizedBox(width: 15),
+          //                         Flexible(
+          //                           child: Row(
+          //                             crossAxisAlignment: CrossAxisAlignment.center,
+          //                             children: <Widget>[
+          //                               Expanded(
+          //                                 child: Column(
+          //                                   crossAxisAlignment: CrossAxisAlignment.start,
+          //                                   children: <Widget>[
+          //                                     Stack(
+          //                                       alignment: AlignmentDirectional.topEnd,
+          //                                       children: [
+          //                                         Container(
+          //                                           padding: EdgeInsets.only(right:10.0),
+          //                                           child: WidgetHelper().textQ("${val['tenant']}", 12, SiteConfig().mainColor, FontWeight.normal),
+          //                                         ),
+          //                                         Positioned(
+          //                                           child:Icon(UiIcons.home,color:SiteConfig().mainColor,size: 8),
+          //                                         )
+          //                                       ],
+          //                                     ),
+          //                                     Row(
+          //                                       children: [
+          //                                         Expanded(child: WidgetHelper().textQ("${val['title']}", 12, widget.mode?Colors.white:SiteConfig().darkMode, FontWeight.normal)),
+          //                                         int.parse(val['disc1'])==0?Container():SizedBox(width: 5),
+          //                                         int.parse(val['disc1'])==0?Container():WidgetHelper().textQ("( diskon ${val['disc1']} + ${val['disc2']} )", 10,Colors.grey,FontWeight.normal),
+          //                                       ],
+          //                                     ),
+          //                                     Row(
+          //                                       children: [
+          //                                         WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(val['harga_coret']))}", 10,Colors.green,FontWeight.normal,textDecoration: TextDecoration.lineThrough),
+          //                                         SizedBox(width: 5),
+          //                                         WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(val['harga']))}", 12,Colors.green,FontWeight.normal),
+          //                                       ],
+          //                                     ),
+          //                                   ],
+          //                                 ),
+          //                               ),
+          //
+          //                             ],
+          //                           ),
+          //                         )
+          //                       ],
+          //                     ),
+          //                   ),
+          //                 ),
+          //               ],
+          //             ),
+          //           );
+          //         },
+          //         separatorBuilder: (context,index){return Divider(height: 1);},
+          //         itemCount: resClick.length
+          //     )
+          // )
 
         ],
       ),

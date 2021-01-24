@@ -115,7 +115,6 @@ class WidgetHelper{
         context: context,
         isScrollControlled: true,
         builder: (context) => Padding(
-
           padding: MediaQuery.of(context).viewInsets,
           child: child,
         )
@@ -228,12 +227,13 @@ class WidgetHelper{
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
       child: ListTile(
+        onTap: callback,
         dense: true,
         contentPadding: EdgeInsets.symmetric(vertical: 0),
         leading: icon,
         title: WidgetHelper().textQ(txt, 12, color,FontWeight.bold,textAlign: textAlign),
         trailing: param==''?Text(''):InkWell(
-            child: WidgetHelper().textQ("$param", 12, color,FontWeight.bold),
+            child: Icon(Icons.arrow_right),
             onTap: callback
         ),
       ),

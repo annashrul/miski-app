@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/site_config.dart';
@@ -67,7 +68,7 @@ class _EmptyTenantState extends State<EmptyTenant> {
           SizedBox(height: 15),
           Opacity(
             opacity: 0.4,
-            child: WidgetHelper().textQ(SiteConfig().noData, 16, SiteConfig().secondColor, FontWeight.w300),
+            child: WidgetHelper().textQ(SiteConfig().noData, 16, Colors.grey, FontWeight.w300),
           ),
         ],
       ),
@@ -110,7 +111,7 @@ class _EmptyDataWidgetState extends State<EmptyDataWidget> {
                     ])),
                 child: Icon(
                   widget.iconData,
-                  color: Theme.of(context).primaryColor,
+                  color: Colors.white,
                   size: 70,
                 ),
               ),
@@ -143,16 +144,7 @@ class _EmptyDataWidgetState extends State<EmptyDataWidget> {
           SizedBox(height: 15),
           Opacity(
             opacity: 0.4,
-            child: RichText(
-                maxLines: 2,
-                overflow: TextOverflow.clip,
-                softWrap: true,
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                  text:widget.title,
-                  style: Theme.of(context).textTheme.display2.merge(TextStyle(fontWeight: FontWeight.w300)),
-                )
-            ),
+            child:WidgetHelper().textQ(widget.title,14,Colors.grey,FontWeight.normal,textAlign: TextAlign.center),
           ),
           widget.isFunction?SizedBox(height: 50):Container(),
           widget.isFunction?FlatButton(

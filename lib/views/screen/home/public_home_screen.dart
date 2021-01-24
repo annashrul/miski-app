@@ -238,6 +238,25 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.only(left:20,right:10,top:0,bottom: 10),
+                          child:WidgetHelper().myPress((){WidgetHelper().myPush(context,ListPromoScreen());},
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  WidgetHelper().textQ("Lihat semua promo",12,widget.mode?Colors.white:SiteConfig().secondColor,FontWeight.bold,textAlign: TextAlign.right),
+                                  Icon(Icons.arrow_right,color: widget.mode?Colors.white:SiteConfig().secondColor,)
+                                ],
+                              ),color: widget.mode?Colors.white10:Colors.black38
+
+                          ),
+                        ),
+                      // WidgetHelper().titleQ("${StringConfig().selesaikanPesananAnda}",color:widget.mode?Colors.white:SiteConfig().secondColor,param: '',callback: (){},icon: Icon(
+                        //   UiIcons.favorites,
+                        //   color: widget.mode?Colors.white:Theme.of(context).hintColor,
+                        // )),
+
                         Container(
                           padding: EdgeInsets.only(left:20,right:20),
                           child: isLoadingLocation?SkeletonFrame(width: double.infinity,height: 40.0):WidgetHelper().myPress((){},Container(
@@ -284,16 +303,17 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                           color: widget.mode?Colors.white:Theme.of(context).hintColor,
                         )),
                         Container(
-                          padding: EdgeInsets.only(left:20,right:20,top:10),
+                          padding: EdgeInsets.only(left:20,right:20,top:0),
                           child: StaggeredGridView.countBuilder(
                             shrinkWrap: true,
                             primary: false,
                             crossAxisCount: 3,
-                            itemCount: 2,
+                            itemCount:  returnTenant.length,
                             itemBuilder: (BuildContext context, int index) {
+                              print(returnTenant);
                               return WidgetHelper().myPress(
-                                      (){
-                                    WidgetHelper().myPush(context,CartScreen(idTenant: '272da72e-0287-4ab9-ac9f-ee3498fcdc97'));
+                                  (){
+                                    WidgetHelper().myPush(context,CartScreen(idTenant:returnTenant[index]['id_tenant']));
                                   },
                                   Container(
                                     padding: EdgeInsets.all(10.0),
@@ -318,17 +338,16 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                                                 right: 0.0,
                                                 top:5.0,
                                                 child: Container(
-                                                  child: WidgetHelper().textQ("1",9,Theme.of(context).primaryColor, FontWeight.bold,textAlign: TextAlign.center),
                                                   padding: EdgeInsets.only(top:0.0),
-                                                  decoration: BoxDecoration(color: Theme.of(context).accentColor, borderRadius: BorderRadius.all(Radius.circular(10))),
-                                                  constraints: BoxConstraints(minWidth: 15, maxWidth: 15, minHeight: 15, maxHeight: 15),
+                                                  decoration: BoxDecoration(color: Colors.redAccent, borderRadius: BorderRadius.all(Radius.circular(10))),
+                                                  constraints: BoxConstraints(minWidth: 10, maxWidth: 10, minHeight: 10, maxHeight: 10),
                                                 )
                                             ),
                                             // WidgetHelper().textQ("NAMA TENANT",12,Colors.grey[200], FontWeight.bold,textAlign: TextAlign.center),
                                           ],
                                         ),
                                         SizedBox(height:5.0),
-                                        WidgetHelper().textQ("Bandung Trade Mall",10,widget.mode?Colors.grey[200]:Colors.grey, FontWeight.bold,textAlign: TextAlign.center),
+                                        WidgetHelper().textQ("${returnTenant[index]['nama'].toUpperCase()}",10,widget.mode?Colors.grey[200]:Colors.grey, FontWeight.normal,textAlign: TextAlign.center),
                                       ],
                                     ),
                                   ),

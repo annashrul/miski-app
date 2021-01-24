@@ -18,7 +18,8 @@ import 'package:netindo_shop/views/widget/timeout_widget.dart';
 
 class HistoryTransactionScreen extends StatefulWidget {
   final int status;
-  HistoryTransactionScreen({this.status});
+  final mode;
+  HistoryTransactionScreen({this.status,this.mode});
   @override
   _HistoryTransactionScreenState createState() => _HistoryTransactionScreenState();
 }
@@ -72,10 +73,10 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
       context,
       onMonthChangeStartWithFirstDate: true,
       pickerTheme: DateTimePickerTheme(
-        itemTextStyle: TextStyle(color: site?Colors.white:SiteConfig().darkMode,fontWeight: FontWeight.bold,fontFamily: SiteConfig().fontStyle),
-        backgroundColor: site?SiteConfig().darkMode:Colors.white,
+        itemTextStyle: TextStyle(color: widget.mode?Colors.white:SiteConfig().darkMode,fontWeight: FontWeight.bold,fontFamily: SiteConfig().fontStyle),
+        backgroundColor: widget.mode?SiteConfig().darkMode:Colors.white,
         showTitle: true,
-        confirm: Text('Selesai', style: TextStyle(color:site?Colors.white:SiteConfig().darkMode,fontFamily:SiteConfig().fontStyle,fontWeight:FontWeight.bold)),
+        confirm: Text('Selesai', style: TextStyle(color:widget.mode?Colors.white:SiteConfig().darkMode,fontFamily:SiteConfig().fontStyle,fontWeight:FontWeight.bold)),
       ),
       minDateTime: DateTime.parse('2010-05-12'),
       maxDateTime: DateTime.parse('2100-01-01'),
@@ -139,13 +140,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
       filterStatus = widget.status;
     });
   }
-  static bool site=false;
-  Future getSite()async{
-    final res = await FunctionHelper().getSite();
-    setState(() {
-      site = res;
-    });
-  }
+
 
 
   @override
@@ -157,8 +152,6 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
   void initState() {
     // TODO: implement initState
     super.initState();
-    getSite();
-
     filterStatus=widget.status;
     isLoading=true;
     controller = new ScrollController()..addListener(_scrollListener);
@@ -210,7 +203,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                         Container(
                           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
                           decoration: BoxDecoration(
-                            border: Border.all(width:1.0,color: site?Colors.white10:Colors.grey[200]),
+                            border: Border.all(width:1.0,color: widget.mode?Colors.white10:Colors.grey[200]),
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                           child: Row(
@@ -242,6 +235,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                       controller: controller,
                       itemCount: historyTransactionModel.result.data.length,
                       itemBuilder: (context,index){
+                        print(historyTransactionModel.result.data[index]);
                         final val=historyTransactionModel.result.data[index];
                         final valDet = historyTransactionModel.result.data[index].detail;
                         return WidgetHelper().myPress(
@@ -277,12 +271,15 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                                                 children: [
                                                   Row(
                                                     children: [
-                                                      WidgetHelper().textQ("${val.tenant}",10,site?SiteConfig().accentColor:Colors.black87,FontWeight.normal),
-                                                      WidgetHelper().textQ("( ${val.kdTrx} )",10,SiteConfig().secondColor,FontWeight.normal),
+                                                      Icon(UiIcons.home,size: 10,color: widget.mode?SiteConfig().accentColor:Colors.black87),
+                                                      SizedBox(width: 5.0),
+                                                      WidgetHelper().textQ("${val.tenant.toUpperCase()}",10,widget.mode?SiteConfig().accentColor:Colors.black87,FontWeight.normal),
                                                     ],
                                                   ),
                                                   SizedBox(height: 5.0),
-                                                  WidgetHelper().textQ("${DateFormat.yMd().format(val.createdAt.toLocal())} ${DateFormat.Hm().format(val.createdAt.toLocal())}",10,SiteConfig().accentColor,FontWeight.normal),
+                                                  WidgetHelper().textQ("${val.kdTrx}",10,widget.mode?SiteConfig().accentColor:Colors.black87,FontWeight.normal),
+
+                                                  // WidgetHelper().textQ("${DateFormat.yMd().format(val.createdAt.toLocal())} ${DateFormat.Hm().format(val.createdAt.toLocal())}",10,SiteConfig().accentColor,FontWeight.normal),
                                                 ],
                                               )
                                             ],
@@ -296,23 +293,28 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                                   Padding(
                                     padding: EdgeInsets.only(left: 10,right:10,top:5,bottom:5),
                                     child: Container(
-                                      color: site?Colors.white10:Colors.grey[200],
+                                      color: widget.mode?Colors.white10:Colors.grey[200],
                                       height: 1.0,
                                       width: double.infinity,
                                     ),
                                   ),
-                                  Padding(
+                                  if(valDet.length>0)Padding(
                                     padding: EdgeInsets.only(left:10,right:10,top:0),
                                     child: Row(
                                       children: [
-                                        Image.network(valDet[0].gambar,height: 50,width: 50,fit: BoxFit.fill,),
+
+                                        Image.network(valDet[0]?.gambar,height: 50,width: 50,fit: BoxFit.fill,),
                                         SizedBox(width: 10.0),
                                         Column(
                                           children: [
                                             Container(
-                                              width: MediaQuery.of(context).size.width/1.5,
-                                              child: WidgetHelper().textQ(valDet[0].barang,12,site?SiteConfig().accentColor:Colors.black87,FontWeight.normal),
+                                              width: MediaQuery.of(context).size.width/2,
+                                              child: WidgetHelper().textQ(valDet[0].barang,12,widget.mode?SiteConfig().accentColor:Colors.black87,FontWeight.normal),
                                             ),
+                                            // Container(
+                                            //   width: MediaQuery.of(context).size.width/1,
+                                            //   child: Expanded(child: WidgetHelper().textQ(valDet[0].barang,12,widget.mode?SiteConfig().accentColor:Colors.black87,FontWeight.normal)),
+                                            // ),
                                             WidgetHelper().textQ("${valDet.length} barang",10,Colors.grey,FontWeight.normal),
                                             WidgetHelper().textQ("Ukuran ${valDet[0].subvarian!=null?valDet[0].subvarian:"-"} Warna ${valDet[0].varian!=null?valDet[0].varian:"-"}",10,Colors.grey,FontWeight.normal),
                                           ],
@@ -336,7 +338,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                                                 mainAxisAlignment: MainAxisAlignment.start,
                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
-                                                  WidgetHelper().textQ("Total Belanja",10,site?SiteConfig().accentColor:Colors.black87,FontWeight.normal),
+                                                  WidgetHelper().textQ("Total Belanja",10,widget.mode?SiteConfig().accentColor:Colors.black87,FontWeight.normal),
                                                   WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(val.grandtotal))}",10,Colors.green,FontWeight.normal),
                                                 ],
                                               )
@@ -408,7 +410,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
   Widget modalFilter(BuildContext context,int index){
     WidgetHelper().myModal(context, Container(
       decoration: BoxDecoration(
-        color: site?SiteConfig().darkMode:Colors.white,
+        color: widget.mode?SiteConfig().darkMode:Colors.white,
         borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0),topRight: Radius.circular(20.0))
       ),
       height: MediaQuery.of(context).size.height/1.5,
@@ -432,7 +434,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
           SizedBox(height: 20.0),
           Expanded(
             child:FilterStatus(
-              site:site,
+              site:widget.mode,
               val: filterStatus,
               callback: (idx,txt){
                 setState(() {

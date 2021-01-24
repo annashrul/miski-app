@@ -92,7 +92,7 @@ class _ListPromoScreenState extends State<ListPromoScreen> {
                           ],
                         ),
                       ),
-                      color: mode?Colors.grey[200]:Colors.black38
+                      color: mode?Colors.white10:Colors.black38
                   ),
                   BadgesQ(val: 'Periode 10-20 Desember',)
                 ],

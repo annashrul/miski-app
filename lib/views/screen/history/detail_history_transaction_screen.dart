@@ -73,9 +73,9 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
           Navigator.pop(context);
           if(retry>=3){
             WidgetHelper().notifDialog(context,"Terjadi Kesalahan Server","Silahkan lakukan pembuatan tiket komplain di halaman tiket", (){
-              WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2,));
+              WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2,mode: site));
             },(){
-              WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2,));
+              WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2,mode: site));
             },titleBtn1: "kembali",titleBtn2: "home");
           }
           else{

@@ -7,6 +7,7 @@ import 'package:netindo_shop/helper/user_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/address/provinsi_model.dart';
 import 'package:netindo_shop/provider/base_provider.dart';
+import 'package:netindo_shop/views/screen/auth/login_screen.dart';
 import 'package:netindo_shop/views/screen/auth/signin_screen.dart';
 import 'package:netindo_shop/views/screen/onboarding_screen.dart';
 import 'package:netindo_shop/views/screen/wrapper_screen.dart';
@@ -44,7 +45,7 @@ class _SplashScreenState extends State<SplashScreen> {
           WidgetHelper().myPushRemove(context, OnboardingScreen());
         }
         else if(onBoarding=='1'&&isLogin=='0'){
-          WidgetHelper().myPushRemove(context, SigninScreen());
+          WidgetHelper().myPushRemove(context, LoginScreen());
         }
         else{
           WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2,mode:widget.mode));

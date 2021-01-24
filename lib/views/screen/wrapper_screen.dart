@@ -67,7 +67,7 @@ class _WrapperScreenState extends State<WrapperScreen> {
       switch (tabItem) {
         case 0:
           widget.currentTitle = 'History';
-          currentPage = HistoryTransactionScreen(status:widget.otherParam==null?5:widget.otherParam);
+          currentPage = HistoryTransactionScreen(status:widget.otherParam==null?5:widget.otherParam,mode: widget.mode);
           break;
         case 1:
           widget.currentTitle = 'Account';
@@ -112,16 +112,9 @@ class _WrapperScreenState extends State<WrapperScreen> {
                 ),
               ),
               Container(
-                child: Text(
-                  "1",
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.caption.merge(
-                    TextStyle(color: Theme.of(context).primaryColor, fontSize: 9),
-                  ),
-                ),
                 padding: EdgeInsets.all(0),
-                decoration: BoxDecoration(color: Theme.of(context).accentColor, borderRadius: BorderRadius.all(Radius.circular(10))),
-                constraints: BoxConstraints(minWidth: 15, maxWidth: 15, minHeight: 15, maxHeight: 15),
+                decoration: BoxDecoration(color: Colors.redAccent, borderRadius: BorderRadius.all(Radius.circular(10))),
+                constraints: BoxConstraints(minWidth: 10, maxWidth: 10, minHeight: 10, maxHeight: 10),
               ),
             ],
           ),

@@ -11,6 +11,7 @@ import 'package:netindo_shop/helper/user_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/main.dart';
 import 'package:netindo_shop/views/screen/address/address_screen.dart';
+import 'package:netindo_shop/views/screen/auth/login_screen.dart';
 import 'package:netindo_shop/views/screen/auth/signin_screen.dart';
 import 'package:netindo_shop/views/screen/history/history_transaction_screen.dart';
 import 'package:netindo_shop/views/screen/wrapper_screen.dart';
@@ -318,7 +319,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       height: 25.0,
                       child: FlatButton(
                         onPressed: () {
-                          WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 5));
+                          WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 5,mode: site));
                         },
                         child: WidgetHelper().textQ("Semua Status",10,site?Colors.white:SiteConfig().secondColor,FontWeight.normal),
                       ),
@@ -330,7 +331,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     splashColor:Colors.black38,
                     onPressed: ()async{
                       await Future.delayed(Duration(milliseconds: 90));
-                      WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 0));
+                      WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 0,mode: site));
                     },
                     child: ListTile(
                       contentPadding: site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
@@ -345,7 +346,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     splashColor:Colors.black38,
                     onPressed: ()async{
                       await Future.delayed(Duration(milliseconds: 90));
-                      WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 1));
+                      WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 1,mode: site));
                     },
                     child: ListTile(
                       contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
@@ -361,7 +362,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     splashColor:Colors.black38,
                     onPressed: ()async{
                       await Future.delayed(Duration(milliseconds: 90));
-                      WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 2));
+                      WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 2,mode: site));
 
                     },
                     child: ListTile(
@@ -377,7 +378,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     splashColor:Colors.black38,
                     onPressed: ()async{
                       await Future.delayed(Duration(milliseconds: 90));
-                      WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 3));
+                      WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 3,mode: site));
 
                     },
                     child: ListTile(
@@ -394,7 +395,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     splashColor:Colors.black38,
                     onPressed: ()async{
                       await Future.delayed(Duration(milliseconds: 90));
-                      WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 4));
+                      WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 4,mode: site));
                     },
                     child: ListTile(
                       contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
@@ -540,7 +541,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         final id = await UserHelper().getDataUser('id');
                         await db.update(UserQuery.TABLE_NAME, {'id':"${id.toString()}","is_login":"0"});
                         // await db.deleteAll(UserQuery.TABLE_NAME);
-                        WidgetHelper().myPushRemove(context,SigninScreen());
+                        WidgetHelper().myPushRemove(context,LoginScreen());
                       });
                     },
                     dense: true,

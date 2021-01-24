@@ -4,6 +4,8 @@ import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
+import 'package:netindo_shop/views/screen/auth/login_screen.dart';
+import 'package:netindo_shop/views/screen/auth/register_screen.dart';
 import 'package:netindo_shop/views/screen/auth/signup_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -43,7 +45,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             Padding(
               padding: const EdgeInsets.only(right: 20, top: 50),
               child: FlatButton(
-                onPressed: () {},
+                onPressed: () {
+                  WidgetHelper().myPushRemove(context,LoginScreen());
+                },
                 // child: Text('Skip', style: Theme.of(context).textTheme.button,),
                 child:RichText(text: TextSpan(style:TextStyle(color:Colors.white,fontWeight: FontWeight.bold,fontFamily:SiteConfig().fontStyle,fontSize: 14), children: [TextSpan(text:'Skip')])),
                 color: Theme.of(context).accentColor,
@@ -112,7 +116,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: FlatButton(
                 padding: EdgeInsets.symmetric(horizontal: 35, vertical: 12),
                 onPressed: () {
-                  WidgetHelper().myPush(context, SignupScreen());
+                  WidgetHelper().myPush(context, RegisterScreen());
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

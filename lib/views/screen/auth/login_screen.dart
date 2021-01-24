@@ -33,6 +33,13 @@ class _LoginScreenState extends State<LoginScreen> {
   final DatabaseConfig _helper = new DatabaseConfig();
   String type='';
   bool _switchValue=true;
+  bool mode=false;
+  Future getMode()async{
+    final res = await FunctionHelper().getSite();
+    setState(() {
+      mode=res;
+    });
+  }
 
   _callBack(BuildContext context,bool isTrue,Map<String, Object> data)async{
     if(isTrue){
@@ -42,7 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
         await _helper.deleteAll(UserQuery.TABLE_NAME);
       }
       await _helper.insert(UserQuery.TABLE_NAME,data);
-      WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2,));
+      WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2,mode: mode,));
     }
   }
   bool isLoadingReOtp=false;
@@ -123,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ));
           }
           else{
-            WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2,));
+            WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2,mode: mode,));
           }
         }
         else{
@@ -182,7 +189,6 @@ class _LoginScreenState extends State<LoginScreen> {
       type = result;
       isLoading=false;
     });
-
   }
   Future countTable() async{
     await _helper.queryRowCount(UserQuery.TABLE_NAME);
@@ -193,6 +199,7 @@ class _LoginScreenState extends State<LoginScreen> {
     _helper.openDB();
     getConfig();
     countTable();
+    getMode();
     isLoading=true;
     super.initState();
   }

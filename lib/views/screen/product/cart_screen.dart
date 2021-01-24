@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
@@ -260,7 +261,7 @@ class _CartScreenState extends State<CartScreen> {
                   ):EmptyDataWidget(
                     iconData: UiIcons.shopping_cart,
                     title: "Wah, keranjang belanjaan mu kosong, yuk, isi barang barang impianmu",
-                    callback: (){WidgetHelper().myPush(context,WrapperScreen(currentTab: 2));},
+                    callback: (){WidgetHelper().myPush(context,WrapperScreen(currentTab: 2,mode: site));},
                     isFunction: true,
                     txtFunction: "Mulai Belanja",
                   ),
@@ -344,7 +345,7 @@ class _CartScreenState extends State<CartScreen> {
           ),
           callback:(){ _handleRefresh();},
         ),
-        bottomNavigationBar:isError?Text(''):Container(
+        bottomNavigationBar:isLoading?Text(''):isError?Text(''):cartModel.result.length>0?Container(
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           decoration: BoxDecoration(
           color: site?SiteConfig().darkMode:Colors.grey[200],
@@ -361,7 +362,7 @@ class _CartScreenState extends State<CartScreen> {
                     onPressed: () {},
                     color: Theme.of(context).accentColor,
                     shape: StadiumBorder(),
-                    child:WidgetHelper().textQ(FunctionHelper().formatter.format(subtotal),12, Theme.of(context).primaryColor, FontWeight.bold)
+                    child:WidgetHelper().textQ(FunctionHelper().formatter.format(subtotal),12, Colors.white, FontWeight.bold)
                   // child:Text("abus")
                 ),
               ),
@@ -379,15 +380,20 @@ class _CartScreenState extends State<CartScreen> {
               )
             ],
           ),
-        ),
+        ):Text(''),
 
     );
   }
   Widget buildContent(BuildContext context,index,id,idBarang,kodeBarang,image,name,price,hargaCoret,idVarian,idSubVarian,varian,subVarian,qty,harga,disc1,disc2,bool isTrue,hargaMaster,hargaVarian,hargaSubVarian) {
     int anying=int.parse(qty);
     return WidgetHelper().myPress(
-            (){
-          WidgetHelper().myPushAndLoad(context, DetailProducrScreen(id:idBarang),()=>loadCart());
+            ()async{
+              await FunctionHelper().storeClickProduct(idBarang);
+              WidgetHelper().myPushAndLoad(context, DetailProducrScreen(id:idBarang,mode:site),(){
+                loadCart();
+                // getFavorite();
+                getProductRecomended();
+              });
         },
         Container(
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 7),
@@ -398,17 +404,23 @@ class _CartScreenState extends State<CartScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              Hero(
-                tag: id,
-                child: Container(
-                  height: 90,
-                  width: 90,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                    image: DecorationImage(image: NetworkImage(image), fit: BoxFit.cover),
+              Container(
+                width: 70,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(6),
+                    topRight: Radius.circular(6),
                   ),
                 ),
+                child: CachedNetworkImage(
+                  imageUrl: image,
+                  width: double.infinity ,
+                  fit:BoxFit.fill,
+                  placeholder: (context, url) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width: double.infinity,),
+                  errorWidget: (context, url, error) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width: double.infinity,),
+                ),
               ),
+
               SizedBox(width: 15),
               Flexible(
                 child: Row(
@@ -427,9 +439,9 @@ class _CartScreenState extends State<CartScreen> {
                           ),
                           Row(
                             children: [
-                              WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(hargaCoret))}", 10,Colors.green,FontWeight.normal,textDecoration: TextDecoration.lineThrough),
+                              Expanded(child: WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(hargaCoret))}", 10,Colors.green,FontWeight.normal,textDecoration: TextDecoration.lineThrough)),
                               SizedBox(width: 5),
-                              WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(price))}", 12,Colors.green,FontWeight.bold),
+                              Expanded(child: WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(price))}", 12,Colors.green,FontWeight.bold),)
                             ],
                           ),
                           varian==null?Container():WidgetHelper().textQ("warna $varian,ukuran $subVarian", 12, Colors.grey, FontWeight.normal),

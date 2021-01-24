@@ -54,42 +54,52 @@ class _SecureCodeScreenState extends State<SecureCodeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       key: _scaffoldKey,
-      bottomNavigationBar:!timeUpFlag?FlatButton(
-        onPressed: ()async{
-          WidgetHelper().showFloatingFlushbar(context,"failed","proses pengiriman otp sedang berlangsung");
-        },
-        child: WidgetHelper().textQ("$timeCounter detik", 12,Colors.black,FontWeight.bold)
-      ):FlatButton(
-          onPressed: ()async{
-            print(timeUpFlag);
-            WidgetHelper().loadingDialog(context);
-            var res = await BaseProvider().postProvider("auth/otp",widget.data);
-            if(res==SiteConfig().errTimeout||res==SiteConfig().errSocket){
-              Navigator.pop(context);
-              setState(() {
-                timeUpFlag=true;
-              });
-              WidgetHelper().showFloatingFlushbar(context,"failed","Terjadi kesalahan jaringan");
-            }
-            else{
-              print("result ${res['result']['otp']}");
-              Navigator.pop(context);
-              if(timeUpFlag){
+      bottomNavigationBar:!timeUpFlag?Container(
+        padding: EdgeInsets.all(10.0),
+
+        child: FlatButton(
+            color: SiteConfig().mainColor,
+            onPressed: ()async{
+              WidgetHelper().showFloatingFlushbar(context,"failed","proses pengiriman otp sedang berlangsung");
+            },
+            child: WidgetHelper().textQ("$timeCounter detik", 12,Colors.white,FontWeight.bold)
+        ),
+      ):Container(
+        padding: EdgeInsets.all(10.0),
+        child: FlatButton(
+            color: SiteConfig().mainColor,
+            onPressed: ()async{
+              print(timeUpFlag);
+              WidgetHelper().loadingDialog(context);
+              var res = await BaseProvider().postProvider("auth/otp",widget.data);
+              if(res==SiteConfig().errTimeout||res==SiteConfig().errSocket){
+                Navigator.pop(context);
                 setState(() {
-                  timeUpFlag=!timeUpFlag;
-                  timeCounter=10;
-                  widget.code = "${res['result']['otp']}";
+                  timeUpFlag=true;
                 });
-                _timerUpdate();
+                WidgetHelper().showFloatingFlushbar(context,"failed","Terjadi kesalahan jaringan");
               }
               else{
-                print('false');
+                print("result ${res['result']['otp']}");
+                Navigator.pop(context);
+                if(timeUpFlag){
+                  setState(() {
+                    timeUpFlag=!timeUpFlag;
+                    timeCounter=10;
+                    widget.code = "${res['result']['otp']}";
+                  });
+                  _timerUpdate();
+                }
+                else{
+                  print('false');
+                }
               }
-            }
 
-          },
-          child: WidgetHelper().textQ("${!timeUpFlag ?'$timeCounter detik':'kirim ulang otp'}", 12,Colors.black,FontWeight.bold)
+            },
+            child: WidgetHelper().textQ("${!timeUpFlag ?'$timeCounter detik':'kirim ulang otp'}", 12,Colors.white,FontWeight.bold)
+        ),
       ),
       body: widget.param=='otp'?SecureCodeHelper(
           showFingerPass: false,
@@ -97,7 +107,7 @@ class _SecureCodeScreenState extends State<SecureCodeScreen> {
           title: "Keamanan",
           passLength: 4,
           bgImage: "assets/images/bg.jpg",
-          borderColor:  Colors.grey,
+          borderColor:  SiteConfig().mainColor,
           showWrongPassDialog: true,
           wrongPassContent: "OTP Tidak Sesuai",
           wrongPassTitle: "Opps!",

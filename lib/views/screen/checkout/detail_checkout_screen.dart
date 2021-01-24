@@ -71,7 +71,7 @@ class _DetailCheckoutScreenState extends State<DetailCheckoutScreen> {
             backgroundColor: site?SiteConfig().darkMode:Colors.white,
             key: key,
             appBar: WidgetHelper().appBarWithButton(context, "INVOICE ${widget.invoice_no}",(){
-              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WrapperScreen(currentTab: 2)), (Route<dynamic> route) => false);
+              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WrapperScreen(currentTab: 2,mode: site)), (Route<dynamic> route) => false);
             },<Widget>[],brightness: site?Brightness.dark:Brightness.light),
             resizeToAvoidBottomInset: false,
             body: Scrollbar(
@@ -294,9 +294,9 @@ class _DetailCheckoutScreenState extends State<DetailCheckoutScreen> {
         Navigator.pop(context);
         if(retry>=3){
           WidgetHelper().notifDialog(context,"Terjadi Kesalahan Server","Silahkan lakukan pembuatan tiket komplain di halaman tiket", (){
-            WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2,));
+            WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2,mode: site));
           },(){
-            WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2,));
+            WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2,mode: site));
           },titleBtn1: "kembali",titleBtn2: "home");
         }
         else{
@@ -312,7 +312,7 @@ class _DetailCheckoutScreenState extends State<DetailCheckoutScreen> {
       else{
         Navigator.pop(context);
         WidgetHelper().notifDialog(context,"Transaksi Berhasil","Terimakasih telah melakukan transaksi disini", (){
-          WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2,));
+          WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2,mode: site));
         },(){
           Navigator.pop(context);
         },titleBtn2: "home",titleBtn1: "detail pembelian");

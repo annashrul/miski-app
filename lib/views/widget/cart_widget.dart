@@ -38,7 +38,7 @@ class CartWidget extends StatelessWidget {
           ),
           Container(
             // child:WidgetHelper().textQ(this.labelCount.toString(), 10, Colors.white,FontWeight.bold,textAlign: TextAlign.center,),
-            // padding: EdgeInsets.only(top: 2),
+            // padding: EdgeInsets.only(top: 2,left: 10),
             decoration: BoxDecoration(color: this.labelColor, borderRadius: BorderRadius.all(Radius.circular(10))),
             constraints: BoxConstraints(minWidth: 10, maxWidth: 10, minHeight: 10, maxHeight: 10),
           ),

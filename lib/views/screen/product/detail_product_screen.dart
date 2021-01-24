@@ -22,7 +22,8 @@ import 'package:netindo_shop/views/widget/review_widget.dart';
 
 class DetailProducrScreen extends StatefulWidget {
   final String id;
-  DetailProducrScreen({this.id});
+  final bool mode;
+  DetailProducrScreen({this.id,this.mode});
   @override
   _DetailProducrScreenState createState() => _DetailProducrScreenState();
 }
@@ -177,7 +178,6 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
       });
     }
   }
-
   void getSubVarian(idx){
     setState(() {
       selectedSubVarian = idx;
@@ -252,8 +252,10 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
       }
     });
   }
+  Future insertClickProduct()async{
+    await FunctionHelper().storeClickProduct(widget.id);
+  }
   ScrollController controller;
-
   void _scrollListener() {
     if (controller.position.pixels == controller.position.maxScrollExtent) {
       setState((){
@@ -273,13 +275,6 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
     }
   }
   int maxLengthDesc=2;
-  bool site=false;
-  Future getSite()async{
-    final res = await FunctionHelper().getSite();
-    setState(() {
-      site = res;
-    });
-  }
   @override
   void dispose() {
     controller.removeListener(_scrollListener);
@@ -289,7 +284,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getSite();
+    insertClickProduct();
     isLoading=true;
     isLoadingPoductOther=true;
     isLoadingReview=true;
@@ -297,13 +292,12 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
     controller = new ScrollController()..addListener(_scrollListener);
 
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: site?Colors.transparent:Colors.white,
+      backgroundColor: widget.mode?SiteConfig().darkMode:Colors.white,
       key: _scaffoldKey,
-      body: isLoading||isLoadingPoductOther||isLoadingReview?LoadingDetailProduct(site: site):buildContent(context),
+      body: isLoading||isLoadingPoductOther||isLoadingReview?LoadingDetailProduct(site: widget.mode):buildContent(context),
       bottomNavigationBar: isLoading||isLoadingPoductOther||isLoadingReview?Text(''):Container(
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
@@ -374,20 +368,20 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
             onStretchTrigger: (){
               return;
             },
-            // brightness: site?Brightness.dark:Brightness.light,
-            // backgroundColor: site?SiteConfig().darkMode:Colors.white,
+            brightness: widget.mode?Brightness.dark:Brightness.light,
+            backgroundColor: widget.mode?SiteConfig().darkMode:Colors.white,
             snap: true,
             floating: true,
             pinned: true,
             automaticallyImplyLeading: false,
             leading: new IconButton(
-              icon: new Icon(UiIcons.return_icon, color: SiteConfig().secondColor),
+              icon: new Icon(UiIcons.return_icon, color: widget.mode?Colors.white:SiteConfig().secondColor),
               onPressed: () => Navigator.pop(context,false),
             ),
             actions: <Widget>[
               new CartWidget(
-                iconColor: SiteConfig().secondColor,
-                labelColor: Theme.of(context).accentColor,
+                iconColor: widget.mode?Colors.white:SiteConfig().secondColor,
+                labelColor: totalCart>0?Colors.redAccent:Colors.transparent,
                 labelCount: totalCart,
                 callback: (){
                   if(totalCart>0){
@@ -400,13 +394,13 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                   height: 30,
                   margin: EdgeInsets.only(top: 12.5, bottom: 12.5, right: 20),
                   child: InkWell(
-                    focusColor:  site?Colors.white:SiteConfig().darkMode,
+                    focusColor:  widget.mode?Colors.white:SiteConfig().darkMode,
                     borderRadius: BorderRadius.circular(300),
                     onTap: () {
                       insertFavorite();
                       // Navigator.of(context).pushNamed('/Tabs', arguments: 1);
                     },
-                    child: Icon(UiIcons.heart,size: 30,color: isSelectedFavorite?Colors.red:SiteConfig().secondColor),
+                    child: Icon(UiIcons.heart,size: 30,color: isSelectedFavorite?Colors.red:widget.mode?Colors.white:SiteConfig().secondColor),
                   )
               ),
             ],
@@ -455,7 +449,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                             title: Row(
                               children: [
                                 Expanded(
-                                  child: WidgetHelper().textQ(title,12,site?SiteConfig().secondDarkColor:SiteConfig().darkMode,FontWeight.normal,maxLines: title.length),
+                                  child: WidgetHelper().textQ(title,12,widget.mode?SiteConfig().secondDarkColor:SiteConfig().darkMode,FontWeight.normal,maxLines: title.length),
                                 ),
                                 SizedBox(width: 5.0),
                                 diskon1>0?Container(
@@ -477,12 +471,12 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                               onTap: (){
                                 showModalBottomSheet(
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
-                                    backgroundColor: site?SiteConfig().darkMode:Colors.white,
+                                    backgroundColor: widget.mode?SiteConfig().darkMode:Colors.white,
                                     context: context,
                                     isScrollControlled: true,
                                     builder: (context) => hargaBertingkat.length>0?Container(
                                       decoration: BoxDecoration(
-                                        color: site?SiteConfig().darkMode:Colors.white,
+                                        color: widget.mode?SiteConfig().darkMode:Colors.white,
                                         borderRadius: BorderRadius.only(topRight: Radius.circular(10.0),topLeft: Radius.circular(10.0))
                                       ),
                                       height: MediaQuery.of(context).size.height/2,
@@ -505,7 +499,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                                           ),
                                           SizedBox(height: 20.0),
                                           Center(
-                                            child: WidgetHelper().textQ("LIST HARGA GROSIR", 14, site?Colors.white:SiteConfig().secondColor, FontWeight.bold),
+                                            child: WidgetHelper().textQ("LIST HARGA GROSIR", 14, widget.mode?Colors.white:SiteConfig().secondColor, FontWeight.bold),
                                           ),
                                           SizedBox(height: 20.0),
                                           Expanded(
@@ -515,7 +509,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                                                     itemCount: hargaBertingkat.length,
                                                     itemBuilder: (context,index){
                                                       return ListTile(
-                                                        title: WidgetHelper().textQ("Beli produk ini sebanyak ${hargaBertingkat[index].dari} sampai ${hargaBertingkat[index].sampai} mendapatkan harga hanya ${FunctionHelper().formatter.format(int.parse(hargaBertingkat[index].harga))}", 12, site?Colors.white:SiteConfig().secondColor, FontWeight.bold),
+                                                        title: WidgetHelper().textQ("Beli produk ini sebanyak ${hargaBertingkat[index].dari} sampai ${hargaBertingkat[index].sampai} mendapatkan harga hanya ${FunctionHelper().formatter.format(int.parse(hargaBertingkat[index].harga))}", 12, widget.mode?Colors.white:SiteConfig().secondColor, FontWeight.bold),
                                                       );
                                                     },
                                                   separatorBuilder: (context, index) {
@@ -532,7 +526,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                                     ):EmptyTenant()
                                 );
                               },
-                              child: Icon(Icons.arrow_right,color:  site?SiteConfig().secondDarkColor:SiteConfig().secondColor,),
+                              child: Icon(Icons.arrow_right,color:  widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor,),
                             ),
                         ),
                       ),
@@ -547,7 +541,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                             Row(
                               children: <Widget>[
                                 Expanded(
-                                  child: WidgetHelper().textQ("Pilih Warna", 12,site?SiteConfig().secondDarkColor:SiteConfig().darkMode, FontWeight.bold),
+                                  child: WidgetHelper().textQ("Pilih Warna", 12,widget.mode?SiteConfig().secondDarkColor:SiteConfig().darkMode, FontWeight.bold),
                                 ),
                               ],
                             ),
@@ -578,7 +572,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                             isSubVarian==true?Row(
                               children: <Widget>[
                                 Expanded(
-                                  child: WidgetHelper().textQ("Pilih Ukuran", 12,site?SiteConfig().secondDarkColor:SiteConfig().darkMode, FontWeight.bold),
+                                  child: WidgetHelper().textQ("Pilih Ukuran", 12,widget.mode?SiteConfig().secondDarkColor:SiteConfig().darkMode, FontWeight.bold),
                                 ),
                               ],
                             ):Container(),
@@ -619,12 +613,12 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                               contentPadding: EdgeInsets.symmetric(vertical: 0,horizontal: 0),
                               leading: Icon(
                                 UiIcons.file_2,
-                                color: site?Colors.white:Theme.of(context).hintColor,
+                                color: widget.mode?Colors.white:Theme.of(context).hintColor,
                               ),
                               title: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  WidgetHelper().textQ("Deskripsi Produk", 14, site?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.bold),
+                                  WidgetHelper().textQ("Deskripsi Produk", 14, widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.bold),
                                   WidgetHelper().myPress(
                                     (){
                                       setState(() {
@@ -635,7 +629,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                                         }
                                       });
                                     },
-                                    Icon(maxLengthDesc==2?Icons.arrow_drop_down:Icons.arrow_drop_up,color:  site?SiteConfig().secondDarkColor:SiteConfig().secondColor,),
+                                    Icon(maxLengthDesc==2?Icons.arrow_right:Icons.arrow_drop_down,color:  widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor,),
                                     // WidgetHelper().textQ("lihat selengkapnya",10, site?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.bold),
                                   )
                                 ],
@@ -644,7 +638,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                           ),
                           Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                              child:WidgetHelper().textQ(deskripsi, 12, site?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.normal,maxLines:maxLengthDesc),
+                              child:WidgetHelper().textQ(deskripsi, 12, widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.normal,maxLines:maxLengthDesc),
                           ),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -658,12 +652,12 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                               contentPadding: EdgeInsets.symmetric(vertical: 0),
                               leading: Icon(
                                 UiIcons.chat_1,
-                                color: site?Colors.white:Theme.of(context).hintColor,
+                                color: widget.mode?Colors.white:Theme.of(context).hintColor,
                               ),
                               title:Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  WidgetHelper().textQ("Ulasan Produk", 14, site?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.bold),
+                                  WidgetHelper().textQ("Ulasan Produk", 14, widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.bold),
                                   InkWell(
                                     onTap: (){
                                       showModalBottomSheet(
@@ -672,15 +666,15 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                                           isScrollControlled: true,
                                           builder: (context) =>  Container(
                                             decoration: BoxDecoration(
-                                              color: site?SiteConfig().darkMode:Colors.white,
+                                              color: widget.mode?SiteConfig().darkMode:Colors.white,
                                               borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0),topRight: Radius.circular(20.0))
                                             ),
                                             height: MediaQuery.of(context).size.height/1.2,
-                                            child:ModalReview(kode: kode,title: title,site:site),
+                                            child:ModalReview(kode: kode,title: title,site:widget.mode),
                                           )
                                       );
                                     },
-                                    child:Icon(Icons.arrow_right,color:  site?SiteConfig().secondDarkColor:SiteConfig().secondColor)
+                                    child:Icon(Icons.arrow_right,color:  widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor)
                                   )
                                 ],
                               ),
@@ -701,7 +695,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                                 separatorBuilder: (context, index) {
                                   return Divider(
                                     height: 30,
-                                    color: site?Colors.white10:Colors.grey[200],
+                                    color: widget.mode?Colors.white10:Colors.grey[200],
                                   );
                                 },
                                 itemCount:review.length,
@@ -709,7 +703,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                                 shrinkWrap: true,
                               ):Container(
                                 margin: EdgeInsets.only(left:20,bottom: 10),
-                                child: WidgetHelper().textQ("belum ada ulasan untuk barang ini", 14, SiteConfig().secondColor, FontWeight.normal),
+                                child: WidgetHelper().textQ("belum ada ulasan untuk barang ini !!", 14, widget.mode?Colors.white:SiteConfig().secondColor, FontWeight.normal),
                               )
                           ),
                         ],
@@ -726,9 +720,9 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                           contentPadding: EdgeInsets.symmetric(vertical: 0),
                           leading: Icon(
                             UiIcons.box,
-                            color: Theme.of(context).hintColor,
+                            color: widget.mode?Colors.white:Theme.of(context).hintColor,
                           ),
-                          title: WidgetHelper().textQ("Produk Terkait", 14, site?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.bold),
+                          title: WidgetHelper().textQ("Produk Terkait", 14, widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.bold),
                         ),
                       ),
                       Container(

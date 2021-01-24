@@ -76,6 +76,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       // theme: Provider.of<ThemeModel>(context).currentTheme,
       theme: ThemeData(
+        dialogBackgroundColor: Colors.white,
         // splashColor: Colors.black38,
         // highlightColor: Colors.black38,
         scaffoldBackgroundColor: widget.mode?SiteConfig().darkMode:Colors.white,

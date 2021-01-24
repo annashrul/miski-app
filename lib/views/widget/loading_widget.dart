@@ -111,18 +111,24 @@ class _LoadingProductTenantState extends State<LoadingProductTenant> {
               SizedBox(height: 12),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 5),
-                child: SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 10.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 5.0),
+                    SizedBox(height:5),
+                    SkeletonFrame(width: MediaQuery.of(context).size.width/4,height: 5.0),
+                    SizedBox(height:5),
+                    SkeletonFrame(width: MediaQuery.of(context).size.width/6,height: 5.0),
+                    SizedBox(height:5),
+                    SkeletonFrame(width: MediaQuery.of(context).size.width/4,height: 5.0),
+                    SizedBox(height:5),
+                    SkeletonFrame(width: MediaQuery.of(context).size.width/5,height: 5.0),
+                    SizedBox(height:5),
+                    SkeletonFrame(width: MediaQuery.of(context).size.width/3,height: 5.0),
+                  ],
+                ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 0),
-                child: SkeletonFrame(width: MediaQuery.of(context).size.width/4,height: 10.0),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 5),
-                child: SkeletonFrame(width: MediaQuery.of(context).size.width/6,height: 10.0),
-              ),
-
-              SizedBox(height: 15),
             ],
           ),
         );
@@ -198,8 +204,8 @@ class LoadingDetailProduct extends StatelessWidget {
       children: [
         Container(
           decoration: BoxDecoration(
-            color: site?Colors.black87:Colors.white,
-            boxShadow: [BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), blurRadius: 5, offset: Offset(0, -2)),],
+            // color: site?Colors.black87:Colors.white,
+            // boxShadow: [BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), blurRadius: 5, offset: Offset(0, -2)),],
           ),
           padding: EdgeInsets.all(10.0),
           child: Column(
@@ -208,80 +214,36 @@ class LoadingDetailProduct extends StatelessWidget {
             children: [
               SkeletonFrame(width:double.infinity,height:MediaQuery.of(context).size.height/3),
               SizedBox(height: 10.0),
-              SkeletonFrame(width:MediaQuery.of(context).size.width/2,height: 15.0),
+              SkeletonFrame(width:MediaQuery.of(context).size.width/1,height: 10.0),
               SizedBox(height: 10.0),
-              SkeletonFrame(width:MediaQuery.of(context).size.width/3,height: 15.0),
+              SkeletonFrame(width:MediaQuery.of(context).size.width/2,height: 10.0),
               SizedBox(height: 10.0),
-              SkeletonFrame(width:MediaQuery.of(context).size.width/2,height: 15.0),
+              SkeletonFrame(width:MediaQuery.of(context).size.width/3,height: 10.0),
               SizedBox(height: 10.0),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                child: ListTile(
-                  dense: true,
-                  contentPadding: EdgeInsets.symmetric(vertical: 0),
-                  title: SkeletonFrame(width:MediaQuery.of(context).size.width/2,height: 15.0),
-                ),
-              ),
-              Container(
-                  child: ListView.separated(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    itemBuilder: (context, index) {
-                      return  Wrap(
-                        direction: Axis.horizontal,
-                        runSpacing: 10,
-                        children: <Widget>[
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Container(
-                                height: 60,
-                                width: 60,
-                                child:  SkeletonFrame(width:60.0,height:60.0),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(100)),
-                                ),
-                              ),
-                              SizedBox(width: 15),
-                              Flexible(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                  children: <Widget>[
-                                    Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Expanded(
-                                          child: Column(
-                                            children: <Widget>[
-                                              SkeletonFrame(width:MediaQuery.of(context).size.width/2,height: 15.0),
-                                              SizedBox(height: 10.0),
-                                              SkeletonFrame(width:MediaQuery.of(context).size.width/3,height: 15.0),
-                                            ],
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                          ),
-                                        ),
+              SkeletonFrame(width:MediaQuery.of(context).size.width/1,height: 10.0),
+              SizedBox(height: 10.0),
+              SkeletonFrame(width:MediaQuery.of(context).size.width/2,height: 10.0),
+              SizedBox(height: 10.0),
+              SkeletonFrame(width:MediaQuery.of(context).size.width/3,height: 10.0),
+              SizedBox(height: 10.0),
+              SkeletonFrame(width:MediaQuery.of(context).size.width/1,height: 10.0),
+              SizedBox(height: 10.0),
+              SkeletonFrame(width:MediaQuery.of(context).size.width/2,height: 10.0),
+              SizedBox(height: 10.0),
+              SkeletonFrame(width:MediaQuery.of(context).size.width/3,height: 10.0),
+              SizedBox(height: 10.0),
+              SkeletonFrame(width:MediaQuery.of(context).size.width/1,height: 10.0),
+              SizedBox(height: 10.0),
+              SkeletonFrame(width:MediaQuery.of(context).size.width/2,height: 10.0),
+              SizedBox(height: 10.0),
+              SkeletonFrame(width:MediaQuery.of(context).size.width/3,height: 10.0),
+              SizedBox(height: 10.0),
+              SkeletonFrame(width:MediaQuery.of(context).size.width/1,height: 10.0),
+              SizedBox(height: 10.0),
+              SkeletonFrame(width:MediaQuery.of(context).size.width/2,height: 10.0),
+              SizedBox(height: 10.0),
+              SkeletonFrame(width:MediaQuery.of(context).size.width/3,height: 10.0),
 
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              )
-                            ],
-                          ),
-                          SkeletonFrame(width:index%2==0?MediaQuery.of(context).size.width/1:MediaQuery.of(context).size.width/2,height: 15.0),
-                        ],
-                      );
-                    },
-                    separatorBuilder: (context, index) {
-                      return Divider(
-                        height: 30,
-                      );
-                    },
-                    itemCount:5,
-                    primary: false,
-                    shrinkWrap: true,
-                  )
-              ),
             ],
           ),
         )
@@ -332,11 +294,19 @@ class LoadingCart extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          SkeletonFrame(width: double.infinity,height: 15),
+                          SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 5),
                           SizedBox(height: 5.0),
-                          SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 15),
+                          SkeletonFrame(width: MediaQuery.of(context).size.width/3,height: 5),
                           SizedBox(height: 5.0),
-                          SkeletonFrame(width: MediaQuery.of(context).size.width/3,height: 15),
+                          SkeletonFrame(width: MediaQuery.of(context).size.width/4,height: 5),
+                          SizedBox(height: 5.0),
+                          SkeletonFrame(width: double.infinity,height: 5),
+                          SizedBox(height: 5.0),
+                          SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 5),
+                          SizedBox(height: 5.0),
+                          SkeletonFrame(width: MediaQuery.of(context).size.width/3,height: 5),
+                          SizedBox(height: 5.0),
+                          SkeletonFrame(width: MediaQuery.of(context).size.width/4,height: 5),
                         ],
                       ),
                     ),
@@ -438,7 +408,7 @@ class _LoadingHistoryState extends State<LoadingHistory> {
                         Column(
                           children: [
                             Container(
-                              width: MediaQuery.of(context).size.width/1.5,
+                              width: MediaQuery.of(context).size.width/2,
                               child: SkeletonFrame(width:MediaQuery.of(context).size.width/1.5,height:5.0),
                             ),
                             SizedBox(height: 5.0),
@@ -510,18 +480,10 @@ class LoadingSecondProduct extends StatefulWidget {
 
 class _LoadingSecondProductState extends State<LoadingSecondProduct> {
 
-  static bool site=false;
-  Future getSite()async{
-    final res = await FunctionHelper().getSite();
-    setState(() {
-      site = res;
-    });
-  }
 
   @override
   void initState() {
     super.initState();
-    getSite();
   }
 
   double width;
@@ -537,9 +499,9 @@ class _LoadingSecondProductState extends State<LoadingSecondProduct> {
         itemBuilder: (context,index){
           return Padding(
             padding: EdgeInsets.only(
-              top: 5,
-              bottom: 5,
-              left: 20,
+              top: 0,
+              bottom: 0,
+              left: 15,
               right: 0,
             ),
             child: Container(
@@ -578,9 +540,12 @@ class _LoadingSecondProductState extends State<LoadingSecondProduct> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SkeletonFrame(width: MediaQuery.of(context).size.width/2,height:10),
-                          SkeletonFrame(width: MediaQuery.of(context).size.width/4,height:10),
-                          SkeletonFrame(width: MediaQuery.of(context).size.width/6,height:10),
+                          SkeletonFrame(width: MediaQuery.of(context).size.width/2,height:5),
+                          SkeletonFrame(width: MediaQuery.of(context).size.width/4,height:5),
+                          SkeletonFrame(width: MediaQuery.of(context).size.width/6,height:5),
+                          SkeletonFrame(width: MediaQuery.of(context).size.width/4,height:5),
+                          SkeletonFrame(width: MediaQuery.of(context).size.width/2,height:5),
+                          SkeletonFrame(width: MediaQuery.of(context).size.width/6,height:5),
                         ],
                       ),
                     ),

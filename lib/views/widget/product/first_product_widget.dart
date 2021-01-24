@@ -11,6 +11,7 @@ import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/user_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/views/screen/product/detail_product_screen.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 class BadgesQ extends StatelessWidget {
   final String val;
   BadgesQ({this.val});
@@ -63,10 +64,9 @@ class _ProductWidgetState extends State<ProductWidget> {
   Widget child;
   final DatabaseConfig _helper = new DatabaseConfig();
   Future insertProductClick()async{
-    final idTenant = await FunctionHelper().getSession("id_tenant");
-    final idUser = await UserHelper().getDataUser("name");
-    await _helper.updateData(ProductQuery.TABLE_NAME,"is_click", "true", idTenant, widget.id.toString());
-    print("update product sukses");
+    await FunctionHelper().storeClickProduct(widget.id);
+    // final idTenant = await FunctionHelper().getSession("id_tenant");
+    // await _helper.updateData(ProductQuery.TABLE_NAME,"is_click", "true", idTenant, widget.id.toString());
   }
 
   bool mode=false;
@@ -118,7 +118,7 @@ class _ProductWidgetState extends State<ProductWidget> {
                   ()async{
                 await Future.delayed(Duration(milliseconds: 90));
                 await insertProductClick();
-                WidgetHelper().myPushAndLoad(context, DetailProducrScreen(id: widget.id), widget.countCart);
+                WidgetHelper().myPushAndLoad(context, DetailProducrScreen(id: widget.id,mode: mode), widget.countCart);
               },
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -129,13 +129,7 @@ class _ProductWidgetState extends State<ProductWidget> {
                         topLeft: Radius.circular(6),
                         topRight: Radius.circular(6),
                       ),
-                      // image: DecorationImage(
-                      //   image: NetworkImage(widget.gambar),
-                      //   fit: BoxFit.contain,
-                      // ),
                     ),
-                    // padding: EdgeInsets.all(1.5),
-                    // child: Image.network(widget.gambar, fit:BoxFit.fill,width: double.infinity,),
                     child: CachedNetworkImage(
                       imageUrl: widget.gambar,
                       width: double.infinity ,
@@ -159,7 +153,23 @@ class _ProductWidgetState extends State<ProductWidget> {
                       ],
                     ),
                   ),
-                  Padding(
+                  // if(int.parse(widget.stock)>0) Padding(
+                  //   padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 0),
+                  //   child: LinearPercentIndicator(
+                  //     animation: true,
+                  //     lineHeight: 5.0,
+                  //     animationDuration: 2500,
+                  //     percent: 0.8,
+                  //     linearStrokeCap: LinearStrokeCap.roundAll,
+                  //     // progressColor: Colors.green,
+                  //     // lineHeigsht: 5.0,
+                  //     // percent: 0.5,
+                  //     backgroundColor: mode?Colors.white:Colors.grey[200],
+                  //     progressColor: mode?SiteConfig().darkMode:SiteConfig().mainColor,
+                  //   ),
+                  // ),
+
+                  if(widget.stockSales!='') Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 5),
                     child: WidgetHelper().textQ("${widget.stockSales} terjual", 12,Colors.grey,FontWeight.normal),
                   ),

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
+import 'package:netindo_shop/views/screen/auth/signin_screen.dart';
 
 typedef void DeleteCode();
 typedef Future<bool> PassCodeVerify(List<int> passcode);
@@ -126,90 +127,76 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
     Future.delayed(Duration(milliseconds: 200), () {
       _fingerPrint();
     });
+    final height = MediaQuery.of(context).size.height;
+
     return Scaffold(
-      backgroundColor:Colors.black87,
+      backgroundColor:Colors.white,
       body: Stack(
         children: <Widget>[
+          Positioned(
+              top: -height * .15,
+              right: -MediaQuery.of(context).size.width * .4,
+              child: BezierContainer()
+          ),
           Container(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Expanded(
-                  flex: 3,
-                  child: Container(
-                    child: Stack(
-                      children: <Widget>[
-                        ClipPath(
-                          child: Container(
-                            height: MediaQuery.of(context).size.height,
-                            width: MediaQuery.of(context).size.width,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                SizedBox(
-                                  height: Platform.isIOS ? 50 : 50,
-                                ),
-                                Image.asset("assets/img/secure.png",height:70),
-                                // WidgetHelper().textQ(widget.title,18,Colors.black,FontWeight.bold),
-                                SizedBox(
-                                  height: Platform.isIOS ? 40 : 15,
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.all(10.0),
-                                  child: Center(
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        RichText(
-                                            maxLines: 2,
-                                            overflow: TextOverflow.clip,
-                                            softWrap: true,
-                                            textAlign: TextAlign.center,
-                                            text: TextSpan(
-                                              text:widget.deskripsi,
-                                              style: TextStyle(fontSize:12,color: Colors.grey,fontFamily:SiteConfig().fontStyle,fontWeight:FontWeight.bold,),
-                                            )
-                                        )
-                                        // WidgetHelper().textQ(widget.deskripsi,12,Colors.black,FontWeight.bold)
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                // RichText(overflow: TextOverflow.ellipsis, text: TextSpan(style:Theme.of(context).textTheme.title.merge(TextStyle(color: Theme.of(context).accentColor,fontSize: 12)), children: [TextSpan(text:widget.deskripsi)])),
-                                SizedBox(
-                                  height: Platform.isIOS ? 40 : 15,
-                                ),
-                                CodePanel(
-                                  codeLength: widget.passLength,
-                                  currentLength: _currentCodeLength,
-                                  borderColor: widget.borderColor,
-                                  foregroundColor: widget.foregroundColor,
-                                  deleteCode: _deleteCode,
-                                  fingerVerify: widget.fingerVerify,
-                                  status: _currentState,
-                                ),
-                                widget.showFingerPass ?SizedBox(
-                                  height: Platform.isIOS ? 40 : 15,
-                                ):Container(),
-                                widget.showFingerPass ? forgotScreen() :Container(),
-                                widget.showFingerPass ?SizedBox(
-                                  height: Platform.isIOS ? 40 : 15,
-                                ):Container(),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
+            height: MediaQuery.of(context).size.height,
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  SizedBox(
+                    height: Platform.isIOS ? 50 : 50,
+                  ),
+                  Image.asset("assets/img/secure.png",height:70),
+                  // WidgetHelper().textQ(widget.title,18,Colors.black,FontWeight.bold),
+                  SizedBox(
+                    height: Platform.isIOS ? 40 : 15,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          RichText(
+                              overflow: TextOverflow.clip,
+                              softWrap: true,
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
+                                text:widget.deskripsi,
+                                style: TextStyle(fontSize:12,color:SiteConfig().secondColor,fontFamily:SiteConfig().fontStyle,fontWeight:FontWeight.normal),
+                              )
+                          )
+                          // WidgetHelper().textQ(widget.deskripsi,12,Colors.black,FontWeight.bold)
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                Expanded(
-                  flex: Platform.isIOS ? 5 : 6,
-                  child: Container(
-                    padding: EdgeInsets.only(left: 0, top: 0),
+                  SizedBox(
+                    height: Platform.isIOS ? 40 : 15,
+                  ),
+                  CodePanel(
+                    codeLength: widget.passLength,
+                    currentLength: _currentCodeLength,
+                    borderColor: widget.borderColor,
+                    foregroundColor: widget.foregroundColor,
+                    deleteCode: _deleteCode,
+                    fingerVerify: widget.fingerVerify,
+                    status: _currentState,
+                  ),
+                  widget.showFingerPass ?SizedBox(
+                    height: Platform.isIOS ? 40 : 40,
+                  ):Container(),
+                  widget.showFingerPass ? forgotScreen() :Container(),
+                  widget.showFingerPass ?SizedBox(
+                    height: Platform.isIOS ? 40 : 15,
+                  ):Container(),
+                  Container(
+                    // color:Theme.of(context).focusColor.withOpacity(0.1),
+                    padding: EdgeInsets.only(left: 0, top: 10),
                     child:
                     NotificationListener<OverscrollIndicatorNotification>(
                       onNotification: (overscroll) {
@@ -217,6 +204,9 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
                         return null;
                       },
                       child: GridView.count(
+                        primary: false,
+                        physics: ClampingScrollPhysics(),
+                        shrinkWrap: true,
                         crossAxisCount: 3,
                         childAspectRatio: 1.6,
                         mainAxisSpacing: 10,
@@ -237,9 +227,9 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
                         ],
                       ),
                     ),
-                  ),
-                )
-              ],
+                  )
+                ],
+              ),
             ),
           ),
         ],
@@ -247,7 +237,118 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
     );
   }
 
-
+  Widget ex1(BuildContext context){
+    return Expanded(
+      flex: 4,
+      child: Container(
+        child: Stack(
+          children: <Widget>[
+            ClipPath(
+              child: Container(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(
+                      height: Platform.isIOS ? 50 : 50,
+                    ),
+                    Image.asset("assets/img/secure.png",height:70),
+                    // WidgetHelper().textQ(widget.title,18,Colors.black,FontWeight.bold),
+                    SizedBox(
+                      height: Platform.isIOS ? 40 : 15,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(10.0),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            RichText(
+                                maxLines: 2,
+                                overflow: TextOverflow.clip,
+                                softWrap: true,
+                                textAlign: TextAlign.center,
+                                text: TextSpan(
+                                  text:widget.deskripsi,
+                                  style: TextStyle(fontSize:12,color:SiteConfig().secondColor,fontFamily:SiteConfig().fontStyle,fontWeight:FontWeight.normal),
+                                )
+                            )
+                            // WidgetHelper().textQ(widget.deskripsi,12,Colors.black,FontWeight.bold)
+                          ],
+                        ),
+                      ),
+                    ),
+                    // RichText(overflow: TextOverflow.ellipsis, text: TextSpan(style:Theme.of(context).textTheme.title.merge(TextStyle(color: Theme.of(context).accentColor,fontSize: 12)), children: [TextSpan(text:widget.deskripsi)])),
+                    SizedBox(
+                      height: Platform.isIOS ? 40 : 15,
+                    ),
+                    CodePanel(
+                      codeLength: widget.passLength,
+                      currentLength: _currentCodeLength,
+                      borderColor: widget.borderColor,
+                      foregroundColor: widget.foregroundColor,
+                      deleteCode: _deleteCode,
+                      fingerVerify: widget.fingerVerify,
+                      status: _currentState,
+                    ),
+                    widget.showFingerPass ?SizedBox(
+                      height: Platform.isIOS ? 40 : 40,
+                    ):Container(),
+                    widget.showFingerPass ? forgotScreen() :Container(),
+                    widget.showFingerPass ?SizedBox(
+                      height: Platform.isIOS ? 40 : 15,
+                    ):Container(),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  Widget ex2(BuildContext context){
+    return Expanded(
+      flex: Platform.isIOS ? 5 : 6,
+      child: Container(
+        // color:Theme.of(context).focusColor.withOpacity(0.1),
+        padding: EdgeInsets.only(left: 0, top: 10),
+        child:
+        NotificationListener<OverscrollIndicatorNotification>(
+          onNotification: (overscroll) {
+            overscroll.disallowGlow();
+            return null;
+          },
+          child: GridView.count(
+            primary: false,
+            physics: ClampingScrollPhysics(),
+            shrinkWrap: true,
+            crossAxisCount: 3,
+            childAspectRatio: 1.6,
+            mainAxisSpacing: 10,
+            padding: EdgeInsets.all(5),
+            children: <Widget>[
+              buildContainerCircle(1),
+              buildContainerCircle(2),
+              buildContainerCircle(3),
+              buildContainerCircle(4),
+              buildContainerCircle(5),
+              buildContainerCircle(6),
+              buildContainerCircle(7),
+              buildContainerCircle(8),
+              buildContainerCircle(9),
+              buildRemoveIcon(Icons.close),
+              buildContainerCircle(0),
+              buildContainerIcon(Icons.arrow_back),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
   Widget forgotScreen(){
     return InkResponse(
       onTap: (){
@@ -255,7 +356,7 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
       },
       child: Center(
         // child:RichText(overflow: TextOverflow.ellipsis, text: TextSpan(style: Theme.of(context).textTheme.button, children: [TextSpan(text:widget.forgotPin)])),
-          child:WidgetHelper().textQ(widget.forgotPin, 12, Colors.black,FontWeight.bold)
+          child:WidgetHelper().textQ(widget.forgotPin, 12,SiteConfig().mainDarkColor,FontWeight.bold)
         // child: Text(widget.forgotPin,style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(26),color:Colors.green,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
       ),
     );
@@ -263,7 +364,8 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
 
   Widget buildContainerCircle(int number) {
     return InkResponse(
-      highlightColor: Colors.red,
+      highlightColor: Colors.black38,
+      splashColor:  Colors.black38,
       onTap: () {
         _onCodeClick(number);
       },
@@ -272,14 +374,16 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
         height: 50,
         width: 50,
         decoration: BoxDecoration(
-            borderRadius:  BorderRadius.circular(10.0),
-
-            color: Colors.grey[200],
-            shape: BoxShape.rectangle,
+            // borderRadius:  BorderRadius.circular(10.0),
+          boxShadow: [
+            BoxShadow(color: Theme.of(context).hintColor.withOpacity(0.1), offset: Offset(0, 3), blurRadius: 10)
+          ],
+            // color: Colors.grey[200],
+            shape: BoxShape.circle,
             ),
         child: Center(
           // child:RichText(overflow: TextOverflow.ellipsis, text: TextSpan(style:TextStyle(fontFamily:'Poppins',fontWeight:FontWeight.bold,color:Colors.black,fontSize: 16), children: [TextSpan(text:number.toString())])),
-          child:WidgetHelper().textQ(number.toString(), 16,SiteConfig().darkMode,FontWeight.bold),
+          child:WidgetHelper().textQ(number.toString(), 16,SiteConfig().mainColor,FontWeight.bold),
           // child: Text(number.toString(), style: TextStyle(fontFamily:ThaibahFont().fontQ, fontSize:  ScreenUtilQ.getInstance().setSp(40), fontWeight: FontWeight.bold, color: widget.numColor),),
         ),
       ),
@@ -289,6 +393,8 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
 
   Widget buildRemoveIcon(IconData icon) {
     return InkResponse(
+      highlightColor: Colors.black38,
+      splashColor:  Colors.black38,
       onTap: () {
         if (0 < _currentCodeLength) {
           _deleteAllCode();
@@ -300,13 +406,13 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
         height: 50,
         width: 50,
         decoration: BoxDecoration(
-            color:  Colors.grey[200],
+            // color:  Colors.grey[200],
             shape: BoxShape.rectangle,
             borderRadius:  BorderRadius.circular(10.0),
 
             ),
         child: Center(
-          child:Icon(Icons.cancel,color: SiteConfig().darkMode),
+          child:Icon(Icons.cancel,color: Colors.redAccent),
           // child: Text('Ulangi',style:TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(40),color:widget.numColor,fontWeight:FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
         ),
       ),
@@ -315,6 +421,8 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
 
   Widget buildContainerIcon(IconData icon) {
     return InkResponse(
+      highlightColor: Colors.black38,
+      splashColor:  Colors.black38,
       onTap: () {
         if (0 < _currentCodeLength) {
           setState(() {
@@ -333,12 +441,11 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
         height: 50,
         width: 50,
         decoration: BoxDecoration(
-            color: circleColor,
             shape: BoxShape.rectangle,
             borderRadius:  BorderRadius.circular(10.0),
         ),
         child: Center(
-          child:Icon(Icons.backspace,color: SiteConfig().darkMode),
+          child:Icon(Icons.backspace,color:Colors.redAccent),
         ),
       ),
     );

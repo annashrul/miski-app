@@ -459,10 +459,10 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
           ),
           Container(
             decoration: BoxDecoration(
-              color:widget.mode?Theme.of(context).focusColor.withOpacity(0.15):SiteConfig().secondColor,
-              boxShadow: [
-                BoxShadow(color: Theme.of(context).hintColor.withOpacity(0.10), offset: Offset(0, -4), blurRadius: 10)
-              ],
+              color:Theme.of(context).focusColor.withOpacity(0.15)
+              // boxShadow: [
+              //   BoxShadow(color: Theme.of(context).hintColor.withOpacity(0.10), offset: Offset(0, -4), blurRadius: 10)
+              // ],
             ),
             child: TextFormField(
               textInputAction: TextInputAction.newline,

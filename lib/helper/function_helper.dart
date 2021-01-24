@@ -398,5 +398,12 @@ class FunctionHelper{
   }
 
 
+  Future storeClickProduct(idProduct)async{
+    final DatabaseConfig _helper = new DatabaseConfig();
+    final idTenant = await getSession("id_tenant");
+    await _helper.updateData(ProductQuery.TABLE_NAME,"is_click", "true", idTenant, idProduct.toString());
+  }
+
+
 
 }

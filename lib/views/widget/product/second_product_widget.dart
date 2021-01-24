@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:netindo_shop/config/site_config.dart';
@@ -80,7 +81,8 @@ class _SecondProductWidgetState extends State<SecondProductWidget> {
                 borderRadius: BorderRadius.circular(10.0)
             ),
             child: WidgetHelper().myPress(
-                (){WidgetHelper().myPush(context, DetailProducrScreen(id: widget.id));},
+                (){
+                  WidgetHelper().myPush(context, DetailProducrScreen(id: widget.id));},
                 Column(
                   children: [
                     Container(
@@ -91,10 +93,14 @@ class _SecondProductWidgetState extends State<SecondProductWidget> {
                           topLeft: Radius.circular(8),
                           topRight: Radius.circular(8),
                         ),
-                        image: DecorationImage(
-                          image: NetworkImage(SiteConfig().noImage),
-                          fit: BoxFit.cover,
-                        ),
+
+                      ),
+                      child: CachedNetworkImage(
+                        imageUrl: widget.gambar,
+                        width: double.infinity ,
+                        fit:BoxFit.contain,
+                        placeholder: (context, url) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width: double.infinity,),
+                        errorWidget: (context, url, error) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width: double.infinity,),
                       ),
                     ),
                     Expanded(
@@ -147,7 +153,7 @@ class _SecondProductWidgetState extends State<SecondProductWidget> {
                                   borderRadius: BorderRadius.circular(4),
                                   color: SiteConfig().mainColor
                               ),
-                              child: WidgetHelper().textQ("Stock ${widget.stock}", 10, SiteConfig().secondDarkColor, FontWeight.normal),
+                              child: WidgetHelper().textQ("${widget.stockSales} Terjual", 10, SiteConfig().secondDarkColor, FontWeight.normal),
                             ):Container(),
                             Container(
                                 child: WidgetHelper().textQ(widget.title, 12, mode?Colors.white:Colors.black, FontWeight.normal)
