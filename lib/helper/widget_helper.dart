@@ -223,9 +223,9 @@ class WidgetHelper{
         }
     );
   }
-  titleQ(String txt,{Color color=Colors.white,String param, Function callback,Icon icon, TextAlign textAlign=TextAlign.left}){
+  titleQ(String txt,{EdgeInsetsGeometry padding=const EdgeInsets.symmetric(horizontal: 20, vertical: 0),Color color=Colors.white,String param, Function callback,Icon icon, TextAlign textAlign=TextAlign.left}){
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+      padding: padding,
       child: ListTile(
         onTap: callback,
         dense: true,

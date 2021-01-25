@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
@@ -28,7 +30,7 @@ class DetailProducrScreen extends StatefulWidget {
   _DetailProducrScreenState createState() => _DetailProducrScreenState();
 }
 
-class _DetailProducrScreenState extends State<DetailProducrScreen> {
+class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final DatabaseConfig _helper = new DatabaseConfig();
   DetailProductTenantModel detailProductTenantModel;
@@ -36,9 +38,9 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
   ListProductTenantModel productTenantModel;
   List hargaBertingkat=[], varian=[], subVarian=[], review=[];
   bool isLoadmore=false,isError=false,isLoading=false,isLoadingReview=false,isLoadingPoductOther=false,isSelectedFavorite=false,isSubVarian=false;
-  int perpageReview=6,_current=0,totalReview=0,totalCart=0,total=0,stock=0,qty=0,hargaFinish=0,hargaWarna=0,hargaUkuran=0,diskon1=0,diskon2=0;
+  int perpageReview=10,_current=0,totalReview=0,totalCart=0,total=0,stock=0,qty=0,hargaFinish=0,hargaWarna=0,hargaUkuran=0,diskon1=0,diskon2=0;
   int selectedVarian=0,selectedSubVarian=0;
-  String title,kode,harga,hargaMaster,hargaCoret,rating,deskripsi,idTenant,warna,ukuran,gambar,kelompok,idVarian,idSubVarian;
+  String stockSales='',title,kode,harga,hargaMaster,hargaCoret,rating,deskripsi,idTenant,warna,ukuran,gambar,kelompok,idVarian,idSubVarian;
 
   Future getDetail()async{
     var res = await BaseProvider().getProvider("barang/${widget.id}", detailProductTenantModelFromJson);
@@ -68,6 +70,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
         setState(() {
           detailProductTenantModel = DetailProductTenantModel.fromJson(result.toJson());
           idTenant = result.result.idTenant;
+          stockSales=result.result.stockSales;
           kode = result.result.kode;
           deskripsi = result.result.deskripsi;
           varian = result.result.varian;
@@ -258,32 +261,45 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
   ScrollController controller;
   void _scrollListener() {
     if (controller.position.pixels == controller.position.maxScrollExtent) {
-      setState((){
-        isLoadmore=true;
-        perpageReview = perpageReview+6;
-        // isShowChild=false;
-      });
-      print("LOADING $isLoadmore");
-      getReview();
-      // if(perpageReview<reviewModel.result.total){
-      //
-      // }
-      // else{
-      //   print('else');
-      // }
+
+      if(perpageReview<reviewModel.result.total){
+        setState((){
+          isLoadmore=true;
+          perpageReview = perpageReview+6;
+        });
+        getReview();
+        print("LOADING $isLoadmore");
+      }
+      else{
+        print('else');
+      }
 
     }
   }
   int maxLengthDesc=2;
+  int _tabIndex = 0;
+  TabController _tabController;
+  _handleTabSelection() {
+    if (_tabController.indexIsChanging) {
+      setState(() {
+        _tabIndex = _tabController.index;
+      });
+    }
+  }
   @override
   void dispose() {
     controller.removeListener(_scrollListener);
+
+    _tabController.dispose();
+
     super.dispose();
   }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _tabController = TabController(length: 3, initialIndex: _tabIndex, vsync: this);
+    _tabController.addListener(_handleTabSelection);
     insertClickProduct();
     isLoading=true;
     isLoadingPoductOther=true;
@@ -328,32 +344,6 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                 // child:Text("abus")
               ),
             ),
-            // FlatButton(
-            //   onPressed: () {
-            //     add();
-            //   },
-            //   color: Theme.of(context).accentColor,
-            //   shape: StadiumBorder(),
-            //   child: Container(
-            //     padding: const EdgeInsets.symmetric(horizontal: 10),
-            //     child: Row(
-            //       mainAxisSize: MainAxisSize.min,
-            //       children: <Widget>[
-            //         IconButton(
-            //           onPressed: () {
-            //             // add();
-            //           },
-            //           iconSize: 30,
-            //           // padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-            //           icon: Icon(Icons.add_circle_outline),
-            //           color: Theme.of(context).primaryColor,
-            //         ),
-            //         WidgetHelper().textQ("Keranjang", 14, SiteConfig().secondDarkColor, FontWeight.bold),
-            //
-            //       ],
-            //     ),
-            //   ),
-            // ),
           ],
         ),
       ),
@@ -408,11 +398,58 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
             expandedHeight: 300,
             elevation: 0,
             flexibleSpace: sliderQ(context),
+            bottom: TabBar(
+                controller: _tabController,
+                indicatorSize: TabBarIndicatorSize.label,
+                labelPadding: EdgeInsets.symmetric(horizontal: 15),
+                unselectedLabelColor: Colors.white,
+                labelColor: Colors.white,
+                indicator: BoxDecoration(borderRadius: BorderRadius.circular(50), color:SiteConfig().mainColor),
+                tabs: [
+                  Tab(
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 5),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          border: Border.all(color:SiteConfig().mainColor, width: 1)
+                      ),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: WidgetHelper().textQ("Produk",12,Colors.white,FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  Tab(
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 5),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          border: Border.all(color: SiteConfig().mainColor, width: 1)),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: WidgetHelper().textQ("Detail",12,Colors.white,FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  Tab(
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 5),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          border: Border.all(color:SiteConfig().mainColor, width: 1)),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: WidgetHelper().textQ("Ulasan",12,Colors.white,FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ]
+            ),
           ),
           SliverList(
             delegate: SliverChildListDelegate([
               Offstage(
-                offstage: false,
+                offstage: 0 != _tabIndex,
                 child: Container(
                   decoration: BoxDecoration(
                     // color: site?SiteConfig().darkMode:Colors.white,
@@ -420,28 +457,12 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20),
                     ),
-                    // boxShadow: [
-                    //   BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), blurRadius: 5, offset: Offset(0, -2)),
-                    // ],
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(top: 10, left: 20, right: 20),
-                        child: Center(
-                          child: Container(
-                            padding: EdgeInsets.only(top:10.0),
-                            width: 50,
-                            height: 10.0,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[200],
-                              borderRadius:  BorderRadius.circular(10.0),
-                            ),
-                          ),
-                        ),
-                      ),
+
                       Padding(
                         padding: const EdgeInsets.only(top: 10, left: 20, right: 20),
                         child: ListTile(
@@ -467,70 +488,75 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                                 WidgetHelper().textQ(FunctionHelper().formatter.format(int.parse(hargaCoret)),12,SiteConfig().accentDarkColor,FontWeight.bold,textDecoration: TextDecoration.lineThrough),
                               ],
                             ),
-                            trailing: InkWell(
-                              onTap: (){
-                                showModalBottomSheet(
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
-                                    backgroundColor: widget.mode?SiteConfig().darkMode:Colors.white,
-                                    context: context,
-                                    isScrollControlled: true,
-                                    builder: (context) => hargaBertingkat.length>0?Container(
-                                      decoration: BoxDecoration(
-                                        color: widget.mode?SiteConfig().darkMode:Colors.white,
-                                        borderRadius: BorderRadius.only(topRight: Radius.circular(10.0),topLeft: Radius.circular(10.0))
-                                      ),
-                                      height: MediaQuery.of(context).size.height/2,
-                                      child:Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: <Widget>[
-                                          SizedBox(height:10.0),
-                                          Center(
-                                            child: Container(
-                                              padding: EdgeInsets.only(top:10.0),
-                                              width: 50,
-                                              height: 10.0,
-                                              decoration: BoxDecoration(
-                                                color: Colors.grey[200],
-                                                borderRadius:  BorderRadius.circular(10.0),
-                                              ),
-                                            ),
-                                          ),
-                                          SizedBox(height: 20.0),
-                                          Center(
-                                            child: WidgetHelper().textQ("LIST HARGA GROSIR", 14, widget.mode?Colors.white:SiteConfig().secondColor, FontWeight.bold),
-                                          ),
-                                          SizedBox(height: 20.0),
-                                          Expanded(
-                                            child: Scrollbar(
-                                                child: ListView.separated(
-                                                    padding: EdgeInsets.zero,
-                                                    itemCount: hargaBertingkat.length,
-                                                    itemBuilder: (context,index){
-                                                      return ListTile(
-                                                        title: WidgetHelper().textQ("Beli produk ini sebanyak ${hargaBertingkat[index].dari} sampai ${hargaBertingkat[index].sampai} mendapatkan harga hanya ${FunctionHelper().formatter.format(int.parse(hargaBertingkat[index].harga))}", 12, widget.mode?Colors.white:SiteConfig().secondColor, FontWeight.bold),
-                                                      );
-                                                    },
-                                                  separatorBuilder: (context, index) {
-                                                    return Divider(
-                                                      height: 1,
-                                                    );
-                                                  },
-                                                )
-                                            ),
-                                          )
-                                        ],
-                                      ),
-
-                                    ):EmptyTenant()
-                                );
-                              },
-                              child: Icon(Icons.arrow_right,color:  widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor,),
+                            trailing: Padding(
+                              padding: EdgeInsets.only(top:5),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  RatingBar.builder(
+                                    itemSize: 15.0,
+                                    initialRating: double.parse(rating),
+                                    direction: Axis.horizontal,
+                                    itemCount: 5,
+                                    itemPadding: EdgeInsets.only(right: 4.0),
+                                    itemBuilder: (context, index) {
+                                      switch (index) {
+                                        case 0:
+                                          return Icon(
+                                            Icons.sentiment_very_dissatisfied,
+                                            color: Colors.red,
+                                          );
+                                        case 1:
+                                          return Icon(
+                                            Icons.sentiment_dissatisfied,
+                                            color: Colors.redAccent,
+                                          );
+                                        case 2:
+                                          return Icon(
+                                            Icons.sentiment_neutral,
+                                            color: Colors.amber,
+                                          );
+                                        case 3:
+                                          return Icon(
+                                            Icons.sentiment_satisfied,
+                                            color: Colors.lightGreen,
+                                          );
+                                        case 4:
+                                          return Icon(
+                                            Icons.sentiment_very_satisfied,
+                                            color: Colors.green,
+                                          );
+                                        default:
+                                          return Container();
+                                      }
+                                    },
+                                    onRatingUpdate:null,
+                                  ),
+                                  if(int.parse(stockSales)>0) Expanded(
+                                    child: Padding(
+                                      padding: EdgeInsets.only(right:5.0),
+                                      child: WidgetHelper().textQ(stockSales+" terjual",12,widget.mode?SiteConfig().secondDarkColor:SiteConfig().darkMode,FontWeight.normal,maxLines: title.length),
+                                    ),
+                                  )
+                                ],
+                              ),
                             ),
+
                         ),
                       ),
-
+                      varian.length>0?Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                        child: ListTile(
+                          dense: true,
+                          contentPadding: EdgeInsets.symmetric(vertical: 0),
+                          leading: Icon(
+                            UiIcons.box,
+                            color: widget.mode?Colors.white:Theme.of(context).hintColor,
+                          ),
+                          title: WidgetHelper().textQ("Pilih Varian", 14, widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.bold),
+                        ),
+                      ):Container(),
                       varian.length>0?Container(
                         width: double.infinity,
                         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
@@ -538,14 +564,6 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                Expanded(
-                                  child: WidgetHelper().textQ("Pilih Warna", 12,widget.mode?SiteConfig().secondDarkColor:SiteConfig().darkMode, FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 10),
                             Wrap(
                               spacing: 8,
                               runSpacing: 8,
@@ -555,8 +573,8 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                                     label: WidgetHelper().textQ(varian[index].title, 10, selectedVarian==index?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.bold),
                                     padding: EdgeInsets.symmetric(horizontal: 0, vertical: 7),
                                     backgroundColor: selectedVarian==index?SiteConfig().mainColor:Colors.grey[200],
-                                    selectedColor: Colors.grey,
-                                    selected: false,
+                                    selectedColor: SiteConfig().mainColor,
+                                    selected:  selectedVarian==index?true:false,
                                     shape: StadiumBorder(),
                                     onSelected: (bool value) {
                                       setState(() {
@@ -569,14 +587,6 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                               }),
                             ),
                             SizedBox(height:isSubVarian==true?10:0),
-                            isSubVarian==true?Row(
-                              children: <Widget>[
-                                Expanded(
-                                  child: WidgetHelper().textQ("Pilih Ukuran", 12,widget.mode?SiteConfig().secondDarkColor:SiteConfig().darkMode, FontWeight.bold),
-                                ),
-                              ],
-                            ):Container(),
-                            SizedBox(height:isSubVarian==true?10:0),
                             isSubVarian==true?Wrap(
                               spacing: 8,
                               runSpacing: 8,
@@ -586,8 +596,8 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                                     label: WidgetHelper().textQ(subVarian[index].title, 10, selectedSubVarian==index?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.bold),
                                     padding: EdgeInsets.symmetric(horizontal: 0, vertical: 7),
                                     backgroundColor: selectedSubVarian==index?SiteConfig().mainColor:Colors.grey[200],
-                                    selectedColor: Colors.grey,
-                                    selected: false,
+                                    selectedColor: SiteConfig().mainColor,
+                                    selected:selectedSubVarian==index?true: false,
                                     showCheckmark: true,
                                     shape: StadiumBorder(),
                                     onSelected: (bool value) {
@@ -603,116 +613,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                           ],
                         ),
                       ):Container(),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                            child: ListTile(
-                              dense: true,
-                              contentPadding: EdgeInsets.symmetric(vertical: 0,horizontal: 0),
-                              leading: Icon(
-                                UiIcons.file_2,
-                                color: widget.mode?Colors.white:Theme.of(context).hintColor,
-                              ),
-                              title: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  WidgetHelper().textQ("Deskripsi Produk", 14, widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.bold),
-                                  WidgetHelper().myPress(
-                                    (){
-                                      setState(() {
-                                        if(maxLengthDesc==2){
-                                          maxLengthDesc = deskripsi.length;
-                                        }else{
-                                          maxLengthDesc = 2;
-                                        }
-                                      });
-                                    },
-                                    Icon(maxLengthDesc==2?Icons.arrow_right:Icons.arrow_drop_down,color:  widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor,),
-                                    // WidgetHelper().textQ("lihat selengkapnya",10, site?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.bold),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                          Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                              child:WidgetHelper().textQ(deskripsi, 12, widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.normal,maxLines:maxLengthDesc),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                            child: WidgetHelper().pembatas(context),
 
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                            child: ListTile(
-                              dense: true,
-                              contentPadding: EdgeInsets.symmetric(vertical: 0),
-                              leading: Icon(
-                                UiIcons.chat_1,
-                                color: widget.mode?Colors.white:Theme.of(context).hintColor,
-                              ),
-                              title:Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  WidgetHelper().textQ("Ulasan Produk", 14, widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.bold),
-                                  InkWell(
-                                    onTap: (){
-                                      showModalBottomSheet(
-                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
-                                          context: context,
-                                          isScrollControlled: true,
-                                          builder: (context) =>  Container(
-                                            decoration: BoxDecoration(
-                                              color: widget.mode?SiteConfig().darkMode:Colors.white,
-                                              borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0),topRight: Radius.circular(20.0))
-                                            ),
-                                            height: MediaQuery.of(context).size.height/1.2,
-                                            child:ModalReview(kode: kode,title: title,site:widget.mode),
-                                          )
-                                      );
-                                    },
-                                    child:Icon(Icons.arrow_right,color:  widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor)
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                          Container(
-                              child: isLoadingReview?Container():review.length>0 ? ListView.separated(
-                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                                itemBuilder: (context, index) {
-                                  return ReviewWidget(
-                                    foto: review[index].foto,
-                                    nama: review[index].nama,
-                                    tgl: review[index].time,
-                                    rate: review[index].rate.toString(),
-                                    desc: review[index].caption,
-                                  );
-                                },
-                                separatorBuilder: (context, index) {
-                                  return Divider(
-                                    height: 30,
-                                    color: widget.mode?Colors.white10:Colors.grey[200],
-                                  );
-                                },
-                                itemCount:review.length,
-                                primary: false,
-                                shrinkWrap: true,
-                              ):Container(
-                                margin: EdgeInsets.only(left:20,bottom: 10),
-                                child: WidgetHelper().textQ("belum ada ulasan untuk barang ini !!", 14, widget.mode?Colors.white:SiteConfig().secondColor, FontWeight.normal),
-                              )
-                          ),
-                        ],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                        child: WidgetHelper().pembatas(context),
-
-                      ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                         child: ListTile(
@@ -752,7 +653,44 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                   ),
                 ),
               ),
-
+              Offstage(
+                offstage: 1 != _tabIndex,
+                child: Container(
+                  // padding: EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      WidgetHelper().titleQ("Deskripsi",param: '',color: widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor,icon: Icon(UiIcons.file_2),padding: EdgeInsets.only(left:10,right:10)),
+                      Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: WidgetHelper().textQ(deskripsi, 12, widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.normal,maxLines: 10000),
+                      ),
+                      if(hargaBertingkat.length>0) WidgetHelper().titleQ("Harga Spesial",param: '',color: widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor,icon: Icon(UiIcons.money),padding: EdgeInsets.only(left:10,right:10)),
+                      if(hargaBertingkat.length>0) Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: hargaGrosir(context)
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+                Offstage(
+                  offstage: 2 != _tabIndex,
+                  child: Column(
+                    children: [
+                      isLoadmore?WidgetHelper().loadingWidget(context):Text(''),
+                      Container(
+                        padding: EdgeInsets.only(bottom:10.0),
+                        height: MediaQuery.of(context).size.height/1,
+                        child: isLoadingReview?Text(''):reviewModel.result.data.length>0?reviewContent(context):EmptyTenant(),
+                      ),
+                      // Expanded(
+                      //   child: Text("loading ......"),
+                      // )
+                    ],
+                  ),
+                )
             ]),
           )
         ]
@@ -785,7 +723,9 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
                 return Builder(
                   builder: (BuildContext context) {
                     return Container(
-                      margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                      padding: EdgeInsets.symmetric(horizontal: 0, vertical: 30),
+
+                      // margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
                       height: 100,
                       child:CachedNetworkImage(
                         imageUrl:e.image,
@@ -805,13 +745,13 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
               }).toList()
           ),
           Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: detailProductTenantModel.result.listImage.map((e){
                 return Container(
                   width: 20.0,
                   height: 3.0,
-                  margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+                  margin: EdgeInsets.symmetric(vertical: 50.0, horizontal: 2.0),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.all(
                         Radius.circular(8),
@@ -846,11 +786,60 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> {
       ),
     );
   }
+  
+  
+  Widget hargaGrosir(BuildContext context){
+    return Container(
+      height: MediaQuery.of(context).size.height/1,
+      child:ListView.separated(
+        padding:EdgeInsets.all(0.0),
+        shrinkWrap: true,
+        primary: false,
+        // padding: EdgeInsets.zero,
+        itemCount: hargaBertingkat.length,
+        itemBuilder: (context,index){
+          return Padding(
+            padding: EdgeInsets.only(top:10,bottom:10),
+            child: WidgetHelper().textQ("Beli produk ini sebanyak ${hargaBertingkat[index].dari} sampai ${hargaBertingkat[index].sampai} mendapatkan harga hanya ${FunctionHelper().formatter.format(int.parse(hargaBertingkat[index].harga))}", 12,widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.normal),
+          );
+        },
+        separatorBuilder: (context, index) {
+          return Divider(
+            height: 1,
+          );
+        },
+      ),
 
+    );
+  }
+
+  Widget reviewContent(BuildContext context){
+    return ListView.separated(
+      controller: controller,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      itemBuilder: (context, index) {
+        return WidgetHelper().myPress((){},ReviewWidget(
+          foto: SiteConfig().noImage,
+          nama: reviewModel.result.data[index].nama,
+          tgl: "Sebulan yang lalu ${index+1}",
+          rate: reviewModel.result.data[index].rate.toString(),
+          desc: reviewModel.result.data[index].caption,
+        ));
+      },
+      separatorBuilder: (context, index) {
+        return Divider(
+          height: 10,
+        );
+      },
+      itemCount:reviewModel.result.data.length,
+      // shrinkWrap: true,
+      // primary: false,
+    );
+  }
+  
 }
 
 class ModalReview extends StatefulWidget {
-
   String kode;
   String title;
   bool site;
@@ -879,7 +868,6 @@ class _ModalReviewState extends State<ModalReview> {
 
     }
   }
-
   void _scrollListener() {
     if (controller.position.pixels == controller.position.maxScrollExtent) {
       if(perpage<total){
@@ -916,24 +904,6 @@ class _ModalReviewState extends State<ModalReview> {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        SizedBox(height:10.0),
-        Center(
-          child: Container(
-            padding: EdgeInsets.only(top:10.0),
-            width: 50,
-            height: 10.0,
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius:  BorderRadius.circular(10.0),
-            ),
-          ),
-        ),
-        SizedBox(height: 20.0),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-          child: WidgetHelper().textQ("Ulasan Produk  ${widget.title}", 12,widget.site?Colors.white:SiteConfig().secondColor, FontWeight.normal,maxLines: widget.title.length),
-        ),
-        SizedBox(height: 20.0),
         isLoading?Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -942,35 +912,35 @@ class _ModalReviewState extends State<ModalReview> {
               WidgetHelper().loadingWidget(context)
             ],
           ),
-        ):reviewModel.result.data.length>0?Expanded(
-          child:Scrollbar(
-              child: ListView.separated(
-                controller: controller,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                itemBuilder: (context, index) {
-                  return WidgetHelper().myPress((){},ReviewWidget(
-                    foto: SiteConfig().noImage,
-                    nama: reviewModel.result.data[index].nama,
-                    tgl: "Sebulan yang lalu ${index+1}",
-                    rate: reviewModel.result.data[index].rate.toString(),
-                    desc: reviewModel.result.data[index].caption,
-                  ));
-                },
-                separatorBuilder: (context, index) {
-                  return Divider(
-                    height: 10,
-                  );
-                },
-                itemCount:reviewModel.result.data.length,
-                primary: false,
-                shrinkWrap: true,
-              )
+        ):reviewModel.result.data.length>0?Container(
+          height: MediaQuery.of(context).size.height/1,
+          child: ListView.separated(
+            controller: controller,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            itemBuilder: (context, index) {
+              return WidgetHelper().myPress((){},ReviewWidget(
+                foto: SiteConfig().noImage,
+                nama: reviewModel.result.data[index].nama,
+                tgl: "Sebulan yang lalu ${index+1}",
+                rate: reviewModel.result.data[index].rate.toString(),
+                desc: reviewModel.result.data[index].caption,
+              ));
+            },
+            separatorBuilder: (context, index) {
+              return Divider(
+                height: 10,
+              );
+            },
+            itemCount:reviewModel.result.data.length,
+            shrinkWrap: true,
+            primary: false,
           ),
         ):EmptyTenant(),
         isLoadmore?Padding(
           padding: EdgeInsets.all(10.0),
           child: WidgetHelper().loadingWidget(context),
         ):Text('')
+
       ],
     );
 

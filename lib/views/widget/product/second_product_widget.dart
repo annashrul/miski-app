@@ -82,7 +82,7 @@ class _SecondProductWidgetState extends State<SecondProductWidget> {
             ),
             child: WidgetHelper().myPress(
                 (){
-                  WidgetHelper().myPush(context, DetailProducrScreen(id: widget.id));},
+                  WidgetHelper().myPush(context, DetailProducrScreen(id: widget.id,mode: mode));},
                 Column(
                   children: [
                     Container(

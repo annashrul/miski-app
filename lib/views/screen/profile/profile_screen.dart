@@ -489,33 +489,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ],
                     ),
                   ),
-                  ListTile(
-                    contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
-                    onTap: () async{
-                      WidgetHelper().loadingDialog(context);
-
-                      await db.deleteAll(SearchingQuery.TABLE_NAME);
-                      print("########################## DATA PENCARIAN BERHASIL DIHAPUS ##########################");
-                      await db.deleteAll(TenantQuery.TABLE_NAME);
-                      print("########################## DATA TENANT BERHASIL DIHAPUS ##########################");
-                      await db.deleteAll(ProductQuery.TABLE_NAME);
-                      print("########################## DATA PRODUCK BERHASIL DIHAPUS ##########################");
-                      await Future.delayed(Duration(seconds: 2));
-                      Navigator.of(context).pop();
-                    },
-                    dense: true,
-                    title: Row(
-                      children: <Widget>[
-                        Icon(
-                          UiIcons.folder_1,
-                          size: 22,
-                          color: Theme.of(context).focusColor,
-                        ),
-                        SizedBox(width: 10),
-                        WidgetHelper().textQ("Hapus Penyimpanan",10,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal)
-                      ],
-                    ),
-                  ),
+                  // ListTile(
+                  //   contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
+                  //   onTap: () async{
+                  //     WidgetHelper().loadingDialog(context);
+                  //
+                  //     await db.deleteAll(SearchingQuery.TABLE_NAME);
+                  //     print("########################## DATA PENCARIAN BERHASIL DIHAPUS ##########################");
+                  //     await db.deleteAll(TenantQuery.TABLE_NAME);
+                  //     print("########################## DATA TENANT BERHASIL DIHAPUS ##########################");
+                  //     await db.deleteAll(ProductQuery.TABLE_NAME);
+                  //     print("########################## DATA PRODUCK BERHASIL DIHAPUS ##########################");
+                  //     await Future.delayed(Duration(seconds: 2));
+                  //     Navigator.of(context).pop();
+                  //   },
+                  //   dense: true,
+                  //   title: Row(
+                  //     children: <Widget>[
+                  //       Icon(
+                  //         UiIcons.folder_1,
+                  //         size: 22,
+                  //         color: Theme.of(context).focusColor,
+                  //       ),
+                  //       SizedBox(width: 10),
+                  //       WidgetHelper().textQ("Hapus Penyimpanan",10,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal)
+                  //     ],
+                  //   ),
+                  // ),
                   ListTile(
                     contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
                     onTap: () {
