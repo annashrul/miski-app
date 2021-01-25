@@ -3,16 +3,10 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@android:color/white" />
     <item>
-<!--        <bitmap-->
-<!--            android:gravity="center"-->
-<!--            android:src="@drawable/splash1"-->
-<!--            android:width="100dp"-->
-<!--            android:height="100dp"-->
-<!--        />-->
-
         <bitmap
             android:gravity="center"
-            android:src="@drawable/splash1"/>
+            android:src="@drawable/logo"
+            />
 
     </item>
 </layer-list>

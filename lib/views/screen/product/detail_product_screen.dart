@@ -404,30 +404,18 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
                 labelPadding: EdgeInsets.symmetric(horizontal: 15),
                 unselectedLabelColor: Colors.white,
                 labelColor: Colors.white,
-                indicator: BoxDecoration(borderRadius: BorderRadius.circular(50), color:SiteConfig().mainColor),
+                indicator: BoxDecoration(borderRadius: BorderRadius.circular(50), color:SiteConfig().secondColor),
                 tabs: [
                   Tab(
                     child: Container(
                       padding: EdgeInsets.symmetric(horizontal: 5),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(50),
-                          border: Border.all(color:SiteConfig().mainColor, width: 1)
+                          border: Border.all(color:SiteConfig().secondColor, width: 1)
                       ),
                       child: Align(
                         alignment: Alignment.center,
-                        child: WidgetHelper().textQ("Produk",12,Colors.white,FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  Tab(
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 5),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(50),
-                          border: Border.all(color: SiteConfig().mainColor, width: 1)),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: WidgetHelper().textQ("Detail",12,Colors.white,FontWeight.bold),
+                        child: WidgetHelper().textQ("Produk",12,Colors.grey,FontWeight.bold),
                       ),
                     ),
                   ),
@@ -436,10 +424,22 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
                       padding: EdgeInsets.symmetric(horizontal: 5),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(50),
-                          border: Border.all(color:SiteConfig().mainColor, width: 1)),
+                          border: Border.all(color: SiteConfig().secondColor, width: 1)),
                       child: Align(
                         alignment: Alignment.center,
-                        child: WidgetHelper().textQ("Ulasan",12,Colors.white,FontWeight.bold),
+                        child: WidgetHelper().textQ("Detail",12,Colors.grey,FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  Tab(
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 5),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          border: Border.all(color:SiteConfig().secondColor, width: 1)),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: WidgetHelper().textQ("Ulasan",12,Colors.grey,FontWeight.bold),
                       ),
                     ),
                   ),
@@ -499,6 +499,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
                                     initialRating: double.parse(rating),
                                     direction: Axis.horizontal,
                                     itemCount: 5,
+                                    unratedColor: SiteConfig().secondColor,
                                     itemPadding: EdgeInsets.only(right: 4.0),
                                     itemBuilder: (context, index) {
                                       switch (index) {
@@ -535,14 +536,13 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
                                   ),
                                   if(int.parse(stockSales)>0) Expanded(
                                     child: Padding(
-                                      padding: EdgeInsets.only(right:5.0),
+                                      padding: EdgeInsets.only(right:5.0,top:5.0),
                                       child: WidgetHelper().textQ(stockSales+" terjual",12,widget.mode?SiteConfig().secondDarkColor:SiteConfig().darkMode,FontWeight.normal,maxLines: title.length),
                                     ),
                                   )
                                 ],
                               ),
                             ),
-
                         ),
                       ),
                       varian.length>0?Padding(
@@ -551,10 +551,10 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
                           dense: true,
                           contentPadding: EdgeInsets.symmetric(vertical: 0),
                           leading: Icon(
-                            UiIcons.box,
+                            UiIcons.medal,
                             color: widget.mode?Colors.white:Theme.of(context).hintColor,
                           ),
-                          title: WidgetHelper().textQ("Pilih Varian", 14, widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.bold),
+                          title: WidgetHelper().textQ("Varian", 14, widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.bold),
                         ),
                       ):Container(),
                       varian.length>0?Container(
@@ -661,12 +661,12 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      WidgetHelper().titleQ("Deskripsi",param: '',color: widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor,icon: Icon(UiIcons.file_2),padding: EdgeInsets.only(left:10,right:10)),
+                      WidgetHelper().titleQ("Deskripsi",param: '',color: widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor,icon: Icon(UiIcons.file_2,color: widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor),padding: EdgeInsets.only(left:10,right:10)),
                       Padding(
                         padding: EdgeInsets.all(10.0),
-                        child: WidgetHelper().textQ(deskripsi, 12, widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.normal,maxLines: 10000),
+                        child: WidgetHelper().textQ(deskripsi, 12, widget.mode?SiteConfig().secondDarkColor:SiteConfig().darkMode, FontWeight.normal,maxLines: 10000),
                       ),
-                      if(hargaBertingkat.length>0) WidgetHelper().titleQ("Harga Spesial",param: '',color: widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor,icon: Icon(UiIcons.money),padding: EdgeInsets.only(left:10,right:10)),
+                      if(hargaBertingkat.length>0) WidgetHelper().titleQ("Harga Spesial",param: '',color: widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor,icon: Icon(UiIcons.money,color: widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor,),padding: EdgeInsets.only(left:10,right:10)),
                       if(hargaBertingkat.length>0) Padding(
                         padding: EdgeInsets.all(10.0),
                         child: hargaGrosir(context)
@@ -675,7 +675,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
                   ),
                 ),
               ),
-                Offstage(
+              Offstage(
                   offstage: 2 != _tabIndex,
                   child: Column(
                     children: [
@@ -786,8 +786,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
       ),
     );
   }
-  
-  
+
   Widget hargaGrosir(BuildContext context){
     return Container(
       height: MediaQuery.of(context).size.height/1,
@@ -800,7 +799,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
         itemBuilder: (context,index){
           return Padding(
             padding: EdgeInsets.only(top:10,bottom:10),
-            child: WidgetHelper().textQ("Beli produk ini sebanyak ${hargaBertingkat[index].dari} sampai ${hargaBertingkat[index].sampai} mendapatkan harga hanya ${FunctionHelper().formatter.format(int.parse(hargaBertingkat[index].harga))}", 12,widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.normal),
+            child: WidgetHelper().textQ("Beli produk ini sebanyak ${hargaBertingkat[index].dari} sampai ${hargaBertingkat[index].sampai} mendapatkan harga hanya ${FunctionHelper().formatter.format(int.parse(hargaBertingkat[index].harga))}", 12,widget.mode?SiteConfig().secondDarkColor:SiteConfig().darkMode, FontWeight.normal),
           );
         },
         separatorBuilder: (context, index) {
