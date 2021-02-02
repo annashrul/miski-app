@@ -15,6 +15,7 @@ import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/promo/global_promo_model.dart';
 import 'package:netindo_shop/model/tenant/list_product_tenant_model.dart';
 import 'package:netindo_shop/provider/base_provider.dart';
+import 'package:netindo_shop/provider/product_provider.dart';
 import 'package:netindo_shop/views/screen/product/cart_screen.dart';
 import 'package:netindo_shop/views/screen/product/detail_product_screen.dart';
 import 'package:netindo_shop/views/screen/wrapper_screen.dart';
@@ -38,7 +39,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   GlobalKey key = GlobalKey();
-
   final userRepository = UserHelper();
   final DatabaseConfig _helper = new DatabaseConfig();
   ListProductTenantModel productTenantModel;
@@ -46,64 +46,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
   ScrollController controller;
   bool isLoadingFav=true,isLoading=false,isLoadingSlider=false,isLoadmore=false,isTimeout=false,isShowChild=false;
   int _current=0,perpage=10,totalCart=0,total=0;
+  List returnProductLocal = [],returnGroup = [], returnCategory = [],returnBrand = [],resFavoriteProduct = [];
+  String q='',group='',category='',brand='';
+
   Future getProduct()async{
-    print("################################# GET PRODUCT #####################################");
-    var resProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? LIMIT $perpage",[widget.id]);
-    var resTotalProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=?",[widget.id]);
-    // if(q!=''&&brand!=''){
-    //   print("IF 1");
-    //   resProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and title LIKE '%$q%' and id_brand=?",[widget.id,brand]);
-    //   resTotalProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and title LIKE '%$q%' and id_brand=?",[widget.id,brand]);
-    // }
-    if(brand!=''){
-      print("IF 2");
-      resProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and id_brand=?",[widget.id,brand]);
-      resTotalProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and id_brand=?",[widget.id,brand]);
-    }
-
-    // if(q!=''){
-    //   print("IF 3");
-    //
-    //   resProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and title LIKE '%$q%'",[widget.id]);
-    //   resTotalProductLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and title LIKE '%$q%'",[widget.id]);
-    // }
-
-    if(resProductLocal.length>0){
-      print("IF 4");
-      setState(() {
-        returnProductLocal = resProductLocal;
-        total=resTotalProductLocal.length;
-        isLoading=false;
-        isLoadmore=false;
-      });
-    }
-    else{
-      var resProduct = await FunctionHelper().baseProduct('perpage=$perpage&tenant=${widget.id}');
-      if(resProduct[0]['total']>0){
-        setState(() {
-          returnProductLocal = resProductLocal;
-          total=resTotalProductLocal.length;
-          productTenantModel = resProduct[0]['data'];
-          total=resProduct[0]['total'];
-          isLoading=false;
-          isLoadmore=false;
-        });
-      }
-      else{
-        setState(() {
-          returnProductLocal = resProductLocal;
-          total=resTotalProductLocal.length;
-          isLoading=false;
-          isTimeout=true;
-        });
-      }
-    }
-    print("################################# END GET PRODUCT #####################################");
-
+    final prod = await ProductProvider().getProduct({'perpage':perpage,'id_tenant':widget.id,'id_brand':brand});
+    setState(() {
+      returnProductLocal = prod['data'];
+      total=prod['total'];
+      isLoading=false;
+      isLoadmore=false;
+    });
   }
   Future getPromo()async{
     var res = await BaseProvider().getProvider("promo?page=1", globalPromoModelFromJson);
-    print(res);
     if(res==SiteConfig().errSocket||res==SiteConfig().errTimeout){
       setState(() {
         isLoadingSlider=false;
@@ -122,22 +78,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
     }
 
   }
-  List returnProductLocal = [];
-  String q='',group='',category='',brand='';
-  List returnGroup = [];
-  List returnCategory = [];
-  List returnBrand = [];
-  List resFavoriteProduct = [];
   Future getFavorite()async{
     final res = await _helper.getWhereByTenant(ProductQuery.TABLE_NAME,widget.id,"is_favorite","true");
     setState(() {
       resFavoriteProduct = res;
       isLoadingFav=false;
     });
-    print("FAVORITE $res");
   }
   Future loadGroup()async{
-    print("LOAD GROUP");
     var group = await _helper.getData(GroupQuery.TABLE_NAME);
     List groups = [];
     group.forEach((element) {
@@ -156,9 +104,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
     });
   }
   Future loadCategory()async{
-    print("LOAD CATEGORY");
     var cat = await _helper.getData(CategoryQuery.TABLE_NAME);
-    print(cat);
     List catagories = [];
     cat.forEach((element) {
       catagories.add({
@@ -172,7 +118,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
     });
   }
   Future loadBrand()async{
-    print("LOAD BRAND");
     var br = await _helper.getData(BrandQuery.TABLE_NAME);
     List brand = [];
     br.forEach((element) {
@@ -194,7 +139,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
     });
   }
   Future loadData(param)async{
-    print("################################# LOAD DATA #####################################");
     setState(() {
       isTimeout=false;
       isLoading=true;
@@ -206,26 +150,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
     var totalProduct = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=?",[widget.id]);
     await FunctionHelper().setSession("id_tenant", widget.id);
     if(totalProduct.length<1){
-      print("IF 1");
       await _helper.delete(ProductQuery.TABLE_NAME, "id_tenant", widget.id);
       await FunctionHelper().insertProduct(widget.id);
       await getProduct();
     }
     if(param=='refresh'){
-      print("IF 2");
       await _helper.delete(ProductQuery.TABLE_NAME, "id_tenant", widget.id);
       await FunctionHelper().insertProduct(widget.id);
       await getProduct();
     }
     if(totalProduct.length<5&&totalProduct.length>1&&param!='refresh'){
-      print("IF 3");
       await _helper.delete(ProductQuery.TABLE_NAME, "id_tenant", widget.id);
       await FunctionHelper().insertProduct(widget.id);
       await getProduct();
     }
-    print("################################# END LOAD DATA #####################################");
-
-
   }
   Future<void> _handleRefresh()async {
     await FunctionHelper().getFilterLocal(widget.id);
@@ -291,8 +229,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
       )
     );
   }
-
-
   Widget buildContents(BuildContext context){
     return RefreshWidget(
       widget: CustomScrollView(
@@ -488,9 +424,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                                 itemCount: returnProductLocal.length,
                                 itemBuilder: (BuildContext context, int index) {
                                   var valProductServer =  returnProductLocal[index];
-                                  // print("STOCK ${valProductServer['stock']}");
-                                  // print("STOCK SALES ${valProductServer['stock_sales']}");
                                   return ProductWidget(
+                                    mode:widget.mode,
                                     id: valProductServer['id_product'],
                                     gambar: valProductServer['gambar'],
                                     title: '${valProductServer['title']}',
@@ -547,7 +482,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                 autoPlay: true,
                 height: 300,
                 onPageChanged: (index,reason) {
-                  print(index);
                   setState(() {
                     _current=index;
                   });
@@ -629,7 +563,6 @@ class _ModalSearchState extends State<ModalSearch> {
       });
       loadSearch();
     }
-
   }
   Future loadSearch()async{
     var res = await db.getRow("SELECT * FROM ${SearchingQuery.TABLE_NAME} ORDER BY title DESC");

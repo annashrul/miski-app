@@ -31,7 +31,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
   ScrollController controller;
   bool isLoadmore=false;
   bool isTimeout=false;
-  List arrFilter = ["Dari Tanggal","Sampai Tanggal","Semua Status"];
+  // List arrFilter = FunctionHelper.arrOptDate;
   int filterStatus=5;
   String dateFrom="";
   String dateTo="";
@@ -44,10 +44,10 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
     if(filterStatus!=5){
       par+="&status=$filterStatus";
     }
-    if(dateFrom!=""&&dateTo!=""){
-      par+="&datefrom=$dateFrom&dateto=$dateTo";
-    }
-    print(par);
+    // if(dateFrom!=""&&dateTo!=""){
+    //   par+="&datefrom=$dateFrom&dateto=$dateTo";
+    // }
+    // print(par);
     var res = await BaseProvider().getProvider(par, historyTransactionModelFromJson);
     if(res is HistoryTransactionModel){
       setState(() {
@@ -96,7 +96,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
           if (param == '1') {
             setState(() {
               dateFrom = '${_dateTime.year}-${_dateTime.month.toString().padLeft(2, '0')}-${_dateTime.day.toString().padLeft(2, '0')}';
-              arrFilter[0] = dateFrom;
+              // arrFilter[0] = dateFrom;
               isLoading=true;
             });
             loadHistory();
@@ -104,7 +104,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
           else {
             setState(() {
               dateTo = '${_dateTime.year}-${_dateTime.month.toString().padLeft(2, '0')}-${_dateTime.day.toString().padLeft(2, '0')}';
-              arrFilter[1] = dateTo;
+              // arrFilter[1] = dateTo;
               isLoading=true;
             });
             loadHistory();
@@ -136,8 +136,8 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
 
   changeStatus(){
     setState(() {
-      arrFilter[2] = FunctionHelper.arrOptDate[widget.status];
-      filterStatus = widget.status;
+      // arrFilter[2] = FunctionHelper.arrOptDate[widget.status];
+      // filterStatus = widget.status;
     });
   }
 
@@ -152,6 +152,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
   void initState() {
     // TODO: implement initState
     super.initState();
+    // if(widget.)
     filterStatus=widget.status;
     isLoading=true;
     controller = new ScrollController()..addListener(_scrollListener);
@@ -161,10 +162,10 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
     dateFrom = formattedDate;
     dateTo = formattedDate;
     _dateTime = DateTime.parse(formattedDate);
-    arrFilter[0]=dateFrom;
-    arrFilter[1]=dateTo;
+    // arrFilter[0]=dateFrom;
+    // arrFilter[1]=dateTo;
     loadHistory();
-    changeStatus();
+    // changeStatus();
   }
 
   @override
@@ -189,29 +190,30 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                 flex: 1,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: arrFilter.length,
+                  itemCount: FunctionHelper.arrOptDate.length,
                   itemBuilder: (context,index){
+                    // print(arrFilter[index]);
                     return  WidgetHelper().myPress(
-                            (){
-                          if(index==0||index==1){
-                            index==0?_showDatePicker('1'):_showDatePicker('2');
-                          }
-                          else{
-                            modalFilter(context,index);
-                          }
+                        (){
+                          setState(() {
+                            isLoading=true;
+                            filterStatus = index;
+                          });
+                          loadHistory();
+
                         },
                         Container(
                           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
                           decoration: BoxDecoration(
-                            border: Border.all(width:1.0,color: widget.mode?Colors.white10:Colors.grey[200]),
+                            border: Border.all(width:1.0,color: filterStatus==index?SiteConfig().mainColor:widget.mode?Colors.white10:Colors.grey[200]),
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              WidgetHelper().textQ("${arrFilter[index]}", 10,Colors.grey, FontWeight.bold),
-                              Icon(Icons.keyboard_arrow_down,size: 17.0,color: Colors.grey,),
+                              WidgetHelper().textQ("${FunctionHelper.arrOptDate[index]}", 10,Colors.grey, FontWeight.bold),
+                              // Icon(Icons.keyboard_arrow_down,size: 17.0,color: Colors.grey,),
                             ],
                           ),
                         )
@@ -302,7 +304,6 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                                     padding: EdgeInsets.only(left:10,right:10,top:0),
                                     child: Row(
                                       children: [
-
                                         Image.network(valDet[0]?.gambar,height: 50,width: 50,fit: BoxFit.fill,),
                                         SizedBox(width: 10.0),
                                         Column(
@@ -311,10 +312,6 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                                               width: MediaQuery.of(context).size.width/2,
                                               child: WidgetHelper().textQ(valDet[0].barang,12,widget.mode?SiteConfig().accentColor:Colors.black87,FontWeight.normal),
                                             ),
-                                            // Container(
-                                            //   width: MediaQuery.of(context).size.width/1,
-                                            //   child: Expanded(child: WidgetHelper().textQ(valDet[0].barang,12,widget.mode?SiteConfig().accentColor:Colors.black87,FontWeight.normal)),
-                                            // ),
                                             WidgetHelper().textQ("${valDet.length} barang",10,Colors.grey,FontWeight.normal),
                                             WidgetHelper().textQ("Ukuran ${valDet[0].subvarian!=null?valDet[0].subvarian:"-"} Warna ${valDet[0].varian!=null?valDet[0].varian:"-"}",10,Colors.grey,FontWeight.normal),
                                           ],
@@ -407,129 +404,129 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
   }
 
 
-  Widget modalFilter(BuildContext context,int index){
-    WidgetHelper().myModal(context, Container(
-      decoration: BoxDecoration(
-        color: widget.mode?SiteConfig().darkMode:Colors.white,
-        borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0),topRight: Radius.circular(20.0))
-      ),
-      height: MediaQuery.of(context).size.height/1.5,
-      child:Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          SizedBox(height:10.0),
-          Center(
-            child: Container(
-              padding: EdgeInsets.only(top:10.0),
-              width: 50,
-              height: 10.0,
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius:  BorderRadius.circular(10.0),
-              ),
-            ),
-          ),
-          SizedBox(height: 20.0),
-          Expanded(
-            child:FilterStatus(
-              site:widget.mode,
-              val: filterStatus,
-              callback: (idx,txt){
-                setState(() {
-                  arrFilter[2] = txt;
-                  filterStatus = idx;
-                });
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 10),
-            child: WidgetHelper().buttonQ(context,(){
-              Navigator.of(context).pop();
-              setState(() {
-                isLoading=true;
-              });
-              loadHistory();
-            },"Terapkan"),
-          )
-        ],
-      ),
-    ));
-  }
+  // Widget modalFilter(BuildContext context,int index){
+  //   WidgetHelper().myModal(context, Container(
+  //     decoration: BoxDecoration(
+  //       color: widget.mode?SiteConfig().darkMode:Colors.white,
+  //       borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0),topRight: Radius.circular(20.0))
+  //     ),
+  //     height: MediaQuery.of(context).size.height/1.5,
+  //     child:Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       mainAxisSize: MainAxisSize.min,
+  //       mainAxisAlignment: MainAxisAlignment.start,
+  //       children: <Widget>[
+  //         SizedBox(height:10.0),
+  //         Center(
+  //           child: Container(
+  //             padding: EdgeInsets.only(top:10.0),
+  //             width: 50,
+  //             height: 10.0,
+  //             decoration: BoxDecoration(
+  //               color: Colors.grey[200],
+  //               borderRadius:  BorderRadius.circular(10.0),
+  //             ),
+  //           ),
+  //         ),
+  //         SizedBox(height: 20.0),
+  //         Expanded(
+  //           child:FilterStatus(
+  //             site:widget.mode,
+  //             val: filterStatus,
+  //             callback: (idx,txt){
+  //               setState(() {
+  //                 arrFilter[2] = txt;
+  //                 filterStatus = idx;
+  //               });
+  //             },
+  //           ),
+  //         ),
+  //         Padding(
+  //           padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 10),
+  //           child: WidgetHelper().buttonQ(context,(){
+  //             Navigator.of(context).pop();
+  //             setState(() {
+  //               isLoading=true;
+  //             });
+  //             loadHistory();
+  //           },"Terapkan"),
+  //         )
+  //       ],
+  //     ),
+  //   ));
+  // }
 }
 
-
-class FilterStatus extends StatefulWidget {
-  FilterStatus({
-    Key key,
-    @required this.site,
-    @required this.val,
-    @required this.callback,
-  }) : super(key: key);
-  bool site;
-  String title;
-  final int val;
-  final Function(int idx,String txt) callback;
-  @override
-  _FilterStatusState createState() => _FilterStatusState();
-}
-
-class _FilterStatusState extends State<FilterStatus> {
-  int value=5;
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    value=widget.val;
-  }
-  @override
-  Widget build(BuildContext context) {
-    return Scrollbar(
-        child: ListView.separated(
-          key: PageStorageKey<String>('FilterStatus'),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-          itemBuilder: (context, index) {
-            return ListTile(
-              onTap: (){
-                setState(() {
-                  value = index;
-                });
-                widget.callback(index,FunctionHelper.arrOptDate[index]);
-              },
-              contentPadding: EdgeInsets.only(left:10,right:10,top:0,bottom:0),
-              title: WidgetHelper().textQ("${FunctionHelper.arrOptDate[index]}", 14,widget.site?Colors.white:SiteConfig().darkMode, FontWeight.bold),
-              trailing: value==index?Icon(UiIcons.checked,color: widget.site?Colors.grey[200]:SiteConfig().darkMode):Text(
-                  ''
-              ),
-            );
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                WidgetHelper().textQ("${FunctionHelper.arrOptDate[index]}", 12,SiteConfig().secondColor, FontWeight.bold),
-                new Radio(
-                  value: index,
-                  groupValue: value,
-                  onChanged: (val){
-                    widget.callback(val,FunctionHelper.arrOptDate[val]);
-                    setState(() {
-                      value = index;
-                    });
-                  },
-                ),
-              ],
-            );
-          },
-          separatorBuilder: (context, index) {
-            return Divider(
-              height: 1,
-            );
-          },
-          itemCount:FunctionHelper.arrOptDate.length,
-          primary: false,
-          shrinkWrap: true,
-        )
-    );
-  }
-}
+//
+// class FilterStatus extends StatefulWidget {
+//   FilterStatus({
+//     Key key,
+//     @required this.site,
+//     @required this.val,
+//     @required this.callback,
+//   }) : super(key: key);
+//   bool site;
+//   String title;
+//   final int val;
+//   final Function(int idx,String txt) callback;
+//   @override
+//   _FilterStatusState createState() => _FilterStatusState();
+// }
+//
+// class _FilterStatusState extends State<FilterStatus> {
+//   int value=5;
+//   @override
+//   void initState() {
+//     // TODO: implement initState
+//     super.initState();
+//     value=widget.val;
+//   }
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scrollbar(
+//         child: ListView.separated(
+//           key: PageStorageKey<String>('FilterStatus'),
+//           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+//           itemBuilder: (context, index) {
+//             return ListTile(
+//               onTap: (){
+//                 setState(() {
+//                   value = index;
+//                 });
+//                 widget.callback(index,FunctionHelper.arrOptDate[index]);
+//               },
+//               contentPadding: EdgeInsets.only(left:10,right:10,top:0,bottom:0),
+//               title: WidgetHelper().textQ("${FunctionHelper.arrOptDate[index]}", 14,widget.site?Colors.white:SiteConfig().darkMode, FontWeight.bold),
+//               trailing: value==index?Icon(UiIcons.checked,color: widget.site?Colors.grey[200]:SiteConfig().darkMode):Text(
+//                   ''
+//               ),
+//             );
+//             return Row(
+//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//               children: [
+//                 WidgetHelper().textQ("${FunctionHelper.arrOptDate[index]}", 12,SiteConfig().secondColor, FontWeight.bold),
+//                 new Radio(
+//                   value: index,
+//                   groupValue: value,
+//                   onChanged: (val){
+//                     widget.callback(val,FunctionHelper.arrOptDate[val]);
+//                     setState(() {
+//                       value = index;
+//                     });
+//                   },
+//                 ),
+//               ],
+//             );
+//           },
+//           separatorBuilder: (context, index) {
+//             return Divider(
+//               height: 1,
+//             );
+//           },
+//           itemCount:FunctionHelper.arrOptDate.length,
+//           primary: false,
+//           shrinkWrap: true,
+//         )
+//     );
+//   }
+// }

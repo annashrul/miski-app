@@ -32,6 +32,7 @@ class BadgesQ extends StatelessWidget {
 
 
 class ProductWidget extends StatefulWidget {
+  final bool mode;
   final String id;
   final String gambar;
   final String title;
@@ -44,6 +45,7 @@ class ProductWidget extends StatefulWidget {
   final String disc2;
   final Function countCart;
   ProductWidget({
+    this.mode,
     this.id,
     this.gambar,
     this.title,
@@ -65,17 +67,8 @@ class _ProductWidgetState extends State<ProductWidget> {
   final DatabaseConfig _helper = new DatabaseConfig();
   Future insertProductClick()async{
     await FunctionHelper().storeClickProduct(widget.id);
-    // final idTenant = await FunctionHelper().getSession("id_tenant");
-    // await _helper.updateData(ProductQuery.TABLE_NAME,"is_click", "true", idTenant, widget.id.toString());
   }
 
-  bool mode=false;
-  Future getMode()async{
-    var res = await FunctionHelper().getSite();
-    setState(() {
-      mode=res;
-    });
-  }
 
 
 
@@ -83,8 +76,6 @@ class _ProductWidgetState extends State<ProductWidget> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getMode();
-
   }
   @override
   Widget build(BuildContext context) {
@@ -109,16 +100,12 @@ class _ProductWidgetState extends State<ProductWidget> {
           decoration: BoxDecoration(
               color: Theme.of(context).focusColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
-            // boxShadow: [
-            //   BoxShadow(color: mode?Colors.transparent:Theme.of(context).hintColor.withOpacity(0.1), offset: Offset(0, 3), blurRadius: 10)
-            // ],
-              // border: Border.all(width:1.0,color: mode?Colors.white10:Colors.grey[200])
           ),
           child:  WidgetHelper().myPress(
                   ()async{
                 await Future.delayed(Duration(milliseconds: 90));
                 await insertProductClick();
-                WidgetHelper().myPushAndLoad(context, DetailProducrScreen(id: widget.id,mode: mode), widget.countCart);
+                WidgetHelper().myPushAndLoad(context, DetailProducrScreen(id: widget.id,mode: widget.mode), widget.countCart);
               },
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -141,7 +128,7 @@ class _ProductWidgetState extends State<ProductWidget> {
                   SizedBox(height: 12),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                    child: WidgetHelper().textQ(widget.title, 12,mode?Colors.white:SiteConfig().darkMode,FontWeight.normal,maxLines:3 ),
+                    child: WidgetHelper().textQ(widget.title, 12,widget.mode?Colors.white:SiteConfig().darkMode,FontWeight.normal,maxLines:3 ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -218,7 +205,7 @@ class _ProductWidgetState extends State<ProductWidget> {
                   SizedBox(height: 15),
                 ],
               ),
-            color: mode?Colors.white10:Colors.black38
+            color:widget.mode?Colors.white10:Colors.black38
           ),
         ),
 
@@ -284,6 +271,7 @@ class _FirstProductWidgetState extends State<FirstProductWidget> {
     getMode();
 
   }
+
   @override
   Widget build(BuildContext context) {
     Random random = new Random();
