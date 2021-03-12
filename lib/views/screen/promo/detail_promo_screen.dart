@@ -8,26 +8,19 @@ import 'package:netindo_shop/views/screen/wrapper_screen.dart';
 
 class DetailPromoScreen extends StatefulWidget {
   final String id;
-  bool mode;
-  DetailPromoScreen({this.id,this.mode});
+  DetailPromoScreen({this.id});
   @override
   _DetailPromoScreenState createState() => _DetailPromoScreenState();
 }
 
 class _DetailPromoScreenState extends State<DetailPromoScreen> {
-  bool site=false;
-  Future getMode()async{
-    var res = await FunctionHelper().getSite();
-    setState(() {
-      site=res;
-    });
-  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: widget.mode?SiteConfig().darkMode:Colors.white,
-      appBar: WidgetHelper().appBarWithButton(context,"Detail Promo",(){Navigator.pop(context);},<Widget>[],brightness: widget.mode?Brightness.dark:Brightness.light),
+      backgroundColor: Colors.white,
+      appBar: WidgetHelper().appBarWithButton(context,"Detail Promo",(){Navigator.pop(context);},<Widget>[],brightness: Brightness.light),
       body: ListView(
         padding: EdgeInsets.all(0.0),
         children: [
@@ -42,7 +35,7 @@ class _DetailPromoScreenState extends State<DetailPromoScreen> {
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.only(topRight: Radius.circular(20.0),topLeft: Radius.circular(20.0)),
-              color: widget.mode?Colors.transparent:Colors.white,
+              color: Colors.white,
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -50,7 +43,7 @@ class _DetailPromoScreenState extends State<DetailPromoScreen> {
               children: [
                 Padding(
                   padding: EdgeInsets.all(10),
-                  child: WidgetHelper().textQ("Pasti Jago dan Berpengalaman",14,widget.mode?Colors.white:Colors.grey,FontWeight.bold),
+                  child: WidgetHelper().textQ("Pasti Jago dan Berpengalaman",14,Colors.grey,FontWeight.bold),
                 ),
                 Padding(
                   padding: EdgeInsets.all(10),
@@ -124,7 +117,7 @@ class _DetailPromoScreenState extends State<DetailPromoScreen> {
                       height: 1.0,
                       color:Colors.grey,
                     ),
-                    WidgetHelper().textQ("TERM & CONDITION",14,widget.mode?Colors.white:Colors.grey,FontWeight.bold),
+                    WidgetHelper().textQ("TERM & CONDITION",14,Colors.grey,FontWeight.bold),
                     Container(
                       width: MediaQuery.of(context).size.width/4,
                       height: 1.0,

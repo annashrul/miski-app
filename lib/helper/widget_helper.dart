@@ -7,6 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
@@ -14,6 +15,7 @@ import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/screen_util_helper.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/helper/user_helper.dart';
+import 'package:shimmer/shimmer.dart';
 
 class WidgetHelper{
   animShakeWidget(BuildContext context,Widget child,{bool enable=true}){
@@ -151,7 +153,7 @@ class WidgetHelper{
   myPushAndLoad(BuildContext context, Widget widget,Function callback){
     return Navigator.push(context, CupertinoPageRoute(builder: (context) => widget)).whenComplete(callback);
   }
-  loadingDialog(BuildContext context,{title='tunggu sebentar'}){
+  loadingDialog(BuildContext context,{Color color=Colors.black,title='tunggu sebentar'}){
     return showDialog(
       barrierDismissible: false,
       context: context,
@@ -159,12 +161,15 @@ class WidgetHelper{
         return ConstrainedBox(
             constraints: BoxConstraints(maxHeight: 100.0),
             child: AlertDialog(
+              backgroundColor: Colors.transparent,
               content: Row(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.grey), semanticsLabel: 'tunggu sebentar', backgroundColor: Colors.black),
-                  SizedBox(width:10.0),
-                  textQ(title, 12, Colors.grey,FontWeight.bold)
+                  SpinKitFadingGrid(color: color, shape: BoxShape.rectangle),
+                  // CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.grey), semanticsLabel: 'tunggu sebentar', backgroundColor: Colors.black),
+                  // SizedBox(width:10.0),
+                  // textQ(title, 12, Colors.grey,FontWeight.bold)
                   // RichText(text: TextSpan(text:'Tunggu Sebentar ...', style: TextStyle(fontWeight:FontWeight.bold,color:Theme.of(context).primaryColorDark, fontSize: 14)))
                 ],
               ),
@@ -178,12 +183,21 @@ class WidgetHelper{
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.grey), semanticsLabel: 'tunggu sebentar', backgroundColor: Colors.black),
-          SizedBox(width:10.0),
-          textQ("tunggu sebentar ...", 12,Colors.grey,FontWeight.bold)
+          SpinKitFadingGrid(color: color, shape: BoxShape.rectangle),
+          // CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.grey), semanticsLabel: 'tunggu sebentar', backgroundColor: Colors.black),
+          // SizedBox(width:10.0),
+          // textQ("tunggu sebentar ...", 12,Colors.grey,FontWeight.bold)
           // RichText(text: TextSpan(text:'Tunggu Sebentar ...', style: TextStyle(fontWeight:FontWeight.bold,color:Theme.of(context).primaryColorDark, fontSize: 14)))
         ],
       ),
+    );
+  }
+  baseLoading(BuildContext context,Widget widget){
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300],
+      highlightColor: Colors.grey[100],
+      enabled: true,
+      child: widget,
     );
   }
   textQ(String txt,double size,Color color,FontWeight fontWeight,{double letterSpacing=0,TextDecoration textDecoration,TextAlign textAlign = TextAlign.left,int maxLines=2}){

@@ -50,6 +50,9 @@ class _SecureCodeScreenState extends State<SecureCodeScreen> {
     timeCounter = 10;
     _timerUpdate();
   }
+
+
+
   bool isLoadingReOtp=false;
   @override
   Widget build(BuildContext context) {

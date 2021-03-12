@@ -23,27 +23,20 @@ class _RefreshWidgetState extends State<RefreshWidget> {
       widget.callback();
     });
   }
-  bool site=false;
-  Future getSite()async{
-    final res = await FunctionHelper().getSite();
-    setState(() {
-      site = res;
-    });
-  }
+
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getSite();
   }
 
   @override
   Widget build(BuildContext context) {
     return LiquidPullToRefresh(
       child: widget.widget,
-      backgroundColor:site?Colors.white:SiteConfig().mainColor,
-      color: site?SiteConfig().darkMode:Colors.white,
+      backgroundColor:SiteConfig().mainColor,
+      color: Colors.white,
       key: _refreshIndicatorKey,
       onRefresh:handleRefresh,
       showChildOpacityTransition: false,

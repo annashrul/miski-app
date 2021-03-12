@@ -20,19 +20,18 @@ StreamController<bool> isLightTheme = StreamController();
 
 void main()async{
   WidgetsFlutterBinding.ensureInitialized(); //all widgets are rendered here
-  final res = await FunctionHelper().getSite();
+  // final res = await FunctionHelper().getSite();
   runApp(
     ChangeNotifierProvider<ThemeModel>(
       create: (context) => ThemeModel(),
-      child: MyApp(mode:res),
+      child: MyApp(),
     ),
   );
   // runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
-  final mode;
-  MyApp({this.mode});
+
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -62,7 +61,6 @@ class _MyAppState extends State<MyApp> {
     };
     OneSignal.shared.init(SiteConfig().oneSignalId, iOSSettings: settings);
     _db.openDB();
-    print("MODE MY APP ${widget.mode}");
   }
 
   @override
@@ -79,17 +77,17 @@ class _MyAppState extends State<MyApp> {
         dialogBackgroundColor: Colors.white,
         // splashColor: Colors.black38,
         // highlightColor: Colors.black38,
-        scaffoldBackgroundColor: widget.mode?SiteConfig().darkMode:Colors.white,
-        backgroundColor: widget.mode?SiteConfig().darkMode:Colors.white,
+        scaffoldBackgroundColor: Colors.white,
+        backgroundColor: Colors.white,
         visualDensity: VisualDensity.adaptivePlatformDensity,
         fontFamily: SiteConfig().fontStyle,
-        primaryColor: widget.mode?SiteConfig().darkMode:Colors.white,
-        brightness: widget.mode?Brightness.dark:Brightness.light,
+        primaryColor: Colors.white,
+        brightness:Brightness.light,
         accentColor: config.Colors().mainColor(1),
         focusColor: config.Colors().accentColor(1),
         hintColor: config.Colors().secondColor(1),
       ),
-      home:  SplashScreen(mode:widget.mode),
+      home:  SplashScreen(),
     );
     // return StreamBuilder<bool>(
     //     initialData: true,

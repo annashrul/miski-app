@@ -17,26 +17,19 @@ class ListPromoScreen extends StatefulWidget {
 class _ListPromoScreenState extends State<ListPromoScreen> {
   Random random = new Random();
   // int random_number = random.nextInt(10000000);
-  bool mode=false;
-  Future getMode()async{
-    var res = await FunctionHelper().getSite();
-    setState(() {
-      mode=res;
-    });
-  }
+
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getMode();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: mode?SiteConfig().darkMode:Colors.white,
-      appBar: WidgetHelper().appBarWithButton(context,"Daftar Promo",(){Navigator.pop(context);},<Widget>[],brightness: mode?Brightness.dark:Brightness.light),
+      backgroundColor:Colors.white,
+      appBar: WidgetHelper().appBarWithButton(context,"Daftar Promo",(){Navigator.pop(context);},<Widget>[],brightness: Brightness.light),
       body: RefreshWidget(
         widget: ListView.separated(
             padding: EdgeInsets.all(10.0),
@@ -46,7 +39,7 @@ class _ListPromoScreenState extends State<ListPromoScreen> {
                 alignment: AlignmentDirectional.topCenter,
                 children: [
                   WidgetHelper().myPress(
-                      (){WidgetHelper().myPush(context, DetailPromoScreen(id: '',mode: mode));},
+                      (){WidgetHelper().myPush(context, DetailPromoScreen(id: ''));},
                       Container(
                         padding: EdgeInsets.only(bottom:10.0),
                         // margin: EdgeInsets.only(bottom: 10.0),
@@ -55,7 +48,7 @@ class _ListPromoScreenState extends State<ListPromoScreen> {
                           // border: Border.all(width:3.0,color: Colors.grey[200]),
                           boxShadow: [
                             BoxShadow(
-                              color: mode?Colors.grey[200].withOpacity(0.1):Colors.grey.withOpacity(0.2),
+                              color:Colors.grey.withOpacity(0.2),
                               spreadRadius: 2,
                               blurRadius: 0,
                               offset: Offset(0, 4),
@@ -82,7 +75,7 @@ class _ListPromoScreenState extends State<ListPromoScreen> {
                             SizedBox(height: 12),
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                              child: WidgetHelper().textQ("Selamat datang di ${SiteConfig().siteName}", 14,mode?Colors.grey[200]:SiteConfig().darkMode,FontWeight.bold),
+                              child: WidgetHelper().textQ("Selamat datang di ${SiteConfig().siteName}", 14,SiteConfig().darkMode,FontWeight.bold),
                             ),
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
@@ -92,7 +85,7 @@ class _ListPromoScreenState extends State<ListPromoScreen> {
                           ],
                         ),
                       ),
-                      color: mode?Colors.white10:Colors.black38
+                      color: Colors.black38
                   ),
                   BadgesQ(val: 'Periode 10-20 Desember',)
                 ],

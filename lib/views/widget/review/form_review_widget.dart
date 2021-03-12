@@ -73,20 +73,11 @@ class _FormReviewWidgetState extends State<FormReviewWidget> {
       }
     }
   }
-  bool site=false;
-  Future getSite()async{
-    final res = await FunctionHelper().getSite();
-    print("SITE $res");
-    setState(() {
-      site = res;
-    });
-  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     initializeDateFormatting('id');
-    getSite();
 
   }
 
@@ -102,7 +93,6 @@ class _FormReviewWidgetState extends State<FormReviewWidget> {
         });
         sendReview(rating,txt,kodeBarang);
       },
-      site: site,
     ));
   }
 
@@ -110,8 +100,8 @@ class _FormReviewWidgetState extends State<FormReviewWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
         key: scaffoldKey,
-        backgroundColor: site?SiteConfig().darkMode:Colors.white,
-        appBar: WidgetHelper().appBarWithButton(context, "Ulasan", (){Navigator.pop(context);},<Widget>[],brightness: site?Brightness.dark:Brightness.light),
+        backgroundColor:Colors.white,
+        appBar: WidgetHelper().appBarWithButton(context, "Ulasan", (){Navigator.pop(context);},<Widget>[],brightness:Brightness.light),
         body:Container(
           padding: EdgeInsets.all(10.0),
           child: ListView.separated(
@@ -142,7 +132,7 @@ class _FormReviewWidgetState extends State<FormReviewWidget> {
                         children: [
                           WidgetHelper().textQ("${DateFormat.yMMMMEEEEd('id').format(widget.detailHistoryTransactionModel.result.barang[index].createdAt)}",10.0,Colors.grey,FontWeight.bold),
                           SizedBox(height: 2.0),
-                          WidgetHelper().textQ(widget.detailHistoryTransactionModel.result.barang[index].barang,12.0,site?Colors.white:SiteConfig().secondColor,FontWeight.bold),
+                          WidgetHelper().textQ(widget.detailHistoryTransactionModel.result.barang[index].barang,12.0,SiteConfig().secondColor,FontWeight.bold),
                           SizedBox(height: 5.0),
                           RatingBar.builder(
                             itemSize: 15.0,
@@ -204,8 +194,7 @@ class ReviewContent extends StatefulWidget {
   String name;
   double rating;
   Function(double rating,String txt) callback;
-  bool site;
-  ReviewContent({this.img,this.name,this.rating,this.callback,this.site});
+  ReviewContent({this.img,this.name,this.rating,this.callback});
   @override
   _ReviewContentState createState() => _ReviewContentState();
 }
@@ -270,7 +259,7 @@ class _ReviewContentState extends State<ReviewContent> {
       padding: EdgeInsets.only(top:10.0,left:0,right:0),
       decoration: BoxDecoration(
 
-        color: widget.site?SiteConfig().darkMode:Colors.white,
+        color: Colors.white,
         borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0),topRight:Radius.circular(10.0) ),
       ),
       // color: Colors.white,
@@ -291,12 +280,12 @@ class _ReviewContentState extends State<ReviewContent> {
           ListTile(
             dense:true,
             contentPadding: EdgeInsets.only(left: 10.0, right: 10.0),
-            title: WidgetHelper().textQ("Tulis Ulasan", 14, widget.site?Colors.white:SiteConfig().secondColor,FontWeight.bold),
+            title: WidgetHelper().textQ("Tulis Ulasan", 14, SiteConfig().secondColor,FontWeight.bold),
             leading: InkWell(
               onTap: ()=>Navigator.pop(context),
               child: CircleAvatar(
                 backgroundColor: Colors.transparent,
-                child: Center(child: Icon(UiIcons.return_icon, color: widget.site?Colors.white:Theme.of(context).hintColor),),
+                child: Center(child: Icon(UiIcons.return_icon, color:Theme.of(context).hintColor),),
               ),
             ),
             trailing: InkWell(
@@ -340,7 +329,7 @@ class _ReviewContentState extends State<ReviewContent> {
                     child: ListTile(
                       contentPadding: EdgeInsets.all(10.0),
                       leading: Image.network(SiteConfig().noImage),
-                      title:WidgetHelper().textQ(widget.name,12.0,widget.site?Colors.white:SiteConfig().secondColor,FontWeight.bold),
+                      title:WidgetHelper().textQ(widget.name,12.0,SiteConfig().secondColor,FontWeight.bold),
                     ),
                   ),
                 ),
@@ -349,7 +338,7 @@ class _ReviewContentState extends State<ReviewContent> {
                   child: Column(
                     children: [
                       RatingBar.builder(
-                        unratedColor: widget.site?Colors.grey:Colors.black,
+                        unratedColor:Colors.black,
                         glowColor: Colors.white,
                         itemSize: 40.0,
                         initialRating: rate,

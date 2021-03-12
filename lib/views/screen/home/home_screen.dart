@@ -30,8 +30,7 @@ import 'package:sticky_headers/sticky_headers.dart';
 class HomeScreen extends StatefulWidget {
   final String id;
   final String nama;
-  final bool mode;
-  HomeScreen({Key key,this.id,this.nama,this.mode}) : super(key: key);
+  HomeScreen({Key key,this.id,this.nama}) : super(key: key);
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -150,11 +149,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
     var totalProduct = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=?",[widget.id]);
     await FunctionHelper().setSession("id_tenant", widget.id);
     if(totalProduct.length<1){
+      setState(() {
+        isTimeout=false;
+        isLoading=true;
+      });
       await _helper.delete(ProductQuery.TABLE_NAME, "id_tenant", widget.id);
       await FunctionHelper().insertProduct(widget.id);
       await getProduct();
     }
     if(param=='refresh'){
+      setState(() {
+        isTimeout=false;
+        isLoading=true;
+      });
       await _helper.delete(ProductQuery.TABLE_NAME, "id_tenant", widget.id);
       await FunctionHelper().insertProduct(widget.id);
       await getProduct();
@@ -214,7 +221,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
     return Scaffold(
       key: _scaffoldKey,
       body: buildContents(context),
-      backgroundColor: widget.mode?SiteConfig().darkMode:Colors.white,
+      backgroundColor:Colors.white,
       floatingActionButton:FloatingActionButton(
         backgroundColor: Colors.white,
         onPressed: (){
@@ -238,18 +245,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
               title: Row(
                 children: [
                   IconButton(
-                    icon: new Icon(UiIcons.home, color:widget.mode?Colors.white:SiteConfig().secondColor,size: 28,),
+                    icon: new Icon(UiIcons.home, color:SiteConfig().secondColor,size: 28,),
                     onPressed:null,
                   ),
-                  Expanded(child: WidgetHelper().textQ("${widget.nama.toUpperCase()}", 12,widget.mode?Colors.white:SiteConfig().secondColor,FontWeight.bold))
+                  Expanded(child: WidgetHelper().textQ("${widget.nama.toUpperCase()}", 12,SiteConfig().secondColor,FontWeight.bold))
                 ],
               ),
               stretch: true,
               onStretchTrigger: (){
                 return;
               },
-              brightness: widget.mode?Brightness.dark:Brightness.light,
-              backgroundColor:  widget.mode?SiteConfig().darkMode:Colors.white,
+              brightness: Brightness.light,
+              backgroundColor:  Colors.white,
               snap: false,
               floating: false,
               pinned: true,
@@ -260,7 +267,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
               // ),
               actions: <Widget>[
                 new CartWidget(
-                  iconColor: widget.mode?Colors.white:SiteConfig().secondColor,
+                  iconColor: SiteConfig().secondColor,
                   labelColor: totalCart>0?Colors.redAccent:Colors.transparent,
                   labelCount: totalCart,
                   callback: (){
@@ -274,12 +281,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                     height: 30,
                     margin: EdgeInsets.only(top: 12.5, bottom: 12.5, right: 20),
                     child: InkWell(
-                      focusColor:  widget.mode?Colors.white:SiteConfig().darkMode,
+                      focusColor: SiteConfig().darkMode,
                       borderRadius: BorderRadius.circular(300),
                       onTap: () {
                         WidgetHelper().myModal(
                             context,
-                            ModalSearch(mode:widget.mode,idTenant:widget.id,callback:(par){
+                            ModalSearch(idTenant:widget.id,callback:(par){
                               q=par;
                               isLoading=true;
                               getProduct();
@@ -288,7 +295,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                         // insertFavorite();
                         // Navigator.of(context).pushNamed('/Tabs', arguments: 1);
                       },
-                      child: Icon(UiIcons.filter,size: 30,color:widget.mode?Colors.white:SiteConfig().secondColor),
+                      child: Icon(UiIcons.filter,size: 30,color:SiteConfig().secondColor),
                     )
                 ),
               ],
@@ -308,10 +315,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
                         if(resFavoriteProduct.length>0) WidgetHelper().titleQ("Wujudkan Barang Favorite Kamu",param: 'ad',callback: (){
-                          WidgetHelper().myPush(context,WrapperScreen(currentTab: 4,mode: widget.mode));
+                          WidgetHelper().myPush(context,WrapperScreen(currentTab: 4));
                         },icon: Icon(
                           UiIcons.heart,
-                          color: widget.mode?Colors.white:SiteConfig().secondColor,
+                          color: SiteConfig().secondColor,
                         )),
                         isLoadingFav?Container(
                           height: MediaQuery.of(context).size.height/3,
@@ -357,10 +364,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
             ),
             SliverStickyHeader(
               header: Container(
-                color: widget.mode?SiteConfig().darkMode:Colors.white,
+                color: Colors.white,
                 height: 65,
                 child: ListView.builder(
-                  padding: EdgeInsets.only(left:10.0,top:5,bottom:5),
+                  padding: EdgeInsets.only(left:10.0,top:0,bottom:0),
                   itemCount: returnBrand.length,
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
@@ -380,7 +387,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                         curve: Curves.easeInOut,
                         padding: EdgeInsets.only(left: 10,right:10),
                         decoration: BoxDecoration(
-                          color: brand==returnBrand[index]['id']?widget.mode?Colors.white:SiteConfig().mainColor:SiteConfig().secondColor,
+                          color: brand==returnBrand[index]['id']?SiteConfig().mainColor:SiteConfig().secondColor,
                           borderRadius: BorderRadius.circular(50),
                         ),
                         child: Row(
@@ -389,7 +396,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                               duration: Duration(milliseconds: 350),
                               curve: Curves.easeInOut,
                               vsync: this,
-                              child: WidgetHelper().textQ(returnBrand[index]['title'],12.0, brand==returnBrand[index]['id']?widget.mode?SiteConfig().secondColor:Colors.white:Colors.white,FontWeight.bold,letterSpacing: 2),
+                              child: WidgetHelper().textQ(returnBrand[index]['title'],12.0, brand==returnBrand[index]['id']?Colors.white:Colors.white,FontWeight.bold,letterSpacing: 2),
                             )
                           ],
                         ),
@@ -425,7 +432,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                                 itemBuilder: (BuildContext context, int index) {
                                   var valProductServer =  returnProductLocal[index];
                                   return ProductWidget(
-                                    mode:widget.mode,
                                     id: valProductServer['id_product'],
                                     gambar: valProductServer['gambar'],
                                     title: '${valProductServer['title']}',
@@ -473,7 +479,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
         StretchMode.fadeTitle
       ],
       collapseMode: CollapseMode.none,
-      background:  isLoadingSlider?Padding(padding: EdgeInsets.all(20.0),child: SkeletonFrame(width: double.infinity,height:250)):Stack(
+      background:  isLoadingSlider?Padding(
+          padding: EdgeInsets.all(20.0),
+          child: WidgetHelper().baseLoading(context,Container(
+            height: 250,
+            width: double.infinity,
+            color: Colors.white,
+          )),
+          // child: SkeletonFrame(width: double.infinity,height:250)
+      ):Stack(
         alignment: AlignmentDirectional.topStart,
         children: <Widget>[
           CarouselSlider(
@@ -593,7 +607,7 @@ class _ModalSearchState extends State<ModalSearch> {
 
     loadSearch();
     Navigator.of(context).pop();
-    WidgetHelper().myPush(context, DetailProducrScreen(id: idProduct,mode: widget.mode));
+    WidgetHelper().myPush(context, DetailProducrScreen(id: idProduct));
   }
   @override
   void initState() {
@@ -607,7 +621,7 @@ class _ModalSearchState extends State<ModalSearch> {
     return Container(
       // height: MediaQuery.of(context).size.height/2.0,
       decoration: BoxDecoration(
-          color:widget.mode?SiteConfig().darkMode:Colors.white,
+          color:Colors.white,
           borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20.0))
       ),
       child: Column(
@@ -680,7 +694,7 @@ class _ModalSearchState extends State<ModalSearch> {
                         store();
 
                       },
-                      title: WidgetHelper().textQ("${resProduct[index]['title']}",10,widget.mode?Colors.white:Colors.black87,FontWeight.normal),
+                      title: WidgetHelper().textQ("${resProduct[index]['title']}",10,Colors.black87,FontWeight.normal),
                     );
                   },
                   separatorBuilder:(context,index){
@@ -710,7 +724,7 @@ class _ModalSearchState extends State<ModalSearch> {
                             loadSearch();
                           }
                       ),
-                      title: WidgetHelper().textQ("${resSearch[index]['title']}",10,widget.mode?Colors.white:Colors.black87,FontWeight.normal),
+                      title: WidgetHelper().textQ("${resSearch[index]['title']}",10,Colors.black87,FontWeight.normal),
                     );
                   },
                   separatorBuilder:(context,index){

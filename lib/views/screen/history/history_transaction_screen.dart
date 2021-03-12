@@ -18,15 +18,14 @@ import 'package:netindo_shop/views/widget/timeout_widget.dart';
 
 class HistoryTransactionScreen extends StatefulWidget {
   final int status;
-  final mode;
-  HistoryTransactionScreen({this.status,this.mode});
+  HistoryTransactionScreen({this.status});
   @override
   _HistoryTransactionScreenState createState() => _HistoryTransactionScreenState();
 }
 
 class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> with SingleTickerProviderStateMixin {
   var scaffoldKey = GlobalKey<ScaffoldState>();
-  int perpage=5;
+  int perpage=10;
   int total=0;
   ScrollController controller;
   bool isLoadmore=false;
@@ -73,10 +72,10 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
       context,
       onMonthChangeStartWithFirstDate: true,
       pickerTheme: DateTimePickerTheme(
-        itemTextStyle: TextStyle(color: widget.mode?Colors.white:SiteConfig().darkMode,fontWeight: FontWeight.bold,fontFamily: SiteConfig().fontStyle),
-        backgroundColor: widget.mode?SiteConfig().darkMode:Colors.white,
+        itemTextStyle: TextStyle(color: SiteConfig().darkMode,fontWeight: FontWeight.bold,fontFamily: SiteConfig().fontStyle),
+        backgroundColor: Colors.white,
         showTitle: true,
-        confirm: Text('Selesai', style: TextStyle(color:widget.mode?Colors.white:SiteConfig().darkMode,fontFamily:SiteConfig().fontStyle,fontWeight:FontWeight.bold)),
+        confirm: Text('Selesai', style: TextStyle(color:SiteConfig().darkMode,fontFamily:SiteConfig().fontStyle,fontWeight:FontWeight.bold)),
       ),
       minDateTime: DateTime.parse('2010-05-12'),
       maxDateTime: DateTime.parse('2100-01-01'),
@@ -205,7 +204,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                         Container(
                           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
                           decoration: BoxDecoration(
-                            border: Border.all(width:1.0,color: filterStatus==index?SiteConfig().mainColor:widget.mode?Colors.white10:Colors.grey[200]),
+                            border: Border.all(width:1.0,color: filterStatus==index?SiteConfig().mainColor:Colors.grey[200]),
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                           child: Row(
@@ -273,13 +272,13 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                                                 children: [
                                                   Row(
                                                     children: [
-                                                      Icon(UiIcons.home,size: 10,color: widget.mode?SiteConfig().accentColor:Colors.black87),
+                                                      Icon(UiIcons.home,size: 10,color: Colors.black87),
                                                       SizedBox(width: 5.0),
-                                                      WidgetHelper().textQ("${val.tenant.toUpperCase()}",10,widget.mode?SiteConfig().accentColor:Colors.black87,FontWeight.normal),
+                                                      WidgetHelper().textQ("${val.tenant.toUpperCase()}",10,Colors.black87,FontWeight.normal),
                                                     ],
                                                   ),
                                                   SizedBox(height: 5.0),
-                                                  WidgetHelper().textQ("${val.kdTrx}",10,widget.mode?SiteConfig().accentColor:Colors.black87,FontWeight.normal),
+                                                  WidgetHelper().textQ("${val.kdTrx}",10,Colors.black87,FontWeight.normal),
 
                                                   // WidgetHelper().textQ("${DateFormat.yMd().format(val.createdAt.toLocal())} ${DateFormat.Hm().format(val.createdAt.toLocal())}",10,SiteConfig().accentColor,FontWeight.normal),
                                                 ],
@@ -295,7 +294,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                                   Padding(
                                     padding: EdgeInsets.only(left: 10,right:10,top:5,bottom:5),
                                     child: Container(
-                                      color: widget.mode?Colors.white10:Colors.grey[200],
+                                      color: Colors.grey[200],
                                       height: 1.0,
                                       width: double.infinity,
                                     ),
@@ -310,7 +309,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                                           children: [
                                             Container(
                                               width: MediaQuery.of(context).size.width/2,
-                                              child: WidgetHelper().textQ(valDet[0].barang,12,widget.mode?SiteConfig().accentColor:Colors.black87,FontWeight.normal),
+                                              child: WidgetHelper().textQ(valDet[0].barang,12,Colors.black87,FontWeight.normal),
                                             ),
                                             WidgetHelper().textQ("${valDet.length} barang",10,Colors.grey,FontWeight.normal),
                                             WidgetHelper().textQ("Ukuran ${valDet[0].subvarian!=null?valDet[0].subvarian:"-"} Warna ${valDet[0].varian!=null?valDet[0].varian:"-"}",10,Colors.grey,FontWeight.normal),
@@ -335,7 +334,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                                                 mainAxisAlignment: MainAxisAlignment.start,
                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
-                                                  WidgetHelper().textQ("Total Belanja",10,widget.mode?SiteConfig().accentColor:Colors.black87,FontWeight.normal),
+                                                  WidgetHelper().textQ("Total Belanja",10,Colors.black87,FontWeight.normal),
                                                   WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(val.grandtotal))}",10,Colors.green,FontWeight.normal),
                                                 ],
                                               )

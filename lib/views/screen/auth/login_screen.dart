@@ -43,13 +43,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   _callBack(BuildContext context,bool isTrue,Map<String, Object> data)async{
     if(isTrue){
+      WidgetHelper().loadingDialog(context);
       print("DATA USER $data");
       final countTbl = await _helper.queryRowCount(UserQuery.TABLE_NAME);
       if(countTbl>0){
         await _helper.deleteAll(UserQuery.TABLE_NAME);
       }
       await _helper.insert(UserQuery.TABLE_NAME,data);
-      WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2,mode: mode,));
+      Navigator.pop(context);
+      WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2));
     }
   }
   bool isLoadingReOtp=false;
@@ -83,20 +85,18 @@ class _LoginScreenState extends State<LoginScreen> {
       'type_otp': _switchValue?'whatsapp':'sms',
     };
     var res = await BaseProvider().postProvider('auth', data);
+    setState(() {Navigator.pop(context);});
     if(res == 'TimeoutException' || res == 'SocketException'){
-      setState(() {Navigator.pop(context);});
       WidgetHelper().notifDialog(context, 'Oopss','Terjadi kesalahan server',(){Navigator.pop(context);},(){Navigator.pop(context);});
     }
     else{
       if(res is General){
         General result = res;
-        setState(() {Navigator.pop(context);});
         WidgetHelper().showFloatingFlushbar(context, 'failed',result.msg);
       }
       else{
         var result =LoginModel.fromJson(res);
         if(result.status=='success'){
-          setState(() {Navigator.pop(context);});
           final dataUser={
             "id_user":result.result.id.toString(),
             "token":result.result.token.toString(),
@@ -130,11 +130,10 @@ class _LoginScreenState extends State<LoginScreen> {
             ));
           }
           else{
-            WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2,mode: mode,));
+            WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2));
           }
         }
         else{
-          setState(() {Navigator.pop(context);});
           WidgetHelper().showFloatingFlushbar(context, 'failed',result.msg);
         }
       }

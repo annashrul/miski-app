@@ -27,8 +27,7 @@ import 'package:netindo_shop/views/widget/refresh_widget.dart';
 import 'package:netindo_shop/views/widget/timeout_widget.dart';
 
 class TicketScreen extends StatefulWidget {
-  bool mode;
-  TicketScreen({this.mode});
+
   @override
   _TicketScreenState createState() => _TicketScreenState();
 }
@@ -104,13 +103,13 @@ class _TicketScreenState extends State<TicketScreen> {
               alignment: Alignment.topCenter,
               child: listTicketModel.result.data.length>0?SingleChildScrollView(
                 controller: controller,
-                padding: EdgeInsets.symmetric(vertical: 7),
+                padding: EdgeInsets.symmetric(),
                 child: Column(
                   children: <Widget>[
                     Offstage(
                       offstage: false,
                       child: ListView.separated(
-                        padding: EdgeInsets.symmetric(vertical: 15),
+                        padding: EdgeInsets.symmetric(),
                         shrinkWrap: true,
                         primary: false,
                         itemCount: listTicketModel.result.data.length,
@@ -124,7 +123,7 @@ class _TicketScreenState extends State<TicketScreen> {
                               // print(val.id);
                               print(listTicketModel.result.data);
                               WidgetHelper().myPush(context,RoomTicketScreen(
-                                  mode:widget.mode,id: val.id,
+                                  id: val.id,
                                   tenant:val.tenant,title:val.title,desc:val.deskripsi,createdAt:val.createdAt,status:val.status
                               ));
                             },
@@ -146,7 +145,7 @@ class _TicketScreenState extends State<TicketScreen> {
                                             // border: Border.all(color:SiteConfig().accentDarkColor)
                                           ),
                                           child: Center(
-                                            child: WidgetHelper().textQ("${DateFormat().add_yMMMd().format(val.createdAt)} \n${DateFormat().add_jm().format(val.createdAt)}", 8, widget.mode?Colors.white:SiteConfig().darkMode,FontWeight.normal,textAlign: TextAlign.center),
+                                            child: WidgetHelper().textQ("${DateFormat().add_yMMMd().format(val.createdAt)} \n${DateFormat().add_jm().format(val.createdAt)}", 8, SiteConfig().darkMode,FontWeight.normal,textAlign: TextAlign.center),
                                           ),
                                         ),
                                       ),
@@ -183,12 +182,12 @@ class _TicketScreenState extends State<TicketScreen> {
                                             )
                                           ],
                                         ),
-                                        WidgetHelper().textQ("${val.title}",12,widget.mode?Colors.white:SiteConfig().darkMode,FontWeight.normal),
+                                        WidgetHelper().textQ("${val.title}",12,SiteConfig().darkMode,FontWeight.normal),
                                         Row(
                                           crossAxisAlignment: CrossAxisAlignment.end,
                                           children: <Widget>[
                                             Expanded(
-                                              child:  WidgetHelper().textQ("${val.deskripsi}",10,widget.mode?Colors.grey[200]:Colors.grey,FontWeight.normal),
+                                              child:  WidgetHelper().textQ("${val.deskripsi}",10,Colors.grey,FontWeight.normal),
                                             ),
                                           ],
                                         )
@@ -214,7 +213,7 @@ class _TicketScreenState extends State<TicketScreen> {
                   child:WidgetHelper().animShakeWidget(context,InkWell(
                     borderRadius: BorderRadius.circular(50.0),
                     onTap: (){
-                      WidgetHelper().myModal(context, ModalTicket(mode: widget.mode,callback:(String par){
+                      WidgetHelper().myModal(context, ModalTicket(callback:(String par){
                         if(par=='berhasil'){
                           loadTicket();
                           WidgetHelper().showFloatingFlushbar(context,"success","ticket komplain berhasil dikirim");
@@ -228,7 +227,7 @@ class _TicketScreenState extends State<TicketScreen> {
                       padding: EdgeInsets.all(10.0),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10.0),
-                        color: widget.mode?Theme.of(context).focusColor.withOpacity(0.15):SiteConfig().mainColor,
+                        color:SiteConfig().mainColor,
                       ),
 
                       child:isLoadmore?CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.grey), backgroundColor: Colors.white): Icon(UiIcons.message,color: Colors.white,size: 30),
@@ -247,14 +246,13 @@ class _TicketScreenState extends State<TicketScreen> {
 }
 
 class RoomTicketScreen extends StatefulWidget {
-  bool mode;
   String id;
   String tenant;
   String title;
   String desc;
   DateTime createdAt;
   int status;
-  RoomTicketScreen({this.mode,this.id,this.tenant,this.title,this.desc,this.createdAt,this.status});
+  RoomTicketScreen({this.id,this.tenant,this.title,this.desc,this.createdAt,this.status});
   @override
   _RoomTicketScreenState createState() => _RoomTicketScreenState();
 }
@@ -399,8 +397,8 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
   Widget build(BuildContext context) {
     _keyboardVisible = MediaQuery.of(context).viewInsets.bottom != 0;
     return Scaffold(
-      backgroundColor: widget.mode?SiteConfig().darkMode:Colors.white,
-      appBar: WidgetHelper().appBarWithButton(context,widget.tenant,(){Navigator.pop(context);},<Widget>[],brightness: widget.mode?Brightness.dark:Brightness.light),
+      backgroundColor: Colors.white,
+      appBar: WidgetHelper().appBarWithButton(context,widget.tenant,(){Navigator.pop(context);},<Widget>[],brightness:Brightness.light),
       body: isLoading?WidgetHelper().loadingWidget(context):Column(
         children: [
           Container(
@@ -421,7 +419,7 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
                           // border: Border.all(color:SiteConfig().accentDarkColor)
                         ),
                         child: Center(
-                          child: WidgetHelper().textQ("${DateFormat().add_yMMMd().format(widget.createdAt)} \n${DateFormat().add_jm().format(widget.createdAt)}", 8, widget.mode?Colors.white:SiteConfig().darkMode,FontWeight.normal,textAlign: TextAlign.center),
+                          child: WidgetHelper().textQ("${DateFormat().add_yMMMd().format(widget.createdAt)} \n${DateFormat().add_jm().format(widget.createdAt)}", 8, SiteConfig().darkMode,FontWeight.normal,textAlign: TextAlign.center),
                         ),
                       ),
                     ),
@@ -446,8 +444,8 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
-                      WidgetHelper().textQ("${widget.title}",12,widget.mode?Colors.white:SiteConfig().darkMode,FontWeight.bold),
-                      WidgetHelper().textQ("${widget.desc}",10,widget.mode?Colors.grey[200]:Colors.grey,FontWeight.normal,maxLines: null)
+                      WidgetHelper().textQ("${widget.title}",12,SiteConfig().darkMode,FontWeight.bold),
+                      WidgetHelper().textQ("${widget.desc}",10,Colors.grey,FontWeight.normal,maxLines: null)
                     ],
                   ),
                 )
@@ -517,7 +515,7 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
             alignment: val['id_member']=='null'?Alignment.centerRight:Alignment.centerLeft,
             child: Container(
               decoration: BoxDecoration(
-                  color: widget.mode?Theme.of(context).accentColor.withOpacity(0.2):SiteConfig().secondColor,
+                  color:SiteConfig().secondColor,
                   borderRadius: val['id_member']=='null'?BorderRadius.only(
                       topLeft: Radius.circular(15),
                       bottomLeft: Radius.circular(15),
@@ -585,7 +583,7 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
                       children: <Widget>[
                         new Container(
                           margin: const EdgeInsets.only(top: 5.0),
-                          child: WidgetHelper().textQ(val.msg, 10, Colors.white,FontWeight.normal),
+                          child: WidgetHelper().textQ(val.msg, 10, Colors.black,FontWeight.normal),
                         ),
                         WidgetHelper().textQ("1 bulan yang lalu",8, Colors.grey,FontWeight.normal),
                       ],
@@ -602,9 +600,8 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
 }
 
 class ModalTicket extends StatefulWidget {
-  bool mode;
   Function(String param) callback;
-  ModalTicket({this.mode,this.callback});
+  ModalTicket({this.callback});
   @override
   _ModalTicketState createState() => _ModalTicketState();
 }
@@ -697,7 +694,7 @@ class _ModalTicketState extends State<ModalTicket> {
       height: _image==null?MediaQuery.of(context).size.height/1.7:MediaQuery.of(context).size.height/1.0,
       padding: EdgeInsets.only(top:10.0,left:0,right:0),
       decoration: BoxDecoration(
-        color: widget.mode?SiteConfig().darkMode:Colors.white,
+        color: Colors.white,
         borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0),topRight:Radius.circular(10.0) ),
       ),
       // color: Colors.white,
@@ -721,7 +718,7 @@ class _ModalTicketState extends State<ModalTicket> {
               onTap: ()=>Navigator.pop(context),
               child: CircleAvatar(
                 backgroundColor: Colors.transparent,
-                child: Center(child: Icon(UiIcons.return_icon, color: widget.mode?Colors.white:Theme.of(context).hintColor),),
+                child: Center(child: Icon(UiIcons.return_icon, color:Theme.of(context).hintColor),),
               ),
             ),
             trailing: InkWell(
@@ -759,7 +756,6 @@ class _ModalTicketState extends State<ModalTicket> {
                           messageFocus.unfocus();
                           FocusScope.of(context).unfocus();
                           WidgetHelper().myModal(context,ModalTenant(
-                            mode: widget.mode,
                             callback: (index)async{
                               WidgetHelper().loadingDialog(context);
                               setState(() {
@@ -851,8 +847,8 @@ class _ModalTicketState extends State<ModalTicket> {
                         padding: EdgeInsets.all(10.0),
                         child: Column(
                           children: [
-                            Icon(UiIcons.upload,color: widget.mode?Colors.white:SiteConfig().darkMode),
-                            WidgetHelper().textQ("Lampirkan File",10,widget.mode?Colors.white:SiteConfig().darkMode,FontWeight.bold)
+                            Icon(UiIcons.upload,color: SiteConfig().darkMode),
+                            WidgetHelper().textQ("Lampirkan File",10,SiteConfig().darkMode,FontWeight.bold)
                           ],
                         ),
                       )
@@ -880,11 +876,9 @@ class _ModalTicketState extends State<ModalTicket> {
 class ModalTenant extends StatefulWidget {
   ModalTenant({
     Key key,
-    @required this.mode,
     @required this.callback,
     @required this.index,
   }) : super(key: key);
-  bool mode;
   Function(int idx) callback;
   final int index;
   @override
@@ -915,7 +909,7 @@ class _ModalTenantState extends State<ModalTenant> {
     return Container(
       height: MediaQuery.of(context).size.height/1.1,
       decoration: BoxDecoration(
-          color: widget.mode?SiteConfig().darkMode:Colors.transparent,
+          color: Colors.transparent,
           borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))
       ),
       child:Column(
@@ -953,9 +947,9 @@ class _ModalTenantState extends State<ModalTenant> {
                         contentPadding: EdgeInsets.only(left:10,right:10,top:0,bottom:0),
                         leading: Padding(padding: EdgeInsets.all(5.0),child:  Image.network(resTenant[index]['logo'],fit: BoxFit.contain,width: 50,),),
                         // leading: Image.network(resTenant[index]['logo'],width: 30,height: 30,),
-                        title: WidgetHelper().textQ("${resTenant[index]['nama']}", 14,widget.mode?Colors.white:SiteConfig().darkMode, FontWeight.bold),
+                        title: WidgetHelper().textQ("${resTenant[index]['nama']}", 14,SiteConfig().darkMode, FontWeight.bold),
                         // subtitle: WidgetHelper().textQ("${widget.kurirModel.result[index].deskripsi}", 12, SiteConfig().secondColor, FontWeight.bold),
-                        trailing: widget.index==index?Icon(UiIcons.checked,color: widget.mode?Colors.grey[200]:SiteConfig().darkMode):Text(
+                        trailing: widget.index==index?Icon(UiIcons.checked,color:SiteConfig().darkMode):Text(
                             ''
                         ),
                       ),

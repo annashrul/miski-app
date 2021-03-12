@@ -40,13 +40,7 @@ class _SecondProductWidgetState extends State<SecondProductWidget> {
   double width;
   double height;
 
-  bool mode=false;
-  Future getMode()async{
-    var res = await FunctionHelper().getSite();
-    setState(() {
-      mode=res;
-    });
-  }
+
 
 
 
@@ -54,7 +48,6 @@ class _SecondProductWidgetState extends State<SecondProductWidget> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getMode();
 
   }
 
@@ -82,7 +75,7 @@ class _SecondProductWidgetState extends State<SecondProductWidget> {
             ),
             child: WidgetHelper().myPress(
                 (){
-                  WidgetHelper().myPush(context, DetailProducrScreen(id: widget.id,mode: mode));},
+                  WidgetHelper().myPush(context, DetailProducrScreen(id: widget.id));},
                 Column(
                   children: [
                     Container(
@@ -156,7 +149,7 @@ class _SecondProductWidgetState extends State<SecondProductWidget> {
                               child: WidgetHelper().textQ("${widget.stockSales} Terjual", 10, SiteConfig().secondDarkColor, FontWeight.normal),
                             ):Container(),
                             Container(
-                                child: WidgetHelper().textQ(widget.title, 12, mode?Colors.white:Colors.black, FontWeight.normal)
+                                child: WidgetHelper().textQ(widget.title, 12, Colors.black, FontWeight.normal)
                             ),
                             Container(
                               child: Row(
@@ -213,7 +206,7 @@ class _SecondProductWidgetState extends State<SecondProductWidget> {
                     ),
                   ],
                 ),
-              color: mode?Colors.white10:Colors.black38
+              color:Colors.black38
             ),
           ),
           int.parse(widget.stock)>0?Container():BadgesQ(val:'Stock habis')

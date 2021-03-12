@@ -261,7 +261,7 @@ class _CartScreenState extends State<CartScreen> {
                   ):EmptyDataWidget(
                     iconData: UiIcons.shopping_cart,
                     title: "Wah, keranjang belanjaan mu kosong, yuk, isi barang barang impianmu",
-                    callback: (){WidgetHelper().myPush(context,WrapperScreen(currentTab: 2,mode: site));},
+                    callback: (){WidgetHelper().myPush(context,WrapperScreen(currentTab: 2));},
                     isFunction: true,
                     txtFunction: "Mulai Belanja",
                   ),
@@ -389,7 +389,7 @@ class _CartScreenState extends State<CartScreen> {
     return WidgetHelper().myPress(
             ()async{
               await FunctionHelper().storeClickProduct(idBarang);
-              WidgetHelper().myPushAndLoad(context, DetailProducrScreen(id:idBarang,mode:site),(){
+              WidgetHelper().myPushAndLoad(context, DetailProducrScreen(id:idBarang),(){
                 loadCart();
                 // getFavorite();
                 getProductRecomended();

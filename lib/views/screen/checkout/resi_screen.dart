@@ -17,17 +17,10 @@ class _ResiScreenState extends State<ResiScreen> {
   final GlobalKey<AnimatedListState> _listKey = new GlobalKey<AnimatedListState>();
   var scaffoldKey = GlobalKey<ScaffoldState>();
   bool isLoading=false;
-  bool site=false;
-  Future getSite()async{
-    final res = await FunctionHelper().getSite();
-    setState(() {
-      site = res;
-    });
-  }
+
   @override
   void initState() {
     super.initState();
-    getSite();
   }
   @override
   void dispose() {
@@ -37,9 +30,9 @@ class _ResiScreenState extends State<ResiScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: site?SiteConfig().darkMode:Colors.white,
+      backgroundColor:Colors.white,
       key: scaffoldKey,
-      appBar: WidgetHelper().appBarWithButton(context, "Lacak Resi ${widget.resiModel.result.resi}", (){Navigator.pop(context);},<Widget>[],brightness: site?Brightness.dark:Brightness.light),
+      appBar: WidgetHelper().appBarWithButton(context, "Lacak Resi ${widget.resiModel.result.resi}", (){Navigator.pop(context);},<Widget>[],brightness:Brightness.light),
       body: Stack(
         children: <Widget>[
           _buildTimeline(),
@@ -57,14 +50,14 @@ class _ResiScreenState extends State<ResiScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Container(
-              decoration: BoxDecoration(color: site?SiteConfig().darkMode:Colors.white),
+              decoration: BoxDecoration(color:Colors.white),
               padding:EdgeInsets.only(top: 20.0, bottom: 0.0, left: 15.0, right: 15.0),
               child: Column(
                 children: <Widget>[
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      WidgetHelper().textQ("No.Resi",12.0,site?Colors.white:SiteConfig().secondColor,FontWeight.bold),
+                      WidgetHelper().textQ("No.Resi",12.0,SiteConfig().secondColor,FontWeight.bold),
                       WidgetHelper().textQ(widget.resiModel.result.resi,12.0,Colors.grey,FontWeight.bold),
                     ],
                   ),
@@ -72,7 +65,7 @@ class _ResiScreenState extends State<ResiScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      WidgetHelper().textQ("Tanggal Pengiriman",12.0,site?Colors.white:SiteConfig().secondColor,FontWeight.bold),
+                      WidgetHelper().textQ("Tanggal Pengiriman",12.0,SiteConfig().secondColor,FontWeight.bold),
                       WidgetHelper().textQ("${DateFormat.yMMMMd().format(widget.resiModel.result.ongkir.details.waybillDate)} ${widget.resiModel.result.ongkir.details.waybillTime}",12.0,Colors.grey,FontWeight.bold),
                     ],
                   ),
@@ -80,7 +73,7 @@ class _ResiScreenState extends State<ResiScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      WidgetHelper().textQ("Service Code",12.0,site?Colors.white:SiteConfig().secondColor,FontWeight.bold),
+                      WidgetHelper().textQ("Service Code",12.0,SiteConfig().secondColor,FontWeight.bold),
                       WidgetHelper().textQ(widget.resiModel.result.ongkir.summary.courierName,12.0,Colors.grey,FontWeight.bold),
                     ],
                   ),
@@ -88,7 +81,7 @@ class _ResiScreenState extends State<ResiScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      WidgetHelper().textQ("Pembeli",12.0,site?Colors.white:SiteConfig().secondColor,FontWeight.bold),
+                      WidgetHelper().textQ("Pembeli",12.0,SiteConfig().secondColor,FontWeight.bold),
                       WidgetHelper().textQ(widget.resiModel.result.ongkir.deliveryStatus.podReceiver,12.0,Colors.grey,FontWeight.bold),
                     ],
                   ),
@@ -96,7 +89,7 @@ class _ResiScreenState extends State<ResiScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      WidgetHelper().textQ("Status",12.0,site?Colors.white:SiteConfig().secondColor,FontWeight.bold),
+                      WidgetHelper().textQ("Status",12.0,SiteConfig().secondColor,FontWeight.bold),
                       WidgetHelper().textQ(widget.resiModel.result.ongkir.deliveryStatus.status,12.0,Colors.grey,FontWeight.bold),
                     ],
                   ),
@@ -136,7 +129,7 @@ class _ResiScreenState extends State<ResiScreen> {
                           child: new Container(
                             height: 12.0,
                             width: 12.0,
-                            decoration: new BoxDecoration(shape: BoxShape.circle, color:site?Colors.white:SiteConfig().mainColor),
+                            decoration: new BoxDecoration(shape: BoxShape.circle, color:SiteConfig().mainColor),
                           ),
                         ),
                         new Expanded(
@@ -144,13 +137,13 @@ class _ResiScreenState extends State<ResiScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               WidgetHelper().textQ(DateFormat.yMMMMd().format(val.manifestDate.toLocal()), 12,Colors.grey,FontWeight.bold),
-                              WidgetHelper().textQ(val.manifestDescription.toLowerCase(), 12,site?Colors.white:SiteConfig().secondColor,FontWeight.bold),
+                              WidgetHelper().textQ(val.manifestDescription.toLowerCase(), 12,SiteConfig().secondColor,FontWeight.bold),
                             ],
                           ),
                         ),
                         new Padding(
                           padding: const EdgeInsets.only(right: 16.0),
-                          child:WidgetHelper().textQ(val.manifestTime, 12,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.bold),
+                          child:WidgetHelper().textQ(val.manifestTime, 12,SiteConfig().secondColor,FontWeight.bold),
                         ),
                       ],
                     ),
@@ -171,7 +164,7 @@ class _ResiScreenState extends State<ResiScreen> {
       left: 32.0,
       child: new Container(
         width: 1.0,
-        color:site?Colors.white:SiteConfig().mainColor,
+        color:SiteConfig().mainColor,
       ),
     );
   }

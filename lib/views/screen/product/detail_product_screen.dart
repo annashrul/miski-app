@@ -24,8 +24,7 @@ import 'package:netindo_shop/views/widget/review_widget.dart';
 
 class DetailProducrScreen extends StatefulWidget {
   final String id;
-  final bool mode;
-  DetailProducrScreen({this.id,this.mode});
+  DetailProducrScreen({this.id});
   @override
   _DetailProducrScreenState createState() => _DetailProducrScreenState();
 }
@@ -311,9 +310,9 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: widget.mode?SiteConfig().darkMode:Colors.white,
+      backgroundColor: Colors.white,
       key: _scaffoldKey,
-      body: isLoading||isLoadingPoductOther||isLoadingReview?LoadingDetailProduct(site: widget.mode):buildContent(context),
+      body: isLoading||isLoadingPoductOther||isLoadingReview?LoadingDetailProduct():buildContent(context),
       bottomNavigationBar: isLoading||isLoadingPoductOther||isLoadingReview?Text(''):Container(
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
@@ -358,19 +357,19 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
             onStretchTrigger: (){
               return;
             },
-            brightness: widget.mode?Brightness.dark:Brightness.light,
-            backgroundColor: widget.mode?SiteConfig().darkMode:Colors.white,
+            brightness: Brightness.light,
+            backgroundColor: Colors.white,
             snap: true,
             floating: true,
             pinned: true,
             automaticallyImplyLeading: false,
             leading: new IconButton(
-              icon: new Icon(UiIcons.return_icon, color: widget.mode?Colors.white:SiteConfig().secondColor),
+              icon: new Icon(UiIcons.return_icon, color:SiteConfig().secondColor),
               onPressed: () => Navigator.pop(context,false),
             ),
             actions: <Widget>[
               new CartWidget(
-                iconColor: widget.mode?Colors.white:SiteConfig().secondColor,
+                iconColor:SiteConfig().secondColor,
                 labelColor: totalCart>0?Colors.redAccent:Colors.transparent,
                 labelCount: totalCart,
                 callback: (){
@@ -384,13 +383,13 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
                   height: 30,
                   margin: EdgeInsets.only(top: 12.5, bottom: 12.5, right: 20),
                   child: InkWell(
-                    focusColor:  widget.mode?Colors.white:SiteConfig().darkMode,
+                    focusColor: SiteConfig().darkMode,
                     borderRadius: BorderRadius.circular(300),
                     onTap: () {
                       insertFavorite();
                       // Navigator.of(context).pushNamed('/Tabs', arguments: 1);
                     },
-                    child: Icon(UiIcons.heart,size: 30,color: isSelectedFavorite?Colors.red:widget.mode?Colors.white:SiteConfig().secondColor),
+                    child: Icon(UiIcons.heart,size: 30,color: isSelectedFavorite?Colors.red:SiteConfig().secondColor),
                   )
               ),
             ],
@@ -470,7 +469,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
                             title: Row(
                               children: [
                                 Expanded(
-                                  child: WidgetHelper().textQ(title,12,widget.mode?SiteConfig().secondDarkColor:SiteConfig().darkMode,FontWeight.normal,maxLines: title.length),
+                                  child: WidgetHelper().textQ(title,12,SiteConfig().darkMode,FontWeight.normal,maxLines: title.length),
                                 ),
                                 SizedBox(width: 5.0),
                                 diskon1>0?Container(
@@ -537,7 +536,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
                                   if(int.parse(stockSales)>0) Expanded(
                                     child: Padding(
                                       padding: EdgeInsets.only(right:5.0,top:5.0),
-                                      child: WidgetHelper().textQ(stockSales+" terjual",12,widget.mode?SiteConfig().secondDarkColor:SiteConfig().darkMode,FontWeight.normal,maxLines: title.length),
+                                      child: WidgetHelper().textQ(stockSales+" terjual",12,SiteConfig().darkMode,FontWeight.normal,maxLines: title.length),
                                     ),
                                   )
                                 ],
@@ -552,9 +551,9 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
                           contentPadding: EdgeInsets.symmetric(vertical: 0),
                           leading: Icon(
                             UiIcons.medal,
-                            color: widget.mode?Colors.white:Theme.of(context).hintColor,
+                            color: Theme.of(context).hintColor,
                           ),
-                          title: WidgetHelper().textQ("Varian", 14, widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.bold),
+                          title: WidgetHelper().textQ("Varian", 14,SiteConfig().secondColor, FontWeight.bold),
                         ),
                       ):Container(),
                       varian.length>0?Container(
@@ -621,9 +620,9 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
                           contentPadding: EdgeInsets.symmetric(vertical: 0),
                           leading: Icon(
                             UiIcons.box,
-                            color: widget.mode?Colors.white:Theme.of(context).hintColor,
+                            color: Theme.of(context).hintColor,
                           ),
-                          title: WidgetHelper().textQ("Produk Terkait", 14, widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.bold),
+                          title: WidgetHelper().textQ("Produk Terkait", 14, SiteConfig().secondColor, FontWeight.bold),
                         ),
                       ),
                       Container(
@@ -661,12 +660,12 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      WidgetHelper().titleQ("Deskripsi",param: '',color: widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor,icon: Icon(UiIcons.file_2,color: widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor),padding: EdgeInsets.only(left:10,right:10)),
+                      WidgetHelper().titleQ("Deskripsi",param: '',color:SiteConfig().secondColor,icon: Icon(UiIcons.file_2,color: SiteConfig().secondColor),padding: EdgeInsets.only(left:10,right:10)),
                       Padding(
                         padding: EdgeInsets.all(10.0),
-                        child: WidgetHelper().textQ(deskripsi, 12, widget.mode?SiteConfig().secondDarkColor:SiteConfig().darkMode, FontWeight.normal,maxLines: 10000),
+                        child: WidgetHelper().textQ(deskripsi, 12, SiteConfig().darkMode, FontWeight.normal,maxLines: 10000),
                       ),
-                      if(hargaBertingkat.length>0) WidgetHelper().titleQ("Harga Spesial",param: '',color: widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor,icon: Icon(UiIcons.money,color: widget.mode?SiteConfig().secondDarkColor:SiteConfig().secondColor,),padding: EdgeInsets.only(left:10,right:10)),
+                      if(hargaBertingkat.length>0) WidgetHelper().titleQ("Harga Spesial",param: '',color:SiteConfig().secondColor,icon: Icon(UiIcons.money,color:SiteConfig().secondColor,),padding: EdgeInsets.only(left:10,right:10)),
                       if(hargaBertingkat.length>0) Padding(
                         padding: EdgeInsets.all(10.0),
                         child: hargaGrosir(context)
@@ -799,7 +798,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
         itemBuilder: (context,index){
           return Padding(
             padding: EdgeInsets.only(top:10,bottom:10),
-            child: WidgetHelper().textQ("Beli produk ini sebanyak ${hargaBertingkat[index].dari} sampai ${hargaBertingkat[index].sampai} mendapatkan harga hanya ${FunctionHelper().formatter.format(int.parse(hargaBertingkat[index].harga))}", 12,widget.mode?SiteConfig().secondDarkColor:SiteConfig().darkMode, FontWeight.normal),
+            child: WidgetHelper().textQ("Beli produk ini sebanyak ${hargaBertingkat[index].dari} sampai ${hargaBertingkat[index].sampai} mendapatkan harga hanya ${FunctionHelper().formatter.format(int.parse(hargaBertingkat[index].harga))}", 12,SiteConfig().darkMode, FontWeight.normal),
           );
         },
         separatorBuilder: (context, index) {

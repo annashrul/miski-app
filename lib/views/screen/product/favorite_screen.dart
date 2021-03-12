@@ -12,8 +12,7 @@ import 'package:netindo_shop/views/widget/loading_widget.dart';
 import 'detail_product_screen.dart';
 
 class FavoriteScreen extends StatefulWidget {
-  bool mode;
-  FavoriteScreen({this.mode});
+
   @override
   _FavoriteScreenState createState() => _FavoriteScreenState();
 }
@@ -129,7 +128,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
               children: [
                 InkWell(
                   onTap: (){
-                    WidgetHelper().myPush(context,DetailProducrScreen(id: val['id_product'],mode: widget.mode));
+                    WidgetHelper().myPush(context,DetailProducrScreen(id: val['id_product']));
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 7),
@@ -179,7 +178,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                     ),
                                     Row(
                                       children: [
-                                        WidgetHelper().textQ("${val['title']}", 12, widget.mode?Colors.white:SiteConfig().darkMode, FontWeight.bold),
+                                        WidgetHelper().textQ("${val['title']}", 12, SiteConfig().darkMode, FontWeight.bold),
                                         int.parse(val['disc1'])==0?Container():SizedBox(width: 5),
                                         int.parse(val['disc1'])==0?Container():WidgetHelper().textQ("( diskon ${val['disc1']} + ${val['disc2']} )", 10,Colors.grey,FontWeight.bold),
                                       ],

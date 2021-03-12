@@ -32,6 +32,8 @@ import 'package:sticky_headers/sticky_headers.dart';
 import '../../../main.dart';
 
 class PublicHomeScreen extends StatefulWidget {
+  // BuildContext context;
+  // static Color cik = Theme.of(context).focusColor.withOpacity(0.1);
   final mode;
   PublicHomeScreen({this.mode});
   @override
@@ -39,6 +41,7 @@ class PublicHomeScreen extends StatefulWidget {
 }
 
 class _PublicHomeScreenState extends State<PublicHomeScreen> {
+
   final GlobalKey<LiquidPullToRefreshState> _refreshIndicatorKey = GlobalKey<LiquidPullToRefreshState>();
   final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
   Position _currentPosition;
@@ -213,8 +216,8 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
               onStretchTrigger: (){
                 return;
               },
-              brightness: widget.mode?Brightness.dark:Brightness.light,
-              backgroundColor: widget.mode?SiteConfig().darkMode:Colors.white,
+              brightness: Brightness.light,
+              backgroundColor: Colors.white,
               snap: true,
               floating: true,
               pinned: true,
@@ -245,21 +248,23 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  WidgetHelper().textQ("Lihat semua promo",12,widget.mode?Colors.white:SiteConfig().secondColor,FontWeight.bold,textAlign: TextAlign.right),
-                                  Icon(Icons.arrow_right,color: widget.mode?Colors.white:SiteConfig().secondColor,)
+                                  WidgetHelper().textQ("Lihat semua promo",12,SiteConfig().secondColor,FontWeight.bold,textAlign: TextAlign.right),
+                                  Icon(Icons.arrow_right,color: SiteConfig().secondColor,)
                                 ],
-                              ),color: widget.mode?Colors.white10:Colors.black38
+                              ),color:Colors.black38
 
                           ),
                         ),
-                      // WidgetHelper().titleQ("${StringConfig().selesaikanPesananAnda}",color:widget.mode?Colors.white:SiteConfig().secondColor,param: '',callback: (){},icon: Icon(
-                        //   UiIcons.favorites,
-                        //   color: widget.mode?Colors.white:Theme.of(context).hintColor,
-                        // )),
-
                         Container(
                           padding: EdgeInsets.only(left:20,right:20),
-                          child: isLoadingLocation?SkeletonFrame(width: double.infinity,height: 40.0):WidgetHelper().myPress((){},Container(
+                          child: isLoadingLocation?WidgetHelper().baseLoading(context,Container(
+                              decoration: BoxDecoration(
+                                color:Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              width: double.infinity,
+                              height: 40.0,
+                          )):WidgetHelper().myPress((){},Container(
                             padding: EdgeInsets.all(10.0),
                             decoration: BoxDecoration(
                               color: Theme.of(context).focusColor.withOpacity(0.1),
@@ -272,7 +277,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                               children: <Widget>[
                                 Row(
                                   children: <Widget>[
-                                    Icon(UiIcons.placeholder,color: widget.mode?Colors.white:SiteConfig().darkMode),
+                                    Icon(UiIcons.placeholder,color: SiteConfig().darkMode),
                                     SizedBox(
                                       width: 8,
                                     ),
@@ -281,7 +286,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: <Widget>[
                                           if (_currentPosition != null && _currentAddress != null)
-                                            WidgetHelper().textQ(_currentAddress,10,widget.mode?Colors.white:SiteConfig().darkMode,FontWeight.normal)
+                                            WidgetHelper().textQ(_currentAddress,10,SiteConfig().darkMode,FontWeight.normal)
                                         ],
                                       ),
                                     ),
@@ -298,9 +303,9 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                           padding: EdgeInsets.only(left:20,right:20,top:0),
                           child: isLoading?LoadingTenant():returnTenant.length>0?tenantLocal():tenantServer(),
                         ),
-                        WidgetHelper().titleQ("${StringConfig().selesaikanPesananAnda}",color:widget.mode?Colors.white:SiteConfig().secondColor,param: '',callback: (){},icon: Icon(
+                        WidgetHelper().titleQ("${StringConfig().selesaikanPesananAnda}",color:SiteConfig().secondColor,param: '',callback: (){},icon: Icon(
                           UiIcons.favorites,
-                          color: widget.mode?Colors.white:Theme.of(context).hintColor,
+                          color: Theme.of(context).hintColor,
                         )),
                         Container(
                           padding: EdgeInsets.only(left:20,right:20,top:0),
@@ -330,7 +335,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                                               padding: const EdgeInsets.symmetric(horizontal: 0),
                                               child: Icon(
                                                 UiIcons.shopping_cart,
-                                                color:widget.mode?Colors.white:Theme.of(context).hintColor,
+                                                color:Theme.of(context).hintColor,
                                                 size: 40,
                                               ),
                                             ),
@@ -347,11 +352,11 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                                           ],
                                         ),
                                         SizedBox(height:5.0),
-                                        WidgetHelper().textQ("${returnTenant[index]['nama'].toUpperCase()}",10,widget.mode?Colors.grey[200]:Colors.grey, FontWeight.normal,textAlign: TextAlign.center),
+                                        WidgetHelper().textQ("${returnTenant[index]['nama'].toUpperCase()}",10,Colors.grey, FontWeight.normal,textAlign: TextAlign.center),
                                       ],
                                     ),
                                   ),
-                                  color: widget.mode?Colors.white10:Colors.black38
+                                  color: Colors.black38
                               );
                             },
                             staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
@@ -453,7 +458,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
       itemBuilder: (BuildContext context, int index) {
         return WidgetHelper().myPress(
             (){
-              WidgetHelper().myPush(context,HomeScreen(id: returnTenant[index]['id_tenant'],nama:returnTenant[index]['nama'],mode: widget.mode));
+              WidgetHelper().myPush(context,HomeScreen(id: returnTenant[index]['id_tenant'],nama:returnTenant[index]['nama']));
             },
             Container(
               padding: EdgeInsets.all(5.0),
@@ -478,7 +483,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                 ],
               ),
             ),
-            color: widget.mode?Colors.white10:Colors.black38
+            color: Colors.black38
         );
       },
       staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
@@ -496,7 +501,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
       itemBuilder: (BuildContext context, int index) {
         return WidgetHelper().myPress(
                 (){
-              WidgetHelper().myPush(context,HomeScreen(id: listTenantModel.result.data[index].id,nama:listTenantModel.result.data[index].nama,mode: widget.mode));
+              WidgetHelper().myPush(context,HomeScreen(id: listTenantModel.result.data[index].id,nama:listTenantModel.result.data[index].nama));
             },
             Container(
               padding: EdgeInsets.all(5.0),
@@ -522,7 +527,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                 ],
               ),
             ),
-            color: widget.mode?Colors.white10:Colors.black38
+            color:Colors.black38
         );
       },
       staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),

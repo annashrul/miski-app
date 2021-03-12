@@ -43,23 +43,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       email = var_email;
       gender = var_gender;
       birthDate = DateTime.parse(var_birthDate);
-    });
-  }
-  bool site=false;
-  bool isLoading=false;
-  Future getSite()async{
-    final res = await FunctionHelper().getSite();
-    print("SITE $res");
-    setState(() {
-      site = res;
       isLoading=false;
     });
   }
+  bool isLoading=false;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getSite();
     loadData();
     initializeDateFormatting('id');
     isLoading=true;
@@ -72,7 +63,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          WidgetHelper().loadingWidget(context,color: site?Colors.white:Colors.white)
+          WidgetHelper().loadingWidget(context,color: Colors.black)
         ],
       ),
     ): RefreshWidget(
@@ -139,10 +130,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Container(
               margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
               decoration: BoxDecoration(
-                color: site?SiteConfig().darkMode:Colors.white,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(6),
                 boxShadow: [
-                  BoxShadow(color: site?Colors.transparent:Theme.of(context).hintColor.withOpacity(0.15), offset: Offset(0, 3), blurRadius: 10)
+                  BoxShadow(color:Theme.of(context).hintColor.withOpacity(0.15), offset: Offset(0, 3), blurRadius: 10)
                 ],
               ),
               child: ListView(
@@ -151,8 +142,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 primary: false,
                 children: <Widget>[
                   ListTile(
-                    leading: Icon(UiIcons.user_1,color: site?Colors.white:Colors.grey),
-                    title: WidgetHelper().textQ("Pengaturan Akun",12,site?Colors.white:SiteConfig().secondColor,FontWeight.bold),
+                    leading: Icon(UiIcons.user_1,color: Colors.grey),
+                    title: WidgetHelper().textQ("Pengaturan Akun",12,SiteConfig().darkMode,FontWeight.bold),
                     trailing: WidgetHelper().myPress(
                       (){
                         showDialog(
@@ -259,38 +250,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             });
                       },
                       Container(
-                        child: WidgetHelper().textQ("Ubah",10,site?Colors.white:SiteConfig().secondColor,FontWeight.bold),
+                        child: WidgetHelper().textQ("Ubah",10,SiteConfig().secondColor,FontWeight.bold),
                       ),
                     ),
-                    contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
+                    contentPadding:EdgeInsets.only(left:20,right:20),
                   ),
 
                   ListTile(
-                    contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
+                    contentPadding:EdgeInsets.only(left:20,right:20),
                     onTap: () {},
                     dense: true,
-                    title: WidgetHelper().textQ("Nama",10, site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal),
+                    title: WidgetHelper().textQ("Nama",10,SiteConfig().secondColor,FontWeight.normal),
                     trailing: WidgetHelper().textQ(name,10,Theme.of(context).focusColor,FontWeight.normal),
                   ),
                   ListTile(
-                    contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
+                    contentPadding:EdgeInsets.only(left:20,right:20),
                     onTap: () {},
                     dense: true,
-                    title: WidgetHelper().textQ("Email",10, site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal),
+                    title: WidgetHelper().textQ("Email",10,SiteConfig().secondColor,FontWeight.normal),
                     trailing: WidgetHelper().textQ(email,10,Theme.of(context).focusColor,FontWeight.normal),
                   ),
                   ListTile(
-                    contentPadding: site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
+                    contentPadding:EdgeInsets.only(left:20,right:20),
                     onTap: () {},
                     dense: true,
-                    title: WidgetHelper().textQ("Jenis Kelamin",10, site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal),
+                    title: WidgetHelper().textQ("Jenis Kelamin",10,SiteConfig().secondColor,FontWeight.normal),
                     trailing: WidgetHelper().textQ(gender,10,Theme.of(context).focusColor,FontWeight.normal),
                   ),
                   ListTile(
-                    contentPadding: site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
+                    contentPadding:EdgeInsets.only(left:20,right:20),
                     onTap: () {},
                     dense: true,
-                    title: WidgetHelper().textQ("Tanggal Lahir",10, site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal),
+                    title: WidgetHelper().textQ("Tanggal Lahir",10,SiteConfig().secondColor,FontWeight.normal),
                     trailing: WidgetHelper().textQ("$birthDate",10,Theme.of(context).focusColor,FontWeight.normal),
                   ),
                 ],
@@ -299,10 +290,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Container(
               margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
               decoration: BoxDecoration(
-                color: site?SiteConfig().darkMode:Colors.white,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(6),
                 boxShadow: [
-                  BoxShadow(color: site?Colors.transparent:Theme.of(context).hintColor.withOpacity(0.15), offset: Offset(0, 3), blurRadius: 10)
+                  BoxShadow(color:Theme.of(context).hintColor.withOpacity(0.15), offset: Offset(0, 3), blurRadius: 10)
                 ],
               ),
               child: ListView(
@@ -310,34 +301,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 primary: false,
                 children: <Widget>[
                   ListTile(
-                    contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
-                    leading: Icon(UiIcons.bar_chart,color: site?Colors.white:Colors.grey),
-                    title: WidgetHelper().textQ("Riwayat Pembelian",12,site?Colors.white:SiteConfig().secondColor,FontWeight.bold),
+                    contentPadding:EdgeInsets.only(left:20,right:20),
+                    leading: Icon(UiIcons.bar_chart,color:Colors.grey),
+                    title: WidgetHelper().textQ("Riwayat Pembelian",12,SiteConfig().secondColor,FontWeight.bold),
                     trailing: ButtonTheme(
                       padding: EdgeInsets.all(0),
                       minWidth: 50.0,
                       height: 25.0,
                       child: FlatButton(
                         onPressed: () {
-                          WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 5,mode: site));
+                          WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 5));
                         },
-                        child: WidgetHelper().textQ("Semua Status",10,site?Colors.white:SiteConfig().secondColor,FontWeight.normal),
+                        child: WidgetHelper().textQ("Semua Status",10,SiteConfig().secondColor,FontWeight.normal),
                       ),
                     ),
                   ),
                   FlatButton(
-                    padding: EdgeInsets.all(site?0.0:0.0),
+                    padding: EdgeInsets.all(0.0),
                     highlightColor:Colors.black38,
                     splashColor:Colors.black38,
                     onPressed: ()async{
                       await Future.delayed(Duration(milliseconds: 90));
-                      WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 0,mode: site));
+                      WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 0));
                     },
                     child: ListTile(
-                      contentPadding: site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
+                      contentPadding:EdgeInsets.only(left:20,right:20),
                       dense: true,
-                      title: WidgetHelper().textQ("${FunctionHelper.arrOptDate[0]}",10,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal),
-                      trailing: Icon(Icons.looks_one,color: site?Colors.white:Theme.of(context).focusColor),
+                      title: WidgetHelper().textQ("${FunctionHelper.arrOptDate[0]}",10,SiteConfig().secondColor,FontWeight.normal),
+                      trailing: Icon(Icons.looks_one,color:Theme.of(context).focusColor),
                     ),
                   ),
                   FlatButton(
@@ -346,13 +337,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     splashColor:Colors.black38,
                     onPressed: ()async{
                       await Future.delayed(Duration(milliseconds: 90));
-                      WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 1,mode: site));
+                      WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 1));
                     },
                     child: ListTile(
-                      contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
+                      contentPadding:EdgeInsets.only(left:20,right:20),
                       dense: true,
-                      title: WidgetHelper().textQ("${FunctionHelper.arrOptDate[1]}",10,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal),
-                      trailing: Icon(Icons.looks_two,color: site?Colors.white:Theme.of(context).focusColor),
+                      title: WidgetHelper().textQ("${FunctionHelper.arrOptDate[1]}",10,SiteConfig().secondColor,FontWeight.normal),
+                      trailing: Icon(Icons.looks_two,color: Theme.of(context).focusColor),
 
                     ),
                   ),
@@ -362,14 +353,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     splashColor:Colors.black38,
                     onPressed: ()async{
                       await Future.delayed(Duration(milliseconds: 90));
-                      WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 2,mode: site));
+                      WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 2));
 
                     },
                     child: ListTile(
-                      contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
+                      contentPadding:EdgeInsets.only(left:20,right:20),
                       dense: true,
-                      title: WidgetHelper().textQ("${FunctionHelper.arrOptDate[2]}",10,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal),
-                      trailing: Icon(Icons.looks_3,color: site?Colors.white:Theme.of(context).focusColor),
+                      title: WidgetHelper().textQ("${FunctionHelper.arrOptDate[2]}",10,SiteConfig().secondColor,FontWeight.normal),
+                      trailing: Icon(Icons.looks_3,color:Theme.of(context).focusColor),
                     ),
                   ),
                   FlatButton(
@@ -378,14 +369,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     splashColor:Colors.black38,
                     onPressed: ()async{
                       await Future.delayed(Duration(milliseconds: 90));
-                      WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 3,mode: site));
+                      WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 3));
 
                     },
                     child: ListTile(
-                      contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
+                      contentPadding:EdgeInsets.only(left:20,right:20),
                       dense: true,
-                      title: WidgetHelper().textQ("${FunctionHelper.arrOptDate[3]}",10,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal),
-                      trailing: Icon(Icons.looks_4,color: site?Colors.white:Theme.of(context).focusColor),
+                      title: WidgetHelper().textQ("${FunctionHelper.arrOptDate[3]}",10,SiteConfig().secondColor,FontWeight.normal),
+                      trailing: Icon(Icons.looks_4,color:Theme.of(context).focusColor),
 
                     ),
                   ),
@@ -395,13 +386,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     splashColor:Colors.black38,
                     onPressed: ()async{
                       await Future.delayed(Duration(milliseconds: 90));
-                      WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 4,mode: site));
+                      WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 4));
                     },
                     child: ListTile(
-                      contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
+                      contentPadding:EdgeInsets.only(left:20,right:20),
                       dense: true,
-                      title: WidgetHelper().textQ("${FunctionHelper.arrOptDate[4]}",10,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal),
-                      trailing: Icon(Icons.looks_5,color: site?Colors.white:Theme.of(context).focusColor),
+                      title: WidgetHelper().textQ("${FunctionHelper.arrOptDate[4]}",10,SiteConfig().secondColor,FontWeight.normal),
+                      trailing: Icon(Icons.looks_5,color:Theme.of(context).focusColor),
 
                     ),
                   ),
@@ -411,10 +402,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Container(
               margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
               decoration: BoxDecoration(
-                color: site?SiteConfig().darkMode:Colors.white,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(6),
                 boxShadow: [
-                  BoxShadow(color: site?Colors.transparent:Theme.of(context).hintColor.withOpacity(0.15), offset: Offset(0, 3), blurRadius: 10)
+                  BoxShadow(color: Theme.of(context).hintColor.withOpacity(0.15), offset: Offset(0, 3), blurRadius: 10)
                 ],
               ),
               child: ListView(
@@ -423,58 +414,58 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 primary: false,
                 children: <Widget>[
                   ListTile(
-                    contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
-                    leading: Icon(UiIcons.settings_1,color: site?Colors.white:Colors.grey),
-                    title: WidgetHelper().textQ("Pengaturan Umum",12,site?Colors.white:SiteConfig().secondColor,FontWeight.bold),
+                    contentPadding:  EdgeInsets.only(left:20,right:20),
+                    leading: Icon(UiIcons.settings_1,color:Colors.grey),
+                    title: WidgetHelper().textQ("Pengaturan Umum",12,SiteConfig().secondColor,FontWeight.bold),
                   ),
-                  WidgetHelper().myPress(
-                    ()async{
-                      await FunctionHelper().storeSite(!site);
-                      setState(() {
-                        site = !site;
-                      });
-                      WidgetHelper().myPush(context,MyApp(mode: site));
-
-                    },
-                    ListTile(
-                      contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
-                      dense: true,
-                      title: Row(
-                        children: <Widget>[
-                          Icon(
-                            site?UiIcons.cloud_computing:UiIcons.cloud_computing_1,
-                            size: 22,
-                            color: Theme.of(context).focusColor,
-                          ),
-                          SizedBox(width: 10),
-                          WidgetHelper().textQ("Warna Tema ${site?'Gelap':'Cerah'}",10,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal)
-
-                        ],
-                      ),
-                      trailing: SizedBox(
-                          width: 70,
-                          height: 10,
-                          child: Switch(
-                            activeColor: site?Colors.white:SiteConfig().mainDarkColor,
-                            value: site,
-                            onChanged: (value) async{
-                              // Provider.of<ThemeModel>(context,listen: false).toggleTheme();
-                              await FunctionHelper().storeSite(value);
-                              setState(() {
-                                site = value;
-                              });
-                              WidgetHelper().myPush(context,MyApp(mode: site));
-
-                            },
-                          )
-                      ),
-                    ),
-                    color: site?Colors.grey[200]:Colors.black38
-                  ),
+                  // WidgetHelper().myPress(
+                  //   ()async{
+                  //     await FunctionHelper().storeSite(!site);
+                  //     setState(() {
+                  //       site = !site;
+                  //     });
+                  //     WidgetHelper().myPush(context,MyApp());
+                  //
+                  //   },
+                  //   ListTile(
+                  //     contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
+                  //     dense: true,
+                  //     title: Row(
+                  //       children: <Widget>[
+                  //         Icon(
+                  //           site?UiIcons.cloud_computing:UiIcons.cloud_computing_1,
+                  //           size: 22,
+                  //           color: Theme.of(context).focusColor,
+                  //         ),
+                  //         SizedBox(width: 10),
+                  //         WidgetHelper().textQ("Warna Tema ${site?'Gelap':'Cerah'}",10,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal)
+                  //
+                  //       ],
+                  //     ),
+                  //     trailing: SizedBox(
+                  //         width: 70,
+                  //         height: 10,
+                  //         child: Switch(
+                  //           activeColor: site?Colors.white:SiteConfig().mainDarkColor,
+                  //           value: site,
+                  //           onChanged: (value) async{
+                  //             // Provider.of<ThemeModel>(context,listen: false).toggleTheme();
+                  //             await FunctionHelper().storeSite(value);
+                  //             setState(() {
+                  //               site = value;
+                  //             });
+                  //             WidgetHelper().myPush(context,MyApp(mode: site));
+                  //
+                  //           },
+                  //         )
+                  //     ),
+                  //   ),
+                  //   color: site?Colors.grey[200]:Colors.black38
+                  // ),
                   ListTile(
-                    contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
+                    contentPadding: EdgeInsets.only(left:20,right:20),
                     onTap: () {
-                      WidgetHelper().myPush(context,AddressScreen(mode:site));
+                      WidgetHelper().myPush(context,AddressScreen());
                     },
                     dense: true,
                     title: Row(
@@ -485,7 +476,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           color: Theme.of(context).focusColor,
                         ),
                         SizedBox(width: 10),
-                        WidgetHelper().textQ("Alamat",10,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal)
+                        WidgetHelper().textQ("Alamat",10,SiteConfig().secondColor,FontWeight.normal)
                       ],
                     ),
                   ),
@@ -517,7 +508,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   //   ),
                   // ),
                   ListTile(
-                    contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
+                    contentPadding:  EdgeInsets.only(left:20,right:20),
                     onTap: () {
                     },
                     dense: true,
@@ -529,13 +520,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           color: Theme.of(context).focusColor,
                         ),
                         SizedBox(width: 10),
-                        WidgetHelper().textQ("Kebijakan & Privasi",10,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal)
+                        WidgetHelper().textQ("Kebijakan & Privasi",10,SiteConfig().secondColor,FontWeight.normal)
 
                       ],
                     ),
                   ),
                   ListTile(
-                    contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
+                    contentPadding:EdgeInsets.only(left:20,right:20),
                     onTap: () {
                       WidgetHelper().notifDialog(context,"Perhatian !!","Anda yakin akan keluar dari aplikas ??", (){Navigator.pop(context);}, ()async{
                         final id = await UserHelper().getDataUser('id');
@@ -553,7 +544,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           color: Theme.of(context).focusColor,
                         ),
                         SizedBox(width: 10),
-                        WidgetHelper().textQ("Keluar",10,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal)
+                        WidgetHelper().textQ("Keluar",10,SiteConfig().secondColor,FontWeight.normal)
 
                       ],
                     ),
@@ -569,7 +560,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           setState(() {
             isLoading=true;
           });
-          getSite();
         });
       },
     );

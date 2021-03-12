@@ -689,7 +689,6 @@ class ModalAddress extends StatefulWidget {
   @override
   _ModalAddressState createState() => _ModalAddressState();
 }
-
 class _ModalAddressState extends State<ModalAddress> {
   ListAddressModel listAddressModel;
   bool isLoading=false,isLoadmore=false,isError=false;

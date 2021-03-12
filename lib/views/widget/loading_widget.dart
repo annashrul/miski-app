@@ -33,6 +33,17 @@ class _LoadingTenantState extends State<LoadingTenant> {
       crossAxisCount: 3,
       itemCount: 9,
       itemBuilder: (BuildContext context, int index) {
+        return WidgetHelper().baseLoading(context,Container(
+            padding: EdgeInsets.only(bottom:5.0),
+            decoration: BoxDecoration(
+              color:site?Theme.of(context).focusColor.withOpacity(0.1):Colors.white,
+              // color:Colors.white,
+              borderRadius: BorderRadius.circular(4.0),
+              // border: Border.all(color: site?Colors.transparent:Colors.grey[200]),
+            ),
+            width: double.infinity,
+            height: 100
+        ));
         return Container(
           padding: EdgeInsets.only(bottom:5.0),
           decoration: BoxDecoration(
@@ -74,9 +85,11 @@ class _LoadingProductTenantState extends State<LoadingProductTenant> {
   static bool site=false;
   Future getSite()async{
     final res = await FunctionHelper().getSite();
-    setState(() {
-      site = res;
-    });
+    if(this.mounted){
+      setState(() {
+        site = res;
+      });
+    }
   }
 
   @override
@@ -92,6 +105,19 @@ class _LoadingProductTenantState extends State<LoadingProductTenant> {
       crossAxisCount: 4,
       itemCount: widget.tot,
       itemBuilder: (BuildContext context, int index) {
+        return Container(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              WidgetHelper().baseLoading(context,Container(width: double.infinity,height: 130.0,color: site?Theme.of(context).focusColor.withOpacity(0.1):Colors.white)),
+              SizedBox(height: 12),
+              WidgetHelper().baseLoading(context,Container(width: MediaQuery.of(context).size.width/2,height: 5.0,color: site?Theme.of(context).focusColor.withOpacity(0.1):Colors.white)),
+              SizedBox(height:5),
+              WidgetHelper().baseLoading(context,Container(width: MediaQuery.of(context).size.width/2,height: 5.0,color: site?Theme.of(context).focusColor.withOpacity(0.1):Colors.white)),
+            ],
+          ),
+        );
         return Container(
           decoration: BoxDecoration(
             // color: site?Colors.transparent:Theme.of(context).primaryColor,

@@ -46,19 +46,11 @@ class _DetailCheckoutScreenState extends State<DetailCheckoutScreen> {
   var bulan = DateFormat.M().format( DateTime.now());
   var tahun = DateFormat.y().format( DateTime.now());
 
-  static bool site=false;
-  Future getSite()async{
-    final res = await FunctionHelper().getSite();
-    setState(() {
-      site = res;
-    });
-  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getSite();
   }
 
 
@@ -68,11 +60,11 @@ class _DetailCheckoutScreenState extends State<DetailCheckoutScreen> {
     final key = new GlobalKey<ScaffoldState>();
     return WillPopScope(
       child: Scaffold(
-            backgroundColor: site?SiteConfig().darkMode:Colors.white,
+            backgroundColor: Colors.white,
             key: key,
             appBar: WidgetHelper().appBarWithButton(context, "INVOICE ${widget.invoice_no}",(){
-              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WrapperScreen(currentTab: 2,mode: site)), (Route<dynamic> route) => false);
-            },<Widget>[],brightness: site?Brightness.dark:Brightness.light),
+              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WrapperScreen(currentTab: 2)), (Route<dynamic> route) => false);
+            },<Widget>[],brightness: Brightness.light),
             resizeToAvoidBottomInset: false,
             body: Scrollbar(
                 child: ListView(
@@ -86,7 +78,7 @@ class _DetailCheckoutScreenState extends State<DetailCheckoutScreen> {
                     SizedBox(height: 8),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
-                      child: WidgetHelper().textQ("Silahkan transfer tepat sebesar :", 12, site?Colors.white:SiteConfig().darkMode, FontWeight.bold),
+                      child: WidgetHelper().textQ("Silahkan transfer tepat sebesar :", 12,SiteConfig().darkMode, FontWeight.bold),
                     ),
                     Padding(
                         padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
@@ -103,7 +95,7 @@ class _DetailCheckoutScreenState extends State<DetailCheckoutScreen> {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
-                      child: WidgetHelper().textQ("Pembayaran dapat dilakukan ke rekening berikut : ", 12, site?Colors.white:SiteConfig().darkMode, FontWeight.bold),
+                      child: WidgetHelper().textQ("Pembayaran dapat dilakukan ke rekening berikut : ", 12, SiteConfig().darkMode, FontWeight.bold),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
@@ -140,7 +132,7 @@ class _DetailCheckoutScreenState extends State<DetailCheckoutScreen> {
                         ),
                       ),
                     ),
-                    !site?Padding(
+                    Padding(
                         padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
                         child: Container(
                             decoration: BoxDecoration(
@@ -152,11 +144,8 @@ class _DetailCheckoutScreenState extends State<DetailCheckoutScreen> {
                               child: WidgetHelper().textQ('VERIFIKASI PENERIMAAN TRANSFER ANDA AKAN DIPROSES SELAMA 5-10 MENIT', 14, Colors.white, FontWeight.bold),
                             )
                         )
-                    ):Padding(
-                      padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
-                      child: WidgetHelper().textQ('VERIFIKASI PENERIMAAN TRANSFER ANDA AKAN DIPROSES SELAMA 5-10 MENIT', 14, Colors.white, FontWeight.bold,textAlign: TextAlign.center),
                     ),
-                    !site?Padding(
+                    Padding(
                         padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
                         child: Container(
                           color: const Color(0xffF4F7FA),
@@ -173,32 +162,12 @@ class _DetailCheckoutScreenState extends State<DetailCheckoutScreen> {
                             ),
                           ),
                         )
-                    ):Padding(
-                      padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
-                      child: RichText(
-                        text: TextSpan(
-                            text: 'Anda dapat melakukan transfer menggunakan ATM, Mobile Banking atau SMS Banking dengan memasukan kode bank',
-                            style: TextStyle(fontSize: 12,fontFamily:SiteConfig().fontStyle,color:Colors.white),
-                            children: <TextSpan>[
-                              TextSpan(text: ' ${widget.bank_name} (${widget.bank_code})',style: TextStyle(color:SiteConfig().mainColor, fontSize: 12,fontWeight: FontWeight.bold,fontFamily:SiteConfig().fontStyle)),
-                              TextSpan(text: ' di depan No.Rekening atas nama',style: TextStyle(fontSize: 12,fontFamily:SiteConfig().fontStyle)),
-                              TextSpan(text: ' ${widget.bank_atas_nama}',style: TextStyle(color:SiteConfig().mainColor, fontSize: 12,fontWeight: FontWeight.bold,fontFamily:SiteConfig().fontStyle)),
-                            ]
-                        ),
-                      ),
                     ),
-                    !site?Padding(
-                        padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
-                        child: Container(
-                            color: const Color(0xffF4F7FA),
-                            padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
-                            child:WidgetHelper().textQ("mohon transfer tepat hingga 3 digit terakhir agar tidak menghambat proses verifikasi", 12, Colors.black, FontWeight.normal)
-                        )
-                    ):Container(
+                    Container(
                         padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
-                        child:WidgetHelper().textQ("mohon transfer tepat hingga 3 digit terakhir agar tidak menghambat proses verifikasi", 12, Colors.white, FontWeight.normal)
+                        child:WidgetHelper().textQ("mohon transfer tepat hingga 3 digit terakhir agar tidak menghambat proses verifikasi", 12, Colors.black, FontWeight.normal)
                     ),
-                    !site?Padding(
+                    Padding(
                         padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
                         child: Container(
                           color: const Color(0xffF4F7FA),
@@ -214,19 +183,7 @@ class _DetailCheckoutScreenState extends State<DetailCheckoutScreen> {
                             ),
                           ),
                         )
-                    ):Container(
-                        padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
-                        child:RichText(
-                          text: TextSpan(
-                              text: 'Pastikan anda transfer sebelum tanggal',
-                              style: TextStyle(fontSize: 12,fontFamily:SiteConfig().fontStyle,color: Colors.white),
-                              children: <TextSpan>[
-                                TextSpan(text: ' $hari-$bulan-$tahun 23:00 WIB',style: TextStyle(color:SiteConfig().mainColor, fontSize: 12,fontWeight: FontWeight.bold,fontFamily:SiteConfig().fontStyle)),
-                                TextSpan(text: ' atau transaksi anda otomatis dibatalkan oleh sistem. jika sudah melakukan transfer segera upload bukti transfer disini atau di halaman detail riwayat pembelian',style: TextStyle(fontSize: 12,fontFamily:SiteConfig().fontStyle)),
-                              ]
-                          ),
-                        )
-                    ),
+                    )
                   ],
                 )
             ),
@@ -294,9 +251,9 @@ class _DetailCheckoutScreenState extends State<DetailCheckoutScreen> {
         Navigator.pop(context);
         if(retry>=3){
           WidgetHelper().notifDialog(context,"Terjadi Kesalahan Server","Silahkan lakukan pembuatan tiket komplain di halaman tiket", (){
-            WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2,mode: site));
+            WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2));
           },(){
-            WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2,mode: site));
+            WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2));
           },titleBtn1: "kembali",titleBtn2: "home");
         }
         else{
@@ -312,7 +269,7 @@ class _DetailCheckoutScreenState extends State<DetailCheckoutScreen> {
       else{
         Navigator.pop(context);
         WidgetHelper().notifDialog(context,"Transaksi Berhasil","Terimakasih telah melakukan transaksi disini", (){
-          WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2,mode: site));
+          WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2));
         },(){
           Navigator.pop(context);
         },titleBtn2: "home",titleBtn1: "detail pembelian");

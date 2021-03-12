@@ -20,8 +20,6 @@ import 'package:netindo_shop/views/widget/timeout_widget.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class AddressScreen extends StatefulWidget {
-  bool mode;
-  AddressScreen({this.mode});
   @override
   _AddressScreenState createState() => _AddressScreenState();
 }
@@ -79,7 +77,7 @@ class _AddressScreenState extends State<AddressScreen> {
 
     return Scaffold(
       key: scaffoldKey,
-      backgroundColor: widget.mode?SiteConfig().darkMode:Colors.white,
+      backgroundColor: Colors.white,
       appBar: WidgetHelper().appBarWithButton(context,"Daftar Alamat",(){Navigator.pop(context);},<Widget>[
         Container(
           color: Colors.transparent,
@@ -91,7 +89,7 @@ class _AddressScreenState extends State<AddressScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 0),
                 child: FlatButton(
                     onPressed: (){
-                      WidgetHelper().myModal(context, ModalForm(id:"",mode: widget.mode,callback:(String par){
+                      WidgetHelper().myModal(context, ModalForm(id:"",callback:(String par){
                         if(par=='berhasil'){
                           loadData();
                           WidgetHelper().showFloatingFlushbar(context,"success","data berhasil dikirim");
@@ -107,7 +105,7 @@ class _AddressScreenState extends State<AddressScreen> {
             ],
           ),
         )
-      ],brightness: widget.mode?Brightness.dark:Brightness.light),
+      ],brightness: Brightness.light),
       body: Container(
         padding: EdgeInsets.only(top:10,bottom:10,left:10,right:10),
         child: isLoading?LoadingHistory(tot: 10):isError?TimeoutWidget(callback: (){}):listAddressModel.result.data.length>0?Column(
@@ -126,7 +124,7 @@ class _AddressScreenState extends State<AddressScreen> {
                       // final valDet = historyTransactionModel.result.data[index].detail;
                       return WidgetHelper().myPress(
                         (){
-                          WidgetHelper().myModal(context, ModalForm(id:"${val.id}",mode: widget.mode,callback:(String par){
+                          WidgetHelper().myModal(context, ModalForm(id:"${val.id}",callback:(String par){
                             if(par=='berhasil'){
                               loadData();
                               WidgetHelper().showFloatingFlushbar(context,"success","data berhasil disimpan");
@@ -192,15 +190,15 @@ class _AddressScreenState extends State<AddressScreen> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    WidgetHelper().textQ("${val.penerima}",10,Colors.grey,FontWeight.normal),
+                                    WidgetHelper().textQ("${val.penerima}",10,Colors.black,FontWeight.normal),
                                     SizedBox(height:5.0),
-                                    WidgetHelper().textQ("${val.noHp}",10,Colors.grey,FontWeight.normal),
+                                    WidgetHelper().textQ("${val.noHp}",10,Colors.black,FontWeight.normal),
                                     SizedBox(height:5.0),
-                                    WidgetHelper().textQ("${val.mainAddress}",10,Colors.grey,FontWeight.normal,maxLines: 3),
+                                    WidgetHelper().textQ("${val.mainAddress}",10,Colors.black,FontWeight.normal,maxLines: 3),
                                     SizedBox(height:5.0),
                                     InkWell(
                                       onTap: (){
-                                        WidgetHelper().myModal(context, ModalForm(id:"${val.id}",mode: widget.mode,callback:(String par){
+                                        WidgetHelper().myModal(context, ModalForm(id:"${val.id}",callback:(String par){
                                           if(par=='berhasil'){
                                             loadData();
                                             WidgetHelper().showFloatingFlushbar(context,"success","data berhasil disimpan");
@@ -227,7 +225,7 @@ class _AddressScreenState extends State<AddressScreen> {
                             ],
                           ),
                         ),
-                        color: widget.mode?Colors.white10:Colors.black38
+                        color: Colors.black38
                       );
                     },
                   separatorBuilder: (context,index){return SizedBox(height:10.0);},
@@ -425,7 +423,7 @@ class _ModalFormState extends State<ModalForm> {
       height: MediaQuery.of(context).size.height/1,
       padding: EdgeInsets.only(top:10.0,left:0,right:0),
       decoration: BoxDecoration(
-        color: widget.mode?SiteConfig().darkMode:Colors.white,
+        color:Colors.white,
         borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0),topRight:Radius.circular(10.0) ),
       ),
       // color: Colors.white,
@@ -449,10 +447,10 @@ class _ModalFormState extends State<ModalForm> {
               onTap: ()=>Navigator.pop(context),
               child: CircleAvatar(
                 backgroundColor: Colors.transparent,
-                child: Center(child: Icon(UiIcons.return_icon, color: widget.mode?Colors.white:Theme.of(context).hintColor),),
+                child: Center(child: Icon(UiIcons.return_icon, color:Theme.of(context).hintColor),),
               ),
             ),
-            title: WidgetHelper().textQ("${widget.id==''?'Tambah':'Ubah'} Alamat",12, widget.mode?Colors.white:Theme.of(context).hintColor, FontWeight.bold),
+            title: WidgetHelper().textQ("${widget.id==''?'Tambah':'Ubah'} Alamat",12, Theme.of(context).hintColor, FontWeight.bold),
             trailing: InkWell(
                 onTap: ()async{
 
@@ -485,7 +483,7 @@ class _ModalFormState extends State<ModalForm> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        WidgetHelper().textQ("Simpan Alamat Sebagai (Contoh:Alamat rumah, Alamat kantor, Alamat pacar)",8, widget.mode?Colors.white:Theme.of(context).hintColor, FontWeight.normal),
+                        WidgetHelper().textQ("Simpan Alamat Sebagai (Contoh:Alamat rumah, Alamat kantor, Alamat pacar)",8, Theme.of(context).hintColor, FontWeight.normal),
                         SizedBox(height:5.0),
                         Container(
                           decoration: BoxDecoration(
@@ -515,7 +513,7 @@ class _ModalFormState extends State<ModalForm> {
                           ),
                         ),
                         SizedBox(height:10.0),
-                        WidgetHelper().textQ("Penerima",8, widget.mode?Colors.white:Theme.of(context).hintColor, FontWeight.normal),
+                        WidgetHelper().textQ("Penerima",8, Theme.of(context).hintColor, FontWeight.normal),
                         SizedBox(height:5.0),
                         Container(
                           decoration: BoxDecoration(
@@ -542,7 +540,7 @@ class _ModalFormState extends State<ModalForm> {
                           ),
                         ),
                         SizedBox(height:10.0),
-                        WidgetHelper().textQ("No.Telepon",8, widget.mode?Colors.white:Theme.of(context).hintColor, FontWeight.normal),
+                        WidgetHelper().textQ("No.Telepon",8, Theme.of(context).hintColor, FontWeight.normal),
                         SizedBox(height:5.0),
                         Container(
                           decoration: BoxDecoration(
@@ -570,7 +568,6 @@ class _ModalFormState extends State<ModalForm> {
                             onFieldSubmitted: (_){
                               FocusScope.of(context).unfocus();
                               WidgetHelper().myModal(context,ModalProvinsi(
-                                mode: widget.mode,
                                 callback:(id,name,idx){
                                   setState(() {prov=id;provName=name;idxProv=idx;city='';});
                                   Navigator.pop(context);
@@ -581,16 +578,14 @@ class _ModalFormState extends State<ModalForm> {
                           ),
                         ),
                         SizedBox(height:10.0),
-                        WidgetHelper().textQ("Provinsi",8, widget.mode?Colors.white:Theme.of(context).hintColor, FontWeight.normal),
+                        WidgetHelper().textQ("Provinsi",8,Theme.of(context).hintColor, FontWeight.normal),
                         SizedBox(height:5.0),
                         tempAdd("${prov!=''?provName:'Pilih Provinsi'}",isErrorProv,(){
                           WidgetHelper().myModal(context,ModalProvinsi(
-                            mode: widget.mode,
                             callback:(id,name,idx){
                               setState(() {prov=id;provName=name;idxProv=idx;city='';});
                               Navigator.pop(context);
                               WidgetHelper().myModal(context,ModalCity(
-                                mode: widget.mode,
                                 callback:(id,name,idx){
                                   setState(() {city=id;cityName=name;idxCity=idx;district='';});
                                   Navigator.pop(context);
@@ -602,17 +597,15 @@ class _ModalFormState extends State<ModalForm> {
                           ));
                         }),
                         SizedBox(height: 10),
-                        WidgetHelper().textQ("Kota",8, widget.mode?Colors.white:Theme.of(context).hintColor, FontWeight.normal),
+                        WidgetHelper().textQ("Kota",8,Theme.of(context).hintColor, FontWeight.normal),
                         SizedBox(height:5.0),
                         tempAdd("${city!=''?cityName:'Pilih Kota'}",isErrorCity,(){
                           if(prov!=''){
                             WidgetHelper().myModal(context,ModalCity(
-                              mode: widget.mode,
                               callback:(id,name,idx){
                                 setState(() {city=id;cityName=name;idxCity=idx;district='';});
                                 Navigator.pop(context);
                                 WidgetHelper().myModal(context,ModalDisctrict(
-                                  mode: widget.mode,
                                   callback:(id,name,idx){
                                     setState(() {district=id;districtName=name;idxDistrict=idx;});
                                     Navigator.pop(context);
@@ -631,12 +624,11 @@ class _ModalFormState extends State<ModalForm> {
                           }
                         }),
                         SizedBox(height: 10),
-                        WidgetHelper().textQ("Kecamatan",8, widget.mode?Colors.white:Theme.of(context).hintColor, FontWeight.normal),
+                        WidgetHelper().textQ("Kecamatan",8,Theme.of(context).hintColor, FontWeight.normal),
                         SizedBox(height:5.0),
                         tempAdd("${district!=''?districtName:'Pilih Kecamatan'}",isErrorDistrcit,(){
                           if(prov!=''&&city!=''){
                             WidgetHelper().myModal(context,ModalDisctrict(
-                              mode: widget.mode,
                               callback:(id,name,idx){
                                 setState(() {district=id;districtName=name;idxDistrict=idx;});
                                 Navigator.pop(context);
@@ -660,7 +652,7 @@ class _ModalFormState extends State<ModalForm> {
                           }
                         }),
                         SizedBox(height: 10),
-                        WidgetHelper().textQ("Detail Alamat (format penulisan : nama jalan,rt,rw,kelurahan,kode pos)",8, widget.mode?Colors.white:Theme.of(context).hintColor, FontWeight.normal),
+                        WidgetHelper().textQ("Detail Alamat (format penulisan : nama jalan,rt,rw,kelurahan,kode pos)",8, Theme.of(context).hintColor, FontWeight.normal),
                         SizedBox(height:5.0),
                         Container(
                           decoration: BoxDecoration(
@@ -708,7 +700,7 @@ class _ModalFormState extends State<ModalForm> {
                           ),
                         ),
                         SizedBox(height: 10),
-                        WidgetHelper().textQ("Alamat ini digunakan untuk pengiriman",8, widget.mode?Colors.white:Theme.of(context).hintColor, FontWeight.normal),
+                        WidgetHelper().textQ("Alamat ini digunakan untuk pengiriman",8, Theme.of(context).hintColor, FontWeight.normal),
                         SizedBox(height:5.0),
                         Container(
                           width: double.infinity,
@@ -889,7 +881,7 @@ class _ModalProvinsiState extends State<ModalProvinsi> {
     return Container(
       height: MediaQuery.of(context).size.height/1,
       decoration: BoxDecoration(
-          color: widget.mode?SiteConfig().darkMode:Colors.transparent,
+          color: Colors.transparent,
           borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))
       ),
       child:Column(
@@ -916,10 +908,10 @@ class _ModalProvinsiState extends State<ModalProvinsi> {
               onTap: ()=>Navigator.pop(context),
               child: CircleAvatar(
                 backgroundColor: Colors.transparent,
-                child: Center(child: Icon(UiIcons.return_icon, color: widget.mode?Colors.white:Theme.of(context).hintColor),),
+                child: Center(child: Icon(UiIcons.return_icon, color:Theme.of(context).hintColor),),
               ),
             ),
-            title: WidgetHelper().textQ("Pilih Provinsi",12, widget.mode?Colors.white:Theme.of(context).hintColor, FontWeight.bold),
+            title: WidgetHelper().textQ("Pilih Provinsi",12,Theme.of(context).hintColor, FontWeight.bold),
           ),
           SizedBox(height: 20.0),
           Expanded(
@@ -940,8 +932,8 @@ class _ModalProvinsiState extends State<ModalProvinsi> {
                       },
                       child: ListTile(
                         contentPadding: EdgeInsets.only(left:10,right:10,top:0,bottom:0),
-                        title: WidgetHelper().textQ("${provinsiModel.result[index].name}", 10,widget.mode?Colors.white:SiteConfig().darkMode, FontWeight.bold),
-                        trailing: widget.id==provinsiModel.result[index].id?Icon(UiIcons.checked,size:20,color: widget.mode?Colors.grey[200]:SiteConfig().darkMode):Text(''),
+                        title: WidgetHelper().textQ("${provinsiModel.result[index].name}", 10,SiteConfig().darkMode, FontWeight.bold),
+                        trailing: widget.id==provinsiModel.result[index].id?Icon(UiIcons.checked,size:20,color:SiteConfig().darkMode):Text(''),
                       ),
                     );
                   },
@@ -1018,7 +1010,7 @@ class _ModalCityState extends State<ModalCity> {
     return Container(
       height: MediaQuery.of(context).size.height/1,
       decoration: BoxDecoration(
-          color: widget.mode?SiteConfig().darkMode:Colors.transparent,
+          color: Colors.transparent,
           borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))
       ),
       child:Column(
@@ -1045,10 +1037,10 @@ class _ModalCityState extends State<ModalCity> {
               onTap: ()=>Navigator.pop(context),
               child: CircleAvatar(
                 backgroundColor: Colors.transparent,
-                child: Center(child: Icon(UiIcons.return_icon, color: widget.mode?Colors.white:Theme.of(context).hintColor),),
+                child: Center(child: Icon(UiIcons.return_icon, color:Theme.of(context).hintColor),),
               ),
             ),
-            title: WidgetHelper().textQ("Pilih Kota",12, widget.mode?Colors.white:Theme.of(context).hintColor, FontWeight.bold),
+            title: WidgetHelper().textQ("Pilih Kota",12,Theme.of(context).hintColor, FontWeight.bold),
           ),
           SizedBox(height: 20.0),
           Expanded(
@@ -1070,8 +1062,8 @@ class _ModalCityState extends State<ModalCity> {
                       },
                       child: ListTile(
                         contentPadding: EdgeInsets.only(left:10,right:10,top:0,bottom:0),
-                        title: WidgetHelper().textQ("${kotaModel.result[index].name}", 10,widget.mode?Colors.white:SiteConfig().darkMode, FontWeight.bold),
-                        trailing: id==kotaModel.result[index].id?Icon(UiIcons.checked,size:20,color: widget.mode?Colors.grey[200]:SiteConfig().darkMode):Text(''),
+                        title: WidgetHelper().textQ("${kotaModel.result[index].name}", 10,SiteConfig().darkMode, FontWeight.bold),
+                        trailing: id==kotaModel.result[index].id?Icon(UiIcons.checked,size:20,color: SiteConfig().darkMode):Text(''),
                       ),
                     );
                   },
@@ -1149,7 +1141,7 @@ class _ModalDisctrictState extends State<ModalDisctrict> {
     return Container(
       height: MediaQuery.of(context).size.height/1,
       decoration: BoxDecoration(
-          color: widget.mode?SiteConfig().darkMode:Colors.transparent,
+          color: Colors.transparent,
           borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))
       ),
       child:Column(
@@ -1176,10 +1168,10 @@ class _ModalDisctrictState extends State<ModalDisctrict> {
               onTap: ()=>Navigator.pop(context),
               child: CircleAvatar(
                 backgroundColor: Colors.transparent,
-                child: Center(child: Icon(UiIcons.return_icon, color: widget.mode?Colors.white:Theme.of(context).hintColor),),
+                child: Center(child: Icon(UiIcons.return_icon, color:Theme.of(context).hintColor),),
               ),
             ),
-            title: WidgetHelper().textQ("Pilih Kecamatan",12, widget.mode?Colors.white:Theme.of(context).hintColor, FontWeight.bold),
+            title: WidgetHelper().textQ("Pilih Kecamatan",12,Theme.of(context).hintColor, FontWeight.bold),
           ),
           SizedBox(height: 20.0),
           Expanded(
@@ -1201,8 +1193,8 @@ class _ModalDisctrictState extends State<ModalDisctrict> {
                       },
                       child: ListTile(
                         contentPadding: EdgeInsets.only(left:10,right:10,top:0,bottom:0),
-                        title: WidgetHelper().textQ("${kecamatanModel.result[index].kecamatan}", 10,widget.mode?Colors.white:SiteConfig().darkMode, FontWeight.bold),
-                        trailing: id==kecamatanModel.result[index].id?Icon(UiIcons.checked,size:20,color: widget.mode?Colors.grey[200]:SiteConfig().darkMode):Text(''),
+                        title: WidgetHelper().textQ("${kecamatanModel.result[index].kecamatan}", 10,SiteConfig().darkMode, FontWeight.bold),
+                        trailing: id==kecamatanModel.result[index].id?Icon(UiIcons.checked,size:20,color:SiteConfig().darkMode):Text(''),
                       ),
                     );
                   },

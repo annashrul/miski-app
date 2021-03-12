@@ -32,7 +32,6 @@ class BadgesQ extends StatelessWidget {
 
 
 class ProductWidget extends StatefulWidget {
-  final bool mode;
   final String id;
   final String gambar;
   final String title;
@@ -45,7 +44,6 @@ class ProductWidget extends StatefulWidget {
   final String disc2;
   final Function countCart;
   ProductWidget({
-    this.mode,
     this.id,
     this.gambar,
     this.title,
@@ -105,7 +103,7 @@ class _ProductWidgetState extends State<ProductWidget> {
                   ()async{
                 await Future.delayed(Duration(milliseconds: 90));
                 await insertProductClick();
-                WidgetHelper().myPushAndLoad(context, DetailProducrScreen(id: widget.id,mode: widget.mode), widget.countCart);
+                WidgetHelper().myPushAndLoad(context, DetailProducrScreen(id: widget.id), widget.countCart);
               },
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -128,7 +126,7 @@ class _ProductWidgetState extends State<ProductWidget> {
                   SizedBox(height: 12),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                    child: WidgetHelper().textQ(widget.title, 12,widget.mode?Colors.white:SiteConfig().darkMode,FontWeight.normal,maxLines:3 ),
+                    child: WidgetHelper().textQ(widget.title, 12,SiteConfig().darkMode,FontWeight.normal,maxLines:3 ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -205,7 +203,7 @@ class _ProductWidgetState extends State<ProductWidget> {
                   SizedBox(height: 15),
                 ],
               ),
-            color:widget.mode?Colors.white10:Colors.black38
+            color:Colors.black38
           ),
         ),
 

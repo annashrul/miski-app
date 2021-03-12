@@ -13,8 +13,6 @@ import 'package:netindo_shop/views/screen/onboarding_screen.dart';
 import 'package:netindo_shop/views/screen/wrapper_screen.dart';
 
 class SplashScreen extends StatefulWidget {
-  final mode;
-  SplashScreen({this.mode});
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
@@ -48,27 +46,21 @@ class _SplashScreenState extends State<SplashScreen> {
           WidgetHelper().myPushRemove(context, LoginScreen());
         }
         else{
-          WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2,mode:widget.mode));
+          WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2));
         }
 
       }
     }
   }
 
-  Future insertData()async{
-    FunctionHelper().getSite();
-    final countTableSite = await _db.queryRowCount(SiteQuery.TABLE_NAME);
-    if(countTableSite<1){
-      await _db.insert(SiteQuery.TABLE_NAME, {"onBoarding":"0","exitApp":"0","mode":"dark"});
-    }
-    loadData();
-  }
+
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    insertData();
+    loadData();
+    // insertData();
   }
   @override
   Widget build(BuildContext context) {
@@ -78,7 +70,7 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            WidgetHelper().loadingWidget(context),
+            WidgetHelper().loadingWidget(context,color: SiteConfig().mainColor),
           ],
         ),
       ),
