@@ -41,10 +41,6 @@ class _SecondProductWidgetState extends State<SecondProductWidget> {
   double width;
   double height;
 
-
-
-
-
   @override
   void initState() {
     // TODO: implement initState
@@ -61,8 +57,6 @@ class _SecondProductWidgetState extends State<SecondProductWidget> {
     height=double.infinity;
     return Padding(
       padding: EdgeInsets.only(
-        top: 5,
-        bottom: 5,
         left: 10,
         right: 0,
       ),
@@ -70,7 +64,7 @@ class _SecondProductWidgetState extends State<SecondProductWidget> {
         alignment: AlignmentDirectional.topCenter,
         children: [
           Container(
-            width: scaler.getWidth(30),
+            width: scaler.getWidth(35),
             height: height,
             decoration: BoxDecoration(
                 color: Theme.of(context).focusColor.withOpacity(0.1),
@@ -91,13 +85,7 @@ class _SecondProductWidgetState extends State<SecondProductWidget> {
                         ),
 
                       ),
-                      child: CachedNetworkImage(
-                        imageUrl: widget.gambar,
-                        width: double.infinity ,
-                        fit:BoxFit.contain,
-                        placeholder: (context, url) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width: double.infinity,),
-                        errorWidget: (context, url, error) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width: double.infinity,),
-                      ),
+                      child: WidgetHelper().baseImage(widget.gambar),
                     ),
                     Expanded(
                       child: Container(
@@ -157,9 +145,9 @@ class _SecondProductWidgetState extends State<SecondProductWidget> {
                             Container(
                               child: Row(
                                 children: [
-                                  WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.hargaCoret))}", scaler.getTextSize(9), Colors.green, FontWeight.normal,textDecoration: TextDecoration.lineThrough),
+                                  WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.hargaCoret))}", scaler.getTextSize(9),SiteConfig().moneyColor, FontWeight.normal,textDecoration: TextDecoration.lineThrough),
                                   SizedBox(width: 10.0),
-                                  WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.harga))}", scaler.getTextSize(9),Colors.green, FontWeight.normal)
+                                  WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.harga))}", scaler.getTextSize(9),SiteConfig().moneyColor, FontWeight.bold)
                                 ],
                               ),
                             ),

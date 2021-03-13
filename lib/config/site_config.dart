@@ -28,4 +28,7 @@ class SiteConfig{
   final Color accentColor     = Color(0xFFADC4C8);
   final Color accentDarkColor = Color(0xFFADC4C8);
   final Color darkMode = Color(0xFF2C2C2C);
+  final Color moneyColor = Color(0xFFff5722);
+  // final Color transparentColor = Color(0xFFff5722);
+  // Theme.of(context).focusColor.withOpacity(0.1),
 }

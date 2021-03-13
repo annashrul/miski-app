@@ -77,9 +77,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: <Widget>[
             wrapperHeader(context,[
               wrapperTitle(context,(){},AntDesign.user,'Pengaturan Akun'),
-              wrapperContent(context,'Alamat',icon:  Icons.arrow_right,i: 0,callback: (){WidgetHelper().myPush(context,AddressScreen());}),
-              wrapperContent(context,'Bank',icon:  Icons.arrow_right,i: 1),
-              wrapperContent(context,'Data Diri',icon:  Icons.arrow_right,i: 0),
+              wrapperContent(context,'Alamat',icon: Ionicons.md_arrow_dropright_circle,i: 0,callback: (){WidgetHelper().myPush(context,AddressScreen());}),
+              wrapperContent(context,'Bank',icon: Ionicons.md_arrow_dropright_circle,i: 1),
+              wrapperContent(context,'Data Diri',icon: Ionicons.md_arrow_dropright_circle,i: 0),
             ]),
             SizedBox(height:scaler.getHeight(1)),
             wrapperHeader(context,[
@@ -87,7 +87,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Column(
                 children: FunctionHelper.arrOptDate.asMap().map((i,k) =>  MapEntry(
                     i,
-                    wrapperContent(context, k, icon: Icons.arrow_right, callback: (){WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: i));}, i: i)
+                    wrapperContent(context, k, icon: Ionicons.md_arrow_dropright_circle, callback: (){WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: i));}, i: i)
                 )).values.toList(),
               )
             ]),
@@ -95,8 +95,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             wrapperHeader(context,[
               wrapperTitle(context,(){},AntDesign.setting,'Pengaturan Umum'),
               // wrapperContent(context,'Alamat',i: 0,icon: Icons.arrow_right,callback: (){WidgetHelper().myPush(context,AddressScreen());}),
-              wrapperContent(context,'Kebijakan & Privasi',i: 1,icon: Icons.arrow_right),
-              wrapperContent(context,'Keluar',i: 0,icon: Icons.arrow_right,callback: ()async{
+              wrapperContent(context,'Kebijakan & Privasi',i: 1,icon: Ionicons.md_arrow_dropright_circle),
+              wrapperContent(context,'Keluar',i: 0,icon: Ionicons.md_arrow_dropright_circle,callback: ()async{
                 WidgetHelper().notifDialog(context,"Perhatian !!","Anda yakin akan keluar dari aplikas ??", (){Navigator.pop(context);}, ()async{
                   final id = await UserHelper().getDataUser('id');
                   await db.update(UserQuery.TABLE_NAME, {'id':"${id.toString()}","is_login":"0"});
@@ -145,7 +145,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       padding:scaler.getPadding(0,2),
       onPressed:callback!=null?callback:(){},
       child: Row(
-        
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           WidgetHelper().textQ(title,10,SiteConfig().darkMode,FontWeight.bold),
@@ -158,6 +157,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
   Widget wrapperTitle(BuildContext context,Function callback, IconData icon,String title){
     ScreenScaler scaler = ScreenScaler()..init(context);
+    return Padding(
+      padding: scaler.getPadding(1,2),
+      child: WidgetHelper().titleQ(context,title,icon: icon,callback: callback,param: '',color: SiteConfig().secondColor),
+    );
     return FlatButton(
       padding:scaler.getPadding(0,2),
       onPressed:callback!=null?callback:(){},
@@ -165,7 +168,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           Icon(icon,color:SiteConfig().mainColor),
           SizedBox(width: 10),
-          WidgetHelper().textQ(title,scaler.getTextSize(10),SiteConfig().mainColor,FontWeight.bold),
+          WidgetHelper().textQ(title,scaler.getTextSize(12),SiteConfig().mainColor,FontWeight.bold),
         ],
       ),
 

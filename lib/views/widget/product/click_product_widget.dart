@@ -39,10 +39,7 @@ class _ClickProductWidgetState extends State<ClickProductWidget> {
     return Container(
       child: Column(
         children: [
-          resRecomendedProduct.length>0?WidgetHelper().titleQ(context,"Kamu Sempat Lihat Barang Barang ini",param: '',callback: (){},icon: Icon(
-            AntDesign.heart,
-            color: Theme.of(context).hintColor,
-          )):Container(),
+          resRecomendedProduct.length>0?WidgetHelper().titleQ(context,"Kamu Sempat Lihat Barang Barang ini",param: '',callback: (){},icon:AntDesign.heart):Container(),
           resRecomendedProduct.length>0?isLoading?LoadingProductTenant(tot: 4):Padding(
             padding: EdgeInsets.only(left:20.0,right:20.0,top:10.0),
             child: new StaggeredGridView.countBuilder(

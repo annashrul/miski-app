@@ -27,28 +27,31 @@ class CartWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     ScreenScaler scaler = ScreenScaler()..init(context);
 
-    return FlatButton(
-      onPressed:callback,
+    return InkWell(
+      onTap:callback,
       child: Stack(
-        alignment: AlignmentDirectional.topEnd,
+        // alignment: AlignmentDirectional.centerEnd,
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 0),
+            padding: scaler.getPadding(1,0),
             child: Icon(
               AntDesign.shoppingcart,
               color: this.iconColor,
               size: scaler.getTextSize(15),
             ),
           ),
-          Container(
-            // child:WidgetHelper().textQ(this.labelCount.toString(), 10, Colors.white,FontWeight.bold,textAlign: TextAlign.center,),
-            // padding: EdgeInsets.only(top: 2,left: 10),
-            decoration: BoxDecoration(color: this.labelColor, borderRadius: BorderRadius.all(Radius.circular(10))),
-            constraints: BoxConstraints(minWidth: 10, maxWidth: 10, minHeight: 10, maxHeight: 10),
+          Positioned(
+            left: 15,
+            top:10,
+            child: Container(
+              // child:WidgetHelper().textQ(this.labelCount.toString(), 10, Colors.white,FontWeight.bold,textAlign: TextAlign.center,),
+              // padding: EdgeInsets.only(top: 2,left: 10),
+              decoration: BoxDecoration(color: this.labelColor, borderRadius: BorderRadius.all(Radius.circular(10))),
+              constraints: BoxConstraints(minWidth: 10, maxWidth: 10, minHeight: 10, maxHeight: 10),
+            ),
           ),
         ],
       ),
-      color: Colors.transparent,
     );
   }
 }

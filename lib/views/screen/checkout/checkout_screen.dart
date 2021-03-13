@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
@@ -17,6 +19,7 @@ import 'package:netindo_shop/model/general_model.dart';
 import 'package:netindo_shop/provider/base_provider.dart';
 import 'package:netindo_shop/views/screen/address/address_screen.dart';
 import 'package:netindo_shop/views/screen/checkout/detail_checkout_screen.dart';
+import 'package:netindo_shop/views/screen/product/detail_product_screen.dart';
 import 'package:netindo_shop/views/widget/product/first_product_widget.dart';
 
 
@@ -42,13 +45,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   int grandTotal=0,subTotal=0,ongkirTotal=0,hrgPerBarang=0;
   int cost=0;
   bool isPostLoading=false;
-  static bool site=false;
-  Future getSite()async{
-    final res = await FunctionHelper().getSite();
-    setState(() {
-      site = res;
-    });
-  }
+
   Future getProduct()async{
     var res = await BaseProvider().getProvider('cart/${widget.idTenant}', cartModelFromJson);
     final userRepository = UserHelper();
@@ -267,7 +264,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     isLoadingBank=true;
     getKurir();
     getProduct();
-    getSite();
     getAlamat();
   }
   int idxKurir=0;
@@ -275,263 +271,207 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   int idxAddress=100000;
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Scaffold(
-      backgroundColor: site?SiteConfig().darkMode:Colors.white,
+      backgroundColor:Colors.white,
       key: _scaffoldKey,
-      appBar: WidgetHelper().appBarWithButton(context,"Pengiriman", (){Navigator.pop(context);},<Widget>[],brightness: site?Brightness.dark:Brightness.light),
+      appBar: WidgetHelper().appBarWithButton(context,"Pengiriman", (){Navigator.pop(context);},<Widget>[]),
       body:isLoading||isLoadingKurir||isLoadingBank?WidgetHelper().loadingWidget(context):ListView(
+        physics:AlwaysScrollableScrollPhysics(),
         children: [
           Padding(
-            padding: EdgeInsets.only(left:20.0,right: 20.0,top:10,bottom: 10),
+            padding:scaler.getPadding(0,2),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(AntDesign.home,size: 20,color: site?Colors.white:SiteConfig().darkMode),
-                          SizedBox(width:5.0),
-                          WidgetHelper().textQ("Alamat Pengiriman",12,site?Colors.white:SiteConfig().darkMode, FontWeight.bold),
-                        ],
-                      ),
-                      InkWell(
-                        onTap: (){
-                          WidgetHelper().myModal(context, ModalAddress(
-                            mode:site,idx:idxAddress,callback:(int index,int isMain,String id,String ttl, String pnrm, String no, String main){
-                              setState(() {
-                                idxAddress = index;
-                                title=ttl;
-                                penerima = pnrm;
-                                noHp = no;
-                                mainAddress = main;
-                                isMainAddress=isMain;
-                              });
-                            }
-                          ));
-                        },
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        child: Container(
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(10)),
-                                border: Border.all(color: Colors.grey[200])
-                            ),
-                            child: WidgetHelper().textQ("Pilih alamat lain",10,site?Colors.white:SiteConfig().darkMode, FontWeight.bold)
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Divider(),
+                WidgetHelper().titleQ(context,isMainAddress==1?"Utama".toUpperCase():title.toUpperCase(),icon: AntDesign.home,color: SiteConfig().secondColor,param: '',callback: (){
+                  WidgetHelper().myModal(context, ModalAddress(
+                      idx:idxAddress,callback:(int index,int isMain,String id,String ttl, String pnrm, String no, String main){
+                    setState(() {
+                      idxAddress = index;
+                      title=ttl;
+                      penerima = pnrm;
+                      noHp = no;
+                      mainAddress = main;
+                      isMainAddress=isMain;
+                    });
+                  }
+                  ));
+                }),
+                SizedBox(height: scaler.getHeight(0.5)),
                 Container(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          WidgetHelper().textQ(title,12,site?SiteConfig().secondDarkColor:Colors.grey, FontWeight.bold),
-                          SizedBox(width: 5.0),
-                          isMainAddress==1?Container(
-                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                            decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10)), color:Colors.grey[200]),
-                            alignment: AlignmentDirectional.topEnd,
-                            child: WidgetHelper().textQ("Utama",12, Theme.of(context).hintColor, FontWeight.bold),
-                          ):Text('')
-                        ],
-                      ),
-                      WidgetHelper().textQ("$penerima ($noHp)}",10,site?Colors.white:Colors.black87, FontWeight.normal),
-                      WidgetHelper().textQ("$mainAddress",10,site?Colors.white:Colors.black87, FontWeight.normal),
+                      WidgetHelper().textQ("$penerima ( $noHp )",scaler.getTextSize(9),Colors.black87, FontWeight.normal),
+                      SizedBox(height: scaler.getHeight(0.5)),
+                      WidgetHelper().textQ("$mainAddress",scaler.getTextSize(9),Colors.black87, FontWeight.normal),
                     ],
                   ),
                 ),
               ],
             ),
           ),
-          site?Container():WidgetHelper().pembatas(context),
+          SizedBox(height: scaler.getHeight(1)),
+          WidgetHelper().pembatas(context),
+          SizedBox(height: scaler.getHeight(1)),
           Container(
-            padding: EdgeInsets.only(left:20.0,right:20.0,top:10.0,bottom: 10.0),
+            padding:scaler.getPadding(0,2),
             child:Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                      border: Border.all(color: Colors.grey[200])
-                  ),
-                  child: InkWell(
-                    onTap: (){
-                      modalKurir(context);
-                    },
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    child: Container(
-                      padding: EdgeInsets.only(left:10.0,right: 10.0,top:5,bottom: 5),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              WidgetHelper().textQ("Pilih Kurir",12,site?Colors.white:SiteConfig().darkMode, FontWeight.bold),
-                              SizedBox(height: 5.0),
-                              WidgetHelper().textQ(kurirTitle,10,site?Colors.white:SiteConfig().darkMode, FontWeight.normal)
-                            ],
-                          ),
-                          Icon(Icons.arrow_forward_ios,size: 15,color: Colors.grey),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 5.0),
-                Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                      border: Border.all(color: Colors.grey[200])
-                  ),
-                  child: InkWell(
-                    onTap: (){
-                      if(kurirTitle!=''){
-                        modalLayanan(context);
-                      }
-                    },
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    child: Container(
-                      padding: EdgeInsets.only(left:10.0,right: 10.0,top:5,bottom: 5),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              WidgetHelper().textQ("Pilih Layanan",12,site?Colors.white:SiteConfig().darkMode, FontWeight.bold),
-                              SizedBox(height: 5.0),
-                              WidgetHelper().textQ("$kurirDeskripsi",10,site?Colors.white:SiteConfig().darkMode, FontWeight.normal)
-                            ],
-                          ),
-                          Icon(Icons.arrow_forward_ios,size: 15,color: Colors.grey),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 5.0),
-                Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                      border: Border.all(color: Colors.grey[200])
-                  ),
-                  child: InkWell(
-                    onTap: (){
-                      if(kurirTitle!=''){
-                        modalLayanan(context);
-                      }
-                    },
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    child: Container(
-                      padding: EdgeInsets.only(left:10.0,right: 10.0,top:5,bottom: 5),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              WidgetHelper().textQ("Gunakan Voucher",12,site?Colors.white:SiteConfig().darkMode, FontWeight.bold),
-                              SizedBox(height: 5.0),
-                              WidgetHelper().textQ("Sentuh dan masukan kode voucher yang kamu punya",10,site?Colors.white:SiteConfig().darkMode, FontWeight.normal)
-                            ],
-                          ),
-                          Icon(Icons.arrow_forward_ios,size: 15,color: Colors.grey),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                WidgetHelper().titleQ(context,'Jasa Pengiriman'.toUpperCase(),icon:FontAwesome.truck,param: '',color: SiteConfig().secondColor),
+                SizedBox(height: scaler.getHeight(0.5)),
+                jasaPengiriman(context,"PILIH KURIR", kurirTitle, (){modalKurir(context);}),
+                SizedBox(height: scaler.getHeight(0.5)),
+                jasaPengiriman(context,"PILIH LAYANAN", kurirDeskripsi, (){if(kurirTitle!='')modalLayanan(context);}),
+                SizedBox(height: scaler.getHeight(0.5)),
+                jasaPengiriman(context,"GUNAKAN VOUCHER", '-', (){}),
               ],
             ),
           ),
-          site?Container():WidgetHelper().pembatas(context),
+          SizedBox(height: scaler.getHeight(1)),
+          WidgetHelper().pembatas(context),
+          SizedBox(height: scaler.getHeight(1)),
           Padding(
-            padding: EdgeInsets.only(left: 20.0,right: 20.0,top: 10.0,bottom: 10.0),
+            padding:scaler.getPadding(0,2),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                WidgetHelper().textQ("Ringkasan Belanja",12,site?Colors.white:SiteConfig().darkMode, FontWeight.bold),
-                SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    WidgetHelper().titleQ(context,"RINGKASAN BELANJA",icon: AntDesign.shoppingcart,color: SiteConfig().secondColor,param: ''),
+                    new Container(
+                      padding: EdgeInsets.all(10.0),
+                      decoration: new BoxDecoration(
+                        color: SiteConfig().mainColor,
+                        shape: BoxShape.circle,
+                      ),
+                      child:WidgetHelper().textQ("${cartModel.result.length}",10,SiteConfig().secondDarkColor, FontWeight.bold),
+                    ),
+                  ],
+                ),
+                SizedBox(height:scaler.getHeight(0.5)),
+                Container(
+                  child: ListView.builder(
+                    padding: EdgeInsets.all(0),
+                      addRepaintBoundaries: true,
+                      primary: false,
+                      shrinkWrap: true,
+                      itemCount: cartModel.result.length,
+                      itemBuilder: (context,index){
+                        var val = cartModel.result[index];
+                        var subTot=int.parse(val.hargaJual)*int.parse(val.qty);
+                        return InkWell(
+                          onTap: (){WidgetHelper().myPush(context,DetailProducrScreen(id: val.id));},
+                          child: Container(
+                            color:index%2==0?Color(0xFFEEEEEE):Colors.transparent,
+                            child: Row(
+                              children: [
+                                CachedNetworkImage(
+                                  height: 50,
+                                  imageUrl: SiteConfig().noImage,
+                                  fit:BoxFit.fill,
+                                  placeholder: (context, url) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width: 50),
+                                  errorWidget: (context, url, error) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width:50),
+                                ),
+                                SizedBox(width:scaler.getWidth(2)),
+                                Expanded(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.max,
+                                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                                    // crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Container(width:scaler.getWidth(90),child: WidgetHelper().textQ(val.barang,scaler.getTextSize(9),SiteConfig().darkMode,FontWeight.normal)),
+                                      SizedBox(height:scaler.getHeight(0.5)),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          WidgetHelper().textSpaceBetween(
+                                              context,
+                                              "${val.qty} ITEM * ",
+                                              "Rp ${FunctionHelper().formatter.format(int.parse("${val.hargaJual}"))} .-",
+                                              titleColor: SiteConfig().moneyColor,
+                                              descColor: SiteConfig().moneyColor,
+                                              mainAxisAlignment: MainAxisAlignment.start
+                                          ),
+                                          WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse("$subTot"))} .-",scaler.getTextSize(9),SiteConfig().moneyColor,FontWeight.normal)
+                                        ],
+                                      ),
+                                      // WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse("${cartModel.result[index].hargaJual}"))} .-",scaler.getTextSize(9),SiteConfig().moneyColor,FontWeight.normal),
+                                      // WidgetHelper().textQ(cartModel.result[index].qty,scaler.getTextSize(9),SiteConfig().moneyColor,FontWeight.normal),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                  ),
+                ),
+                SizedBox(height:scaler.getHeight(0.5)),
                 Container(
                   child: Column(
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          WidgetHelper().textQ("Total Harga",10,site?Colors.white:SiteConfig().darkMode, FontWeight.normal),
-                          WidgetHelper().textQ(FunctionHelper().formatter.format(subTotal),12,Colors.green, FontWeight.normal),
-                        ],
-                      ),
-                      SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          WidgetHelper().textQ("Total Ongkos Kirim",10,site?Colors.white:SiteConfig().darkMode, FontWeight.normal),
-                          WidgetHelper().textQ(FunctionHelper().formatter.format(cost),12,Colors.green, FontWeight.normal),
-                        ],
-                      ),
+                      WidgetHelper().textSpaceBetween(context,"TOTAL BELANJA","Rp ${FunctionHelper().formatter.format(subTotal)} .-",descColor: SiteConfig().moneyColor),
+                      Divider(),
+                      WidgetHelper().textSpaceBetween(context,"TOTAL ONGKOS KIRIM","Rp ${FunctionHelper().formatter.format(cost)} .-",descColor: SiteConfig().moneyColor),
+                      Divider(),
+                      WidgetHelper().textSpaceBetween(context,"DISKON VOUCHER","Rp ${FunctionHelper().formatter.format(0)} .-",descColor: SiteConfig().moneyColor),
                     ],
                   ),
                 ),
               ],
             ),
           ),
-          site?Container():WidgetHelper().pembatas(context),
-          Padding(
-            padding: EdgeInsets.only(left:20.0,right: 20.0,top:10,bottom: 10),
-            child: Container(
-              // height: MediaQuery.of(context).size.height/2,
-              child: new StaggeredGridView.countBuilder(
-                addRepaintBoundaries: true,
-                primary: false,
-                shrinkWrap: true,
-                crossAxisCount: 4,
-                itemCount: cartModel.result.length,
-                itemBuilder: (context,index){
-                  return ProductWidget(
-                    id: cartModel.result[index].idBarang,
-                    gambar: SiteConfig().noImage,
-                    title: cartModel.result[index].barang,
-                    harga: cartModel.result[index].hargaJual,
-                    hargaCoret: cartModel.result[index].hargaCoret,
-                    rating: '0',
-                    stock: cartModel.result[index].stock,
-                    stockSales: '',
-                    disc1: "${cartModel.result[index].qty}",
-                    disc2: cartModel.result[index].disc2,
-                    countCart: (){getProduct();},
-                  );
-                },
-                staggeredTileBuilder: (int index) => new StaggeredTile.fit(2),
-                mainAxisSpacing: 15.0,
-                crossAxisSpacing: 15.0,
-              ),
-            ),
-          ),
+          SizedBox(height: scaler.getHeight(1)),
         ],
       ),
       bottomNavigationBar: _bottomNavBarBeli(context),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
-  Widget _bottomNavBarBeli(BuildContext context){
+  Widget jasaPengiriman(BuildContext context,String title,String desc,Function callback){
+    ScreenScaler scaler = ScreenScaler()..init(context);
     return Container(
-      color: site?SiteConfig().darkMode:SiteConfig().mainColor,
-      padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+          border: Border.all(color:SiteConfig().secondColor,width: 1)
+      ),
+      child: InkWell(
+        onTap:callback,
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+        child: Container(
+          padding: EdgeInsets.only(left:10.0,right: 10.0,top:5,bottom: 5),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  WidgetHelper().textQ(title,scaler.getTextSize(9),SiteConfig().darkMode, FontWeight.normal),
+                  SizedBox(height: 5.0),
+                  WidgetHelper().textQ(desc,scaler.getTextSize(9),SiteConfig().darkMode, FontWeight.normal)
+                ],
+              ),
+              Icon(Ionicons.ios_arrow_dropright_circle,color: SiteConfig().secondColor,size: scaler.getTextSize(10)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+  Widget _bottomNavBarBeli(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return Container(
+      height: scaler.getHeight(4),
+      padding: scaler.getPadding(0,2),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
@@ -539,117 +479,92 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              WidgetHelper().textQ("Total Tagihan",14,Colors.white, FontWeight.bold),
-              WidgetHelper().textQ(FunctionHelper().formatter.format(grandTotal),14,Colors.white, FontWeight.bold),
+              WidgetHelper().textQ("Total Tagihan",scaler.getTextSize(10),SiteConfig().secondColor, FontWeight.bold),
+              WidgetHelper().textQ("Rp "+FunctionHelper().formatter.format(grandTotal)+" .-",scaler.getTextSize(10),SiteConfig().moneyColor, FontWeight.bold),
             ],
           ),
-          Container(
-              height: kBottomNavigationBarHeight,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                  border: Border.all(color: Colors.grey[200])
-              ),
-              child: FlatButton(
-                onPressed: (){
-                  modalBank(context);
-                },
-                child: WidgetHelper().textQ("Pilih Pembayaran",14,Colors.white, FontWeight.bold),
-                // child: Text("Bayar", style: TextStyle(color: Colors.white,fontFamily: ThaibahFont().fontQ,fontWeight: FontWeight.bold,fontSize: ScreenUtilQ.getInstance().setSp(34))),
-              )
-          )
+          WidgetHelper().buttonQ(context,(){
+            WidgetHelper().myModal(
+                context,
+                Container(
+                  height:scaler.getHeight(50),
+                  child:Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      SizedBox(height:scaler.getHeight(0.5)),
+                      Center(
+                        child: Container(
+                          width: scaler.getWidth(10),
+                          height:scaler.getHeight(0.5),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            borderRadius:  BorderRadius.circular(10.0),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height:scaler.getHeight(0.5)),
+                      Container(
+                          margin: scaler.getMargin(0, 2),
+                          width: double.infinity,
+                          padding:scaler.getPadding(0.5,2),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            color:SiteConfig().mainColor,
+                            // border: Border.all(color:SiteConfig().accentDarkColor)
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(AntDesign.infocirlceo,color: Colors.white),
+                              SizedBox(width:scaler.getWidth(1)),
+                              WidgetHelper().textQ("Pilih bank untuk melanjutkan proses checkout",scaler.getTextSize(9),Colors.white, FontWeight.bold)
+                            ],
+                          )
+                      ),
+                      Expanded(
+                        child: Scrollbar(
+                            child: isLoading?WidgetHelper().loadingWidget(context):ModalBank(
+                              bankModel: bankModel,
+                              callback: (idx){
+                                selectedBank(idx);
+                              },
+                              // isSelected: isSelectedBank
+                            )
+                        ),
+                      ),
+                      Align(
+                        widthFactor: scaler.getWidth(100),
+                        alignment: Alignment.bottomCenter,
+                        child:Padding(
+                          padding:scaler.getPadding(0.5,2),
+                          child: FlatButton(
+                            shape: StadiumBorder(),
+                            onPressed: (){
+                              WidgetHelper().notifDialog(context,"Perhatian","Anda yakin akan melakukan proses checkout sekarang ??",(){Navigator.pop(context);},(){
+                                Navigator.pop(context);
+                                checkout();
+                              });
+                            },
+                            color: SiteConfig().mainColor,
+                            child: Container(
+                              width: scaler.getWidth(100),
+                              child: WidgetHelper().textQ("BERIKUTNYA",scaler.getTextSize(10),Colors.white, FontWeight.bold,textAlign: TextAlign.center),
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                )
+            );
+          },"berikutnya")
+          
         ],
       ),
     );
   }
-  Widget modalBank(BuildContext context){
-    WidgetHelper().myModal(
-        context,
-        Container(
-          decoration: BoxDecoration(
-              color: site?SiteConfig().darkMode:Colors.transparent,
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))
-          ),
-          height: MediaQuery.of(context).size.height/2,
-          child:Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              SizedBox(height:10.0),
-              Center(
-                child: Container(
-                  padding: EdgeInsets.only(top:10.0),
-                  width: 50,
-                  height: 10.0,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius:  BorderRadius.circular(10.0),
-                  ),
-                ),
-              ),
-              SizedBox(height: 20.0),
-              Padding(
-                padding: EdgeInsets.all(10),
-                child: Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                      color: SiteConfig().accentDarkColor,
-                      // border: Border.all(color:SiteConfig().accentDarkColor)
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.info_outline,color: Colors.white),
-                        SizedBox(width: 5),
-                        WidgetHelper().textQ("Pilih bank untuk melanjutkan proses checkout",12,Colors.white, FontWeight.bold)
-                      ],
-                    )
-                ),
-              ),
-              Expanded(
-                child: Scrollbar(
-                    child: isLoading?WidgetHelper().loadingWidget(context):ModalBank(
-                      bankModel: bankModel,
-                      callback: (idx){
-                        selectedBank(idx);
-                      },
-                      // isSelected: isSelectedBank
-                    )
-                ),
-              ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: InkWell(
-                  onTap: (){
-                    WidgetHelper().notifDialog(context,"Perhatian","Anda yakin akan melakukan proses checkout sekarang ??",(){Navigator.pop(context);},(){
-                      Navigator.pop(context);
-                      checkout();
-                    });
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.all(10),
-                    child: Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                        decoration: BoxDecoration(
-                            color: SiteConfig().mainColor,
-                            borderRadius: BorderRadius.circular(10.0),
-                            boxShadow: [
-                              BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), offset: Offset(0, -2), blurRadius: 5.0)
-                            ]),
-                        child: Center(
-                          child: WidgetHelper().textQ("Lanjut",14,Colors.white, FontWeight.bold),
-                        )
-                    ),
-                  ),
-                ),
-              )
-            ],
-          ),
-        )
-    );
-  }
+ 
   Widget modalKurir(BuildContext context){
     WidgetHelper().myModal(
         context,
@@ -683,10 +598,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 }
 
 class ModalAddress extends StatefulWidget {
-  bool mode;
   int idx;
   Function(int index,int isMain,String id,String title, String penerima, String nohp, String mainAddress) callback;
-  ModalAddress({this.mode,this.idx,this.callback});
+  ModalAddress({this.idx,this.callback});
   @override
   _ModalAddressState createState() => _ModalAddressState();
 }
@@ -728,7 +642,7 @@ class _ModalAddressState extends State<ModalAddress> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          color: widget.mode?SiteConfig().darkMode:Colors.transparent,
+          color:Colors.transparent,
           // borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20))
       ),
       child:Column(
@@ -756,13 +670,13 @@ class _ModalAddressState extends State<ModalAddress> {
               onTap: ()=>Navigator.pop(context),
               child: CircleAvatar(
                 backgroundColor: Colors.transparent,
-                child: Center(child: Icon(AntDesign.back, color: widget.mode?Colors.white:Theme.of(context).hintColor),),
+                child: Center(child: Icon(AntDesign.back, color:Theme.of(context).hintColor),),
               ),
             ),
-            title: WidgetHelper().textQ("Pilih Alamat Pengiriman",14,widget.mode?Colors.white:Theme.of(context).hintColor, FontWeight.bold),
+            title: WidgetHelper().textQ("Pilih Alamat Pengiriman",14,Theme.of(context).hintColor, FontWeight.bold),
             trailing: InkWell(
                 onTap: ()async{
-                  WidgetHelper().myModal(context,ModalForm(id:"",mode: widget.mode,callback: (par){
+                  WidgetHelper().myModal(context,ModalForm(id:"",callback: (par){
                     if(par=='berhasil'){
                       loadData();
                       WidgetHelper().showFloatingFlushbar(context,"success","data berhasil dikirim");
@@ -807,7 +721,7 @@ class _ModalAddressState extends State<ModalAddress> {
                       Navigator.pop(context);
                     },
                     child: Card(
-                      color: widget.mode?Theme.of(context).focusColor.withOpacity(0.15):Colors.white,
+                      color:Colors.white,
                       elevation: 1.0,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -821,7 +735,7 @@ class _ModalAddressState extends State<ModalAddress> {
                               children: [
                                 Row(
                                   children: [
-                                    WidgetHelper().textQ("${val.title}",12,widget.mode?Colors.white:Colors.black,FontWeight.bold),
+                                    WidgetHelper().textQ("${val.title}",12,Colors.black,FontWeight.bold),
                                     val.ismain==1?Container(
                                       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                                       decoration: BoxDecoration(
@@ -858,10 +772,10 @@ class _ModalAddressState extends State<ModalAddress> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                WidgetHelper().textQ("${val.penerima}",10,widget.mode?Colors.white:Colors.black,FontWeight.normal),
+                                WidgetHelper().textQ("${val.penerima}",10,Colors.black,FontWeight.normal),
                                 // WidgetHelper().textQ("PENERIMA",10,Colors.black,FontWeight.normal),
                                 SizedBox(height:5.0),
-                                WidgetHelper().textQ("${val.noHp}",10,widget.mode?Colors.white:Colors.black,FontWeight.normal),
+                                WidgetHelper().textQ("${val.noHp}",10,Colors.black,FontWeight.normal),
                                 // WidgetHelper().textQ("NOHP",10,Colors.black,FontWeight.normal),
                                 SizedBox(height:5.0),
                                 WidgetHelper().textQ("${val.mainAddress}",10,Colors.grey,FontWeight.normal,maxLines: 3),
@@ -869,7 +783,7 @@ class _ModalAddressState extends State<ModalAddress> {
                                 SizedBox(height:5.0),
                                 InkWell(
                                   onTap: (){
-                                    WidgetHelper().myModal(context, ModalForm(id:"${val.id}",mode: widget.mode,callback:(String par){
+                                    WidgetHelper().myModal(context, ModalForm(id:"${val.id}",callback:(String par){
                                       if(par=='berhasil'){
                                         loadData();
                                         WidgetHelper().showFloatingFlushbar(context,"success","data berhasil disimpan");
@@ -1146,23 +1060,17 @@ class _ModalBankState extends State<ModalBank> {
       num = idx;
     });
   }
-  static bool site=false;
-  Future getSite()async{
-    final res = await FunctionHelper().getSite();
-    setState(() {
-      site = res;
-    });
-  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getSite();
   }
 
 
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
     return ListView.separated(
       padding: EdgeInsets.zero,
       itemCount: widget.bankModel.result.data.length,
@@ -1171,15 +1079,14 @@ class _ModalBankState extends State<ModalBank> {
           onTap: (){
             print(widget.bankModel.result.data[index].atasNama);
             widget.callback(index);
-            // isSelectedBank();
             isSelectedBank(index);
           },
           child: ListTile(
-            trailing: num==index?Icon(AntDesign.checkcircleo,color:site?Colors.grey[200]:SiteConfig().darkMode):Text(''),
+            trailing: num==index?Icon(AntDesign.checkcircleo,color:SiteConfig().darkMode):Text(''),
             contentPadding: EdgeInsets.only(left:10,right:10,top:0,bottom:0),
-            leading: Image.network(SiteConfig().noImage,width: 50,height: 50,),
-            title: WidgetHelper().textQ("${widget.bankModel.result.data[index].atasNama}", 12,site?Colors.white:SiteConfig().darkMode, FontWeight.bold),
-            subtitle: WidgetHelper().textQ(widget.bankModel.result.data[index].noRekening, 12, SiteConfig().secondColor, FontWeight.bold),
+            leading:WidgetHelper().baseImage(widget.bankModel.result.data[index].logo,width: scaler.getWidth(15)),
+            title: WidgetHelper().textQ("${widget.bankModel.result.data[index].atasNama}", scaler.getTextSize(9),SiteConfig().darkMode, FontWeight.bold),
+            subtitle: WidgetHelper().textQ(widget.bankModel.result.data[index].noRekening,  scaler.getTextSize(9), SiteConfig().secondColor, FontWeight.bold),
           ),
         );
       },

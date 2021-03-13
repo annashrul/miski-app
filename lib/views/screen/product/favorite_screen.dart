@@ -24,7 +24,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
   ScrollController controller;
   List resFavoriteProduct=[];
   bool isLoading=false,isLoadmore=false;
-  int perpage=7;
+  int perpage=15;
   int total=0;
   Future deleteFavorite(id)async{
     final res = await _helper.update(ProductQuery.TABLE_NAME, {"id":id.toString(),"is_favorite":"false"});
@@ -100,8 +100,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
 
   Widget buildContent(BuildContext context) {
     ScreenScaler scaler = ScreenScaler()..init(context);
-
-    return ListView.builder(
+    return ListView.separated(
       controller: controller,
       itemCount: resFavoriteProduct.length,
       itemBuilder: (context,index){
@@ -122,9 +121,13 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
               ),
             ),
           ),
-          onDismissed: (direction) {
-            deleteFavorite(val['id']);
+          confirmDismiss: (DismissDirection direction)async{
+            return await WidgetHelper().notifDialog(context,"Informasi !!", "Anda yakin akan menghapus data ini ??", (){Navigator.pop(context);}, (){
+              Navigator.pop(context);
+              deleteFavorite(val['id']);
+            });
           },
+
           child: Padding(
             padding: EdgeInsets.all(0.0),
             child: Stack(
@@ -148,18 +151,8 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
-                        Hero(
-                          tag: "${val['id']}${val['id_product']}${val['id_tenant']}",
-                          child: Container(
-                            height: 90,
-                            width: 90,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(Radius.circular(0)),
-                              image: DecorationImage(image: NetworkImage(val['gambar']), fit: BoxFit.cover),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 15),
+                        WidgetHelper().baseImage(val['gambar'],width: scaler.getWidth(15),height: scaler.getHeight(5)),
+                        SizedBox(width:scaler.getWidth(2)),
                         Flexible(
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -168,6 +161,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
+                                    SizedBox(height:scaler.getHeight(0.5)),
                                     Stack(
                                       alignment: AlignmentDirectional.topEnd,
                                       children: [
@@ -180,13 +174,18 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                         )
                                       ],
                                     ),
+                                    SizedBox(height:scaler.getHeight(0.5)),
                                     Row(
                                       children: [
-                                        WidgetHelper().textQ("${val['title']}", scaler.getTextSize(9), SiteConfig().darkMode, FontWeight.bold),
+                                        Container(
+                                          child: WidgetHelper().textQ("${val['title']}", scaler.getTextSize(9), SiteConfig().darkMode, FontWeight.bold),
+                                          width: scaler.getWidth(60),
+                                        ),
                                         int.parse(val['disc1'])==0?Container():SizedBox(width: 5),
                                         int.parse(val['disc1'])==0?Container():WidgetHelper().textQ("( diskon ${val['disc1']} + ${val['disc2']} )", scaler.getTextSize(8),Colors.grey,FontWeight.bold),
                                       ],
                                     ),
+                                    SizedBox(height:scaler.getHeight(0.5)),
                                     Row(
                                       children: [
                                         WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(val['harga_coret']))}", scaler.getTextSize(9),Colors.green,FontWeight.normal,textDecoration: TextDecoration.lineThrough),
@@ -194,6 +193,8 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                         WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(val['harga']))}", scaler.getTextSize(9),Colors.green,FontWeight.bold),
                                       ],
                                     ),
+                                    SizedBox(height:scaler.getHeight(0.5)),
+
                                   ],
                                 ),
                               ),
@@ -207,13 +208,17 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                 ),
 
                 Positioned(
-                  right: 10,
+                  right: 0,
                   child: IconButton(
                     onPressed: (){
-                      deleteFavorite(val['id']);
+                      WidgetHelper().notifDialog(context,"Informasi !!", "Anda yakin akan menghapus data ini ??", (){Navigator.pop(context);}, (){
+                        Navigator.pop(context);
+                        deleteFavorite(val['id']);
+                      });
+                      // deleteFavorite(val['id']);
                       // deleted(cartModel.result[index].id,'');
                     },
-                    iconSize: scaler.getTextSize(15),
+                    iconSize: scaler.getTextSize(12),
                     padding: EdgeInsets.symmetric(horizontal: 5),
                     icon: Icon(AntDesign.heart),
                     color: Colors.red,
@@ -223,7 +228,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
             ),
           )
         );
-      }
+      },separatorBuilder: (context,index){return SizedBox(height: scaler.getHeight(0.5));},
     );
   }
 }

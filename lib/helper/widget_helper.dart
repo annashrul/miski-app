@@ -116,7 +116,7 @@ class WidgetHelper{
   }
   myModal(BuildContext context,Widget child){
     return showModalBottomSheet(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(10.0))),
         backgroundColor: Colors.white,
         context: context,
         isScrollControlled: true,
@@ -165,16 +165,11 @@ class WidgetHelper{
         return ConstrainedBox(
             constraints: BoxConstraints(maxHeight: 100.0),
             child: AlertDialog(
-              backgroundColor: Colors.transparent,
               content: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  SpinKitFadingGrid(color: color, shape: BoxShape.rectangle),
-                  // CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.grey), semanticsLabel: 'tunggu sebentar', backgroundColor: Colors.black),
-                  // SizedBox(width:10.0),
-                  // textQ(title, 12, Colors.grey,FontWeight.bold)
-                  // RichText(text: TextSpan(text:'Tunggu Sebentar ...', style: TextStyle(fontWeight:FontWeight.bold,color:Theme.of(context).primaryColorDark, fontSize: 14)))
+                  SpinKitFadingGrid(color: SiteConfig().mainColor, shape: BoxShape.rectangle),
                 ],
               ),
             )
@@ -187,7 +182,7 @@ class WidgetHelper{
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          SpinKitFadingGrid(color: color, shape: BoxShape.rectangle),
+          SpinKitFadingGrid(color:  SiteConfig().mainColor, shape: BoxShape.rectangle),
           // CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.grey), semanticsLabel: 'tunggu sebentar', backgroundColor: Colors.black),
           // SizedBox(width:10.0),
           // textQ("tunggu sebentar ...", 12,Colors.grey,FontWeight.bold)
@@ -241,24 +236,69 @@ class WidgetHelper{
         }
     );
   }
-  titleQ(BuildContext context,String txt,{EdgeInsetsGeometry padding=const EdgeInsets.symmetric(horizontal: 10, vertical: 0),Color color=Colors.white,String param, Function callback,Icon icon, TextAlign textAlign=TextAlign.left}){
+  titleQ(BuildContext context,String txt,{EdgeInsetsGeometry padding=const EdgeInsets.symmetric(horizontal: 10, vertical: 0),Color color=Colors.white,String param, Function callback,IconData icon, TextAlign textAlign=TextAlign.left}){
     ScreenScaler scaler = ScreenScaler()..init(context);
+    return InkWell(
+      onTap:callback,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            child: Row(
+              children: [
+                Icon(
+                  icon,
+                  color: SiteConfig().secondColor,
+                  size: scaler.getTextSize(12),
+                ),
+                SizedBox(width: scaler.getWidth(1)),
+                WidgetHelper().textQ(txt.toUpperCase(), scaler.getTextSize(10), color,FontWeight.bold,textAlign: textAlign)
+              ],
+            ),
+          ),
+          param==''?Text(''):Align(
+            alignment: Alignment.centerRight,
+            child: Icon(Ionicons.ios_arrow_dropright_circle,color: SiteConfig().secondColor,size: scaler.getTextSize(12)),
+          )
+        ],
+      ),
+    );
+    // return Padding(
+    //   padding: padding,
+    //   child: ListTile(
+    //     onTap: callback,
+    //     dense: true,
+    //     contentPadding: EdgeInsets.all(0.0),
+    //     leading: icon,
+    //     title: WidgetHelper().textQ(txt, scaler.getTextSize(9), color,FontWeight.bold,textAlign: textAlign),
+    //     trailing: param==''?Text(''):InkWell(
+    //         child: Icon(Ionicons.ios_arrow_dropright_circle,color: SiteConfig().secondColor,size: scaler.getTextSize(10)),
+    //         onTap: callback
+    //     ),
+    //   ),
+    // );
+  }
 
-    return Padding(
-      padding: padding,
-      child: ListTile(
-        onTap: callback,
-        dense: true,
-        contentPadding: EdgeInsets.symmetric(vertical: 0),
-        leading: icon,
-        title: WidgetHelper().textQ(txt, scaler.getTextSize(9), color,FontWeight.bold,textAlign: textAlign),
-        trailing: param==''?Text(''):InkWell(
-            child: Icon(Ionicons.ios_arrow_dropright_circle,color: SiteConfig().secondColor,size: scaler.getTextSize(10)),
-            onTap: callback
-        ),
+  iconAppbar(BuildContext context,Function callback,IconData icon){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return InkWell(
+      onTap:callback,
+      child: Stack(
+        children: <Widget>[
+          Padding(
+            padding: scaler.getPadding(1,0),
+            child: Icon(
+              icon,
+              color: SiteConfig().secondColor,
+              size: scaler.getTextSize(15),
+            ),
+          ),
+
+        ],
       ),
     );
   }
+
   appBarWithButton(BuildContext context, title,Function callback,List<Widget> widget,{Brightness brightness=Brightness.light}){
     ScreenUtilHelper.instance = ScreenUtilHelper.getInstance()..init(context);
     ScreenUtilHelper.instance = ScreenUtilHelper(allowFontScaling: false)..init(context);
@@ -269,9 +309,10 @@ class WidgetHelper{
       elevation: 0.0,
       backgroundColor: brightness.index==1?Colors.white:Color(0xFF2C2C2C), // status bar color
       brightness: brightness,
-      title:textQ(title,scaler.getTextSize(10),brightness.index==1?SiteConfig().secondColor:Colors.white,FontWeight.bold),
+      title:textQ(title.toUpperCase(),scaler.getTextSize(10),brightness.index==1?SiteConfig().secondColor:Colors.white,FontWeight.bold),
       leading: IconButton(
-        icon: new Icon(Ionicons.ios_return_left, color:brightness.index==1?SiteConfig().secondColor:Colors.white,size: scaler.getTextSize(15)),
+        padding: scaler.getPadding(0,0),
+        icon: new Icon(AntDesign.back, color:SiteConfig().secondColor,size: scaler.getTextSize(13)),
         onPressed: (){
           callback();
         },
@@ -285,39 +326,25 @@ class WidgetHelper{
       automaticallyImplyLeading: false,
       backgroundColor: brightness.index==0?SiteConfig().darkMode:Colors.white, // status bar color
       brightness: brightness,
-      title:textQ(title,scaler.getTextSize(10),brightness.index==0?Colors.white:SiteConfig().secondColor,FontWeight.bold),
+      title:textQ(title.toUpperCase(),scaler.getTextSize(10),brightness.index==0?Colors.white:SiteConfig().secondColor,FontWeight.bold),
       elevation: 0,
-      leading:Padding(
-        padding: EdgeInsets.only(left:20.0,top:10.0,bottom:10.0),
-        child:  CircleAvatar(
-          backgroundImage:NetworkImage('http://ptnetindo.com:6700/images/customer/default.png',scale: 10.0),
-        ),
-      ),
+      // leading:Padding(
+      //   padding: EdgeInsets.only(left:20.0,top:10.0,bottom:10.0),
+      //   child:  CircleAvatar(
+      //     backgroundImage:NetworkImage('http://ptnetindo.com:6700/images/customer/default.png',scale: 10.0),
+      //   ),
+      // ),
       actions:widget,
     );
 
   }
 
-  myAppBar(BuildContext context, title,Function callback,List<Widget> widget){
-    ScreenUtilHelper.instance = ScreenUtilHelper.getInstance()..init(context);
-    ScreenUtilHelper.instance = ScreenUtilHelper(allowFontScaling: false)..init(context);
-    return AppBar(
-      automaticallyImplyLeading: false,
-      leading: new IconButton(
-        icon: new Icon(Ionicons.ios_return_left, color: Theme.of(context).hintColor),
-        onPressed: callback,
-      ),
-      backgroundColor: Colors.white,
-      elevation: 1.0,
-      title: textQ(title,16,Theme.of(context).hintColor,FontWeight.bold),
-      actions:widget,
-    );
-  }
+
 
   pembatas(BuildContext context){
     return Container(
       width: MediaQuery.of(context).size.width,
-      height: 2.0,
+      height: 5.0,
       decoration: BoxDecoration(
         color: Colors.grey[200],
         borderRadius:  BorderRadius.circular(10.0),
@@ -326,6 +353,15 @@ class WidgetHelper{
   }
 
   buttonQ(BuildContext context,Function callback,String title,{isColor=false,Color color}){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return FlatButton(
+      shape: StadiumBorder(),
+      color:SiteConfig().mainColor,
+      onPressed: callback,
+      child: Center(
+        child: WidgetHelper().textQ(title.toUpperCase(),scaler.getTextSize(10),Colors.white, FontWeight.bold,letterSpacing: 2),
+      )
+    );
     return InkWell(
       onTap: callback,
       child: Container(
@@ -365,6 +401,28 @@ class WidgetHelper{
       imageUrl: img,
       progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
       errorWidget: (context, url, error) => Icon(Icons.error),
+    );
+  }
+  baseImage(String img,{double width, double height,BoxFit fit = BoxFit.contain}){
+    return CachedNetworkImage(
+      imageUrl:img,
+      width: width,
+      height: height,
+      fit:fit,
+      placeholder: (context, url) => Image.asset(SiteConfig().localAssets+'logo.jpeg',fit:BoxFit.contain),
+      errorWidget: (context, url, error) => Image.asset(SiteConfig().localAssets+'logo.jpeg',fit:BoxFit.contain),
+    );
+  }
+
+
+  textSpaceBetween(BuildContext context,String title,String desc,{MainAxisAlignment mainAxisAlignment=MainAxisAlignment.spaceBetween,Color titleColor=Colors.black,Color descColor}){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return Row(
+      mainAxisAlignment:mainAxisAlignment,
+      children: [
+        WidgetHelper().textQ(title,scaler.getTextSize(9),titleColor, FontWeight.normal),
+        WidgetHelper().textQ(desc,scaler.getTextSize(9),descColor, FontWeight.normal),
+      ],
     );
   }
 

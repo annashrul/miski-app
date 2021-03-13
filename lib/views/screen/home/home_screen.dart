@@ -220,6 +220,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
 
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Scaffold(
       key: _scaffoldKey,
       body: buildContents(context),
@@ -233,7 +235,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
             duration: const Duration(milliseconds: 5000),
           );
         },
-        child: Icon(Icons.vertical_align_top, size: 24, color:SiteConfig().darkMode),
+        child: Icon(AntDesign.totop, size: scaler.getTextSize(15), color:SiteConfig().secondColor),
         // backgroundColor:SiteConfig().mainColor,
       )
     );
@@ -247,7 +249,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
           slivers: <Widget>[
             SliverAppBar(
               titleSpacing: scaler.getHeight(1),
-              title: Expanded(child: WidgetHelper().textQ("${widget.nama.toUpperCase()}",  scaler.getTextSize(10),SiteConfig().secondColor,FontWeight.bold)),
+              title:WidgetHelper().textQ("${widget.nama.toUpperCase()}",  scaler.getTextSize(10),SiteConfig().secondColor,FontWeight.bold),
               stretch: true,
               onStretchTrigger: (){
                 return;
@@ -273,30 +275,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                     }
                   },
                 ),
+                SizedBox(width: scaler.getWidth(2)),
                 Container(
-                    width: scaler.getWidth(5),
-                    height: 30,
-                    margin: EdgeInsets.only(top: 12.5, bottom: 12.5, right:  scaler.getHeight(2)),
-                    child: InkWell(
-                      focusColor: SiteConfig().darkMode,
-                      borderRadius: BorderRadius.circular(300),
-                      onTap: () {
-                        WidgetHelper().myModal(
-                            context,
-                            ModalSearch(idTenant:widget.id,callback:(par){
-                              q=par;
-                              isLoading=true;
-                              getProduct();
-                            })
-                        );
-                        // insertFavorite();
-                        // Navigator.of(context).pushNamed('/Tabs', arguments: 1);
-                      },
-                      child: Icon(AntDesign.filter,size:  scaler.getTextSize(15),color:SiteConfig().secondColor),
-                    )
-                ),
+                  margin: scaler.getMargin(0,1),
+                  child:  WidgetHelper().iconAppbar(context,(){
+                    WidgetHelper().myModal(
+                        context,
+                        ModalSearch(idTenant:widget.id,callback:(par){
+                          q=par;
+                          isLoading=true;
+                          getProduct();
+                        })
+                    );
+                  }, AntDesign.filter),
+                )
               ],
-              // backgroundColor: Theme.of(context).primaryColor,
               expandedHeight:scaler.getHeight(20),
               elevation: 0,
               flexibleSpace:sliderQ(context),
@@ -311,12 +304,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
-                        if(resFavoriteProduct.length>0) WidgetHelper().titleQ(context,"Wujudkan Barang Favorite Kamu",param: 'ad',callback: (){
-                          WidgetHelper().myPush(context,WrapperScreen(currentTab: 4));
-                        },icon: Icon(
-                          AntDesign.hearto,
-                          color: SiteConfig().secondColor,
-                        ),color: SiteConfig().secondColor),
+                        if(resFavoriteProduct.length>0) Padding(
+                          padding: scaler.getPadding(1,2),
+                          child: WidgetHelper().titleQ(context,"Wujudkan Barang Favorite Kamu",param: 'ad',callback: (){
+                            WidgetHelper().myPush(context,WrapperScreen(currentTab: 4));
+                          },icon: AntDesign.hearto,color: SiteConfig().secondColor),
+                        ),
                         isLoadingFav?Container(
                           height: MediaQuery.of(context).size.height/3,
                           width:  MediaQuery.of(context).size.width,

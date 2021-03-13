@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:netindo_shop/config/database_config.dart';
@@ -141,19 +142,12 @@ class _CartScreenState extends State<CartScreen> {
   Future<void> _handleRefresh()async {
     await FunctionHelper().handleRefresh(()=>loadCart());
   }
-  static bool site=false;
-  Future getSite()async{
-    final res = await FunctionHelper().getSite();
-    setState(() {
-      site = res;
-    });
-  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     isLoading=true;
-    getSite();
     loadCart();
     getProductRecomended();
     getFavorite();
@@ -163,32 +157,22 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     double widthSize = MediaQuery.of(context).size.width;
+    ScreenScaler scaler = ScreenScaler()..init(context);
 
     // TODO: implement build
     return Scaffold(
         key: scaffoldKey,
-        backgroundColor: site?SiteConfig().darkMode:Colors.white,
+        backgroundColor: Colors.white,
         appBar: WidgetHelper().appBarWithButton(context,"Daftar Belanjaan",(){Navigator.pop(context);},<Widget>[
           Container(
-              height: 30,
-              margin: EdgeInsets.only(top: 12.5, bottom: 12.5, right: 0),
-              child: Row(
-                children: [
-                  IconButton(
-                    onPressed: (){
-                      if(cartModel.result.length>0){
-                        deleted(widget.idTenant,'all');
-                      }
-                    },
-                    iconSize: 30,
-                    padding: EdgeInsets.symmetric(horizontal: 5),
-                    icon: Icon(FontAwesome.trash),
-                    color: site?Colors.white:Theme.of(context).hintColor,
-                  )
-                ],
-              )
-          ),
-        ],brightness: site?Brightness.dark:Brightness.light),
+            margin: scaler.getMargin(0,2),
+            child: isLoading?Text(''):cartModel.result.length>0?WidgetHelper().iconAppbar(context,(){
+              if(cartModel.result.length>0){
+                deleted(widget.idTenant,'all');
+              }
+            }, FontAwesome.trash):Text(''),
+          )
+        ],brightness:Brightness.light),
         body: isError?TimeoutWidget(callback: (){
           setState(() {
             isLoading=true;
@@ -198,16 +182,16 @@ class _CartScreenState extends State<CartScreen> {
         }):RefreshWidget(
           widget: Container(
             child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(vertical: 10),
+              // padding: EdgeInsets.symmetric(vertical: 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
                   isLoading?LoadingCart(total: 2):cartModel.result.length>0?Padding(
-                    padding: EdgeInsets.only(left:15.0,right:15.0,top:10,bottom:10),
+                    padding: scaler.getPadding(0,2),
                     child: ListView.separated(
-                      padding: EdgeInsets.symmetric(vertical: 0),
+                      padding: EdgeInsets.all(0),
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
                       primary: false,
@@ -217,7 +201,7 @@ class _CartScreenState extends State<CartScreen> {
                       },
                       itemBuilder: (context, index) {
                         return Stack(
-                          alignment: AlignmentDirectional.bottomEnd,
+                          // alignment: AlignmentDirectional.bottomEnd,
                           children: [
                             buildContent(
                               context,
@@ -245,14 +229,16 @@ class _CartScreenState extends State<CartScreen> {
                             Positioned(
                               top: 0,
                               left: 0,
-                              child: IconButton(
-                                onPressed: (){
-                                  deleted(cartModel.result[index].id,'');
-                                },
-                                iconSize: 30,
-                                padding: EdgeInsets.symmetric(horizontal: 5),
-                                icon: Icon(FontAwesome.trash),
-                                color: Theme.of(context).hintColor,
+
+                              child: Container(
+                                child: IconButton(
+                                  onPressed: (){
+                                    deleted(cartModel.result[index].id,'');
+                                  },
+                                  padding: EdgeInsets.all(0),
+                                  icon: Icon(FontAwesome.trash,color: SiteConfig().mainColor),
+                                ),
+                                color: Theme.of(context).focusColor.withOpacity(0.2),
                               ),
                             )
                           ],
@@ -272,15 +258,15 @@ class _CartScreenState extends State<CartScreen> {
                     padding: EdgeInsets.only(left: 0,right:0,bottom:25),
                     child:LoadingSecondProduct()
                   ): resFavoriteProduct.length>0?Container(
-                    height: MediaQuery.of(context).size.height/2.3,
+                    height: scaler.getHeight(35),
                     width: widthSize,
-                    padding: EdgeInsets.only(left: 0,right:0,bottom:25),
+                    padding: EdgeInsets.only(left: 0,right:0,bottom:0),
                     child: Column(
                       children: [
-                        WidgetHelper().titleQ(context,"Wujudkan Barang Favorite Kamu",param: '',callback: (){},icon: Icon(
-                          AntDesign.heart,
-                          color: site?Colors.white:SiteConfig().secondColor,
-                        ),color: site?Colors.white:SiteConfig().secondColor),
+                        Padding(
+                          padding: scaler.getPadding(1, 2),
+                          child: WidgetHelper().titleQ(context,"Wujudkan Barang Favorite Kamu",param: '',callback: (){},icon:AntDesign.hearto,color: SiteConfig().secondColor),
+                        ),
                         Expanded(
                           child: ListView.builder(
                             padding: EdgeInsets.all(0.0),
@@ -306,15 +292,15 @@ class _CartScreenState extends State<CartScreen> {
                       ],
                     ),
                   ):Container(),
-                  isLoading?Container():resRecomendedProduct.length>0?WidgetHelper().titleQ(context,"Kamu Sempat Lihat Barang Barang ini",param: '',callback: (){},icon: Icon(
-                    FontAwesome.eye,
-                    color: site?Colors.white:Theme.of(context).hintColor,
-                  ),color: site?Colors.white:SiteConfig().secondColor):Container(),
+                  isLoading?Container():resRecomendedProduct.length>0?Padding(
+                    padding: scaler.getPadding(1, 2),
+                    child: WidgetHelper().titleQ(context,"Kamu Sempat Lihat Barang Barang ini",param: '',callback: (){},icon: FontAwesome.eye,color: SiteConfig().secondColor),
+                  ):Container(),
                   isLoading?Padding(
                     padding: EdgeInsets.only(left:20.0,right:20.0,top:10.0),
                     child: LoadingProductTenant(tot: 4),
                   ):resRecomendedProduct.length>0?Padding(
-                    padding: EdgeInsets.only(left:20.0,right:20.0,top:10.0),
+                    padding: scaler.getPadding(0, 2),
                     child: new StaggeredGridView.countBuilder(
                       primary: false,
                       shrinkWrap: true,
@@ -336,8 +322,8 @@ class _CartScreenState extends State<CartScreen> {
                         );
                       },
                       staggeredTileBuilder: (int index) => new StaggeredTile.fit(2),
-                      mainAxisSpacing: 15.0,
-                      crossAxisSpacing: 15.0,
+                      mainAxisSpacing: scaler.getWidth(1),
+                      crossAxisSpacing:scaler.getWidth(1),
                     ),
                   ):Container(),
                 ],
@@ -347,38 +333,24 @@ class _CartScreenState extends State<CartScreen> {
           callback:(){ _handleRefresh();},
         ),
         bottomNavigationBar:isLoading?Text(''):isError?Text(''):cartModel.result.length>0?Container(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          decoration: BoxDecoration(
-          color: site?SiteConfig().darkMode:Colors.grey[200],
-          boxShadow: [BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), blurRadius: 5, offset: Offset(0, -2)),],
-        ),
+          color: Colors.transparent,
+          height: scaler.getHeight(4),
+          padding:scaler.getPadding(0,2),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            // crossAxisAlignment: Cro,
             children: <Widget>[
-
-              Container(
-                width: MediaQuery.of(context).size.width/2.5,
-                child: FlatButton(
-                    onPressed: () {},
-                    color: Theme.of(context).accentColor,
-                    shape: StadiumBorder(),
-                    child:WidgetHelper().textQ(FunctionHelper().formatter.format(subtotal),12, Colors.white, FontWeight.bold)
-                  // child:Text("abus")
-                ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  WidgetHelper().textQ("Total Tagihan",scaler.getTextSize(10),SiteConfig().secondColor, FontWeight.bold),
+                  WidgetHelper().textQ("Rp "+FunctionHelper().formatter.format(subtotal)+" .-",scaler.getTextSize(10),SiteConfig().moneyColor, FontWeight.bold),
+                ],
               ),
-
-              Container(
-                width: MediaQuery.of(context).size.width/2.5,
-                child: FlatButton(
-                  onPressed: () {
-                    WidgetHelper().myPush(context,CheckoutScreen(idTenant: widget.idTenant));
-                  },
-                  color: Theme.of(context).accentColor,
-                  shape: StadiumBorder(),
-                  child: WidgetHelper().textQ("Chekout", 14, SiteConfig().secondDarkColor, FontWeight.bold),
-                ),
-              )
+              WidgetHelper().buttonQ(context,(){
+                WidgetHelper().myPush(context,CheckoutScreen(idTenant: widget.idTenant));
+              },"Bayar")
+              
             ],
           ),
         ):Text(''),
@@ -386,6 +358,8 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
   Widget buildContent(BuildContext context,index,id,idBarang,kodeBarang,image,name,price,hargaCoret,idVarian,idSubVarian,varian,subVarian,qty,harga,disc1,disc2,bool isTrue,hargaMaster,hargaVarian,hargaSubVarian) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     int anying=int.parse(qty);
     return WidgetHelper().myPress(
             ()async{
@@ -397,7 +371,6 @@ class _CartScreenState extends State<CartScreen> {
               });
         },
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 7),
           decoration: BoxDecoration(
               color: Theme.of(context).focusColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10.0)
@@ -406,23 +379,18 @@ class _CartScreenState extends State<CartScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               Container(
-                width: 70,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(6),
-                    topRight: Radius.circular(6),
-                  ),
-                ),
-                child: CachedNetworkImage(
-                  imageUrl: image,
-                  width: double.infinity ,
-                  fit:BoxFit.fill,
-                  placeholder: (context, url) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width: double.infinity,),
-                  errorWidget: (context, url, error) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width: double.infinity,),
-                ),
+                width: scaler.getWidth(20),
+                child: WidgetHelper().baseImage(image),
+                // child: CachedNetworkImage(
+                //   imageUrl: image,
+                //   width: double.infinity ,
+                //   fit:BoxFit.contain,
+                //   placeholder: (context, url) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width: double.infinity,),
+                //   errorWidget: (context, url, error) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width: double.infinity,),
+                // ),
               ),
+              SizedBox(width: scaler.getWidth(1)),
 
-              SizedBox(width: 15),
               Flexible(
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -433,19 +401,20 @@ class _CartScreenState extends State<CartScreen> {
                         children: <Widget>[
                           Row(
                             children: [
-                              Expanded(child: WidgetHelper().textQ("$name", 12, site?Colors.white:SiteConfig().darkMode, FontWeight.normal)),
+                              Expanded(child: WidgetHelper().textQ("$name", scaler.getTextSize(9),SiteConfig().darkMode, FontWeight.normal)),
                               int.parse(disc1)==0?Container():SizedBox(width: 5),
-                              int.parse(disc1)==0?Container():WidgetHelper().textQ("( diskon $disc1 + $disc2 )", 10,Colors.grey,FontWeight.bold),
+                              int.parse(disc1)==0?Container():WidgetHelper().textQ("( diskon $disc1 + $disc2 )", scaler.getTextSize(9),Colors.grey,FontWeight.bold),
                             ],
                           ),
+                          SizedBox(height: scaler.getHeight(0.5)),
                           Row(
                             children: [
-                              Expanded(child: WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(hargaCoret))}", 10,Colors.green,FontWeight.normal,textDecoration: TextDecoration.lineThrough)),
-                              SizedBox(width: 5),
-                              Expanded(child: WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(price))}", 12,Colors.green,FontWeight.bold),)
+                              WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(hargaCoret))}", scaler.getTextSize(9),SiteConfig().moneyColor,FontWeight.normal,textDecoration: TextDecoration.lineThrough),
+                              SizedBox(width: scaler.getWidth(1)),
+                              Expanded(child: WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(price))}", scaler.getTextSize(9),SiteConfig().moneyColor,FontWeight.bold),)
                             ],
                           ),
-                          varian==null?Container():WidgetHelper().textQ("warna $varian,ukuran $subVarian", 12, Colors.grey, FontWeight.normal),
+                          varian==null?Container():WidgetHelper().textQ("warna $varian,ukuran $subVarian", scaler.getTextSize(9),SiteConfig().darkMode, FontWeight.normal),
                           // int.parse(disc1)==0?Container():WidgetHelper().textQ("${int.parse(cartModel.result[index].disc1)>0?"diskon 1 = ${cartModel.result[index].disc1} %\ndiskon 2 = ${cartModel.result[index].disc2} %":0}", 12,Colors.grey, FontWeight.bold),
                         ],
                       ),
@@ -482,7 +451,7 @@ class _CartScreenState extends State<CartScreen> {
                           icon: Icon(Icons.add_circle_outline),
                           color: Theme.of(context).hintColor,
                         ),
-                        WidgetHelper().textQ('$qty', 12, SiteConfig().secondColor, FontWeight.bold),
+                        WidgetHelper().textQ('$qty', scaler.getTextSize(9), SiteConfig().secondColor, FontWeight.bold),
                         IconButton(
                           onPressed: () async {
                             if(int.parse(cartModel.result[index].qty)>1){
@@ -520,7 +489,7 @@ class _CartScreenState extends State<CartScreen> {
             ],
           ),
         ),
-        color: site?Colors.white10:Colors.black38
+        color:Colors.black38
     );
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
@@ -91,9 +92,11 @@ class EmptyDataWidget extends StatefulWidget {
 class _EmptyDataWidgetState extends State<EmptyDataWidget> {
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Container(
       alignment: AlignmentDirectional.center,
-      padding: EdgeInsets.symmetric(horizontal: 30),
+      padding:scaler.getPadding(0,10),
       height: config.AppConfig(context).appHeight(60),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -145,28 +148,10 @@ class _EmptyDataWidgetState extends State<EmptyDataWidget> {
           SizedBox(height: 15),
           Opacity(
             opacity: 0.4,
-            child:WidgetHelper().textQ(widget.title,14,Colors.grey,FontWeight.normal,textAlign: TextAlign.center),
+            child:WidgetHelper().textQ(widget.title,14,SiteConfig().darkMode,FontWeight.normal,textAlign: TextAlign.center),
           ),
           widget.isFunction?SizedBox(height: 50):Container(),
-          widget.isFunction?FlatButton(
-            onPressed:widget.callback,
-            padding: EdgeInsets.symmetric(vertical: 12, horizontal: 30),
-            color: Theme.of(context).focusColor.withOpacity(0.15),
-            shape: StadiumBorder(),
-            child: RichText(
-                maxLines: 2,
-                overflow: TextOverflow.clip,
-                softWrap: true,
-                text: TextSpan(
-                  text:widget.txtFunction,
-                  style: Theme.of(context).textTheme.title,
-                )
-            ),
-            // child: Text(
-            //   'Start Exploring',
-            //   style: Theme.of(context).textTheme.title,
-            // ),
-          ):Container(),
+          widget.isFunction?WidgetHelper().buttonQ(context,widget.callback,"Mulai Belanja"):Container(),
         ],
       ),
     );

@@ -245,9 +245,8 @@ class _AddressScreenState extends State<AddressScreen> {
 
 class ModalForm extends StatefulWidget {
   String id;
-  bool mode;
   Function(String param) callback;
-  ModalForm({this.id,this.mode,this.callback});
+  ModalForm({this.id,this.callback});
   @override
   _ModalFormState createState() => _ModalFormState();
 }

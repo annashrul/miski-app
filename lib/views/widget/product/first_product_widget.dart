@@ -120,13 +120,7 @@ class _ProductWidgetState extends State<ProductWidget> {
                         topRight: Radius.circular(6),
                       ),
                     ),
-                    child: CachedNetworkImage(
-                      imageUrl: widget.gambar,
-                      width: double.infinity ,
-                      fit:BoxFit.fill,
-                      placeholder: (context, url) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width: double.infinity,),
-                      errorWidget: (context, url, error) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width: double.infinity,),
-                    ),
+                    child: WidgetHelper().baseImage(widget.gambar),
                   ),
                   SizedBox(height: 12),
                   Padding(
@@ -137,9 +131,9 @@ class _ProductWidgetState extends State<ProductWidget> {
                     padding: scaler.getPadding(0,1),
                     child: Row(
                       children: [
-                        WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.hargaCoret))}",  scaler.getTextSize(9),Colors.green,FontWeight.normal,textDecoration: TextDecoration.lineThrough),
+                        WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.hargaCoret))}",  scaler.getTextSize(9),SiteConfig().moneyColor,FontWeight.normal,textDecoration: TextDecoration.lineThrough),
                         SizedBox(width: 5),
-                        WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.harga))}",  scaler.getTextSize(9),Colors.green,FontWeight.normal),
+                        WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.harga))}",  scaler.getTextSize(9),SiteConfig().moneyColor,FontWeight.bold),
                       ],
                     ),
                   ),

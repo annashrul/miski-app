@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:intl/intl.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
@@ -57,128 +58,115 @@ class _DetailCheckoutScreenState extends State<DetailCheckoutScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     final key = new GlobalKey<ScaffoldState>();
     return WillPopScope(
       child: Scaffold(
             backgroundColor: Colors.white,
             key: key,
-            appBar: WidgetHelper().appBarWithButton(context, "INVOICE ${widget.invoice_no}",(){
+            appBar: WidgetHelper().appBarWithButton(context, "${widget.invoice_no}",(){
               Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => WrapperScreen(currentTab: 2)), (Route<dynamic> route) => false);
             },<Widget>[],brightness: Brightness.light),
             resizeToAvoidBottomInset: false,
             body: Scrollbar(
                 child: ListView(
                   children: <Widget>[
-                    SizedBox(height: 30),
+                    // SizedBox(height: 30),
                     Image.asset(
                       'img/checkmark.gif',
                       height: MediaQuery.of(context).size.height / 7,
                       fit: BoxFit.fitHeight,
                     ),
-                    SizedBox(height: 8),
+                    SizedBox(height: scaler.getHeight(1)),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
-                      child: WidgetHelper().textQ("Silahkan transfer tepat sebesar :", 12,SiteConfig().darkMode, FontWeight.bold),
+                      padding:scaler.getPadding(0,2),
+                      child: WidgetHelper().textQ("Silahkan transfer tepat sebesar :", scaler.getTextSize(10),SiteConfig().darkMode, FontWeight.normal),
                     ),
-                    Padding(
-                        padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color:SiteConfig().accentColor,
-                              borderRadius: BorderRadius.circular(10)
-                          ),
-                          padding: const EdgeInsets.symmetric(horizontal:10.0,vertical:10.0),
-                          child:Center(
-                            child: WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(widget.total_transfer))} .-", 18, Colors.white, FontWeight.bold),
-                          ),
-                        )
+                    SizedBox(height: scaler.getHeight(1)),
+                    Container(
+                      margin: scaler.getMargin(0, 0),
+                      color:Theme.of(context).focusColor.withOpacity(0.1),
+                      padding:scaler.getPadding(1,2),
+                      child:Center(
+                        child: WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(widget.total_transfer))} .-", scaler.getTextSize(12),SiteConfig().moneyColor, FontWeight.bold),
+                      ),
                     ),
+                    SizedBox(height: scaler.getHeight(1)),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
-                      child: WidgetHelper().textQ("Pembayaran dapat dilakukan ke rekening berikut : ", 12, SiteConfig().darkMode, FontWeight.bold),
+                      padding:scaler.getPadding(0,2),
+                      child: WidgetHelper().textQ("Pembayaran dapat dilakukan ke rekening berikut : ", scaler.getTextSize(10), SiteConfig().darkMode, FontWeight.normal),
                     ),
+                    SizedBox(height: scaler.getHeight(1)),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
+                      padding:scaler.getPadding(0,0),
                       child: Container(
-                        decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(10)
-                        ),
+                        color:Theme.of(context).focusColor.withOpacity(0.1),
                         child: ListTile(
                           onTap: (){
                             Clipboard.setData(new ClipboardData(text: "${widget.bank_acc}"));
                             WidgetHelper().showFloatingFlushbar(context,"success"," no rekening berhasil disalin");
                           },
-                          contentPadding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
-                          leading: Container(
-                            width: 90.0,
-                            height: 50.0,
-                            padding: EdgeInsets.all(10),
-                            child: CircleAvatar(
-                                minRadius: 150,
-                                maxRadius: 150,
-                                child:Image.network(SiteConfig().noImage,fit: BoxFit.fill)
-                            ),
-                          ),
-                          title:WidgetHelper().textQ("${widget.bank_atas_nama}", 12, Colors.black, FontWeight.bold),
+                          contentPadding:scaler.getPadding(0,2),
+                          leading: WidgetHelper().baseImage(widget.bank_logo),
+                          title:WidgetHelper().textQ("${widget.bank_atas_nama}", scaler.getTextSize(10),SiteConfig().darkMode, FontWeight.normal),
                           subtitle: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: <Widget>[
-                                WidgetHelper().textQ("${widget.bank_acc}", 12, Colors.black.withOpacity(0.7), FontWeight.bold),
+                                WidgetHelper().textQ("${widget.bank_acc}", scaler.getTextSize(10),SiteConfig().darkMode, FontWeight.normal),
                                 SizedBox(width: 5),
-                                Icon(Icons.content_copy, color: Colors.black, size: 15,),
+                                Icon(Icons.content_copy, color:SiteConfig().darkMode, size: 15,),
                               ]
                           ),
                         ),
                       ),
                     ),
+                    SizedBox(height: scaler.getHeight(1)),
                     Padding(
-                        padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
-                        child: Container(
-                            decoration: BoxDecoration(
-                                color:SiteConfig().accentColor,
-                                borderRadius: BorderRadius.circular(10)
-                            ),
-                            padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
-                            child:Center(
-                              child: WidgetHelper().textQ('VERIFIKASI PENERIMAAN TRANSFER ANDA AKAN DIPROSES SELAMA 5-10 MENIT', 14, Colors.white, FontWeight.bold),
-                            )
+                      padding:scaler.getPadding(0,2),
+                        child:Center(
+                          child: WidgetHelper().textQ('VERIFIKASI PENERIMAAN TRANSFER ANDA AKAN DIPROSES SELAMA 5-10 MENIT', scaler.getTextSize(10), SiteConfig().mainColor, FontWeight.normal,letterSpacing: 2,maxLines: 3),
                         )
                     ),
+                    SizedBox(height: scaler.getHeight(1)),
                     Padding(
-                        padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
+                        padding:scaler.getPadding(0,0),
                         child: Container(
-                          color: const Color(0xffF4F7FA),
-                          padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 8.0),
+                          color:Theme.of(context).focusColor.withOpacity(0.1),
+                          padding:scaler.getPadding(0.5,2),
                           child: RichText(
                             text: TextSpan(
                                 text: 'Anda dapat melakukan transfer menggunakan ATM, Mobile Banking atau SMS Banking dengan memasukan kode bank',
-                                style: TextStyle(fontSize: 12,fontFamily:SiteConfig().fontStyle,color: Colors.black),
+                                style: TextStyle(fontSize: scaler.getTextSize(10),fontFamily:SiteConfig().fontStyle,color:SiteConfig().darkMode,fontWeight: FontWeight.normal),
                                 children: <TextSpan>[
-                                  TextSpan(text: ' ${widget.bank_name} (${widget.bank_code})',style: TextStyle(color:SiteConfig().mainColor, fontSize: 12,fontWeight: FontWeight.bold,fontFamily:SiteConfig().fontStyle)),
-                                  TextSpan(text: ' di depan No.Rekening atas nama',style: TextStyle(fontSize: 12,fontFamily:SiteConfig().fontStyle)),
-                                  TextSpan(text: ' ${widget.bank_atas_nama}',style: TextStyle(color:SiteConfig().mainColor, fontSize: 12,fontWeight: FontWeight.bold,fontFamily:SiteConfig().fontStyle)),
+                                  TextSpan(text: ' ${widget.bank_name} (${widget.bank_code})',style: TextStyle(color:SiteConfig().mainColor, fontSize:  scaler.getTextSize(10),fontWeight: FontWeight.normal,fontFamily:SiteConfig().fontStyle)),
+                                  TextSpan(text: ' di depan No.Rekening atas nama',style: TextStyle(fontSize:  scaler.getTextSize(10),fontFamily:SiteConfig().fontStyle)),
+                                  TextSpan(text: ' ${widget.bank_atas_nama}',style: TextStyle(color:SiteConfig().mainColor, fontSize: 12,fontWeight: FontWeight.normal,fontFamily:SiteConfig().fontStyle)),
                                 ]
                             ),
                           ),
                         )
                     ),
+                    SizedBox(height: scaler.getHeight(1)),
+
                     Container(
-                        padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
-                        child:WidgetHelper().textQ("mohon transfer tepat hingga 3 digit terakhir agar tidak menghambat proses verifikasi", 12, Colors.black, FontWeight.normal)
+                        padding:scaler.getPadding(0,2),
+                        child:WidgetHelper().textQ("mohon transfer tepat hingga 3 digit terakhir agar tidak menghambat proses verifikasi", scaler.getTextSize(10),SiteConfig().darkMode, FontWeight.normal)
                     ),
+                    SizedBox(height: scaler.getHeight(1)),
+
                     Padding(
-                        padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
+                        padding:scaler.getPadding(0,0),
                         child: Container(
-                          color: const Color(0xffF4F7FA),
-                          padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
+                          color:Theme.of(context).focusColor.withOpacity(0.1),
+                          padding:scaler.getPadding(0.5,2),
                           child: RichText(
                             text: TextSpan(
                                 text: 'Pastikan anda transfer sebelum tanggal',
-                                style: TextStyle(fontSize: 12,fontFamily:SiteConfig().fontStyle,color: Colors.black),
+                                style: TextStyle(fontWeight:FontWeight.normal,fontSize: scaler.getTextSize(10),fontFamily:SiteConfig().fontStyle,color:SiteConfig().darkMode),
                                 children: <TextSpan>[
-                                  TextSpan(text: ' $hari-$bulan-$tahun 23:00 WIB',style: TextStyle(color:SiteConfig().mainColor, fontSize: 12,fontWeight: FontWeight.bold,fontFamily:SiteConfig().fontStyle)),
-                                  TextSpan(text: ' atau transaksi anda otomatis dibatalkan oleh sistem. jika sudah melakukan transfer segera upload bukti transfer disini atau di halaman detail riwayat pembelian',style: TextStyle(fontSize: 12,fontFamily:SiteConfig().fontStyle)),
+                                  TextSpan(text: ' $hari-$bulan-$tahun 23:00 WIB',style: TextStyle(color:SiteConfig().mainColor, fontSize:  scaler.getTextSize(10),fontWeight: FontWeight.normal,fontFamily:SiteConfig().fontStyle)),
+                                  TextSpan(text: ' atau transaksi anda otomatis dibatalkan oleh sistem. jika sudah melakukan transfer segera upload bukti transfer disini atau di halaman detail riwayat pembelian',style: TextStyle(fontWeight:FontWeight.normal,fontSize:  scaler.getTextSize(10),fontFamily:SiteConfig().fontStyle)),
                                 ]
                             ),
                           ),
@@ -197,8 +185,11 @@ class _DetailCheckoutScreenState extends State<DetailCheckoutScreen> {
   }
   String url = '',image='';
   Widget _bottomNavBarBeli(BuildContext context){
-    return InkWell(
-      onTap: (){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return Container(
+      height: scaler.getHeight(4),
+      padding: scaler.getPadding(0,2),
+      child: WidgetHelper().buttonQ(context,(){
         WidgetHelper().myModal(context, UploadImage(
           callback: (String img)async{
             setState(() {
@@ -208,23 +199,7 @@ class _DetailCheckoutScreenState extends State<DetailCheckoutScreen> {
             upload(url,image);
           },
         ));
-      },
-      child: Container(
-        padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-        child: Container(
-          width:double.infinity,
-          height: kBottomNavigationBarHeight,
-          decoration: BoxDecoration(
-              color: SiteConfig().mainColor,
-              borderRadius: BorderRadius.circular(10.0),
-              boxShadow: [
-                BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), offset: Offset(0, -2), blurRadius: 5.0)
-              ]),
-          child: Center(
-            child: WidgetHelper().textQ("Saya sudah transfer",14,Colors.white, FontWeight.bold),
-          ),
-        ),
-      ),
+      }, "saya sudah transfer"),
     );
   }
   int retry=0;
@@ -287,26 +262,20 @@ class UploadImage extends StatefulWidget {
 class _UploadImageState extends State<UploadImage> {
   File _image;
   String dropdownValue = 'pilih';
-  static bool site=false;
-  Future getSite()async{
-    final res = await FunctionHelper().getSite();
-    setState(() {
-      site = res;
-    });
-  }
+
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getSite();
   }
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
     return Container(
-      padding:EdgeInsets.all(20.0),
+      padding:scaler.getPadding(0,2),
       decoration: BoxDecoration(
-        color: site?SiteConfig().darkMode:Colors.transparent,
+        color:Colors.transparent,
         borderRadius: BorderRadius.only(topRight: Radius.circular(20.0), topLeft: Radius.circular(20.0))
       ),
       child:Column(
@@ -326,9 +295,9 @@ class _UploadImageState extends State<UploadImage> {
                 ),
               ),
             ),
-            SizedBox(height: 20.0),
-            WidgetHelper().textQ("Ambil gambar dari ?",12,site?Colors.white:Colors.black,FontWeight.bold),
-            SizedBox(height: 10.0),
+            SizedBox(height:scaler.getHeight(1)),
+            WidgetHelper().textQ("Ambil gambar dari ?",12,SiteConfig().darkMode,FontWeight.bold),
+            SizedBox(height:scaler.getHeight(1)),
             Container(
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
@@ -369,9 +338,9 @@ class _UploadImageState extends State<UploadImage> {
               decoration: BoxDecoration(
                 borderRadius:  BorderRadius.circular(10.0),
               ),
-              child: _image == null ?Image.network("http://lequytong.com/Content/Images/no-image-02.png"): new Image.file(_image,width: MediaQuery.of(context).size.width/1,height: MediaQuery.of(context).size.height/2,filterQuality: FilterQuality.high,),
+              child: _image == null ?Image.asset(SiteConfig().localAssets+'logo.jpeg',width: double.infinity,fit: BoxFit.contain): new Image.file(_image,width: MediaQuery.of(context).size.width/1,height: MediaQuery.of(context).size.height/2,filterQuality: FilterQuality.high,),
             ),
-            SizedBox(height: 10.0),
+            SizedBox(height:scaler.getHeight(1)),
             WidgetHelper().buttonQ(context, (){
               if(_image!=null){
                 String fileName;

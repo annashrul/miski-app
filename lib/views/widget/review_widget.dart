@@ -33,7 +33,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Container(
-              height: scaler.getHeight(5),
+              height: scaler.getHeight(4),
               width:  scaler.getWidth(10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(100)),
