@@ -6,6 +6,8 @@ import 'package:animated_widgets/widgets/rotation_animated.dart';
 import 'package:animated_widgets/widgets/shake_animated_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/widgets.dart';
 import 'package:netindo_shop/config/database_config.dart';
@@ -91,6 +93,8 @@ class _TicketScreenState extends State<TicketScreen> {
 
   @override
   Widget build(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return isLoading?LoadingTicket(total: 10):isError?TimeoutWidget(callback: ()async{
       setState(() {
         isLoading=true;
@@ -129,23 +133,24 @@ class _TicketScreenState extends State<TicketScreen> {
                             },
                             child: Container(
                               color:Theme.of(context).focusColor.withOpacity(0.1),
-                              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                              padding: scaler.getPadding(1,2),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: <Widget>[
                                   Stack(
                                     children: <Widget>[
                                       SizedBox(
-                                        width: 60,
-                                        height: 60,
+                                        width: scaler.getWidth(17),
+                                        height: scaler.getHeight(7),
                                         child: Container(
                                           decoration: BoxDecoration(
+                                            // shape: BoxShape.circle,
                                             borderRadius: BorderRadius.all(Radius.circular(50)),
                                             color:Theme.of(context).focusColor.withOpacity(0.15),
                                             // border: Border.all(color:SiteConfig().accentDarkColor)
                                           ),
                                           child: Center(
-                                            child: WidgetHelper().textQ("${DateFormat().add_yMMMd().format(val.createdAt)} \n${DateFormat().add_jm().format(val.createdAt)}", 8, SiteConfig().darkMode,FontWeight.normal,textAlign: TextAlign.center),
+                                            child: WidgetHelper().textQ("${DateFormat().add_yMMMd().format(val.createdAt)} \n${DateFormat().add_jm().format(val.createdAt)}", scaler.getTextSize(8), SiteConfig().darkMode,FontWeight.normal,textAlign: TextAlign.center),
                                           ),
                                         ),
                                       ),
@@ -175,19 +180,19 @@ class _TicketScreenState extends State<TicketScreen> {
                                           children: [
                                             Container(
                                               padding: EdgeInsets.only(right:10.0),
-                                              child: WidgetHelper().textQ("${val.tenant}", 12, SiteConfig().mainColor, FontWeight.bold),
+                                              child: WidgetHelper().textQ("${val.tenant}", scaler.getTextSize(9), SiteConfig().mainColor, FontWeight.bold),
                                             ),
                                             Positioned(
-                                              child:Icon(UiIcons.home,color:SiteConfig().mainColor,size: 8),
+                                              child:Icon(AntDesign.home,color:SiteConfig().mainColor,size: 8),
                                             )
                                           ],
                                         ),
-                                        WidgetHelper().textQ("${val.title}",12,SiteConfig().darkMode,FontWeight.normal),
+                                        WidgetHelper().textQ("${val.title}", scaler.getTextSize(9),SiteConfig().darkMode,FontWeight.normal),
                                         Row(
                                           crossAxisAlignment: CrossAxisAlignment.end,
                                           children: <Widget>[
                                             Expanded(
-                                              child:  WidgetHelper().textQ("${val.deskripsi}",10,Colors.grey,FontWeight.normal),
+                                              child:  WidgetHelper().textQ("${val.deskripsi}", scaler.getTextSize(8),Colors.grey,FontWeight.normal),
                                             ),
                                           ],
                                         )
@@ -206,8 +211,8 @@ class _TicketScreenState extends State<TicketScreen> {
               ):EmptyTenant(),
             ),
             new Positioned(
-              bottom: 20,
-              right: 20,
+              bottom: scaler.getHeight(1),
+              right: scaler.getWidth(5),
               child: new Align(
                   alignment: Alignment.bottomRight,
                   child:WidgetHelper().animShakeWidget(context,InkWell(
@@ -230,7 +235,7 @@ class _TicketScreenState extends State<TicketScreen> {
                         color:SiteConfig().mainColor,
                       ),
 
-                      child:isLoadmore?CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.grey), backgroundColor: Colors.white): Icon(UiIcons.message,color: Colors.white,size: 30),
+                      child:isLoadmore?CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.grey), backgroundColor: Colors.white): Icon(AntDesign.message1,color: Colors.white),
                     ),
                   ))
               ),
@@ -375,8 +380,6 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
     _scrollController.dispose();
     super.dispose();
   }
-
-
   @override
   void initState() {
     // TODO: implement initState
@@ -395,6 +398,8 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     _keyboardVisible = MediaQuery.of(context).viewInsets.bottom != 0;
     return Scaffold(
       backgroundColor: Colors.white,
@@ -403,15 +408,15 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
         children: [
           Container(
             color: Theme.of(context).focusColor.withOpacity(0.15),
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            padding: scaler.getPadding(0.5,2),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 Stack(
                   children: <Widget>[
                     SizedBox(
-                      width: 60,
-                      height: 60,
+                      width: scaler.getWidth(17),
+                      height: scaler.getHeight(7),
                       child: Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(50)),
@@ -419,7 +424,7 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
                           // border: Border.all(color:SiteConfig().accentDarkColor)
                         ),
                         child: Center(
-                          child: WidgetHelper().textQ("${DateFormat().add_yMMMd().format(widget.createdAt)} \n${DateFormat().add_jm().format(widget.createdAt)}", 8, SiteConfig().darkMode,FontWeight.normal,textAlign: TextAlign.center),
+                          child: WidgetHelper().textQ("${DateFormat().add_yMMMd().format(widget.createdAt)} \n${DateFormat().add_jm().format(widget.createdAt)}", scaler.getTextSize(8), SiteConfig().darkMode,FontWeight.normal,textAlign: TextAlign.center),
                         ),
                       ),
                     ),
@@ -444,8 +449,8 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
-                      WidgetHelper().textQ("${widget.title}",12,SiteConfig().darkMode,FontWeight.bold),
-                      WidgetHelper().textQ("${widget.desc}",10,Colors.grey,FontWeight.normal,maxLines: null)
+                      WidgetHelper().textQ("${widget.title}",scaler.getTextSize(9),SiteConfig().darkMode,FontWeight.bold),
+                      WidgetHelper().textQ("${widget.desc}",scaler.getTextSize(8),Colors.grey,FontWeight.normal,maxLines: null)
                     ],
                   ),
                 )
@@ -489,7 +494,7 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
                     _scrollToBottom();
                   },
                   icon: Icon(
-                    UiIcons.cursor,
+                    Ionicons.ios_send,
                     color:Theme.of(context).focusColor.withOpacity(0.8),
                     size: 20,
                   ),
@@ -503,6 +508,8 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
   }
   
   Widget buildLocal(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return ListView.builder(
         padding: EdgeInsets.only(left:20,right:20),
         controller: _scrollController,
@@ -536,9 +543,9 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
                       children: <Widget>[
                         new Container(
                           margin: const EdgeInsets.only(top: 5.0),
-                          child: WidgetHelper().textQ(val['msg'], 10, Colors.white,FontWeight.normal),
+                          child: WidgetHelper().textQ(val['msg'], scaler.getTextSize(9), Colors.white,FontWeight.normal),
                         ),
-                        WidgetHelper().textQ(TimeAgo.timeAgoSinceDate(val['created_at']),8, Colors.grey,FontWeight.normal),
+                        WidgetHelper().textQ(TimeAgo.timeAgoSinceDate(val['created_at']), scaler.getTextSize(8), Colors.grey,FontWeight.normal),
                       ],
                     ),
                   ),
@@ -718,7 +725,7 @@ class _ModalTicketState extends State<ModalTicket> {
               onTap: ()=>Navigator.pop(context),
               child: CircleAvatar(
                 backgroundColor: Colors.transparent,
-                child: Center(child: Icon(UiIcons.return_icon, color:Theme.of(context).hintColor),),
+                child: Center(child: Icon(AntDesign.back, color:Theme.of(context).hintColor),),
               ),
             ),
             trailing: InkWell(
@@ -847,7 +854,7 @@ class _ModalTicketState extends State<ModalTicket> {
                         padding: EdgeInsets.all(10.0),
                         child: Column(
                           children: [
-                            Icon(UiIcons.upload,color: SiteConfig().darkMode),
+                            Icon(AntDesign.upload,color: SiteConfig().darkMode),
                             WidgetHelper().textQ("Lampirkan File",10,SiteConfig().darkMode,FontWeight.bold)
                           ],
                         ),
@@ -906,6 +913,8 @@ class _ModalTenantState extends State<ModalTenant> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Container(
       height: MediaQuery.of(context).size.height/1.1,
       decoration: BoxDecoration(
@@ -949,7 +958,7 @@ class _ModalTenantState extends State<ModalTenant> {
                         // leading: Image.network(resTenant[index]['logo'],width: 30,height: 30,),
                         title: WidgetHelper().textQ("${resTenant[index]['nama']}", 14,SiteConfig().darkMode, FontWeight.bold),
                         // subtitle: WidgetHelper().textQ("${widget.kurirModel.result[index].deskripsi}", 12, SiteConfig().secondColor, FontWeight.bold),
-                        trailing: widget.index==index?Icon(UiIcons.checked,color:SiteConfig().darkMode):Text(
+                        trailing: widget.index==index?Icon(AntDesign.checkcircleo,color:SiteConfig().darkMode):Text(
                             ''
                         ),
                       ),

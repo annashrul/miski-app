@@ -1,5 +1,6 @@
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/user_helper.dart';
@@ -49,7 +50,7 @@ class _ProfileDialogFormWidgetState extends State<ProfileDialogFormWidget> {
                 titlePadding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
                 title: Row(
                   children: <Widget>[
-                    Icon(UiIcons.user_1),
+                    Icon(AntDesign.user),
                     SizedBox(width: 10),
                     Text(
                       'Profile Settings',

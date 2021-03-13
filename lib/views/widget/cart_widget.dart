@@ -1,6 +1,8 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
@@ -23,6 +25,8 @@ class CartWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return FlatButton(
       onPressed:callback,
       child: Stack(
@@ -31,9 +35,9 @@ class CartWidget extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 0),
             child: Icon(
-              UiIcons.shopping_cart,
+              AntDesign.shoppingcart,
               color: this.iconColor,
-              size: 28,
+              size: scaler.getTextSize(15),
             ),
           ),
           Container(

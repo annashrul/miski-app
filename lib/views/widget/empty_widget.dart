@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
@@ -34,7 +35,7 @@ class _EmptyTenantState extends State<EmptyTenant> {
                       Theme.of(context).focusColor.withOpacity(0.1),
                     ])),
                 child: Icon(
-                  UiIcons.inbox,
+                  AntDesign.inbox,
                   color: Theme.of(context).primaryColor,
                   size: 70,
                 ),

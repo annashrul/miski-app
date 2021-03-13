@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/site_config.dart';
@@ -17,6 +18,8 @@ class BadgesQ extends StatelessWidget {
   BadgesQ({this.val});
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Positioned(
       top: 6,
       right: 10,
@@ -24,7 +27,7 @@ class BadgesQ extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
         decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(100)), color: Theme.of(context).accentColor),
         alignment: AlignmentDirectional.topEnd,
-        child: WidgetHelper().textQ(val, 10,Colors.white,FontWeight.bold),
+        child: WidgetHelper().textQ(val, scaler.getTextSize(7),Colors.white,FontWeight.bold),
       ),
     );
   }
@@ -91,6 +94,8 @@ class _ProductWidgetState extends State<ProductWidget> {
     else{
       child = BadgesQ(val: 'Stock habis',);
     }
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Stack(
       alignment: AlignmentDirectional.topCenter,
       children: [
@@ -125,16 +130,16 @@ class _ProductWidgetState extends State<ProductWidget> {
                   ),
                   SizedBox(height: 12),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                    child: WidgetHelper().textQ(widget.title, 12,SiteConfig().darkMode,FontWeight.normal,maxLines:3 ),
+                    padding:scaler.getPadding(0,1),
+                    child: WidgetHelper().textQ(widget.title, scaler.getTextSize(9),SiteConfig().darkMode,FontWeight.normal,maxLines:3 ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    padding: scaler.getPadding(0,1),
                     child: Row(
                       children: [
-                        WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.hargaCoret))}", 10,Colors.green,FontWeight.normal,textDecoration: TextDecoration.lineThrough),
+                        WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.hargaCoret))}",  scaler.getTextSize(9),Colors.green,FontWeight.normal,textDecoration: TextDecoration.lineThrough),
                         SizedBox(width: 5),
-                        WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.harga))}", 12,Colors.green,FontWeight.normal),
+                        WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.harga))}",  scaler.getTextSize(9),Colors.green,FontWeight.normal),
                       ],
                     ),
                   ),
@@ -155,11 +160,11 @@ class _ProductWidgetState extends State<ProductWidget> {
                   // ),
 
                   if(widget.stockSales!='') Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 5),
-                    child: WidgetHelper().textQ("${widget.stockSales} terjual", 12,Colors.grey,FontWeight.normal),
+                    padding:scaler.getPadding(0,1),
+                    child: WidgetHelper().textQ("${widget.stockSales} terjual",  scaler.getTextSize(9),Colors.grey,FontWeight.normal),
                   ),
                   double.parse(widget.rating)>0?Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    padding:scaler.getPadding(0,1),
                     child:  RatingBar.builder(
                       itemSize: 15.0,
                       initialRating: double.parse(widget.rating),
@@ -252,13 +257,7 @@ class _FirstProductWidgetState extends State<FirstProductWidget> {
     await _helper.updateData(ProductQuery.TABLE_NAME,"is_click", "true", idTenant, widget.id.toString());
     print("update product sukses");
   }
-  bool mode=false;
-  Future getMode()async{
-    var res = await FunctionHelper().getSite();
-    setState(() {
-      mode=res;
-    });
-  }
+
 
 
 
@@ -266,12 +265,13 @@ class _FirstProductWidgetState extends State<FirstProductWidget> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getMode();
 
   }
 
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     Random random = new Random();
     int random_number = random.nextInt(10000000);
     print(widget.stock);
@@ -324,16 +324,16 @@ class _FirstProductWidgetState extends State<FirstProductWidget> {
                   ),
                   SizedBox(height: 12),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                    child: WidgetHelper().textQ(widget.title, 12,mode?Colors.white:SiteConfig().secondColor,FontWeight.normal),
+                    padding:scaler.getPadding(0,1),
+                    child: WidgetHelper().textQ(widget.title, scaler.getTextSize(8),SiteConfig().secondColor,FontWeight.normal),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    padding:scaler.getPadding(0.5,1),
                     child: Row(
                       children: [
-                        int.parse(widget.stock)<0?Container():WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.hargaCoret))}", 10,SiteConfig().accentDarkColor,FontWeight.bold,textDecoration: TextDecoration.lineThrough),
+                        int.parse(widget.stock)<0?Container():WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.hargaCoret))}",  scaler.getTextSize(8),SiteConfig().accentDarkColor,FontWeight.bold,textDecoration: TextDecoration.lineThrough),
                         int.parse(widget.stock)<0?Container():SizedBox(width: 5),
-                        WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.harga))}", 12,Colors.green,FontWeight.normal),
+                        WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.harga))}",  scaler.getTextSize(8),Colors.green,FontWeight.normal),
                       ],
                     ),
                   ),
@@ -387,7 +387,7 @@ class _FirstProductWidgetState extends State<FirstProductWidget> {
                 ],
               ),
             ),
-            color: mode?Colors.white10:Colors.black38
+            color: Colors.black38
         ),
         child
       ],

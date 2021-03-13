@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/user_helper.dart';
@@ -79,32 +80,35 @@ class _AddressScreenState extends State<AddressScreen> {
       key: scaffoldKey,
       backgroundColor: Colors.white,
       appBar: WidgetHelper().appBarWithButton(context,"Daftar Alamat",(){Navigator.pop(context);},<Widget>[
-        Container(
-          color: Colors.transparent,
-          padding: EdgeInsets.only(right: 20.0,top:5),
-          child: Stack(
-            alignment: AlignmentDirectional.topEnd,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 0),
-                child: FlatButton(
-                    onPressed: (){
-                      WidgetHelper().myModal(context, ModalForm(id:"",callback:(String par){
-                        if(par=='berhasil'){
-                          loadData();
-                          WidgetHelper().showFloatingFlushbar(context,"success","data berhasil dikirim");
-                        }
-                        else{
-                          WidgetHelper().showFloatingFlushbar(context,"success","terjadi kesalahan koneksi");
-                        }
-                      },));
-                    },
-                    child: WidgetHelper().textQ("Tambah Alamat",10,SiteConfig().mainColor,FontWeight.bold)
-                ),
-              ),
-            ],
-          ),
+        IconButton(
+          icon: Icon(AntDesign.picture),
         )
+        // Container(
+        //   color: Colors.transparent,
+        //   padding: EdgeInsets.only(right: 20.0,top:5),
+        //   child: Stack(
+        //     alignment: AlignmentDirectional.topEnd,
+        //     children: <Widget>[
+        //       Padding(
+        //         padding: const EdgeInsets.symmetric(horizontal: 0),
+        //         child: FlatButton(
+        //             onPressed: (){
+        //               WidgetHelper().myModal(context, ModalForm(id:"",callback:(String par){
+        //                 if(par=='berhasil'){
+        //                   loadData();
+        //                   WidgetHelper().showFloatingFlushbar(context,"success","data berhasil dikirim");
+        //                 }
+        //                 else{
+        //                   WidgetHelper().showFloatingFlushbar(context,"success","terjadi kesalahan koneksi");
+        //                 }
+        //               },));
+        //             },
+        //             child: WidgetHelper().textQ("Tambah Alamat",10,SiteConfig().mainColor,FontWeight.bold)
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // )
       ],brightness: Brightness.light),
       body: Container(
         padding: EdgeInsets.only(top:10,bottom:10,left:10,right:10),
@@ -165,7 +169,7 @@ class _AddressScreenState extends State<AddressScreen> {
                                       ],
                                     ),
                                     IconButton(
-                                      icon: Icon(UiIcons.trash_1,color: Colors.red),
+                                      icon: Icon(AntDesign.delete,color: Colors.red),
                                       onPressed: (){
                                         WidgetHelper().notifDialog(context, "Perhatian !!","anda yakin akan menghapus data ini ??", (){Navigator.pop(context);},()async{
                                           Navigator.pop(context);
@@ -447,7 +451,7 @@ class _ModalFormState extends State<ModalForm> {
               onTap: ()=>Navigator.pop(context),
               child: CircleAvatar(
                 backgroundColor: Colors.transparent,
-                child: Center(child: Icon(UiIcons.return_icon, color:Theme.of(context).hintColor),),
+                child: Center(child: Icon(AntDesign.back, color:Theme.of(context).hintColor),),
               ),
             ),
             title: WidgetHelper().textQ("${widget.id==''?'Tambah':'Ubah'} Alamat",12, Theme.of(context).hintColor, FontWeight.bold),
@@ -908,7 +912,7 @@ class _ModalProvinsiState extends State<ModalProvinsi> {
               onTap: ()=>Navigator.pop(context),
               child: CircleAvatar(
                 backgroundColor: Colors.transparent,
-                child: Center(child: Icon(UiIcons.return_icon, color:Theme.of(context).hintColor),),
+                child: Center(child: Icon(AntDesign.back, color:Theme.of(context).hintColor),),
               ),
             ),
             title: WidgetHelper().textQ("Pilih Provinsi",12,Theme.of(context).hintColor, FontWeight.bold),
@@ -933,7 +937,7 @@ class _ModalProvinsiState extends State<ModalProvinsi> {
                       child: ListTile(
                         contentPadding: EdgeInsets.only(left:10,right:10,top:0,bottom:0),
                         title: WidgetHelper().textQ("${provinsiModel.result[index].name}", 10,SiteConfig().darkMode, FontWeight.bold),
-                        trailing: widget.id==provinsiModel.result[index].id?Icon(UiIcons.checked,size:20,color:SiteConfig().darkMode):Text(''),
+                        trailing: widget.id==provinsiModel.result[index].id?Icon(AntDesign.checkcircleo,size:20,color:SiteConfig().darkMode):Text(''),
                       ),
                     );
                   },
@@ -1037,7 +1041,7 @@ class _ModalCityState extends State<ModalCity> {
               onTap: ()=>Navigator.pop(context),
               child: CircleAvatar(
                 backgroundColor: Colors.transparent,
-                child: Center(child: Icon(UiIcons.return_icon, color:Theme.of(context).hintColor),),
+                child: Center(child: Icon(AntDesign.back, color:Theme.of(context).hintColor),),
               ),
             ),
             title: WidgetHelper().textQ("Pilih Kota",12,Theme.of(context).hintColor, FontWeight.bold),
@@ -1063,7 +1067,7 @@ class _ModalCityState extends State<ModalCity> {
                       child: ListTile(
                         contentPadding: EdgeInsets.only(left:10,right:10,top:0,bottom:0),
                         title: WidgetHelper().textQ("${kotaModel.result[index].name}", 10,SiteConfig().darkMode, FontWeight.bold),
-                        trailing: id==kotaModel.result[index].id?Icon(UiIcons.checked,size:20,color: SiteConfig().darkMode):Text(''),
+                        trailing: id==kotaModel.result[index].id?Icon(AntDesign.checkcircleo,size:20,color: SiteConfig().darkMode):Text(''),
                       ),
                     );
                   },
@@ -1168,7 +1172,7 @@ class _ModalDisctrictState extends State<ModalDisctrict> {
               onTap: ()=>Navigator.pop(context),
               child: CircleAvatar(
                 backgroundColor: Colors.transparent,
-                child: Center(child: Icon(UiIcons.return_icon, color:Theme.of(context).hintColor),),
+                child: Center(child: Icon(AntDesign.back, color:Theme.of(context).hintColor),),
               ),
             ),
             title: WidgetHelper().textQ("Pilih Kecamatan",12,Theme.of(context).hintColor, FontWeight.bold),
@@ -1194,7 +1198,7 @@ class _ModalDisctrictState extends State<ModalDisctrict> {
                       child: ListTile(
                         contentPadding: EdgeInsets.only(left:10,right:10,top:0,bottom:0),
                         title: WidgetHelper().textQ("${kecamatanModel.result[index].kecamatan}", 10,SiteConfig().darkMode, FontWeight.bold),
-                        trailing: id==kecamatanModel.result[index].id?Icon(UiIcons.checked,size:20,color:SiteConfig().darkMode):Text(''),
+                        trailing: id==kecamatanModel.result[index].id?Icon(AntDesign.checkcircleo,size:20,color:SiteConfig().darkMode):Text(''),
                       ),
                     );
                   },

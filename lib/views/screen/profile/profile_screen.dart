@@ -1,5 +1,7 @@
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:netindo_shop/config/database_config.dart';
@@ -58,6 +60,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return isLoading?Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -68,490 +72,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     ): RefreshWidget(
       widget: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(vertical: 7),
+        padding:scaler.getPadding(1,3),
         child:Column(
           children: <Widget>[
-            // Container(
-            //   margin: EdgeInsets.symmetric(horizontal: 20),
-            //   decoration: BoxDecoration(
-            //     color: Theme.of(context).primaryColor,
-            //     borderRadius: BorderRadius.circular(6),
-            //     boxShadow: [
-            //       BoxShadow(color: Theme.of(context).hintColor.withOpacity(0.15), offset: Offset(0, 3), blurRadius: 10)
-            //     ],
-            //   ),
-            //   child: Row(
-            //     children: <Widget>[
-            //       Expanded(
-            //         child: FlatButton(
-            //           padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-            //           onPressed: () {
-            //             // Navigator.of(context).pushNamed('/Tabs', arguments: 4);
-            //           },
-            //           child: Column(
-            //             children: <Widget>[
-            //               Icon(UiIcons.heart,color: Colors.grey),
-            //               WidgetHelper().textQ("Favorite",12,SiteConfig().secondColor,FontWeight.bold)
-            //             ],
-            //           ),
-            //         ),
-            //       ),
-            //       Expanded(
-            //         child: FlatButton(
-            //           padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-            //           onPressed: () {
-            //             // Navigator.of(context).pushNamed('/Tabs', arguments: 0);
-            //           },
-            //           child: Column(
-            //             children: <Widget>[
-            //               Icon(UiIcons.favorites,color: Colors.grey),
-            //               WidgetHelper().textQ("Favorite",12,SiteConfig().secondColor,FontWeight.bold)
-            //             ],
-            //           ),
-            //         ),
-            //       ),
-            //       Expanded(
-            //         child: FlatButton(
-            //           padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-            //           onPressed: () {
-            //             // Navigator.of(context).pushNamed('/Tabs', arguments: 3);
-            //           },
-            //           child: Column(
-            //             children: <Widget>[
-            //               Icon(UiIcons.chat_1,color: Colors.grey),
-            //               WidgetHelper().textQ("Favorite",12,SiteConfig().secondColor,FontWeight.bold)
-            //             ],
-            //           ),
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(6),
-                boxShadow: [
-                  BoxShadow(color:Theme.of(context).hintColor.withOpacity(0.15), offset: Offset(0, 3), blurRadius: 10)
-                ],
-              ),
-              child: ListView(
-                padding: EdgeInsets.all(0.0),
-                shrinkWrap: true,
-                primary: false,
-                children: <Widget>[
-                  ListTile(
-                    leading: Icon(UiIcons.user_1,color: Colors.grey),
-                    title: WidgetHelper().textQ("Pengaturan Akun",12,SiteConfig().darkMode,FontWeight.bold),
-                    trailing: WidgetHelper().myPress(
-                      (){
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              return SimpleDialog(
-                                contentPadding: EdgeInsets.symmetric(horizontal: 20),
-                                titlePadding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-                                title: Row(
-                                  children: <Widget>[
-                                    Icon(UiIcons.user_1),
-                                    SizedBox(width: 10),
-                                    Text(
-                                      'Profile Settings',
-                                      style: Theme.of(context).textTheme.body2,
-                                    )
-                                  ],
-                                ),
-                                children: <Widget>[
-                                  Form(
-                                    key: _profileSettingsFormKey,
-                                    child: Column(
-                                      children: <Widget>[
-                                        new TextFormField(
-                                          style: TextStyle(color: Theme.of(context).hintColor),
-                                          keyboardType: TextInputType.text,
-                                          decoration: getInputDecoration(hintText: 'John Doe', labelText: 'Full Name'),
-                                          initialValue: name,
-                                          validator: (input) => input.trim().length < 3 ? 'Not a valid full name' : null,
-                                          onSaved: (input) => name = input,
-                                        ),
-                                        new TextFormField(
-                                          style: TextStyle(color: Theme.of(context).hintColor),
-                                          keyboardType: TextInputType.emailAddress,
-                                          decoration: getInputDecoration(hintText: 'johndo@gmail.com', labelText: 'Email Address'),
-                                          initialValue: email,
-                                          validator: (input) => !input.contains('@') ? 'Not a valid email' : null,
-                                          onSaved: (input) => email = input,
-                                        ),
-                                        FormField<String>(
-                                          builder: (FormFieldState<String> state) {
-                                            return DropdownButtonFormField<String>(
-                                              decoration: getInputDecoration(hintText: 'Pria', labelText: 'Jenis Kelamin'),
-                                              hint: Text("Select Device"),
-                                              value: gender,
-                                              onChanged: (input) {
-                                                setState(() {
-                                                  gender = input;
-                                                });
-                                              },
-                                              onSaved: (input) => gender = input,
-                                              items: [
-                                                new DropdownMenuItem(value: 'Wanita', child: Text('Wanita')),
-                                                new DropdownMenuItem(value: 'Pria', child: Text('Pria')),
-                                              ],
-                                            );
-                                          },
-                                        ),
-                                        FormField<String>(
-                                          builder: (FormFieldState<String> state) {
-                                            return DateTimeField(
-                                              decoration: getInputDecoration(hintText: '1996-12-31', labelText: 'Birth Date'),
-                                              format: new DateFormat('yyyy-MM-dd'),
-                                              initialValue: birthDate,
-                                              onShowPicker: (context, currentValue) {
-                                                return showDatePicker(
-                                                    context: context,
-                                                    firstDate: DateTime(1900),
-                                                    initialDate: currentValue ?? DateTime.now(),
-                                                    lastDate: DateTime(2100));
-                                              },
-                                              onSaved: (input) => setState(() {
-                                                // birthDate = input.toString();
-                                                // widget.onChanged();
-                                              }),
-                                            );
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(height: 20),
-                                  Row(
-                                    children: <Widget>[
-                                      MaterialButton(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        child: Text('Cancel'),
-                                      ),
-                                      MaterialButton(
-                                        onPressed: _submit,
-                                        child: Text(
-                                          'Save',
-                                          style: TextStyle(color: Theme.of(context).accentColor),
-                                        ),
-                                      ),
-                                    ],
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                  ),
-                                  SizedBox(height: 10),
-                                ],
-                              );
-                            });
-                      },
-                      Container(
-                        child: WidgetHelper().textQ("Ubah",10,SiteConfig().secondColor,FontWeight.bold),
-                      ),
-                    ),
-                    contentPadding:EdgeInsets.only(left:20,right:20),
-                  ),
+            wrapperHeader(context,[
+              wrapperTitle(context,(){},AntDesign.user,'Pengaturan Akun'),
+              wrapperContent(context,'Alamat',icon:  Icons.arrow_right,i: 0,callback: (){WidgetHelper().myPush(context,AddressScreen());}),
+              wrapperContent(context,'Bank',icon:  Icons.arrow_right,i: 1),
+              wrapperContent(context,'Data Diri',icon:  Icons.arrow_right,i: 0),
+            ]),
+            SizedBox(height:scaler.getHeight(1)),
+            wrapperHeader(context,[
+              wrapperTitle(context,(){},AntDesign.barchart,'Riwayat Pembelian'),
+              Column(
+                children: FunctionHelper.arrOptDate.asMap().map((i,k) =>  MapEntry(
+                    i,
+                    wrapperContent(context, k, icon: Icons.arrow_right, callback: (){WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: i));}, i: i)
+                )).values.toList(),
+              )
+            ]),
+            SizedBox(height:scaler.getHeight(1)),
+            wrapperHeader(context,[
+              wrapperTitle(context,(){},AntDesign.setting,'Pengaturan Umum'),
+              // wrapperContent(context,'Alamat',i: 0,icon: Icons.arrow_right,callback: (){WidgetHelper().myPush(context,AddressScreen());}),
+              wrapperContent(context,'Kebijakan & Privasi',i: 1,icon: Icons.arrow_right),
+              wrapperContent(context,'Keluar',i: 0,icon: Icons.arrow_right,callback: ()async{
+                WidgetHelper().notifDialog(context,"Perhatian !!","Anda yakin akan keluar dari aplikas ??", (){Navigator.pop(context);}, ()async{
+                  final id = await UserHelper().getDataUser('id');
+                  await db.update(UserQuery.TABLE_NAME, {'id':"${id.toString()}","is_login":"0"});
+                  // await db.deleteAll(UserQuery.TABLE_NAME);
+                  WidgetHelper().myPushRemove(context,LoginScreen());
+                });
+              }),
+            ]),
 
-                  ListTile(
-                    contentPadding:EdgeInsets.only(left:20,right:20),
-                    onTap: () {},
-                    dense: true,
-                    title: WidgetHelper().textQ("Nama",10,SiteConfig().secondColor,FontWeight.normal),
-                    trailing: WidgetHelper().textQ(name,10,Theme.of(context).focusColor,FontWeight.normal),
-                  ),
-                  ListTile(
-                    contentPadding:EdgeInsets.only(left:20,right:20),
-                    onTap: () {},
-                    dense: true,
-                    title: WidgetHelper().textQ("Email",10,SiteConfig().secondColor,FontWeight.normal),
-                    trailing: WidgetHelper().textQ(email,10,Theme.of(context).focusColor,FontWeight.normal),
-                  ),
-                  ListTile(
-                    contentPadding:EdgeInsets.only(left:20,right:20),
-                    onTap: () {},
-                    dense: true,
-                    title: WidgetHelper().textQ("Jenis Kelamin",10,SiteConfig().secondColor,FontWeight.normal),
-                    trailing: WidgetHelper().textQ(gender,10,Theme.of(context).focusColor,FontWeight.normal),
-                  ),
-                  ListTile(
-                    contentPadding:EdgeInsets.only(left:20,right:20),
-                    onTap: () {},
-                    dense: true,
-                    title: WidgetHelper().textQ("Tanggal Lahir",10,SiteConfig().secondColor,FontWeight.normal),
-                    trailing: WidgetHelper().textQ("$birthDate",10,Theme.of(context).focusColor,FontWeight.normal),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(6),
-                boxShadow: [
-                  BoxShadow(color:Theme.of(context).hintColor.withOpacity(0.15), offset: Offset(0, 3), blurRadius: 10)
-                ],
-              ),
-              child: ListView(
-                shrinkWrap: true,
-                primary: false,
-                children: <Widget>[
-                  ListTile(
-                    contentPadding:EdgeInsets.only(left:20,right:20),
-                    leading: Icon(UiIcons.bar_chart,color:Colors.grey),
-                    title: WidgetHelper().textQ("Riwayat Pembelian",12,SiteConfig().secondColor,FontWeight.bold),
-                    trailing: ButtonTheme(
-                      padding: EdgeInsets.all(0),
-                      minWidth: 50.0,
-                      height: 25.0,
-                      child: FlatButton(
-                        onPressed: () {
-                          WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 5));
-                        },
-                        child: WidgetHelper().textQ("Semua Status",10,SiteConfig().secondColor,FontWeight.normal),
-                      ),
-                    ),
-                  ),
-                  FlatButton(
-                    padding: EdgeInsets.all(0.0),
-                    highlightColor:Colors.black38,
-                    splashColor:Colors.black38,
-                    onPressed: ()async{
-                      await Future.delayed(Duration(milliseconds: 90));
-                      WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 0));
-                    },
-                    child: ListTile(
-                      contentPadding:EdgeInsets.only(left:20,right:20),
-                      dense: true,
-                      title: WidgetHelper().textQ("${FunctionHelper.arrOptDate[0]}",10,SiteConfig().secondColor,FontWeight.normal),
-                      trailing: Icon(Icons.looks_one,color:Theme.of(context).focusColor),
-                    ),
-                  ),
-                  FlatButton(
-                    padding: EdgeInsets.all(0.0),
-                    highlightColor:Colors.black38,
-                    splashColor:Colors.black38,
-                    onPressed: ()async{
-                      await Future.delayed(Duration(milliseconds: 90));
-                      WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 1));
-                    },
-                    child: ListTile(
-                      contentPadding:EdgeInsets.only(left:20,right:20),
-                      dense: true,
-                      title: WidgetHelper().textQ("${FunctionHelper.arrOptDate[1]}",10,SiteConfig().secondColor,FontWeight.normal),
-                      trailing: Icon(Icons.looks_two,color: Theme.of(context).focusColor),
-
-                    ),
-                  ),
-                  FlatButton(
-                    padding: EdgeInsets.all(0.0),
-                    highlightColor:Colors.black38,
-                    splashColor:Colors.black38,
-                    onPressed: ()async{
-                      await Future.delayed(Duration(milliseconds: 90));
-                      WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 2));
-
-                    },
-                    child: ListTile(
-                      contentPadding:EdgeInsets.only(left:20,right:20),
-                      dense: true,
-                      title: WidgetHelper().textQ("${FunctionHelper.arrOptDate[2]}",10,SiteConfig().secondColor,FontWeight.normal),
-                      trailing: Icon(Icons.looks_3,color:Theme.of(context).focusColor),
-                    ),
-                  ),
-                  FlatButton(
-                    padding: EdgeInsets.all(0.0),
-                    highlightColor:Colors.black38,
-                    splashColor:Colors.black38,
-                    onPressed: ()async{
-                      await Future.delayed(Duration(milliseconds: 90));
-                      WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 3));
-
-                    },
-                    child: ListTile(
-                      contentPadding:EdgeInsets.only(left:20,right:20),
-                      dense: true,
-                      title: WidgetHelper().textQ("${FunctionHelper.arrOptDate[3]}",10,SiteConfig().secondColor,FontWeight.normal),
-                      trailing: Icon(Icons.looks_4,color:Theme.of(context).focusColor),
-
-                    ),
-                  ),
-                  FlatButton(
-                    padding: EdgeInsets.all(0.0),
-                    highlightColor:Colors.black38,
-                    splashColor:Colors.black38,
-                    onPressed: ()async{
-                      await Future.delayed(Duration(milliseconds: 90));
-                      WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: 4));
-                    },
-                    child: ListTile(
-                      contentPadding:EdgeInsets.only(left:20,right:20),
-                      dense: true,
-                      title: WidgetHelper().textQ("${FunctionHelper.arrOptDate[4]}",10,SiteConfig().secondColor,FontWeight.normal),
-                      trailing: Icon(Icons.looks_5,color:Theme.of(context).focusColor),
-
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(6),
-                boxShadow: [
-                  BoxShadow(color: Theme.of(context).hintColor.withOpacity(0.15), offset: Offset(0, 3), blurRadius: 10)
-                ],
-              ),
-              child: ListView(
-                padding: EdgeInsets.all(0.0),
-                shrinkWrap: true,
-                primary: false,
-                children: <Widget>[
-                  ListTile(
-                    contentPadding:  EdgeInsets.only(left:20,right:20),
-                    leading: Icon(UiIcons.settings_1,color:Colors.grey),
-                    title: WidgetHelper().textQ("Pengaturan Umum",12,SiteConfig().secondColor,FontWeight.bold),
-                  ),
-                  // WidgetHelper().myPress(
-                  //   ()async{
-                  //     await FunctionHelper().storeSite(!site);
-                  //     setState(() {
-                  //       site = !site;
-                  //     });
-                  //     WidgetHelper().myPush(context,MyApp());
-                  //
-                  //   },
-                  //   ListTile(
-                  //     contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
-                  //     dense: true,
-                  //     title: Row(
-                  //       children: <Widget>[
-                  //         Icon(
-                  //           site?UiIcons.cloud_computing:UiIcons.cloud_computing_1,
-                  //           size: 22,
-                  //           color: Theme.of(context).focusColor,
-                  //         ),
-                  //         SizedBox(width: 10),
-                  //         WidgetHelper().textQ("Warna Tema ${site?'Gelap':'Cerah'}",10,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal)
-                  //
-                  //       ],
-                  //     ),
-                  //     trailing: SizedBox(
-                  //         width: 70,
-                  //         height: 10,
-                  //         child: Switch(
-                  //           activeColor: site?Colors.white:SiteConfig().mainDarkColor,
-                  //           value: site,
-                  //           onChanged: (value) async{
-                  //             // Provider.of<ThemeModel>(context,listen: false).toggleTheme();
-                  //             await FunctionHelper().storeSite(value);
-                  //             setState(() {
-                  //               site = value;
-                  //             });
-                  //             WidgetHelper().myPush(context,MyApp(mode: site));
-                  //
-                  //           },
-                  //         )
-                  //     ),
-                  //   ),
-                  //   color: site?Colors.grey[200]:Colors.black38
-                  // ),
-                  ListTile(
-                    contentPadding: EdgeInsets.only(left:20,right:20),
-                    onTap: () {
-                      WidgetHelper().myPush(context,AddressScreen());
-                    },
-                    dense: true,
-                    title: Row(
-                      children: <Widget>[
-                        Icon(
-                          UiIcons.map,
-                          size: 22,
-                          color: Theme.of(context).focusColor,
-                        ),
-                        SizedBox(width: 10),
-                        WidgetHelper().textQ("Alamat",10,SiteConfig().secondColor,FontWeight.normal)
-                      ],
-                    ),
-                  ),
-                  // ListTile(
-                  //   contentPadding:  site?EdgeInsets.all(0.0):EdgeInsets.only(left:20,right:20),
-                  //   onTap: () async{
-                  //     WidgetHelper().loadingDialog(context);
-                  //
-                  //     await db.deleteAll(SearchingQuery.TABLE_NAME);
-                  //     print("########################## DATA PENCARIAN BERHASIL DIHAPUS ##########################");
-                  //     await db.deleteAll(TenantQuery.TABLE_NAME);
-                  //     print("########################## DATA TENANT BERHASIL DIHAPUS ##########################");
-                  //     await db.deleteAll(ProductQuery.TABLE_NAME);
-                  //     print("########################## DATA PRODUCK BERHASIL DIHAPUS ##########################");
-                  //     await Future.delayed(Duration(seconds: 2));
-                  //     Navigator.of(context).pop();
-                  //   },
-                  //   dense: true,
-                  //   title: Row(
-                  //     children: <Widget>[
-                  //       Icon(
-                  //         UiIcons.folder_1,
-                  //         size: 22,
-                  //         color: Theme.of(context).focusColor,
-                  //       ),
-                  //       SizedBox(width: 10),
-                  //       WidgetHelper().textQ("Hapus Penyimpanan",10,site?Colors.grey[200]:SiteConfig().secondColor,FontWeight.normal)
-                  //     ],
-                  //   ),
-                  // ),
-                  ListTile(
-                    contentPadding:  EdgeInsets.only(left:20,right:20),
-                    onTap: () {
-                    },
-                    dense: true,
-                    title: Row(
-                      children: <Widget>[
-                        Icon(
-                          UiIcons.information,
-                          size: 22,
-                          color: Theme.of(context).focusColor,
-                        ),
-                        SizedBox(width: 10),
-                        WidgetHelper().textQ("Kebijakan & Privasi",10,SiteConfig().secondColor,FontWeight.normal)
-
-                      ],
-                    ),
-                  ),
-                  ListTile(
-                    contentPadding:EdgeInsets.only(left:20,right:20),
-                    onTap: () {
-                      WidgetHelper().notifDialog(context,"Perhatian !!","Anda yakin akan keluar dari aplikas ??", (){Navigator.pop(context);}, ()async{
-                        final id = await UserHelper().getDataUser('id');
-                        await db.update(UserQuery.TABLE_NAME, {'id':"${id.toString()}","is_login":"0"});
-                        // await db.deleteAll(UserQuery.TABLE_NAME);
-                        WidgetHelper().myPushRemove(context,LoginScreen());
-                      });
-                    },
-                    dense: true,
-                    title: Row(
-                      children: <Widget>[
-                        Icon(
-                          Icons.exit_to_app,
-                          size: 22,
-                          color: Theme.of(context).focusColor,
-                        ),
-                        SizedBox(width: 10),
-                        WidgetHelper().textQ("Keluar",10,SiteConfig().secondColor,FontWeight.normal)
-
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
           ],
         ),
       ),
@@ -564,6 +118,60 @@ class _ProfileScreenState extends State<ProfileScreen> {
       },
     );
   }
+
+  Widget wrapperHeader(BuildContext context,List<Widget> children){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(6),
+        boxShadow: [
+          BoxShadow(color:Theme.of(context).hintColor.withOpacity(0.15), offset: Offset(0, 3), blurRadius: 10)
+        ],
+      ),
+      child: ListView(
+        padding:EdgeInsets.all(0.0),
+        shrinkWrap: true,
+        primary: false,
+        children: children,
+      ),
+    );
+  }
+
+  Widget wrapperContent(BuildContext context,String title,{Function callback, IconData icon,String desc,int i=0}){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return FlatButton(
+      color: i%2==0?Color(0xFFEEEEEE):Colors.transparent,
+      padding:scaler.getPadding(0,2),
+      onPressed:callback!=null?callback:(){},
+      child: Row(
+        
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          WidgetHelper().textQ(title,10,SiteConfig().darkMode,FontWeight.bold),
+          if(icon!=null)Icon(icon,color:Theme.of(context).focusColor),
+          if(desc!=null)WidgetHelper().textQ(desc,10,Theme.of(context).focusColor,FontWeight.normal),
+        ],
+      ),
+
+    );
+  }
+  Widget wrapperTitle(BuildContext context,Function callback, IconData icon,String title){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return FlatButton(
+      padding:scaler.getPadding(0,2),
+      onPressed:callback!=null?callback:(){},
+      child: Row(
+        children: [
+          Icon(icon,color:SiteConfig().mainColor),
+          SizedBox(width: 10),
+          WidgetHelper().textQ(title,scaler.getTextSize(10),SiteConfig().mainColor,FontWeight.bold),
+        ],
+      ),
+
+    );
+  }
+
   InputDecoration getInputDecoration({String hintText, String labelText}) {
     return new InputDecoration(
       hintText: hintText,

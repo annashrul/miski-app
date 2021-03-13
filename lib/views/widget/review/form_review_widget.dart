@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -285,7 +286,7 @@ class _ReviewContentState extends State<ReviewContent> {
               onTap: ()=>Navigator.pop(context),
               child: CircleAvatar(
                 backgroundColor: Colors.transparent,
-                child: Center(child: Icon(UiIcons.return_icon, color:Theme.of(context).hintColor),),
+                child: Center(child: Icon(AntDesign.back, color:Theme.of(context).hintColor),),
               ),
             ),
             trailing: InkWell(

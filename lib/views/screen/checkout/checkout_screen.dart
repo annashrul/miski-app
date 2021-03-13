@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
@@ -295,7 +296,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Icon(UiIcons.placeholder,size: 20,color: site?Colors.white:SiteConfig().darkMode),
+                          Icon(AntDesign.home,size: 20,color: site?Colors.white:SiteConfig().darkMode),
                           SizedBox(width:5.0),
                           WidgetHelper().textQ("Alamat Pengiriman",12,site?Colors.white:SiteConfig().darkMode, FontWeight.bold),
                         ],
@@ -755,7 +756,7 @@ class _ModalAddressState extends State<ModalAddress> {
               onTap: ()=>Navigator.pop(context),
               child: CircleAvatar(
                 backgroundColor: Colors.transparent,
-                child: Center(child: Icon(UiIcons.return_icon, color: widget.mode?Colors.white:Theme.of(context).hintColor),),
+                child: Center(child: Icon(AntDesign.back, color: widget.mode?Colors.white:Theme.of(context).hintColor),),
               ),
             ),
             title: WidgetHelper().textQ("Pilih Alamat Pengiriman",14,widget.mode?Colors.white:Theme.of(context).hintColor, FontWeight.bold),
@@ -832,7 +833,7 @@ class _ModalAddressState extends State<ModalAddress> {
                                   ],
                                 ),
                                 IconButton(
-                                  icon: Icon(UiIcons.checked,color: widget.idx==index?Colors.grey:Colors.transparent),
+                                  icon: Icon(AntDesign.checkcircleo,color: widget.idx==index?Colors.grey:Colors.transparent),
                                   onPressed: (){
                                     // setState(() {
                                     //   widget.idx=index;
@@ -1002,7 +1003,7 @@ class _ModalKurirState extends State<ModalKurir> {
                         leading: Image.network(widget.kurirModel.result[index].gambar,width: 50,height: 50,),
                         title: WidgetHelper().textQ("${widget.kurirModel.result[index].kurir}", 14,site?Colors.white:SiteConfig().darkMode, FontWeight.bold),
                         subtitle: WidgetHelper().textQ("${widget.kurirModel.result[index].deskripsi}", 12, SiteConfig().secondColor, FontWeight.bold),
-                        trailing: widget.index==index?Icon(UiIcons.checked,color: site?Colors.grey[200]:SiteConfig().darkMode):Text(
+                        trailing: widget.index==index?Icon(AntDesign.checkcircleo,color: site?Colors.grey[200]:SiteConfig().darkMode):Text(
                           ''
                         ),
                       ),
@@ -1107,7 +1108,7 @@ class _ModalLayananState extends State<ModalLayanan> {
                       child: ListTile(
                         contentPadding: EdgeInsets.only(left:10,right:10,top:0,bottom:0),
                         title: WidgetHelper().textQ("${widget.checkOngkirModel.result.ongkir[index].service} | ${widget.checkOngkirModel.result.ongkir[index].cost} | ${widget.checkOngkirModel.result.ongkir[index].estimasi}", 12,site?Colors.white:Colors.black, FontWeight.bold),
-                         trailing: widget.index==index?Icon(UiIcons.checked,color: site?Colors.grey[200]:SiteConfig().darkMode):Text('')
+                         trailing: widget.index==index?Icon(AntDesign.checkcircleo,color: site?Colors.grey[200]:SiteConfig().darkMode):Text('')
                       )
                     );
                   },
@@ -1174,7 +1175,7 @@ class _ModalBankState extends State<ModalBank> {
             isSelectedBank(index);
           },
           child: ListTile(
-            trailing: num==index?Icon(UiIcons.checked,color:site?Colors.grey[200]:SiteConfig().darkMode):Text(''),
+            trailing: num==index?Icon(AntDesign.checkcircleo,color:site?Colors.grey[200]:SiteConfig().darkMode):Text(''),
             contentPadding: EdgeInsets.only(left:10,right:10,top:0,bottom:0),
             leading: Image.network(SiteConfig().noImage,width: 50,height: 50,),
             title: WidgetHelper().textQ("${widget.bankModel.result.data[index].atasNama}", 12,site?Colors.white:SiteConfig().darkMode, FontWeight.bold),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
@@ -86,7 +87,7 @@ class _WrapperScreenState extends State<WrapperScreen> {
       }
     });
   }
-  static const _kFontFam = 'EcommerceAppUI';
+  // static const _kFontFam = 'EcommerceAppUI';
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +105,7 @@ class _WrapperScreenState extends State<WrapperScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 0),
                 child: Icon(
-                  UiIcons.bell,
+                  Ionicons.ios_notifications,
                   color:Theme.of(context).hintColor,
                   size: 28,
                 ),
@@ -136,11 +137,11 @@ class _WrapperScreenState extends State<WrapperScreen> {
         // this will be set when a new tab is tapped
         items: [
           BottomNavigationBarItem(
-            icon: Icon(UiIcons.bar_chart),
+            icon: Icon(AntDesign.barchart),
             title: new Container(height: 0.0),
           ),
           BottomNavigationBarItem(
-            icon: Icon(UiIcons.user_1),
+            icon: Icon(AntDesign.profile),
             title: new Container(height: 0.0),
           ),
           BottomNavigationBarItem(
@@ -160,14 +161,14 @@ class _WrapperScreenState extends State<WrapperScreen> {
                         color: Theme.of(context).accentColor.withOpacity(0.4), blurRadius: 13, offset: Offset(0, 3))
                   ],
                 ),
-                child: new Icon(const IconData(0xe800, fontFamily: _kFontFam), color: Colors.white),
+                child: new Icon(AntDesign.home, color: Colors.white),
               )),
           BottomNavigationBarItem(
-            icon: new Icon(const IconData(0xe81c, fontFamily: _kFontFam)),
+            icon: new Icon(AntDesign.message1),
             title: new Container(height: 0.0),
           ),
           BottomNavigationBarItem(
-            icon: new Icon( const IconData(0xe801, fontFamily: _kFontFam)),
+            icon: new Icon(AntDesign.hearto),
             title: new Container(height: 0.0),
           ),
         ],

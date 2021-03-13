@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:netindo_shop/config/database_config.dart';
@@ -181,7 +182,7 @@ class _CartScreenState extends State<CartScreen> {
                     },
                     iconSize: 30,
                     padding: EdgeInsets.symmetric(horizontal: 5),
-                    icon: Icon(UiIcons.trash),
+                    icon: Icon(FontAwesome.trash),
                     color: site?Colors.white:Theme.of(context).hintColor,
                   )
                 ],
@@ -250,7 +251,7 @@ class _CartScreenState extends State<CartScreen> {
                                 },
                                 iconSize: 30,
                                 padding: EdgeInsets.symmetric(horizontal: 5),
-                                icon: Icon(UiIcons.trash_1),
+                                icon: Icon(FontAwesome.trash),
                                 color: Theme.of(context).hintColor,
                               ),
                             )
@@ -259,7 +260,7 @@ class _CartScreenState extends State<CartScreen> {
                       },
                     ),
                   ):EmptyDataWidget(
-                    iconData: UiIcons.shopping_cart,
+                    iconData: AntDesign.shoppingcart,
                     title: "Wah, keranjang belanjaan mu kosong, yuk, isi barang barang impianmu",
                     callback: (){WidgetHelper().myPush(context,WrapperScreen(currentTab: 2));},
                     isFunction: true,
@@ -276,8 +277,8 @@ class _CartScreenState extends State<CartScreen> {
                     padding: EdgeInsets.only(left: 0,right:0,bottom:25),
                     child: Column(
                       children: [
-                        WidgetHelper().titleQ("Wujudkan Barang Favorite Kamu",param: '',callback: (){},icon: Icon(
-                          UiIcons.heart,
+                        WidgetHelper().titleQ(context,"Wujudkan Barang Favorite Kamu",param: '',callback: (){},icon: Icon(
+                          AntDesign.heart,
                           color: site?Colors.white:SiteConfig().secondColor,
                         ),color: site?Colors.white:SiteConfig().secondColor),
                         Expanded(
@@ -305,8 +306,8 @@ class _CartScreenState extends State<CartScreen> {
                       ],
                     ),
                   ):Container(),
-                  isLoading?Container():resRecomendedProduct.length>0?WidgetHelper().titleQ("Kamu Sempat Lihat Barang Barang ini",param: '',callback: (){},icon: Icon(
-                    UiIcons.favorites,
+                  isLoading?Container():resRecomendedProduct.length>0?WidgetHelper().titleQ(context,"Kamu Sempat Lihat Barang Barang ini",param: '',callback: (){},icon: Icon(
+                    FontAwesome.eye,
                     color: site?Colors.white:Theme.of(context).hintColor,
                   ),color: site?Colors.white:SiteConfig().secondColor):Container(),
                   isLoading?Padding(

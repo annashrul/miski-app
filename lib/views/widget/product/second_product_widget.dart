@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
@@ -53,6 +54,8 @@ class _SecondProductWidgetState extends State<SecondProductWidget> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     double widthSize = MediaQuery.of(context).size.width;
     width=120;
     height=double.infinity;
@@ -60,14 +63,14 @@ class _SecondProductWidgetState extends State<SecondProductWidget> {
       padding: EdgeInsets.only(
         top: 5,
         bottom: 5,
-        left: 20,
+        left: 10,
         right: 0,
       ),
       child: Stack(
         alignment: AlignmentDirectional.topCenter,
         children: [
           Container(
-            width: 120,
+            width: scaler.getWidth(30),
             height: height,
             decoration: BoxDecoration(
                 color: Theme.of(context).focusColor.withOpacity(0.1),
@@ -117,7 +120,7 @@ class _SecondProductWidgetState extends State<SecondProductWidget> {
                                       borderRadius: BorderRadius.circular(4),
                                       color: SiteConfig().mainColor,
                                     ),
-                                    child: WidgetHelper().textQ("10 %", 10,SiteConfig().secondDarkColor, FontWeight.w600),
+                                    child: WidgetHelper().textQ("10 %", scaler.getTextSize(8),SiteConfig().secondDarkColor, FontWeight.w600),
                                   ),
                                   Container(
                                     padding: EdgeInsets.all(4),
@@ -126,7 +129,7 @@ class _SecondProductWidgetState extends State<SecondProductWidget> {
                                         borderRadius: BorderRadius.circular(4),
                                         color: SiteConfig().mainColor
                                     ),
-                                    child: WidgetHelper().textQ("+", 10, SiteConfig().secondDarkColor, FontWeight.w600),
+                                    child: WidgetHelper().textQ("+", scaler.getTextSize(8), SiteConfig().secondDarkColor, FontWeight.w600),
                                   ),
                                   Container(
                                     padding: EdgeInsets.all(4),
@@ -135,7 +138,7 @@ class _SecondProductWidgetState extends State<SecondProductWidget> {
                                         borderRadius: BorderRadius.circular(4),
                                         color: SiteConfig().mainColor
                                     ),
-                                    child: WidgetHelper().textQ("10 %", 10, SiteConfig().secondDarkColor, FontWeight.w600),
+                                    child: WidgetHelper().textQ("10 %", scaler.getTextSize(8), SiteConfig().secondDarkColor, FontWeight.w600),
                                   ),
                                 ],
                               ),
@@ -146,17 +149,17 @@ class _SecondProductWidgetState extends State<SecondProductWidget> {
                                   borderRadius: BorderRadius.circular(4),
                                   color: SiteConfig().mainColor
                               ),
-                              child: WidgetHelper().textQ("${widget.stockSales} Terjual", 10, SiteConfig().secondDarkColor, FontWeight.normal),
+                              child: WidgetHelper().textQ("${widget.stockSales} Terjual", scaler.getTextSize(9), SiteConfig().secondDarkColor, FontWeight.normal),
                             ):Container(),
                             Container(
-                                child: WidgetHelper().textQ(widget.title, 12, Colors.black, FontWeight.normal)
+                                child: WidgetHelper().textQ(widget.title, scaler.getTextSize(9), Colors.black, FontWeight.normal)
                             ),
                             Container(
                               child: Row(
                                 children: [
-                                  WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.hargaCoret))}", 10, Colors.green, FontWeight.normal,textDecoration: TextDecoration.lineThrough),
+                                  WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.hargaCoret))}", scaler.getTextSize(9), Colors.green, FontWeight.normal,textDecoration: TextDecoration.lineThrough),
                                   SizedBox(width: 10.0),
-                                  WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.harga))}", 12,Colors.green, FontWeight.normal)
+                                  WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.harga))}", scaler.getTextSize(9),Colors.green, FontWeight.normal)
                                 ],
                               ),
                             ),

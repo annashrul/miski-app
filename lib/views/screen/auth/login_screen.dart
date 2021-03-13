@@ -1,4 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/helper/database_helper.dart';
@@ -13,6 +18,7 @@ import 'package:netindo_shop/views/screen/auth/secure_code_screen.dart';
 import 'package:netindo_shop/views/screen/auth/signin_screen.dart';
 import 'package:netindo_shop/views/screen/auth/signup_screen.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:http/http.dart' as http;
 
 import '../wrapper_screen.dart';
 
@@ -22,6 +28,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  static final FacebookLogin facebookSignIn = new FacebookLogin();
+  String name = '', image;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   bool _showPassword = false;
   var _emailController = TextEditingController();
@@ -33,13 +41,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final DatabaseConfig _helper = new DatabaseConfig();
   String type='';
   bool _switchValue=true;
-  bool mode=false;
-  Future getMode()async{
-    final res = await FunctionHelper().getSite();
-    setState(() {
-      mode=res;
-    });
-  }
 
   _callBack(BuildContext context,bool isTrue,Map<String, Object> data)async{
     if(isTrue){
@@ -192,13 +193,81 @@ class _LoginScreenState extends State<LoginScreen> {
   Future countTable() async{
     await _helper.queryRowCount(UserQuery.TABLE_NAME);
   }
+  Future handleFb()async{
+    final FacebookLoginResult result =
+    await facebookSignIn.logIn(['email']);
 
+    switch (result.status) {
+      case FacebookLoginStatus.loggedIn:
+        final FacebookAccessToken accessToken = result.accessToken;
+        final graphResponse = await http.get(
+            'https://graph.facebook.com/v2.12/me?fields=gender,name,first_name,last_name,email,picture&access_token=${accessToken.token}'
+        );
+        final profile = jsonDecode(graphResponse.body);
+        print(profile);
+        setState(() {
+          name = profile['first_name'];
+          image = profile['picture']['data']['url'];
+        });
+
+        print('''
+        name  $name
+        image $image
+         Logged in!
+         Token: ${accessToken.token}
+         User id: ${accessToken.userId}
+         Expires: ${accessToken.expires}
+         Permissions: ${accessToken.permissions}
+         Declined permissions: ${accessToken.declinedPermissions}
+         ''');
+        break;
+      case FacebookLoginStatus.cancelledByUser:
+        print('Login cancelled by the user.');
+        break;
+      case FacebookLoginStatus.error:
+        print('Something went wrong with the login process.\n'
+            'Here\'s the error Facebook gave us: ${result.errorMessage}');
+        break;
+    }
+  }
+  GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
+
+  Future handleGoogle()async{
+    try{
+      await _googleSignIn.signIn();
+      print(_googleSignIn.currentUser.displayName);
+      print(_googleSignIn.currentUser.email);
+      print(_googleSignIn.currentUser.photoUrl);
+      // _googleSignIn.isSignedIn().then((value){
+      //   print(value);
+      // });
+      // _googleSignIn.onCurrentUserChanged.listen((event) {
+      //   print(event);
+      // },onDone: (){
+      //   print('done');
+      // },onError: (){
+      //   print('error');
+      // });
+      // print(_googleSignIn.);
+      // setState(() {
+      //   _isLoggedIn = false;
+      // });
+      // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Home(
+      //   title: 'Login With Google',
+      //   name: _googleSignIn.currentUser.displayName,
+      //   photo: _googleSignIn.currentUser.photoUrl,
+      //   email: _googleSignIn.currentUser.email,
+      //   isLogin: 'google',
+      // )));
+    } catch (err){
+      print(err);
+    }
+  }
   @override
   void initState()  {
     _helper.openDB();
     getConfig();
     countTable();
-    getMode();
     isLoading=true;
     super.initState();
   }
@@ -233,6 +302,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
   Widget _submitButton() {
     return WidgetHelper().myPress((){
+      // handleGoogle();
+      // handleFb();
       validasi(type);
     },Container(
       width: MediaQuery.of(context).size.width,
@@ -350,9 +421,11 @@ class _LoginScreenState extends State<LoginScreen> {
     ScreenUtilHelper.instance = ScreenUtilHelper.getInstance()..init(context);
     ScreenUtilHelper.instance = ScreenUtilHelper(allowFontScaling: false);
     final height = MediaQuery.of(context).size.height;
+    ScreenScaler scaler = ScreenScaler()..init(context);
     return Scaffold(
       backgroundColor: Colors.white,
         body: Container(
+
           height: height,
           child: Stack(
             children: <Widget>[
@@ -414,6 +487,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
+
               // Positioned(top: 40, left: 0, child: _backButton()),
             ],
           ),

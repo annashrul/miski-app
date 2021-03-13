@@ -7,6 +7,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:netindo_shop/config/site_config.dart';
@@ -50,6 +52,8 @@ class WidgetHelper{
   }
 
   myStatus(BuildContext context, int param){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     Color color;
     String txt="";
     if(param==0){
@@ -75,7 +79,7 @@ class WidgetHelper{
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
       decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(0)), color:color),
-      child: WidgetHelper().textQ(txt, 10,Colors.white,FontWeight.bold),
+      child: WidgetHelper().textQ(txt, scaler.getTextSize(8),Colors.white,FontWeight.bold),
     );
   }
 
@@ -237,7 +241,9 @@ class WidgetHelper{
         }
     );
   }
-  titleQ(String txt,{EdgeInsetsGeometry padding=const EdgeInsets.symmetric(horizontal: 20, vertical: 0),Color color=Colors.white,String param, Function callback,Icon icon, TextAlign textAlign=TextAlign.left}){
+  titleQ(BuildContext context,String txt,{EdgeInsetsGeometry padding=const EdgeInsets.symmetric(horizontal: 10, vertical: 0),Color color=Colors.white,String param, Function callback,Icon icon, TextAlign textAlign=TextAlign.left}){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Padding(
       padding: padding,
       child: ListTile(
@@ -245,9 +251,9 @@ class WidgetHelper{
         dense: true,
         contentPadding: EdgeInsets.symmetric(vertical: 0),
         leading: icon,
-        title: WidgetHelper().textQ(txt, 12, color,FontWeight.bold,textAlign: textAlign),
+        title: WidgetHelper().textQ(txt, scaler.getTextSize(9), color,FontWeight.bold,textAlign: textAlign),
         trailing: param==''?Text(''):InkWell(
-            child: Icon(Icons.arrow_right),
+            child: Icon(Ionicons.ios_arrow_dropright_circle,color: SiteConfig().secondColor,size: scaler.getTextSize(10)),
             onTap: callback
         ),
       ),
@@ -257,13 +263,15 @@ class WidgetHelper{
     ScreenUtilHelper.instance = ScreenUtilHelper.getInstance()..init(context);
     ScreenUtilHelper.instance = ScreenUtilHelper(allowFontScaling: false)..init(context);
     print("TEMA ${brightness.index}");
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return  AppBar(
       elevation: 0.0,
       backgroundColor: brightness.index==1?Colors.white:Color(0xFF2C2C2C), // status bar color
       brightness: brightness,
-      title:textQ(title,16,brightness.index==1?SiteConfig().secondColor:Colors.white,FontWeight.bold),
+      title:textQ(title,scaler.getTextSize(10),brightness.index==1?SiteConfig().secondColor:Colors.white,FontWeight.bold),
       leading: IconButton(
-        icon: new Icon(UiIcons.return_icon, color:brightness.index==1?SiteConfig().secondColor:Colors.white),
+        icon: new Icon(Ionicons.ios_return_left, color:brightness.index==1?SiteConfig().secondColor:Colors.white,size: scaler.getTextSize(15)),
         onPressed: (){
           callback();
         },
@@ -272,18 +280,19 @@ class WidgetHelper{
     );
   }
   myAppBarNoButton(BuildContext context,String title,List<Widget> widget,{Brightness brightness=Brightness.light}){
+    ScreenScaler scaler = ScreenScaler()..init(context);
     return AppBar(
       automaticallyImplyLeading: false,
       backgroundColor: brightness.index==0?SiteConfig().darkMode:Colors.white, // status bar color
       brightness: brightness,
-      title:textQ(title,16,brightness.index==0?Colors.white:SiteConfig().secondColor,FontWeight.bold),
+      title:textQ(title,scaler.getTextSize(10),brightness.index==0?Colors.white:SiteConfig().secondColor,FontWeight.bold),
       elevation: 0,
-      // leading:Padding(
-      //   padding: EdgeInsets.only(left:20.0,top:10.0,bottom:10.0),
-      //   child:  CircleAvatar(
-      //     backgroundImage:NetworkImage('http://ptnetindo.com:6700/images/customer/default.png',scale: 10.0),
-      //   ),
-      // ),
+      leading:Padding(
+        padding: EdgeInsets.only(left:20.0,top:10.0,bottom:10.0),
+        child:  CircleAvatar(
+          backgroundImage:NetworkImage('http://ptnetindo.com:6700/images/customer/default.png',scale: 10.0),
+        ),
+      ),
       actions:widget,
     );
 
@@ -295,7 +304,7 @@ class WidgetHelper{
     return AppBar(
       automaticallyImplyLeading: false,
       leading: new IconButton(
-        icon: new Icon(UiIcons.return_icon, color: Theme.of(context).hintColor),
+        icon: new Icon(Ionicons.ios_return_left, color: Theme.of(context).hintColor),
         onPressed: callback,
       ),
       backgroundColor: Colors.white,

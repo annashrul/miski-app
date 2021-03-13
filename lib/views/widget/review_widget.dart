@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
@@ -18,8 +20,11 @@ class ReviewWidget extends StatefulWidget {
 }
 
 class _ReviewWidgetState extends State<ReviewWidget> {
+
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Wrap(
       direction: Axis.horizontal,
       runSpacing: 10,
@@ -28,8 +33,8 @@ class _ReviewWidgetState extends State<ReviewWidget> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Container(
-              height: 60,
-              width: 60,
+              height: scaler.getHeight(5),
+              width:  scaler.getWidth(10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(100)),
                 image: DecorationImage(
@@ -50,12 +55,12 @@ class _ReviewWidgetState extends State<ReviewWidget> {
                       Expanded(
                         child: Column(
                           children: <Widget>[
-                            WidgetHelper().textQ(widget.nama, 12, SiteConfig().mainColor, FontWeight.bold),
+                            WidgetHelper().textQ(widget.nama, scaler.getTextSize(9), SiteConfig().mainColor, FontWeight.bold),
                             Row(
                               children: <Widget>[
-                                Icon(UiIcons.calendar, color:SiteConfig().accentColor,size: 20,),
+                                Icon(AntDesign.calendar, color:SiteConfig().accentColor,size:  scaler.getTextSize(9),),
                                 SizedBox(width: 10),
-                                WidgetHelper().textQ("${widget.tgl}", 10,SiteConfig().accentColor, FontWeight.normal),
+                                WidgetHelper().textQ("${widget.tgl}",  scaler.getTextSize(8),SiteConfig().accentColor, FontWeight.normal),
                               ],
                             ),
                           ],
@@ -64,7 +69,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
                       ),
                       RatingBar.builder(
                         unratedColor: Colors.grey,
-                        itemSize: 20.0,
+                        itemSize: 15.0,
                         initialRating: double.parse(widget.rate),
                         direction: Axis.horizontal,
                         itemCount: 5,

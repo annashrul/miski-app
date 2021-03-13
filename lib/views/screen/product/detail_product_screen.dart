@@ -3,7 +3,9 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
@@ -309,12 +311,14 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
   }
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       key: _scaffoldKey,
       body: isLoading||isLoadingPoductOther||isLoadingReview?LoadingDetailProduct():buildContent(context),
       bottomNavigationBar: isLoading||isLoadingPoductOther||isLoadingReview?Text(''):Container(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        padding:scaler.getPadding(1,5),
         decoration: BoxDecoration(
           // color: site?SiteConfig().darkMode:Colors.grey[200],
           boxShadow: [BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), blurRadius: 5, offset: Offset(0, -2)),],
@@ -325,10 +329,10 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
             Expanded(
               child: FlatButton(
                   onPressed: () {},
-                  padding: EdgeInsets.symmetric(vertical: 14),
+                  padding:scaler.getPadding(1,0),
                   color: Theme.of(context).accentColor,
                   shape: StadiumBorder(),
-                  child:WidgetHelper().textQ(FunctionHelper().formatter.format(total),12, Colors.white, FontWeight.bold)
+                  child:WidgetHelper().textQ(FunctionHelper().formatter.format(total),scaler.getTextSize(10), Colors.white, FontWeight.bold)
                   // child:Text("abus")
               ),
             ),
@@ -336,10 +340,10 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
             Expanded(
               child: FlatButton(
                   onPressed: () {add();},
-                  padding: EdgeInsets.symmetric(vertical: 14),
+                  padding:scaler.getPadding(1,0),
                   color: Theme.of(context).accentColor,
                   shape: StadiumBorder(),
-                  child:WidgetHelper().textQ("Keranjang", 14, SiteConfig().secondDarkColor, FontWeight.bold)
+                  child:WidgetHelper().textQ("Keranjang", scaler.getTextSize(10), SiteConfig().secondDarkColor, FontWeight.bold)
                 // child:Text("abus")
               ),
             ),
@@ -350,6 +354,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
   }
 
   Widget buildContent(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
     return CustomScrollView(
         slivers: <Widget>[
           SliverAppBar(
@@ -359,12 +364,12 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
             },
             brightness: Brightness.light,
             backgroundColor: Colors.white,
-            snap: true,
-            floating: true,
+            snap: false,
+            floating: false,
             pinned: true,
             automaticallyImplyLeading: false,
             leading: new IconButton(
-              icon: new Icon(UiIcons.return_icon, color:SiteConfig().secondColor),
+              icon: new Icon(AntDesign.back, color:SiteConfig().secondColor),
               onPressed: () => Navigator.pop(context,false),
             ),
             actions: <Widget>[
@@ -379,9 +384,9 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
                 },
               ),
               Container(
-                  width: 30,
+                  width: scaler.getWidth(5),
                   height: 30,
-                  margin: EdgeInsets.only(top: 12.5, bottom: 12.5, right: 20),
+                  margin: EdgeInsets.only(top: 12.5, bottom: 12.5, right:  scaler.getHeight(2)),
                   child: InkWell(
                     focusColor: SiteConfig().darkMode,
                     borderRadius: BorderRadius.circular(300),
@@ -389,56 +394,58 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
                       insertFavorite();
                       // Navigator.of(context).pushNamed('/Tabs', arguments: 1);
                     },
-                    child: Icon(UiIcons.heart,size: 30,color: isSelectedFavorite?Colors.red:SiteConfig().secondColor),
+                    child: Icon(AntDesign.hearto,size:  scaler.getTextSize(15),color: isSelectedFavorite?Colors.red:SiteConfig().secondColor),
                   )
               ),
             ],
             // backgroundColor: Theme.of(context).primaryColor,
-            expandedHeight: 300,
+            expandedHeight:scaler.getHeight(30),
             elevation: 0,
             flexibleSpace: sliderQ(context),
             bottom: TabBar(
+              indicatorWeight: 0.0,
+                indicatorPadding:  EdgeInsets.symmetric(horizontal: 0,vertical: 0),
                 controller: _tabController,
                 indicatorSize: TabBarIndicatorSize.label,
-                labelPadding: EdgeInsets.symmetric(horizontal: 15),
+                labelPadding: EdgeInsets.symmetric(horizontal: 0,vertical: 0),
                 unselectedLabelColor: Colors.white,
                 labelColor: Colors.white,
                 indicator: BoxDecoration(borderRadius: BorderRadius.circular(50), color:SiteConfig().secondColor),
                 tabs: [
                   Tab(
+                    iconMargin:  EdgeInsets.symmetric(horizontal: 0,vertical: 0),
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 5),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(50),
                           border: Border.all(color:SiteConfig().secondColor, width: 1)
                       ),
                       child: Align(
                         alignment: Alignment.center,
-                        child: WidgetHelper().textQ("Produk",12,Colors.grey,FontWeight.bold),
+                        child: WidgetHelper().textQ("Produk",scaler.getTextSize(9),Colors.grey,FontWeight.bold),
                       ),
                     ),
                   ),
                   Tab(
+                    iconMargin:  EdgeInsets.symmetric(horizontal: 0,vertical: 0),
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 5),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(50),
                           border: Border.all(color: SiteConfig().secondColor, width: 1)),
                       child: Align(
                         alignment: Alignment.center,
-                        child: WidgetHelper().textQ("Detail",12,Colors.grey,FontWeight.bold),
+                        child: WidgetHelper().textQ("Detail",scaler.getTextSize(9),Colors.grey,FontWeight.bold),
                       ),
                     ),
                   ),
                   Tab(
+                    iconMargin:  EdgeInsets.symmetric(horizontal: 0,vertical: 0),
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 5),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(50),
                           border: Border.all(color:SiteConfig().secondColor, width: 1)),
                       child: Align(
                         alignment: Alignment.center,
-                        child: WidgetHelper().textQ("Ulasan",12,Colors.grey,FontWeight.bold),
+                        child: WidgetHelper().textQ("Ulasan",scaler.getTextSize(9),Colors.grey,FontWeight.bold),
                       ),
                     ),
                   ),
@@ -461,36 +468,38 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-
                       Padding(
-                        padding: const EdgeInsets.only(top: 10, left: 20, right: 20),
-                        child: ListTile(
-                            contentPadding: EdgeInsets.all(0.0),
-                            title: Row(
+                        padding:scaler.getPadding(1,2),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: WidgetHelper().textQ(title,scaler.getTextSize(9),SiteConfig().darkMode,FontWeight.normal,maxLines: title.length),
+                            ),
+                            SizedBox(width: 5.0),
+                            diskon1>0?Container(
+                              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                              decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(100)), color: Theme.of(context).accentColor),
+                              alignment: AlignmentDirectional.topEnd,
+                              child: WidgetHelper().textQ('$diskon1 + $diskon2 %', scaler.getTextSize(9),Colors.white,FontWeight.bold),
+                            ):Container()
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding:scaler.getPadding(0,2),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
                               children: [
-                                Expanded(
-                                  child: WidgetHelper().textQ(title,12,SiteConfig().darkMode,FontWeight.normal,maxLines: title.length),
-                                ),
+                                WidgetHelper().textQ(FunctionHelper().formatter.format(int.parse(harga)),scaler.getTextSize(9),SiteConfig().mainColor,FontWeight.bold),
                                 SizedBox(width: 5.0),
-                                diskon1>0?Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                                  decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(100)), color: Theme.of(context).accentColor),
-                                  alignment: AlignmentDirectional.topEnd,
-                                  child: WidgetHelper().textQ('$diskon1 + $diskon2 %', 10,Colors.white,FontWeight.bold),
-                                ):Container()
+                                WidgetHelper().textQ(FunctionHelper().formatter.format(int.parse(hargaCoret)),scaler.getTextSize(9),SiteConfig().accentDarkColor,FontWeight.bold,textDecoration: TextDecoration.lineThrough),
                               ],
                             ),
-                            subtitle: Row(
-                              children: [
-                                WidgetHelper().textQ(FunctionHelper().formatter.format(int.parse(harga)),14,SiteConfig().mainColor,FontWeight.bold),
-                                SizedBox(width: 5.0),
-                                WidgetHelper().textQ(FunctionHelper().formatter.format(int.parse(hargaCoret)),12,SiteConfig().accentDarkColor,FontWeight.bold,textDecoration: TextDecoration.lineThrough),
-                              ],
-                            ),
-                            trailing: Padding(
-                              padding: EdgeInsets.only(top:5),
+                            Container(
                               child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.end,
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   RatingBar.builder(
@@ -499,7 +508,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
                                     direction: Axis.horizontal,
                                     itemCount: 5,
                                     unratedColor: SiteConfig().secondColor,
-                                    itemPadding: EdgeInsets.only(right: 4.0),
+                                    itemPadding: EdgeInsets.only(right: 0.0),
                                     itemBuilder: (context, index) {
                                       switch (index) {
                                         case 0:
@@ -533,47 +542,45 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
                                     },
                                     onRatingUpdate:null,
                                   ),
-                                  if(int.parse(stockSales)>0) Expanded(
-                                    child: Padding(
-                                      padding: EdgeInsets.only(right:5.0,top:5.0),
-                                      child: WidgetHelper().textQ(stockSales+" terjual",12,SiteConfig().darkMode,FontWeight.normal,maxLines: title.length),
-                                    ),
-                                  )
+                                  if(int.parse(stockSales)>0)  WidgetHelper().textQ(stockSales+" terjual",12,SiteConfig().darkMode,FontWeight.normal,maxLines: title.length),
                                 ],
                               ),
                             ),
+
+                          ],
                         ),
                       ),
+
                       varian.length>0?Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                        padding:scaler.getPadding(0,2),
                         child: ListTile(
                           dense: true,
-                          contentPadding: EdgeInsets.symmetric(vertical: 0),
+                          contentPadding:scaler.getPadding(0,0),
                           leading: Icon(
-                            UiIcons.medal,
+                            FontAwesome.object_group,
                             color: Theme.of(context).hintColor,
                           ),
-                          title: WidgetHelper().textQ("Varian", 14,SiteConfig().secondColor, FontWeight.bold),
+                          title: WidgetHelper().textQ("Varian", scaler.getTextSize(10),SiteConfig().secondColor, FontWeight.bold),
                         ),
                       ):Container(),
                       varian.length>0?Container(
                         width: double.infinity,
-                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                        padding:scaler.getPadding(0,2),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
                             Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
+                              spacing: 1,
+                              runSpacing: 0,
                               children: List.generate(varian.length, (index) {
                                 return SizedBox(
                                   child: FilterChip(
-                                    label: WidgetHelper().textQ(varian[index].title, 10, selectedVarian==index?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.bold),
-                                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 7),
+                                    label: WidgetHelper().textQ(varian[index].title,  scaler.getTextSize(8), selectedVarian==index?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.bold),
+                                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                                     backgroundColor: selectedVarian==index?SiteConfig().mainColor:Colors.grey[200],
                                     selectedColor: SiteConfig().mainColor,
-                                    selected:  selectedVarian==index?true:false,
+                                    // selected:  selectedVarian==index?true:false,
                                     shape: StadiumBorder(),
                                     onSelected: (bool value) {
                                       setState(() {
@@ -585,19 +592,19 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
                                 );
                               }),
                             ),
-                            SizedBox(height:isSubVarian==true?10:0),
+                            SizedBox(height:isSubVarian==true?scaler.getHeight(0):0),
                             isSubVarian==true?Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
+                              spacing: 1,
+                              runSpacing: 0,
                               children: List.generate(subVarian.length, (index) {
                                 return SizedBox(
                                   child: FilterChip(
-                                    label: WidgetHelper().textQ(subVarian[index].title, 10, selectedSubVarian==index?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.bold),
-                                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 7),
+
+                                    label: WidgetHelper().textQ(subVarian[index].title, scaler.getTextSize(8), selectedSubVarian==index?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.bold),
+                                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                                     backgroundColor: selectedSubVarian==index?SiteConfig().mainColor:Colors.grey[200],
                                     selectedColor: SiteConfig().mainColor,
-                                    selected:selectedSubVarian==index?true: false,
-                                    showCheckmark: true,
+                                    // selected:selectedSubVarian==index?true: false,
                                     shape: StadiumBorder(),
                                     onSelected: (bool value) {
                                       setState(() {
@@ -614,15 +621,15 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
                       ):Container(),
 
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                        padding:scaler.getPadding(0,2),
                         child: ListTile(
                           dense: true,
                           contentPadding: EdgeInsets.symmetric(vertical: 0),
                           leading: Icon(
-                            UiIcons.box,
+                            FontAwesome.product_hunt,
                             color: Theme.of(context).hintColor,
                           ),
-                          title: WidgetHelper().textQ("Produk Terkait", 14, SiteConfig().secondColor, FontWeight.bold),
+                          title: WidgetHelper().textQ("Produk Terkait", scaler.getTextSize(10), SiteConfig().secondColor, FontWeight.bold),
                         ),
                       ),
                       Container(
@@ -660,12 +667,12 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      WidgetHelper().titleQ("Deskripsi",param: '',color:SiteConfig().secondColor,icon: Icon(UiIcons.file_2,color: SiteConfig().secondColor),padding: EdgeInsets.only(left:10,right:10)),
+                      WidgetHelper().titleQ(context,"Deskripsi",param: '',color:SiteConfig().secondColor,icon: Icon(AntDesign.file1,color: SiteConfig().secondColor),padding: EdgeInsets.only(left:10,right:10)),
                       Padding(
                         padding: EdgeInsets.all(10.0),
                         child: WidgetHelper().textQ(deskripsi, 12, SiteConfig().darkMode, FontWeight.normal,maxLines: 10000),
                       ),
-                      if(hargaBertingkat.length>0) WidgetHelper().titleQ("Harga Spesial",param: '',color:SiteConfig().secondColor,icon: Icon(UiIcons.money,color:SiteConfig().secondColor,),padding: EdgeInsets.only(left:10,right:10)),
+                      if(hargaBertingkat.length>0) WidgetHelper().titleQ(context,"Harga Spesial",param: '',color:SiteConfig().secondColor,icon: Icon(FontAwesome.money,color:SiteConfig().secondColor,),padding: EdgeInsets.only(left:10,right:10)),
                       if(hargaBertingkat.length>0) Padding(
                         padding: EdgeInsets.all(10.0),
                         child: hargaGrosir(context)
@@ -696,6 +703,8 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
     );
   }
   Widget sliderQ(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return FlexibleSpaceBar(
       stretchModes: [
         StretchMode.zoomBackground,
@@ -710,7 +719,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
           CarouselSlider(
               options: CarouselOptions(
                 viewportFraction: 1.0,
-                height: 300,
+                height: scaler.getHeight(30),
                 onPageChanged: (index,reason) {
                   print(index);
                   setState(() {
@@ -725,7 +734,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
                       padding: EdgeInsets.symmetric(horizontal: 0, vertical: 30),
 
                       // margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-                      height: 100,
+                      height: scaler.getHeight(30),
                       child:CachedNetworkImage(
                         imageUrl:e.image,
                         width: double.infinity ,
@@ -812,9 +821,11 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
   }
 
   Widget reviewContent(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return ListView.separated(
       controller: controller,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: scaler.getPadding(0,2),
       itemBuilder: (context, index) {
         return WidgetHelper().myPress((){},ReviewWidget(
           foto: SiteConfig().noImage,

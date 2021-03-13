@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
+import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:intl/intl.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
@@ -174,9 +176,11 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
   }
 
   Widget buildContent(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return RefreshWidget(
       widget: Container(
-        padding: EdgeInsets.only(top:10,bottom:10,left:20,right:20),
+        padding:scaler.getPadding(0,0),
         child: isTimeout?TimeoutWidget(callback: (){
           setState(() {
             isTimeout=false;
@@ -245,13 +249,8 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                             },
                             Container(
                               decoration: BoxDecoration(
-                                // color: site?Colors.black87:Colors.transparent,
                                 color: Theme.of(context).focusColor.withOpacity(0.1),
-                                // border: Border.all(width:1.0,color: site?Colors.white10:Colors.transparent),
                                 borderRadius: BorderRadius.circular(10.0),
-                                // boxShadow: [
-                                //   BoxShadow(color: site?Colors.transparent:Theme.of(context).hintColor.withOpacity(0.15), offset: Offset(0, 3), blurRadius: 10)
-                                // ],
                               ),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
@@ -272,13 +271,13 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                                                 children: [
                                                   Row(
                                                     children: [
-                                                      Icon(UiIcons.home,size: 10,color: Colors.black87),
+                                                      Icon(AntDesign.home,size: 10,color: Colors.black87),
                                                       SizedBox(width: 5.0),
-                                                      WidgetHelper().textQ("${val.tenant.toUpperCase()}",10,Colors.black87,FontWeight.normal),
+                                                      WidgetHelper().textQ("${val.tenant.toUpperCase()}",scaler.getTextSize(8),Colors.black87,FontWeight.normal),
                                                     ],
                                                   ),
                                                   SizedBox(height: 5.0),
-                                                  WidgetHelper().textQ("${val.kdTrx}",10,Colors.black87,FontWeight.normal),
+                                                  WidgetHelper().textQ("${val.kdTrx}",scaler.getTextSize(8),Colors.black87,FontWeight.normal),
 
                                                   // WidgetHelper().textQ("${DateFormat.yMd().format(val.createdAt.toLocal())} ${DateFormat.Hm().format(val.createdAt.toLocal())}",10,SiteConfig().accentColor,FontWeight.normal),
                                                 ],
@@ -308,11 +307,11 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                                         Column(
                                           children: [
                                             Container(
-                                              width: MediaQuery.of(context).size.width/2,
-                                              child: WidgetHelper().textQ(valDet[0].barang,12,Colors.black87,FontWeight.normal),
+                                              width: MediaQuery.of(context).size.width/1.5,
+                                              child: WidgetHelper().textQ(valDet[0].barang,scaler.getTextSize(9),Colors.black87,FontWeight.normal),
                                             ),
-                                            WidgetHelper().textQ("${valDet.length} barang",10,Colors.grey,FontWeight.normal),
-                                            WidgetHelper().textQ("Ukuran ${valDet[0].subvarian!=null?valDet[0].subvarian:"-"} Warna ${valDet[0].varian!=null?valDet[0].varian:"-"}",10,Colors.grey,FontWeight.normal),
+                                            WidgetHelper().textQ("${valDet.length} barang",scaler.getTextSize(8),Colors.grey,FontWeight.normal),
+                                            WidgetHelper().textQ("Ukuran ${valDet[0].subvarian!=null?valDet[0].subvarian:"-"} Warna ${valDet[0].varian!=null?valDet[0].varian:"-"}",scaler.getTextSize(8),Colors.grey,FontWeight.normal),
                                           ],
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           mainAxisAlignment: MainAxisAlignment.start,
@@ -334,8 +333,8 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                                                 mainAxisAlignment: MainAxisAlignment.start,
                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
-                                                  WidgetHelper().textQ("Total Belanja",10,Colors.black87,FontWeight.normal),
-                                                  WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(val.grandtotal))}",10,Colors.green,FontWeight.normal),
+                                                  WidgetHelper().textQ("Total Belanja",scaler.getTextSize(9),Colors.black87,FontWeight.normal),
+                                                  WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(val.grandtotal))}",scaler.getTextSize(9),Colors.green,FontWeight.normal),
                                                 ],
                                               )
                                             ],
@@ -372,7 +371,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                                                       BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), offset: Offset(0, -2), blurRadius: 5.0)
                                                     ]),
                                                 child: Center(
-                                                  child: WidgetHelper().textQ(val.status==0?"Upload Bukti Transfer":"Beri Ulasan",10,Colors.white, FontWeight.bold),
+                                                  child: WidgetHelper().textQ(val.status==0?"Upload Bukti Transfer":"Beri Ulasan",scaler.getTextSize(8),Colors.white, FontWeight.bold),
                                                 )
                                             ),
                                           ),
@@ -403,129 +402,5 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
   }
 
 
-  // Widget modalFilter(BuildContext context,int index){
-  //   WidgetHelper().myModal(context, Container(
-  //     decoration: BoxDecoration(
-  //       color: widget.mode?SiteConfig().darkMode:Colors.white,
-  //       borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0),topRight: Radius.circular(20.0))
-  //     ),
-  //     height: MediaQuery.of(context).size.height/1.5,
-  //     child:Column(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       mainAxisSize: MainAxisSize.min,
-  //       mainAxisAlignment: MainAxisAlignment.start,
-  //       children: <Widget>[
-  //         SizedBox(height:10.0),
-  //         Center(
-  //           child: Container(
-  //             padding: EdgeInsets.only(top:10.0),
-  //             width: 50,
-  //             height: 10.0,
-  //             decoration: BoxDecoration(
-  //               color: Colors.grey[200],
-  //               borderRadius:  BorderRadius.circular(10.0),
-  //             ),
-  //           ),
-  //         ),
-  //         SizedBox(height: 20.0),
-  //         Expanded(
-  //           child:FilterStatus(
-  //             site:widget.mode,
-  //             val: filterStatus,
-  //             callback: (idx,txt){
-  //               setState(() {
-  //                 arrFilter[2] = txt;
-  //                 filterStatus = idx;
-  //               });
-  //             },
-  //           ),
-  //         ),
-  //         Padding(
-  //           padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 10),
-  //           child: WidgetHelper().buttonQ(context,(){
-  //             Navigator.of(context).pop();
-  //             setState(() {
-  //               isLoading=true;
-  //             });
-  //             loadHistory();
-  //           },"Terapkan"),
-  //         )
-  //       ],
-  //     ),
-  //   ));
-  // }
 }
 
-//
-// class FilterStatus extends StatefulWidget {
-//   FilterStatus({
-//     Key key,
-//     @required this.site,
-//     @required this.val,
-//     @required this.callback,
-//   }) : super(key: key);
-//   bool site;
-//   String title;
-//   final int val;
-//   final Function(int idx,String txt) callback;
-//   @override
-//   _FilterStatusState createState() => _FilterStatusState();
-// }
-//
-// class _FilterStatusState extends State<FilterStatus> {
-//   int value=5;
-//   @override
-//   void initState() {
-//     // TODO: implement initState
-//     super.initState();
-//     value=widget.val;
-//   }
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scrollbar(
-//         child: ListView.separated(
-//           key: PageStorageKey<String>('FilterStatus'),
-//           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-//           itemBuilder: (context, index) {
-//             return ListTile(
-//               onTap: (){
-//                 setState(() {
-//                   value = index;
-//                 });
-//                 widget.callback(index,FunctionHelper.arrOptDate[index]);
-//               },
-//               contentPadding: EdgeInsets.only(left:10,right:10,top:0,bottom:0),
-//               title: WidgetHelper().textQ("${FunctionHelper.arrOptDate[index]}", 14,widget.site?Colors.white:SiteConfig().darkMode, FontWeight.bold),
-//               trailing: value==index?Icon(UiIcons.checked,color: widget.site?Colors.grey[200]:SiteConfig().darkMode):Text(
-//                   ''
-//               ),
-//             );
-//             return Row(
-//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//               children: [
-//                 WidgetHelper().textQ("${FunctionHelper.arrOptDate[index]}", 12,SiteConfig().secondColor, FontWeight.bold),
-//                 new Radio(
-//                   value: index,
-//                   groupValue: value,
-//                   onChanged: (val){
-//                     widget.callback(val,FunctionHelper.arrOptDate[val]);
-//                     setState(() {
-//                       value = index;
-//                     });
-//                   },
-//                 ),
-//               ],
-//             );
-//           },
-//           separatorBuilder: (context, index) {
-//             return Divider(
-//               height: 1,
-//             );
-//           },
-//           itemCount:FunctionHelper.arrOptDate.length,
-//           primary: false,
-//           shrinkWrap: true,
-//         )
-//     );
-//   }
-// }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
@@ -38,8 +39,8 @@ class _ClickProductWidgetState extends State<ClickProductWidget> {
     return Container(
       child: Column(
         children: [
-          resRecomendedProduct.length>0?WidgetHelper().titleQ("Kamu Sempat Lihat Barang Barang ini",param: '',callback: (){},icon: Icon(
-            UiIcons.favorites,
+          resRecomendedProduct.length>0?WidgetHelper().titleQ(context,"Kamu Sempat Lihat Barang Barang ini",param: '',callback: (){},icon: Icon(
+            AntDesign.heart,
             color: Theme.of(context).hintColor,
           )):Container(),
           resRecomendedProduct.length>0?isLoading?LoadingProductTenant(tot: 4):Padding(

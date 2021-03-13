@@ -16,11 +16,13 @@ import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:flutter/services.dart' show PlatformException;
 import 'package:provider/provider.dart';
 import 'package:uni_links/uni_links.dart';
+import 'package:firebase_core/firebase_core.dart';
+
 StreamController<bool> isLightTheme = StreamController();
 
 void main()async{
-  WidgetsFlutterBinding.ensureInitialized(); //all widgets are rendered here
-  // final res = await FunctionHelper().getSite();
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(
     ChangeNotifierProvider<ThemeModel>(
       create: (context) => ThemeModel(),

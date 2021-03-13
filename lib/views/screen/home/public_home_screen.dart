@@ -2,6 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
@@ -199,6 +201,9 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
   }
 
   Widget buildContents(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
+
     return RefreshWidget(
       widget: isTimeout||isTimeoutPromo?TimeoutWidget(callback: ()async{
         setState(() {
@@ -216,13 +221,14 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
               onStretchTrigger: (){
                 return;
               },
+              title: Expanded(child: WidgetHelper().textQ("Selamat datang & selamat belanja", 12,SiteConfig().secondColor,FontWeight.bold)),
               brightness: Brightness.light,
               backgroundColor: Colors.white,
-              snap: true,
-              floating: true,
-              pinned: true,
               automaticallyImplyLeading: false,
-              expandedHeight: 200,
+              snap: false,
+              floating: false,
+              pinned: true,
+              expandedHeight:scaler.getHeight(20),
               elevation: 0,
               flexibleSpace: sliderQ(context),
             ),
@@ -242,21 +248,22 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
                         Padding(
-                          padding: EdgeInsets.only(left:20,right:10,top:0,bottom: 10),
+                          padding:scaler.getPadding(0.5,2),
                           child:WidgetHelper().myPress((){WidgetHelper().myPush(context,ListPromoScreen());},
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  WidgetHelper().textQ("Lihat semua promo",12,SiteConfig().secondColor,FontWeight.bold,textAlign: TextAlign.right),
-                                  Icon(Icons.arrow_right,color: SiteConfig().secondColor,)
+                                  WidgetHelper().textQ("Lihat semua promo",scaler.getTextSize(9),SiteConfig().secondColor,FontWeight.bold,textAlign: TextAlign.right),
+                                  SizedBox(width: scaler.getWidth(1)),
+                                  Icon(Ionicons.ios_arrow_dropright_circle,color: SiteConfig().secondColor,size: scaler.getTextSize(10),)
                                 ],
                               ),color:Colors.black38
 
                           ),
                         ),
                         Container(
-                          padding: EdgeInsets.only(left:20,right:20),
+                          padding: EdgeInsets.only(left:scaler.getHeight(1),right:scaler.getHeight(1)),
                           child: isLoadingLocation?WidgetHelper().baseLoading(context,Container(
                               decoration: BoxDecoration(
                                 color:Colors.white,
@@ -277,7 +284,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                               children: <Widget>[
                                 Row(
                                   children: <Widget>[
-                                    Icon(UiIcons.placeholder,color: SiteConfig().darkMode),
+                                    Icon(Icons.place,color: SiteConfig().secondColor),
                                     SizedBox(
                                       width: 8,
                                     ),
@@ -286,7 +293,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: <Widget>[
                                           if (_currentPosition != null && _currentAddress != null)
-                                            WidgetHelper().textQ(_currentAddress,10,SiteConfig().darkMode,FontWeight.normal)
+                                            WidgetHelper().textQ(_currentAddress,scaler.getTextSize(9),SiteConfig().darkMode,FontWeight.normal)
                                         ],
                                       ),
                                     ),
@@ -300,16 +307,17 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                           )),
                         ),
                         Container(
-                          padding: EdgeInsets.only(left:20,right:20,top:0),
+                          padding: EdgeInsets.only(left:scaler.getHeight(1),right:scaler.getHeight(1),top:0),
                           child: isLoading?LoadingTenant():returnTenant.length>0?tenantLocal():tenantServer(),
                         ),
-                        WidgetHelper().titleQ("${StringConfig().selesaikanPesananAnda}",color:SiteConfig().secondColor,param: '',callback: (){},icon: Icon(
-                          UiIcons.favorites,
+                        WidgetHelper().titleQ(context,"${StringConfig().selesaikanPesananAnda}",color:SiteConfig().secondColor,param: '',callback: (){},icon: Icon(
+                          AntDesign.shoppingcart,
                           color: Theme.of(context).hintColor,
                         )),
                         Container(
-                          padding: EdgeInsets.only(left:20,right:20,top:0),
+                          padding: EdgeInsets.only(left:scaler.getHeight(1),right:scaler.getHeight(1),top:0),
                           child: StaggeredGridView.countBuilder(
+                            padding: EdgeInsets.all(0.0),
                             shrinkWrap: true,
                             primary: false,
                             crossAxisCount: 3,
@@ -321,7 +329,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                                     WidgetHelper().myPush(context,CartScreen(idTenant:returnTenant[index]['id_tenant']));
                                   },
                                   Container(
-                                    padding: EdgeInsets.all(10.0),
+                                    padding: EdgeInsets.all(5.0),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10),
                                       color: Theme.of(context).focusColor.withOpacity(0.4),
@@ -334,9 +342,9 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                                             Padding(
                                               padding: const EdgeInsets.symmetric(horizontal: 0),
                                               child: Icon(
-                                                UiIcons.shopping_cart,
+                                                AntDesign.shoppingcart,
                                                 color:Theme.of(context).hintColor,
-                                                size: 40,
+                                                size: scaler.getTextSize(20),
                                               ),
                                             ),
                                             Positioned(
@@ -352,7 +360,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                                           ],
                                         ),
                                         SizedBox(height:5.0),
-                                        WidgetHelper().textQ("${returnTenant[index]['nama'].toUpperCase()}",10,Colors.grey, FontWeight.normal,textAlign: TextAlign.center),
+                                        WidgetHelper().textQ("${returnTenant[index]['nama'].toUpperCase()}",scaler.getTextSize(9),SiteConfig().darkMode, FontWeight.normal,textAlign: TextAlign.center),
                                       ],
                                     ),
                                   ),
@@ -360,8 +368,8 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                               );
                             },
                             staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
-                            mainAxisSpacing: 15.0,
-                            crossAxisSpacing: 15.0,
+                            mainAxisSpacing: scaler.getHeight(1),
+                            crossAxisSpacing:scaler.getWidth(1),
                           ),
                         ),
                       ],
@@ -377,6 +385,8 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
     );
   }
   Widget sliderQ(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return FlexibleSpaceBar(
       stretchModes: [
         StretchMode.zoomBackground,
@@ -385,13 +395,13 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
       ],
 
       collapseMode: CollapseMode.parallax,
-      background:  isLoadingPromo?Padding(padding: EdgeInsets.all(20.0),child: SkeletonFrame(width: double.infinity,height:250)):Stack(
+      background:  isLoadingPromo?Padding(padding: EdgeInsets.all(0.0),child: SkeletonFrame(width: double.infinity,height:scaler.getHeight(20))):Stack(
         alignment: AlignmentDirectional.topStart,
         children: <Widget>[
           CarouselSlider(
               options: CarouselOptions(
                 viewportFraction: 1.0,
-                height: 200,
+                height: scaler.getHeight(23),
                 onPageChanged: (index,reason) {
                   print(index);
                   setState(() {
@@ -421,7 +431,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
               }).toList()
           ),
           Positioned(
-            top: 180,
+            top: scaler.getHeight(17),
             child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -450,11 +460,14 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
 
 
   Widget tenantLocal(){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return returnTenant.length>0?StaggeredGridView.countBuilder(
       shrinkWrap: true,
       primary: false,
       crossAxisCount: 3,
       itemCount: returnTenant.length,
+      padding: EdgeInsets.only(top: scaler.getHeight(1)),
       itemBuilder: (BuildContext context, int index) {
         return WidgetHelper().myPress(
             (){
@@ -475,7 +488,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                     imageUrl:returnTenant[index]['logo'],
                     width: double.infinity ,
                     fit:BoxFit.scaleDown,
-                    height: 110.0,
+                    height: scaler.getHeight(10),
                     placeholder: (context, url) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width: double.infinity,),
                     errorWidget: (context, url, error) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width: double.infinity,),
                   )
@@ -487,16 +500,19 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
         );
       },
       staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
-      mainAxisSpacing: 15.0,
-      crossAxisSpacing: 15.0,
+      mainAxisSpacing: scaler.getHeight(1),
+      crossAxisSpacing:scaler.getWidth(1),
     ):EmptyTenant();
   }
 
   Widget tenantServer(){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return listTenantModel.result.data.length>0?StaggeredGridView.countBuilder(
       shrinkWrap: true,
       primary: false,
       crossAxisCount: 3,
+      padding: EdgeInsets.only(top: scaler.getHeight(1)),
       itemCount: listTenantModel.result.data.length,
       itemBuilder: (BuildContext context, int index) {
         return WidgetHelper().myPress(
@@ -519,7 +535,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                     child: Image.network(
                       listTenantModel.result.data[index].logo,
                       width: MediaQuery.of(context).size.width/1,
-                      height: 110.0,
+                      height: scaler.getHeight(10),
                       fit: BoxFit.scaleDown,
                     ),
                   ),
@@ -531,8 +547,8 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
         );
       },
       staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
-      mainAxisSpacing: 15.0,
-      crossAxisSpacing: 15.0,
+      mainAxisSpacing: scaler.getHeight(1),
+      crossAxisSpacing:scaler.getHeight(1),
     ):EmptyTenant();
   }
 

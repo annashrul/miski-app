@@ -2,6 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:netindo_shop/config/database_config.dart';
@@ -237,20 +239,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
     );
   }
   Widget buildContents(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return RefreshWidget(
       widget: CustomScrollView(
           controller: controller,
           slivers: <Widget>[
             SliverAppBar(
-              title: Row(
-                children: [
-                  IconButton(
-                    icon: new Icon(UiIcons.home, color:SiteConfig().secondColor,size: 28,),
-                    onPressed:null,
-                  ),
-                  Expanded(child: WidgetHelper().textQ("${widget.nama.toUpperCase()}", 12,SiteConfig().secondColor,FontWeight.bold))
-                ],
-              ),
+              titleSpacing: scaler.getHeight(1),
+              title: Expanded(child: WidgetHelper().textQ("${widget.nama.toUpperCase()}",  scaler.getTextSize(10),SiteConfig().secondColor,FontWeight.bold)),
               stretch: true,
               onStretchTrigger: (){
                 return;
@@ -277,9 +274,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                   },
                 ),
                 Container(
-                    width: 30,
+                    width: scaler.getWidth(5),
                     height: 30,
-                    margin: EdgeInsets.only(top: 12.5, bottom: 12.5, right: 20),
+                    margin: EdgeInsets.only(top: 12.5, bottom: 12.5, right:  scaler.getHeight(2)),
                     child: InkWell(
                       focusColor: SiteConfig().darkMode,
                       borderRadius: BorderRadius.circular(300),
@@ -295,12 +292,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                         // insertFavorite();
                         // Navigator.of(context).pushNamed('/Tabs', arguments: 1);
                       },
-                      child: Icon(UiIcons.filter,size: 30,color:SiteConfig().secondColor),
+                      child: Icon(AntDesign.filter,size:  scaler.getTextSize(15),color:SiteConfig().secondColor),
                     )
                 ),
               ],
               // backgroundColor: Theme.of(context).primaryColor,
-              expandedHeight: 200,
+              expandedHeight:scaler.getHeight(20),
               elevation: 0,
               flexibleSpace:sliderQ(context),
             ),
@@ -314,12 +311,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
-                        if(resFavoriteProduct.length>0) WidgetHelper().titleQ("Wujudkan Barang Favorite Kamu",param: 'ad',callback: (){
+                        if(resFavoriteProduct.length>0) WidgetHelper().titleQ(context,"Wujudkan Barang Favorite Kamu",param: 'ad',callback: (){
                           WidgetHelper().myPush(context,WrapperScreen(currentTab: 4));
                         },icon: Icon(
-                          UiIcons.heart,
+                          AntDesign.hearto,
                           color: SiteConfig().secondColor,
-                        )),
+                        ),color: SiteConfig().secondColor),
                         isLoadingFav?Container(
                           height: MediaQuery.of(context).size.height/3,
                           width:  MediaQuery.of(context).size.width,
@@ -365,9 +362,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
             SliverStickyHeader(
               header: Container(
                 color: Colors.white,
-                height: 65,
+                height: scaler.getHeight(5),
                 child: ListView.builder(
-                  padding: EdgeInsets.only(left:10.0,top:0,bottom:0),
+                  padding: EdgeInsets.only(left:0.0,top:0,bottom:0),
                   itemCount: returnBrand.length,
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
@@ -396,7 +393,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                               duration: Duration(milliseconds: 350),
                               curve: Curves.easeInOut,
                               vsync: this,
-                              child: WidgetHelper().textQ(returnBrand[index]['title'],12.0, brand==returnBrand[index]['id']?Colors.white:Colors.white,FontWeight.bold,letterSpacing: 2),
+                              child: WidgetHelper().textQ(returnBrand[index]['title'],scaler.getTextSize(9), brand==returnBrand[index]['id']?Colors.white:Colors.white,FontWeight.bold,letterSpacing: 2),
                             )
                           ],
                         ),
@@ -421,9 +418,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
                             child: LoadingProductTenant(tot: 10),
                           ):returnProductLocal.length>0?Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
                               child:new StaggeredGridView.countBuilder(
-                                // padding: EdgeInsets.all(0.0),
+                                padding: EdgeInsets.all(0.0),
                                 primary: false,
                                 physics: ClampingScrollPhysics(),
                                 shrinkWrap: true,
@@ -449,8 +446,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                                   );
                                 },
                                 staggeredTileBuilder: (int index) => new StaggeredTile.fit(2),
-                                mainAxisSpacing: 15.0,
-                                crossAxisSpacing: 15.0,
+                                mainAxisSpacing: scaler.getHeight(1),
+                                crossAxisSpacing:scaler.getWidth(1),
                               )
                           ):EmptyTenant(),
                           isLoadmore?Container(
@@ -472,6 +469,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
     );
   }
   Widget sliderQ(BuildContext context){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return FlexibleSpaceBar(
       stretchModes: [
         StretchMode.zoomBackground,
@@ -482,7 +481,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
       background:  isLoadingSlider?Padding(
           padding: EdgeInsets.all(20.0),
           child: WidgetHelper().baseLoading(context,Container(
-            height: 250,
+            height: scaler.getHeight(23),
             width: double.infinity,
             color: Colors.white,
           )),
@@ -519,7 +518,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
               }).toList()
           ),
           Positioned(
-            top: 200,
+            top: scaler.getHeight(17),
             child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,

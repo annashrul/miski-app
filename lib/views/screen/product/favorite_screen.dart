@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
@@ -97,6 +99,8 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
 
 
   Widget buildContent(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return ListView.builder(
       controller: controller,
       itemCount: resFavoriteProduct.length,
@@ -110,9 +114,9 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
             child: Align(
               alignment: Alignment.centerRight,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: scaler.getPadding(0,0),
                 child: Icon(
-                  UiIcons.trash,
+                  FontAwesome.trash,
                   color: Colors.white,
                 ),
               ),
@@ -122,7 +126,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
             deleteFavorite(val['id']);
           },
           child: Padding(
-            padding: EdgeInsets.only(bottom: 10.0),
+            padding: EdgeInsets.all(0.0),
             child: Stack(
               alignment: AlignmentDirectional.topEnd,
               children: [
@@ -131,7 +135,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                     WidgetHelper().myPush(context,DetailProducrScreen(id: val['id_product']));
                   },
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 7),
+                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                     decoration: BoxDecoration(
                       color: Theme.of(context).focusColor.withOpacity(0.15),
 
@@ -150,7 +154,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                             height: 90,
                             width: 90,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(Radius.circular(5)),
+                              borderRadius: BorderRadius.all(Radius.circular(0)),
                               image: DecorationImage(image: NetworkImage(val['gambar']), fit: BoxFit.cover),
                             ),
                           ),
@@ -169,25 +173,25 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                       children: [
                                         Container(
                                           padding: EdgeInsets.only(right:10.0),
-                                          child: WidgetHelper().textQ("${val['tenant']}", 12, SiteConfig().mainColor, FontWeight.bold),
+                                          child: WidgetHelper().textQ("${val['tenant']}", scaler.getTextSize(9), SiteConfig().mainColor, FontWeight.bold),
                                         ),
                                         Positioned(
-                                          child:Icon(UiIcons.home,color:SiteConfig().mainColor,size: 8),
+                                          child:Icon(AntDesign.home,color:SiteConfig().mainColor,size: 8),
                                         )
                                       ],
                                     ),
                                     Row(
                                       children: [
-                                        WidgetHelper().textQ("${val['title']}", 12, SiteConfig().darkMode, FontWeight.bold),
+                                        WidgetHelper().textQ("${val['title']}", scaler.getTextSize(9), SiteConfig().darkMode, FontWeight.bold),
                                         int.parse(val['disc1'])==0?Container():SizedBox(width: 5),
-                                        int.parse(val['disc1'])==0?Container():WidgetHelper().textQ("( diskon ${val['disc1']} + ${val['disc2']} )", 10,Colors.grey,FontWeight.bold),
+                                        int.parse(val['disc1'])==0?Container():WidgetHelper().textQ("( diskon ${val['disc1']} + ${val['disc2']} )", scaler.getTextSize(8),Colors.grey,FontWeight.bold),
                                       ],
                                     ),
                                     Row(
                                       children: [
-                                        WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(val['harga_coret']))}", 10,Colors.green,FontWeight.normal,textDecoration: TextDecoration.lineThrough),
+                                        WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(val['harga_coret']))}", scaler.getTextSize(9),Colors.green,FontWeight.normal,textDecoration: TextDecoration.lineThrough),
                                         SizedBox(width: 5),
-                                        WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(val['harga']))}", 12,Colors.green,FontWeight.bold),
+                                        WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(val['harga']))}", scaler.getTextSize(9),Colors.green,FontWeight.bold),
                                       ],
                                     ),
                                   ],
@@ -209,9 +213,9 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                       deleteFavorite(val['id']);
                       // deleted(cartModel.result[index].id,'');
                     },
-                    iconSize: 30,
+                    iconSize: scaler.getTextSize(15),
                     padding: EdgeInsets.symmetric(horizontal: 5),
-                    icon: Icon(UiIcons.heart),
+                    icon: Icon(AntDesign.heart),
                     color: Colors.red,
                   ),
                 )
