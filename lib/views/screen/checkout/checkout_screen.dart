@@ -286,7 +286,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                WidgetHelper().titleQ(context,isMainAddress==1?"Utama".toUpperCase():title.toUpperCase(),icon: AntDesign.home,color: SiteConfig().secondColor,param: '',callback: (){
+                WidgetHelper().titleQ(context,isMainAddress==1?"Utama".toUpperCase():title.toUpperCase(),icon: AntDesign.home,color: SiteConfig().secondColor,param: '-',callback: (){
                   WidgetHelper().myModal(context, ModalAddress(
                       idx:idxAddress,callback:(int index,int isMain,String id,String ttl, String pnrm, String no, String main){
                     setState(() {
@@ -370,7 +370,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         return InkWell(
                           onTap: (){WidgetHelper().myPush(context,DetailProducrScreen(id: val.id));},
                           child: Container(
-                            color:index%2==0?Color(0xFFEEEEEE):Colors.transparent,
+                            color:Colors.transparent,
                             child: Row(
                               children: [
                                 CachedNetworkImage(
@@ -469,6 +469,107 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
   Widget _bottomNavBarBeli(BuildContext context){
     ScreenScaler scaler = ScreenScaler()..init(context);
+    return Container(
+      padding:scaler.getPadding(0,0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Container(
+            margin: scaler.getMarginLTRB(2,0,0,0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                WidgetHelper().textQ("Total Tagihan",scaler.getTextSize(10),SiteConfig().secondColor, FontWeight.bold),
+                WidgetHelper().textQ("Rp "+FunctionHelper().formatter.format(grandTotal)+" .-",scaler.getTextSize(10),SiteConfig().moneyColor, FontWeight.bold),
+              ],
+            ),
+          ),
+          FlatButton(
+              padding:scaler.getPadding(1,0),
+              color: SiteConfig().secondColor,
+              onPressed: (){
+                WidgetHelper().myModal(
+                    context,
+                    Container(
+                      height:scaler.getHeight(50),
+                      child:Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          SizedBox(height:scaler.getHeight(0.5)),
+                          Center(
+                            child: Container(
+                              width: scaler.getWidth(10),
+                              height:scaler.getHeight(0.5),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius:  BorderRadius.circular(10.0),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height:scaler.getHeight(0.5)),
+                          Container(
+                              margin: scaler.getMargin(0, 2),
+                              width: double.infinity,
+                              padding:scaler.getPadding(0.5,2),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(10)),
+                                color:SiteConfig().mainColor,
+                                // border: Border.all(color:SiteConfig().accentDarkColor)
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(AntDesign.infocirlceo,color: Colors.white),
+                                  SizedBox(width:scaler.getWidth(1)),
+                                  WidgetHelper().textQ("Pilih bank untuk melanjutkan proses checkout",scaler.getTextSize(9),Colors.white, FontWeight.bold)
+                                ],
+                              )
+                          ),
+                          Expanded(
+                            child: Scrollbar(
+                                child: isLoading?WidgetHelper().loadingWidget(context):ModalBank(
+                                  bankModel: bankModel,
+                                  callback: (idx){
+                                    selectedBank(idx);
+                                  },
+                                  // isSelected: isSelectedBank
+                                )
+                            ),
+                          ),
+                          Align(
+                            widthFactor: scaler.getWidth(100),
+                            alignment: Alignment.bottomCenter,
+                            child:Padding(
+                              padding:scaler.getPadding(0.5,2),
+                              child: FlatButton(
+                                // shape: StadiumBorder(),
+                                onPressed: (){
+                                  WidgetHelper().notifDialog(context,"Perhatian","Anda yakin akan melakukan proses checkout sekarang ??",(){Navigator.pop(context);},(){
+                                    Navigator.pop(context);
+                                    checkout();
+                                  });
+                                },
+                                color: SiteConfig().secondColor,
+                                child: Container(
+                                  padding:scaler.getPadding(1.0,0.0),
+                                  width: scaler.getWidth(100),
+                                  child: WidgetHelper().textQ("BERIKUTNYA",scaler.getTextSize(10),Colors.white, FontWeight.bold,textAlign: TextAlign.center),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    )
+                );
+              },
+              child: WidgetHelper().textQ("Bayar", scaler.getTextSize(10), Colors.white,FontWeight.bold)
+          )
+        ],
+      ),
+    );
     return Container(
       height: scaler.getHeight(4),
       padding: scaler.getPadding(0,2),
@@ -1083,7 +1184,7 @@ class _ModalBankState extends State<ModalBank> {
           },
           child: ListTile(
             trailing: num==index?Icon(AntDesign.checkcircleo,color:SiteConfig().darkMode):Text(''),
-            contentPadding: EdgeInsets.only(left:10,right:10,top:0,bottom:0),
+            contentPadding: EdgeInsets.only(left:5,right:10,top:0,bottom:0),
             leading:WidgetHelper().baseImage(widget.bankModel.result.data[index].logo,width: scaler.getWidth(15)),
             title: WidgetHelper().textQ("${widget.bankModel.result.data[index].atasNama}", scaler.getTextSize(9),SiteConfig().darkMode, FontWeight.bold),
             subtitle: WidgetHelper().textQ(widget.bankModel.result.data[index].noRekening,  scaler.getTextSize(9), SiteConfig().secondColor, FontWeight.bold),

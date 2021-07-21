@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
@@ -135,21 +136,22 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
         await loadData();
       },):(isLoading?_loading(context):buildContent(context)),
       bottomNavigationBar:isLoading?Text(''):Container(
-        padding:scaler.getPadding(0,5),
+        padding:scaler.getPadding(0,0),
         decoration: BoxDecoration(
           // color: Colors.grey[200],
           // boxShadow: [BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), blurRadius: 5, offset: Offset(0, -2)),],
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           // crossAxisAlignment: Cro,
           children: <Widget>[
             Expanded(
               child: FlatButton(
                   onPressed: () {checkResi();},
                   padding:scaler.getPadding(1,0),
-                  color: Theme.of(context).accentColor,
-                  shape: StadiumBorder(),
+                  color: SiteConfig().secondColor,
+                  // shape: StadiumBorder(),
                   child:WidgetHelper().textQ("Lacak Resi",scaler.getTextSize(10), Theme.of(context).primaryColor, FontWeight.bold)
                 // child:Text("abus")
               ),
@@ -159,8 +161,8 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
               child: FlatButton(
                   onPressed: () {},
                   padding:scaler.getPadding(1,0),
-                  color: Theme.of(context).accentColor,
-                  shape: StadiumBorder(),
+                  color: SiteConfig().secondColor,
+                  // shape: StadiumBorder(),
                   child:WidgetHelper().textQ("Selesai",scaler.getTextSize(10), Theme.of(context).primaryColor, FontWeight.bold)
                 // child:Text("abus")
               ),
@@ -170,8 +172,8 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
                     WidgetHelper().myPush(context,FormReviewWidget(detailHistoryTransactionModel: detailHistoryTransactionModel));
                   },
                   padding:scaler.getPadding(1,0),
-                  color: Theme.of(context).accentColor,
-                  shape: StadiumBorder(),
+                  color: SiteConfig().secondColor,
+                  // shape: StadiumBorder(),
                   child:WidgetHelper().textQ("Beri Ulasan",scaler.getTextSize(10), Theme.of(context).primaryColor, FontWeight.bold)
                 // child:Text("abus")
               ),

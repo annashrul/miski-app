@@ -18,7 +18,7 @@ class SiteConfig{
   final String serverDown     = 'img/server_down.png';
   final int timeout           = 60;
   final int noDataCode        = -100000000;
-  final String fontStyle      = 'Rubik';
+  final String fontStyle      = 'Roboto-Light';
   final String errTimeout     = 'TimeoutException';
   final String errSocket      = 'SocketException';
   final Color mainColor       = Color(0xFF009DB5);

@@ -165,13 +165,18 @@ class WidgetHelper{
         return ConstrainedBox(
             constraints: BoxConstraints(maxHeight: 100.0),
             child: AlertDialog(
-              content: Row(
+              elevation: 0.0,
+              backgroundColor: Colors.transparent,
+              content: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  SpinKitFadingGrid(color: SiteConfig().mainColor, shape: BoxShape.rectangle),
+                children: [
+                  SpinKitFadingGrid(color:SiteConfig().mainColor, shape: BoxShape.circle),
+                  // SpinKitCubeGrid(size: 80.0, color: Constant().mainColor),
+                  // textQ(title,14,Constant().mainColor,FontWeight.bold,letterSpacing: 5.0)
                 ],
               ),
+
             )
         );
       },
@@ -252,7 +257,7 @@ class WidgetHelper{
                   size: scaler.getTextSize(12),
                 ),
                 SizedBox(width: scaler.getWidth(1)),
-                WidgetHelper().textQ(txt.toUpperCase(), scaler.getTextSize(10), color,FontWeight.bold,textAlign: textAlign)
+                WidgetHelper().textQ(txt, scaler.getTextSize(9), color,FontWeight.bold,textAlign: textAlign)
               ],
             ),
           ),
@@ -279,7 +284,7 @@ class WidgetHelper{
     // );
   }
 
-  iconAppbar(BuildContext context,Function callback,IconData icon){
+  iconAppbar(BuildContext context,Function callback,IconData icon,{Color color=Colors.black}){
     ScreenScaler scaler = ScreenScaler()..init(context);
     return InkWell(
       onTap:callback,
@@ -289,7 +294,7 @@ class WidgetHelper{
             padding: scaler.getPadding(1,0),
             child: Icon(
               icon,
-              color: SiteConfig().secondColor,
+              color: color,
               size: scaler.getTextSize(15),
             ),
           ),
@@ -359,7 +364,7 @@ class WidgetHelper{
       color:SiteConfig().mainColor,
       onPressed: callback,
       child: Center(
-        child: WidgetHelper().textQ(title.toUpperCase(),scaler.getTextSize(10),Colors.white, FontWeight.bold,letterSpacing: 2),
+        child: WidgetHelper().textQ(title,scaler.getTextSize(10),Colors.white, FontWeight.bold,letterSpacing: 2),
       )
     );
     return InkWell(

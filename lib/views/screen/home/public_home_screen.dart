@@ -221,7 +221,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
               onStretchTrigger: (){
                 return;
               },
-              title: WidgetHelper().textQ("Selamat datang & selamat belanja".toUpperCase(), 12,SiteConfig().secondColor,FontWeight.bold),
+              title: WidgetHelper().textQ("Selamat datang & selamat belanja", scaler.getTextSize(9),SiteConfig().secondColor,FontWeight.bold),
               brightness: Brightness.light,
               backgroundColor: Colors.white,
               automaticallyImplyLeading: false,
@@ -254,7 +254,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  WidgetHelper().textQ("Lihat semua promo".toUpperCase(),scaler.getTextSize(10),SiteConfig().secondColor,FontWeight.bold,textAlign: TextAlign.right),
+                                  WidgetHelper().textQ("Lihat semua promo",scaler.getTextSize(9),SiteConfig().secondColor,FontWeight.bold,textAlign: TextAlign.right),
                                   SizedBox(width: scaler.getWidth(1)),
                                   Icon(Ionicons.ios_arrow_dropright_circle,color: SiteConfig().secondColor,size: scaler.getTextSize(12),)
                                 ],

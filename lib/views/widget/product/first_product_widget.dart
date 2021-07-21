@@ -27,7 +27,7 @@ class BadgesQ extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
         decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(100)), color: Theme.of(context).accentColor),
         alignment: AlignmentDirectional.topEnd,
-        child: WidgetHelper().textQ(val, scaler.getTextSize(7),Colors.white,FontWeight.bold),
+        child: WidgetHelper().textQ(val, scaler.getTextSize(9),Colors.white,FontWeight.bold),
       ),
     );
   }

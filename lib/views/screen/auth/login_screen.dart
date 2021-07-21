@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+// import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+// import 'package:google_sign_in/google_sign_in.dart';
 import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/helper/database_helper.dart';
@@ -28,7 +28,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  static final FacebookLogin facebookSignIn = new FacebookLogin();
+  // static final FacebookLogin facebookSignIn = new FacebookLogin();
   String name = '', image;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   bool _showPassword = false;
@@ -193,76 +193,76 @@ class _LoginScreenState extends State<LoginScreen> {
   Future countTable() async{
     await _helper.queryRowCount(UserQuery.TABLE_NAME);
   }
-  Future handleFb()async{
-    final FacebookLoginResult result =
-    await facebookSignIn.logIn(['email']);
-
-    switch (result.status) {
-      case FacebookLoginStatus.loggedIn:
-        final FacebookAccessToken accessToken = result.accessToken;
-        final graphResponse = await http.get(
-            'https://graph.facebook.com/v2.12/me?fields=gender,name,first_name,last_name,email,picture&access_token=${accessToken.token}'
-        );
-        final profile = jsonDecode(graphResponse.body);
-        print(profile);
-        setState(() {
-          name = profile['first_name'];
-          image = profile['picture']['data']['url'];
-        });
-
-        print('''
-        name  $name
-        image $image
-         Logged in!
-         Token: ${accessToken.token}
-         User id: ${accessToken.userId}
-         Expires: ${accessToken.expires}
-         Permissions: ${accessToken.permissions}
-         Declined permissions: ${accessToken.declinedPermissions}
-         ''');
-        break;
-      case FacebookLoginStatus.cancelledByUser:
-        print('Login cancelled by the user.');
-        break;
-      case FacebookLoginStatus.error:
-        print('Something went wrong with the login process.\n'
-            'Here\'s the error Facebook gave us: ${result.errorMessage}');
-        break;
-    }
-  }
-  GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
-
-  Future handleGoogle()async{
-    try{
-      await _googleSignIn.signIn();
-      print(_googleSignIn.currentUser.displayName);
-      print(_googleSignIn.currentUser.email);
-      print(_googleSignIn.currentUser.photoUrl);
-      // _googleSignIn.isSignedIn().then((value){
-      //   print(value);
-      // });
-      // _googleSignIn.onCurrentUserChanged.listen((event) {
-      //   print(event);
-      // },onDone: (){
-      //   print('done');
-      // },onError: (){
-      //   print('error');
-      // });
-      // print(_googleSignIn.);
-      // setState(() {
-      //   _isLoggedIn = false;
-      // });
-      // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Home(
-      //   title: 'Login With Google',
-      //   name: _googleSignIn.currentUser.displayName,
-      //   photo: _googleSignIn.currentUser.photoUrl,
-      //   email: _googleSignIn.currentUser.email,
-      //   isLogin: 'google',
-      // )));
-    } catch (err){
-      print(err);
-    }
-  }
+  // Future handleFb()async{
+  //   final FacebookLoginResult result =
+  //   await facebookSignIn.logIn(['email']);
+  //
+  //   switch (result.status) {
+  //     case FacebookLoginStatus.loggedIn:
+  //       final FacebookAccessToken accessToken = result.accessToken;
+  //       final graphResponse = await http.get(
+  //           'https://graph.facebook.com/v2.12/me?fields=gender,name,first_name,last_name,email,picture&access_token=${accessToken.token}'
+  //       );
+  //       final profile = jsonDecode(graphResponse.body);
+  //       print(profile);
+  //       setState(() {
+  //         name = profile['first_name'];
+  //         image = profile['picture']['data']['url'];
+  //       });
+  //
+  //       print('''
+  //       name  $name
+  //       image $image
+  //        Logged in!
+  //        Token: ${accessToken.token}
+  //        User id: ${accessToken.userId}
+  //        Expires: ${accessToken.expires}
+  //        Permissions: ${accessToken.permissions}
+  //        Declined permissions: ${accessToken.declinedPermissions}
+  //        ''');
+  //       break;
+  //     case FacebookLoginStatus.cancelledByUser:
+  //       print('Login cancelled by the user.');
+  //       break;
+  //     case FacebookLoginStatus.error:
+  //       print('Something went wrong with the login process.\n'
+  //           'Here\'s the error Facebook gave us: ${result.errorMessage}');
+  //       break;
+  //   }
+  // }
+  // GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
+  //
+  // Future handleGoogle()async{
+  //   try{
+  //     await _googleSignIn.signIn();
+  //     print(_googleSignIn.currentUser.displayName);
+  //     print(_googleSignIn.currentUser.email);
+  //     print(_googleSignIn.currentUser.photoUrl);
+  //     // _googleSignIn.isSignedIn().then((value){
+  //     //   print(value);
+  //     // });
+  //     // _googleSignIn.onCurrentUserChanged.listen((event) {
+  //     //   print(event);
+  //     // },onDone: (){
+  //     //   print('done');
+  //     // },onError: (){
+  //     //   print('error');
+  //     // });
+  //     // print(_googleSignIn.);
+  //     // setState(() {
+  //     //   _isLoggedIn = false;
+  //     // });
+  //     // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Home(
+  //     //   title: 'Login With Google',
+  //     //   name: _googleSignIn.currentUser.displayName,
+  //     //   photo: _googleSignIn.currentUser.photoUrl,
+  //     //   email: _googleSignIn.currentUser.email,
+  //     //   isLogin: 'google',
+  //     // )));
+  //   } catch (err){
+  //     print(err);
+  //   }
+  // }
   @override
   void initState()  {
     _helper.openDB();

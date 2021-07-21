@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
+import 'package:intl/intl.dart';
 import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
@@ -23,6 +24,7 @@ import 'package:netindo_shop/views/widget/empty_widget.dart';
 import 'package:netindo_shop/views/widget/loading_widget.dart';
 import 'package:netindo_shop/views/widget/product/second_product_widget.dart';
 import 'package:netindo_shop/views/widget/review_widget.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class DetailProducrScreen extends StatefulWidget {
   final String id;
@@ -260,9 +262,9 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
     await FunctionHelper().storeClickProduct(widget.id);
   }
   ScrollController controller;
+  ScrollController controllers;
   void _scrollListener() {
     if (controller.position.pixels == controller.position.maxScrollExtent) {
-
       if(perpageReview<reviewModel.result.total){
         setState((){
           isLoadmore=true;
@@ -307,7 +309,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
     isLoadingReview=true;
     getDetail();
     controller = new ScrollController()..addListener(_scrollListener);
-
+    timeago.setLocaleMessages('id', timeago.IdMessages());
   }
   @override
   Widget build(BuildContext context) {
@@ -318,21 +320,29 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
       key: _scaffoldKey,
       body: isLoading||isLoadingPoductOther||isLoadingReview?LoadingDetailProduct():buildContent(context),
       bottomNavigationBar: isLoading||isLoadingPoductOther||isLoadingReview?Text(''):Container(
-        height: scaler.getHeight(4),
-        padding:scaler.getPadding(0,5),
+        padding:scaler.getPadding(0,0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                WidgetHelper().textQ("Rp "+FunctionHelper().formatter.format(total)+" .-",scaler.getTextSize(10),SiteConfig().moneyColor, FontWeight.bold),
-              ],
+            Container(
+              margin: scaler.getMarginLTRB(2,0,0,0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  WidgetHelper().textQ("Rp "+FunctionHelper().formatter.format(total)+" .-",scaler.getTextSize(10),SiteConfig().moneyColor, FontWeight.bold),
+                ],
+              ),
             ),
-            WidgetHelper().buttonQ(context,(){
-              add();
-            },"Keranjang")
+            FlatButton(
+              padding:scaler.getPadding(1,0),
+              color: SiteConfig().secondColor,
+              onPressed: (){add();},
+              child: Icon(AntDesign.shoppingcart,color: Colors.white,)
+            )
+            // WidgetHelper().buttonQ(context,(){
+            //   add();
+            // },"Keranjang")
 
           ],
         ),
@@ -342,8 +352,11 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
 
   Widget buildContent(BuildContext context){
     ScreenScaler scaler = ScreenScaler()..init(context);
+    print(_tabIndex);
     return CustomScrollView(
-        physics:AlwaysScrollableScrollPhysics(),
+        controller: _tabIndex!=2?controllers:controller,
+
+        // controller: controller,
         slivers: <Widget>[
           SliverAppBar(
             titleSpacing: scaler.getHeight(1),
@@ -375,7 +388,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
               SizedBox(width: scaler.getWidth(2)),
               Container(
                 margin: scaler.getMargin(0,1),
-                child:  WidgetHelper().iconAppbar(context,(){insertFavorite();}, AntDesign.hearto),
+                child:  WidgetHelper().iconAppbar(context,(){insertFavorite();}, AntDesign.hearto,color: isSelectedFavorite?Colors.redAccent:SiteConfig().secondColor),
               )
             ],
             // backgroundColor: Theme.of(context).primaryColor,
@@ -532,10 +545,10 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
                           ],
                         ),
                       ),
-
+                      SizedBox(height: scaler.getHeight(1)),
                       varian.length>0?Padding(
                         padding:scaler.getPadding(0,2),
-                        child: WidgetHelper().titleQ(context,"VARIAN",icon: AntDesign.tagso,color: SiteConfig().secondColor,param: ''),
+                        child: WidgetHelper().titleQ(context,"Varian",icon: AntDesign.tagso,color: SiteConfig().secondColor,param: ''),
                       ):Container(),
                       varian.length>0?Container(
                         width: double.infinity,
@@ -550,7 +563,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
                               children: List.generate(varian.length, (index) {
                                 return SizedBox(
                                   child: FilterChip(
-                                    label: WidgetHelper().textQ(varian[index].title,  scaler.getTextSize(10), selectedVarian==index?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.bold),
+                                    label: WidgetHelper().textQ(varian[index].title,  scaler.getTextSize(9), selectedVarian==index?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.bold),
                                     padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                                     backgroundColor: selectedVarian==index?SiteConfig().mainColor:Colors.grey[200],
                                     selectedColor: SiteConfig().mainColor,
@@ -573,7 +586,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
                               children: List.generate(subVarian.length, (index) {
                                 return SizedBox(
                                   child: FilterChip(
-                                    label: WidgetHelper().textQ(subVarian[index].title, scaler.getTextSize(10), selectedSubVarian==index?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.bold),
+                                    label: WidgetHelper().textQ(subVarian[index].title, scaler.getTextSize(9), selectedSubVarian==index?SiteConfig().secondDarkColor:SiteConfig().secondColor, FontWeight.bold),
                                     padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                                     backgroundColor: selectedSubVarian==index?SiteConfig().mainColor:Colors.grey[200],
                                     selectedColor: SiteConfig().mainColor,
@@ -654,18 +667,60 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
               ),
               Offstage(
                   offstage: 2 != _tabIndex,
-                  child: Column(
-                    children: [
-                      isLoadmore?WidgetHelper().loadingWidget(context):Text(''),
-                      Container(
-                        padding: EdgeInsets.only(bottom:10.0),
-                        height: MediaQuery.of(context).size.height/1,
-                        child: isLoadingReview?Text(''):reviewModel.result.data.length>0?reviewContent(context):EmptyTenant(),
-                      ),
-                      // Expanded(
-                      //   child: Text("loading ......"),
-                      // )
-                    ],
+                  child: Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+
+                      children: [
+                        // isLoadmore?WidgetHelper().loadingWidget(context):Text(''),
+                        Container(
+                          height: MediaQuery.of(context).size.height/1,
+                          padding: scaler.getPadding(1, 2),
+
+                          // child: isLoadingReview?Text(''):reviewModel.result.data.length>0?reviewContent(context):EmptyTenant(),
+                          child: isLoadingReview?Text(''):reviewModel.result.data.length>0?ListView.separated(
+                              padding:EdgeInsets.all(0.0),
+                              shrinkWrap: true,
+                              primary: false,
+                              itemBuilder: (context,index){
+                                var val=reviewModel.result.data[index];
+                                return Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        WidgetHelper().baseImage(val.foto,height: scaler.getHeight(3)),
+                                        SizedBox(width: scaler.getWidth(2)),
+                                        Column(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            WidgetHelper().textQ(val.nama,scaler.getTextSize(9),SiteConfig().darkMode,FontWeight.bold),
+                                            WidgetHelper().textQ(timeago.format(DateTime.parse(val.createdAt.toIso8601String()),locale:'id',allowFromNow: true),scaler.getTextSize(9),SiteConfig().darkMode,FontWeight.normal),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                    SizedBox(width: scaler.getHeight(0.5)),
+                                    WidgetHelper().textQ(val.caption,scaler.getTextSize(9),SiteConfig().darkMode,FontWeight.normal)
+                                  ],
+                                );
+                              },
+                              separatorBuilder: (context,index){return Divider();},
+                              itemCount: reviewModel.result.data.length
+                          ):EmptyTenant(),
+                        ),
+                        if(isLoadmore)Container(
+                          alignment: Alignment.center,
+                          child: CupertinoActivityIndicator(),
+                        )
+                        // Expanded(
+                        //   child: Text("loading ......"),
+                        // )
+                      ],
+                    ),
                   ),
                 )
             ]),
@@ -774,12 +829,11 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
         padding:EdgeInsets.all(0.0),
         shrinkWrap: true,
         primary: false,
-        // padding: EdgeInsets.zero,
         itemCount: hargaBertingkat.length,
         itemBuilder: (context,index){
           return Padding(
             padding: scaler.getPadding(0.5,0),
-            child: WidgetHelper().textQ("Beli produk ini sebanyak ${hargaBertingkat[index].dari} sampai ${hargaBertingkat[index].sampai} mendapatkan harga hanya ${FunctionHelper().formatter.format(int.parse(hargaBertingkat[index].harga))}", 12,SiteConfig().darkMode, FontWeight.normal),
+            child: WidgetHelper().textQ("Beli produk ini sebanyak ${hargaBertingkat[index].dari} sampai ${hargaBertingkat[index].sampai} mendapatkan harga hanya ${FunctionHelper().formatter.format(int.parse(hargaBertingkat[index].harga))}", scaler.getTextSize(9),SiteConfig().darkMode, FontWeight.normal),
           );
         },
         separatorBuilder: (context, index) {
@@ -796,13 +850,12 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
     ScreenScaler scaler = ScreenScaler()..init(context);
 
     return ListView.separated(
-      physics:AlwaysScrollableScrollPhysics(),
-      addRepaintBoundaries: true,
-      primary: false,
       shrinkWrap: true,
+      primary: false,
       controller: controller,
       padding: scaler.getPadding(0,2),
       itemBuilder: (context, index) {
+        var val = reviewModel.result.data[index];
         return WidgetHelper().myPress((){},ReviewWidget(
           foto: SiteConfig().noImage,
           nama: reviewModel.result.data[index].nama,

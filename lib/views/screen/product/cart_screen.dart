@@ -333,24 +333,48 @@ class _CartScreenState extends State<CartScreen> {
           callback:(){ _handleRefresh();},
         ),
         bottomNavigationBar:isLoading?Text(''):isError?Text(''):cartModel.result.length>0?Container(
-          color: Colors.transparent,
-          height: scaler.getHeight(4),
-          padding:scaler.getPadding(0,2),
+          // color: Colors.transparent,
+          // height: scaler.getHeight(4),
+          // padding:scaler.getPadding(0,2),
+          // child: Row(
+          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //   children: <Widget>[
+          //     Column(
+          //       mainAxisSize: MainAxisSize.min,
+          //       crossAxisAlignment: CrossAxisAlignment.start,
+          //       children: <Widget>[
+          //         WidgetHelper().textQ("Total Tagihan",scaler.getTextSize(10),SiteConfig().secondColor, FontWeight.bold),
+          //         WidgetHelper().textQ("Rp "+FunctionHelper().formatter.format(subtotal)+" .-",scaler.getTextSize(10),SiteConfig().moneyColor, FontWeight.bold),
+          //       ],
+          //     ),
+          //     WidgetHelper().buttonQ(context,(){
+          //       WidgetHelper().myPush(context,CheckoutScreen(idTenant: widget.idTenant));
+          //     },"Bayar")
+          //
+          //   ],
+          // ),
+          padding:scaler.getPadding(0,0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  WidgetHelper().textQ("Total Tagihan",scaler.getTextSize(10),SiteConfig().secondColor, FontWeight.bold),
-                  WidgetHelper().textQ("Rp "+FunctionHelper().formatter.format(subtotal)+" .-",scaler.getTextSize(10),SiteConfig().moneyColor, FontWeight.bold),
-                ],
+              Container(
+                margin: scaler.getMarginLTRB(2,0,0,0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    WidgetHelper().textQ("Total Tagihan",scaler.getTextSize(10),SiteConfig().secondColor, FontWeight.bold),
+                    WidgetHelper().textQ("Rp "+FunctionHelper().formatter.format(subtotal)+" .-",scaler.getTextSize(10),SiteConfig().moneyColor, FontWeight.bold),
+                    // WidgetHelper().textQ("Rp "+FunctionHelper().formatter.format(subtotal)+" .-",scaler.getTextSize(10),SiteConfig().moneyColor, FontWeight.bold),
+                  ],
+                ),
               ),
-              WidgetHelper().buttonQ(context,(){
-                WidgetHelper().myPush(context,CheckoutScreen(idTenant: widget.idTenant));
-              },"Bayar")
-              
+              FlatButton(
+                  padding:scaler.getPadding(1,0),
+                  color: SiteConfig().secondColor,
+                  onPressed: (){WidgetHelper().myPush(context,CheckoutScreen(idTenant: widget.idTenant));},
+                  child: WidgetHelper().textQ("Bayar", scaler.getTextSize(10), Colors.white,FontWeight.bold)
+              )
             ],
           ),
         ):Text(''),

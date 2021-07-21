@@ -16,13 +16,12 @@ import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:flutter/services.dart' show PlatformException;
 import 'package:provider/provider.dart';
 import 'package:uni_links/uni_links.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 StreamController<bool> isLightTheme = StreamController();
 
 void main()async{
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
   runApp(
     ChangeNotifierProvider<ThemeModel>(
       create: (context) => ThemeModel(),
@@ -74,11 +73,8 @@ class _MyAppState extends State<MyApp> {
     // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(statusBarIconBrightness: Brightness.dark, statusBarColor: Colors.transparent));
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      // theme: Provider.of<ThemeModel>(context).currentTheme,
       theme: ThemeData(
         dialogBackgroundColor: Colors.white,
-        // splashColor: Colors.black38,
-        // highlightColor: Colors.black38,
         scaffoldBackgroundColor: Colors.white,
         backgroundColor: Colors.white,
         visualDensity: VisualDensity.adaptivePlatformDensity,

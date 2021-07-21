@@ -108,7 +108,7 @@ class _SecondProductWidgetState extends State<SecondProductWidget> {
                                       borderRadius: BorderRadius.circular(4),
                                       color: SiteConfig().mainColor,
                                     ),
-                                    child: WidgetHelper().textQ("10 %", scaler.getTextSize(8),SiteConfig().secondDarkColor, FontWeight.w600),
+                                    child: WidgetHelper().textQ("10 %", scaler.getTextSize(9),SiteConfig().secondDarkColor, FontWeight.w600),
                                   ),
                                   Container(
                                     padding: EdgeInsets.all(4),
@@ -117,7 +117,7 @@ class _SecondProductWidgetState extends State<SecondProductWidget> {
                                         borderRadius: BorderRadius.circular(4),
                                         color: SiteConfig().mainColor
                                     ),
-                                    child: WidgetHelper().textQ("+", scaler.getTextSize(8), SiteConfig().secondDarkColor, FontWeight.w600),
+                                    child: WidgetHelper().textQ("+", scaler.getTextSize(9), SiteConfig().secondDarkColor, FontWeight.w600),
                                   ),
                                   Container(
                                     padding: EdgeInsets.all(4),
@@ -126,7 +126,7 @@ class _SecondProductWidgetState extends State<SecondProductWidget> {
                                         borderRadius: BorderRadius.circular(4),
                                         color: SiteConfig().mainColor
                                     ),
-                                    child: WidgetHelper().textQ("10 %", scaler.getTextSize(8), SiteConfig().secondDarkColor, FontWeight.w600),
+                                    child: WidgetHelper().textQ("10 %", scaler.getTextSize(9), SiteConfig().secondDarkColor, FontWeight.w600),
                                   ),
                                 ],
                               ),

@@ -120,6 +120,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
   }
   Future loadBrand()async{
     var br = await _helper.getData(BrandQuery.TABLE_NAME);
+    print("BRAND");
+    print(br);
     List brand = [];
     br.forEach((element) {
       brand.add({
@@ -287,7 +289,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                           getProduct();
                         })
                     );
-                  }, AntDesign.filter),
+                  }, AntDesign.filter,color: SiteConfig().secondColor,),
                 )
               ],
               expandedHeight:scaler.getHeight(20),
@@ -635,11 +637,11 @@ class _ModalSearchState extends State<ModalSearch> {
               keyboardType: TextInputType.multiline,
               cursorColor: Theme.of(context).focusColor.withOpacity(0.8),
               controller: qController,
-              style:TextStyle(color: Theme.of(context).focusColor.withOpacity(0.8),fontFamily: SiteConfig().fontStyle),
+              style:TextStyle(color: Colors.black,fontFamily: SiteConfig().fontStyle),
               decoration: InputDecoration(
                 contentPadding: EdgeInsets.all(20),
                 hintText: 'Tulis sesuatu disini ...',
-                hintStyle: TextStyle(color: Theme.of(context).focusColor.withOpacity(0.8),fontFamily: SiteConfig().fontStyle),
+                hintStyle: TextStyle(color: Colors.black,fontFamily: SiteConfig().fontStyle),
                 border: UnderlineInputBorder(borderSide: BorderSide.none),
                 enabledBorder: UnderlineInputBorder(borderSide: BorderSide.none),
                 focusedBorder: UnderlineInputBorder(borderSide: BorderSide.none),
@@ -656,8 +658,8 @@ class _ModalSearchState extends State<ModalSearch> {
                     }
                   },
                   icon: Icon(
-                    qController.text==''?Icons.search:Icons.close,
-                    color:Theme.of(context).focusColor.withOpacity(0.8),
+                    qController.text==''?AntDesign.search1:AntDesign.close,
+                    color:Colors.black,
                     size: 20,
                   ),
                 ),
@@ -710,7 +712,7 @@ class _ModalSearchState extends State<ModalSearch> {
                         store();
                       },
                       trailing: IconButton(
-                          icon: Icon(Icons.close,color:Colors.grey),
+                          icon: Icon(AntDesign.close,color:Colors.grey),
                           onPressed:()async{
                             await db.delete(SearchingQuery.TABLE_NAME,"id",resSearch[index]['id']);
                             loadSearch();

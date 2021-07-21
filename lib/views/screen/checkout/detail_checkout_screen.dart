@@ -141,7 +141,7 @@ class _DetailCheckoutScreenState extends State<DetailCheckoutScreen> {
                                 children: <TextSpan>[
                                   TextSpan(text: ' ${widget.bank_name} (${widget.bank_code})',style: TextStyle(color:SiteConfig().mainColor, fontSize:  scaler.getTextSize(10),fontWeight: FontWeight.normal,fontFamily:SiteConfig().fontStyle)),
                                   TextSpan(text: ' di depan No.Rekening atas nama',style: TextStyle(fontSize:  scaler.getTextSize(10),fontFamily:SiteConfig().fontStyle)),
-                                  TextSpan(text: ' ${widget.bank_atas_nama}',style: TextStyle(color:SiteConfig().mainColor, fontSize: 12,fontWeight: FontWeight.normal,fontFamily:SiteConfig().fontStyle)),
+                                  TextSpan(text: ' ${widget.bank_atas_nama}',style: TextStyle(color:SiteConfig().mainColor, fontSize: scaler.getTextSize(10),fontWeight: FontWeight.normal,fontFamily:SiteConfig().fontStyle)),
                                 ]
                             ),
                           ),
@@ -186,21 +186,25 @@ class _DetailCheckoutScreenState extends State<DetailCheckoutScreen> {
   String url = '',image='';
   Widget _bottomNavBarBeli(BuildContext context){
     ScreenScaler scaler = ScreenScaler()..init(context);
-    return Container(
-      height: scaler.getHeight(4),
-      padding: scaler.getPadding(0,2),
-      child: WidgetHelper().buttonQ(context,(){
-        WidgetHelper().myModal(context, UploadImage(
-          callback: (String img)async{
-            setState(() {
-              url = base64.encode(utf8.encode(widget.invoice_no));
-              image = img;
-            });
-            upload(url,image);
-          },
-        ));
-      }, "saya sudah transfer"),
+    return FlatButton(
+        onPressed: () {
+          WidgetHelper().myModal(context, UploadImage(
+            callback: (String img)async{
+              setState(() {
+                url = base64.encode(utf8.encode(widget.invoice_no));
+                image = img;
+              });
+              upload(url,image);
+            },
+          ));
+        },
+        padding:scaler.getPadding(1,0),
+        color: SiteConfig().secondColor,
+        // shape: StadiumBorder(),
+        child:WidgetHelper().textQ("Saya sudah transfer",scaler.getTextSize(10), Theme.of(context).primaryColor, FontWeight.bold)
+      // child:Text("abus")
     );
+
   }
   int retry=0;
   Future uploadAgain()async{
@@ -341,16 +345,38 @@ class _UploadImageState extends State<UploadImage> {
               child: _image == null ?Image.asset(SiteConfig().localAssets+'logo.jpeg',width: double.infinity,fit: BoxFit.contain): new Image.file(_image,width: MediaQuery.of(context).size.width/1,height: MediaQuery.of(context).size.height/2,filterQuality: FilterQuality.high,),
             ),
             SizedBox(height:scaler.getHeight(1)),
-            WidgetHelper().buttonQ(context, (){
-              if(_image!=null){
-                String fileName;
-                String base64Image;
-                fileName = _image.path.split("/").last;
-                var type = fileName.split('.');
-                base64Image = 'data:image/' + type[1] + ';base64,' + base64Encode(_image.readAsBytesSync());
-                widget.callback(base64Image);
-              }
-            },'Simpan')
+            Container(
+              width: double.infinity,
+
+              child: FlatButton(
+                  onPressed: () {
+                    if(_image!=null){
+                      String fileName;
+                      String base64Image;
+                      fileName = _image.path.split("/").last;
+                      var type = fileName.split('.');
+                      base64Image = 'data:image/' + type[1] + ';base64,' + base64Encode(_image.readAsBytesSync());
+                      widget.callback(base64Image);
+                    }
+                  },
+                  padding:scaler.getPadding(1,0),
+                  color: SiteConfig().secondColor,
+                  child:WidgetHelper().textQ("Beri Ulasan",scaler.getTextSize(10), Theme.of(context).primaryColor, FontWeight.bold)
+                // child:Text("abus")
+              ),
+            ),
+            SizedBox(height:scaler.getHeight(1)),
+
+            // WidgetHelper().buttonQ(context, (){
+            //   if(_image!=null){
+            //     String fileName;
+            //     String base64Image;
+            //     fileName = _image.path.split("/").last;
+            //     var type = fileName.split('.');
+            //     base64Image = 'data:image/' + type[1] + ';base64,' + base64Encode(_image.readAsBytesSync());
+            //     widget.callback(base64Image);
+            //   }
+            // },'Simpan')
           ],
         )
     );

@@ -479,11 +479,11 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
               ),
               controller: msgController,
               focusNode: msgFocus,
-              style:TextStyle(color: Theme.of(context).focusColor.withOpacity(0.8),fontFamily: SiteConfig().fontStyle),
+              style:TextStyle(color: Colors.black,fontFamily: SiteConfig().fontStyle),
               decoration: InputDecoration(
                 contentPadding: EdgeInsets.all(20),
                 hintText: 'Tulis sesuatu disini ...',
-                hintStyle: TextStyle(color: Theme.of(context).focusColor.withOpacity(0.8),fontFamily: SiteConfig().fontStyle),
+                hintStyle: TextStyle(color: Colors.black,fontFamily: SiteConfig().fontStyle),
                 border: UnderlineInputBorder(borderSide: BorderSide.none),
                 enabledBorder: UnderlineInputBorder(borderSide: BorderSide.none),
                 focusedBorder: UnderlineInputBorder(borderSide: BorderSide.none),
@@ -495,7 +495,7 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
                   },
                   icon: Icon(
                     Ionicons.ios_send,
-                    color:Theme.of(context).focusColor.withOpacity(0.8),
+                    color:Colors.black,
                     size: 20,
                   ),
                 ),

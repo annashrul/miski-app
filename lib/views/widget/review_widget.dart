@@ -60,7 +60,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
                               children: <Widget>[
                                 Icon(AntDesign.calendar, color:SiteConfig().accentColor,size:  scaler.getTextSize(9),),
                                 SizedBox(width: 10),
-                                WidgetHelper().textQ("${widget.tgl}",  scaler.getTextSize(8),SiteConfig().accentColor, FontWeight.normal),
+                                WidgetHelper().textQ("${widget.tgl}",  scaler.getTextSize(9),SiteConfig().darkMode, FontWeight.normal),
                               ],
                             ),
                           ],
@@ -115,7 +115,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
             )
           ],
         ),
-        WidgetHelper().textQ("${widget.desc}", 10,SiteConfig().accentColor, FontWeight.normal),
+        WidgetHelper().textQ("${widget.desc}", scaler.getTextSize(9),SiteConfig().darkMode, FontWeight.normal),
       ],
     );
   }
