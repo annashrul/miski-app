@@ -6,11 +6,13 @@ import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/user_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/address/provinsi_model.dart';
+import 'package:netindo_shop/model/tenant/list_tenant_model.dart';
 import 'package:netindo_shop/provider/base_provider.dart';
 import 'package:netindo_shop/views/screen/auth/login_screen.dart';
 import 'package:netindo_shop/views/screen/auth/signin_screen.dart';
 import 'package:netindo_shop/views/screen/onboarding_screen.dart';
 import 'package:netindo_shop/views/screen/wrapper_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -20,7 +22,10 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   final userHelper=UserHelper();
   final DatabaseConfig _db = new DatabaseConfig();
+  ListTenantModel listTenantModel;
   Future loadData() async{
+
+
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
     final countTable = await _db.queryRowCount(UserQuery.TABLE_NAME);
     print('##################### SPLASH SCREEN ######################');
@@ -46,6 +51,20 @@ class _SplashScreenState extends State<SplashScreen> {
           WidgetHelper().myPushRemove(context, LoginScreen());
         }
         else{
+          final tenant = await BaseProvider().getProvider("tenant?page=1",listTenantModelFromJson);
+          SharedPreferences sess = await SharedPreferences.getInstance();
+          sess.setBool("isTenant", true);
+          if(tenant is ListTenantModel){
+            ListTenantModel dataTenant=ListTenantModel.fromJson(tenant.toJson());
+            if(dataTenant.result.data.length==1){
+              final val = dataTenant.result.data[0];
+              sess.setString("namaTenant", val.nama);
+              sess.setString("idTenant", val.id);
+              sess.setBool("isTenant", false);
+            }
+            print('##################### CHECK TENANT ${dataTenant.result.data.length}  ######################');
+
+          }
           WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2));
         }
 

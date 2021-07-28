@@ -10,7 +10,6 @@ import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/config/string_config.dart';
-import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/database_helper.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/skeleton_helper.dart';
@@ -93,66 +92,25 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
   final DatabaseConfig _helper = new DatabaseConfig();
   List returnTenant=[];
   Future getTenant()async{
-    final countTbl = await _helper.queryRowCount(TenantQuery.TABLE_NAME);
-    if(countTbl>1){
-      final tenant = await _helper.getData(TenantQuery.TABLE_NAME);
-      print("USE DATA TENANT LOCAL SERVER");
+    var res = await BaseProvider().getProvider('tenant?page=1', listTenantModelFromJson);
+    if(res==SiteConfig().errSocket||res==SiteConfig().errTimeout){
       setState(() {
-        returnTenant = tenant;
-        isTimeout=false;
+        isTimeout=true;
         isLoading=false;
-        countTenant=countTbl;
       });
     }
     else{
-      var res = await BaseProvider().getProvider('tenant?page=1', listTenantModelFromJson);
-      if(res==SiteConfig().errSocket||res==SiteConfig().errTimeout){
+      if(res is ListTenantModel){
+        listTenantModel = ListTenantModel.fromJson(res.toJson());
         setState(() {
-          isTimeout=true;
+          isTimeout=false;
           isLoading=false;
         });
       }
-      else{
-        if(res is ListTenantModel){
-          listTenantModel = ListTenantModel.fromJson(res.toJson());
-          insertTenant(listTenantModel.result.perPage,listTenantModel.result.lastPage);
-          print("USE DATA TENANT SERVER");
-          setState(() {
-            isTimeout=false;
-            isLoading=false;
-          });
-        }
-      }
-      await FunctionHelper().getFilterLocal('');
     }
   }
 
-  Future insertTenant(perpage,lastpage)async{
-    ListTenantModel _listTenantModel;
-    var res = await BaseProvider().getProvider('tenant?page=1&perpage=${perpage*lastpage}', listTenantModelFromJson);
-    if(res is ListTenantModel){
-      ListTenantModel result = res;
-      setState(() {});
-      result.result.data.forEach((element)async {
-        var data={
-          "id_tenant":element.id.toString(),
-          "nama":element.nama.toString(),
-          "email":element.email.toString(),
-          "telp":element.telp.toString(),
-          "alamat":element.alamat.toString(),
-          "long":element.long.toString(),
-          "lat":element.lat.toString(),
-          "status":element.status.toString(),
-          "logo":element.logo.toString(),
-          "unique_code":element.uniqueCode.toString(),
-          "is_favorite":"false",
-          "is_click":"false"
-        };
-        await _helper.insert(TenantQuery.TABLE_NAME, data);
-      });
 
-    }
-  }
   Future<void> _handleRefresh()async {
     await _helper.deleteAll(TenantQuery.TABLE_NAME);
     await FunctionHelper().handleRefresh(()=>getTenant());
@@ -197,13 +155,16 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
   int _current=0;
   @override
   Widget build(BuildContext context){
+    if(!isLoading){
+      if(listTenantModel.result.data.length==1){
+        return HomeScreen(id: listTenantModel.result.data[0].id,nama:listTenantModel.result.data[0].nama);
+      }
+    }
     return buildContents(context);
   }
 
   Widget buildContents(BuildContext context){
     ScreenScaler scaler = ScreenScaler()..init(context);
-
-
     return RefreshWidget(
       widget: isTimeout||isTimeoutPromo?TimeoutWidget(callback: ()async{
         setState(() {

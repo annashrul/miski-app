@@ -5,8 +5,8 @@ import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:intl/intl.dart';
+import 'package:netindo_shop/config/light_color.dart';
 import 'package:netindo_shop/config/site_config.dart';
-import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/history/history_transaction_model.dart';
@@ -30,14 +30,10 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
   int perpage=10;
   int total=0;
   ScrollController controller;
+
   bool isLoadmore=false;
   bool isTimeout=false;
-  // List arrFilter = FunctionHelper.arrOptDate;
   int filterStatus=5;
-  String dateFrom="";
-  String dateTo="";
-  DateTime _dateTime;
-  DateTimePickerLocale _locale = DateTimePickerLocale.id;
   HistoryTransactionModel historyTransactionModel;
   bool isLoading=false;
   Future loadHistory()async{
@@ -45,10 +41,6 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
     if(filterStatus!=5){
       par+="&status=$filterStatus";
     }
-    // if(dateFrom!=""&&dateTo!=""){
-    //   par+="&datefrom=$dateFrom&dateto=$dateTo";
-    // }
-    // print(par);
     var res = await BaseProvider().getProvider(par, historyTransactionModelFromJson);
     if(res is HistoryTransactionModel){
       setState(() {
@@ -68,52 +60,6 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
       });
     }
 
-  }
-  void _showDatePicker(var param) {
-    DatePicker.showDatePicker(
-      context,
-      onMonthChangeStartWithFirstDate: true,
-      pickerTheme: DateTimePickerTheme(
-        itemTextStyle: TextStyle(color: SiteConfig().darkMode,fontWeight: FontWeight.bold,fontFamily: SiteConfig().fontStyle),
-        backgroundColor: Colors.white,
-        showTitle: true,
-        confirm: Text('Selesai', style: TextStyle(color:SiteConfig().darkMode,fontFamily:SiteConfig().fontStyle,fontWeight:FontWeight.bold)),
-      ),
-      minDateTime: DateTime.parse('2010-05-12'),
-      maxDateTime: DateTime.parse('2100-01-01'),
-      initialDateTime: _dateTime,
-      dateFormat: 'yyyy-MM-dd',
-      locale: _locale,
-      onClose: () => print("----- onClose -----"),
-      onCancel: () => print('onCancel'),
-      onChange: (dateTime, List<int> index) {
-        setState(() {
-          _dateTime = dateTime;
-        });
-      },
-      onConfirm: (dateTime, List<int> index) {
-        setState(() {
-          _dateTime = dateTime;
-          if (param == '1') {
-            setState(() {
-              dateFrom = '${_dateTime.year}-${_dateTime.month.toString().padLeft(2, '0')}-${_dateTime.day.toString().padLeft(2, '0')}';
-              // arrFilter[0] = dateFrom;
-              isLoading=true;
-            });
-            loadHistory();
-          }
-          else {
-            setState(() {
-              dateTo = '${_dateTime.year}-${_dateTime.month.toString().padLeft(2, '0')}-${_dateTime.day.toString().padLeft(2, '0')}';
-              // arrFilter[1] = dateTo;
-              isLoading=true;
-            });
-            loadHistory();
-          }
-
-        });
-      },
-    );
   }
   void _scrollListener() {
     if (!isLoading) {
@@ -135,12 +81,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
     loadHistory();
   }
 
-  changeStatus(){
-    setState(() {
-      // arrFilter[2] = FunctionHelper.arrOptDate[widget.status];
-      // filterStatus = widget.status;
-    });
-  }
+
 
 
 
@@ -153,26 +94,20 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
   void initState() {
     // TODO: implement initState
     super.initState();
-    // if(widget.)
     filterStatus=widget.status;
     isLoading=true;
     controller = new ScrollController()..addListener(_scrollListener);
-    var date = new DateTime.now().toString();
-    var dateParse = DateTime.parse(date);
-    var formattedDate = "${dateParse.year}-${dateParse.month.toString().padLeft(2, '0')}-${dateParse.day.toString().padLeft(2, '0')}";
-    dateFrom = formattedDate;
-    dateTo = formattedDate;
-    _dateTime = DateTime.parse(formattedDate);
-    // arrFilter[0]=dateFrom;
-    // arrFilter[1]=dateTo;
     loadHistory();
-    // changeStatus();
+
   }
 
   @override
   Widget build(BuildContext context) {
     // super.build(context);
-    return buildContent(context);
+    return Scaffold(
+      appBar: WidgetHelper().appBarWithButton(context,"History pembelian",(){}, <Widget>[],param: "default"),
+      body: buildContent(context),
+    );
   }
 
   Widget buildContent(BuildContext context){
@@ -180,7 +115,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
 
     return RefreshWidget(
       widget: Container(
-        padding:scaler.getPadding(0,0),
+        padding:scaler.getPadding(0,2),
         child: isTimeout?TimeoutWidget(callback: (){
           setState(() {
             isTimeout=false;
@@ -195,31 +130,36 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                   scrollDirection: Axis.horizontal,
                   itemCount: FunctionHelper.arrOptDate.length,
                   itemBuilder: (context,index){
-                    // print(arrFilter[index]);
-                    return  WidgetHelper().myPress(
-                        (){
-                          setState(() {
-                            isLoading=true;
-                            filterStatus = index;
-                          });
-                          loadHistory();
+                    print(FunctionHelper.arrOptDate.length-1);
+                    double _marginRight = 2;
+                    (index == 5) ? _marginRight = 0 : _marginRight = 2;
+                    return  Container(
+                      margin: scaler.getMarginLTRB(0, 0, _marginRight, 0),
+                      child: WidgetHelper().myPress(
+                              (){
+                            setState(() {
+                              isLoading=true;
+                              filterStatus = index;
+                            });
+                            loadHistory();
 
-                        },
-                        Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-                          decoration: BoxDecoration(
-                            border: Border.all(width:1.0,color: filterStatus==index?SiteConfig().mainColor:Colors.grey[200]),
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              WidgetHelper().textQ("${FunctionHelper.arrOptDate[index]}", 10,Colors.grey, FontWeight.bold),
-                              // Icon(Icons.keyboard_arrow_down,size: 17.0,color: Colors.grey,),
-                            ],
-                          ),
-                        )
+                          },
+                          Container(
+                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                            decoration: BoxDecoration(
+                              border: Border.all(width:filterStatus==index?2.0:1.0,color: filterStatus==index?LightColor.orange:Colors.grey[200]),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                WidgetHelper().textQ("${FunctionHelper.arrOptDate[index]}", scaler.getTextSize(9),Colors.grey, FontWeight.bold),
+                                // Icon(Icons.keyboard_arrow_down,size: 17.0,color: Colors.grey,),
+                              ],
+                            ),
+                          )
+                      ),
                     );
                   },
                 )
@@ -264,29 +204,15 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                                       children: [
                                         Container(
                                           child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Column(
-                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      Icon(AntDesign.home,size: 10,color: Colors.black87),
-                                                      SizedBox(width: 5.0),
-                                                      WidgetHelper().textQ("${val.tenant.toUpperCase()}",scaler.getTextSize(8),Colors.black87,FontWeight.normal),
-                                                    ],
-                                                  ),
-                                                  SizedBox(height: 5.0),
-                                                  WidgetHelper().textQ("${val.kdTrx}",scaler.getTextSize(8),Colors.black87,FontWeight.normal),
-
-                                                  // WidgetHelper().textQ("${DateFormat.yMd().format(val.createdAt.toLocal())} ${DateFormat.Hm().format(val.createdAt.toLocal())}",10,SiteConfig().accentColor,FontWeight.normal),
-                                                ],
-                                              )
+                                              WidgetHelper().textQ("${val.tenant.toUpperCase()}",scaler.getTextSize(9),LightColor.titleTextColor,FontWeight.bold),
+                                              SizedBox(height: 2.0),
+                                              WidgetHelper().textQ("${val.kdTrx}",scaler.getTextSize(9),LightColor.black,FontWeight.normal),
                                             ],
                                           ),
                                         ),
                                         WidgetHelper().myStatus(context,val.status)
-
                                       ],
                                     ),
                                   ),

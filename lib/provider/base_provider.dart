@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' show Client;
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/helper/user_helper.dart';
@@ -11,13 +12,21 @@ import 'package:netindo_shop/model/general_model.dart';
 class BaseProvider{
   Client client = Client();
   final userRepository = UserHelper();
-  Future getProvider(url,param)async{
+  Future getProvider(url,param) async {
+
     try{
       final token= await userRepository.getDataUser('token');
-      Map<String, String> head={'Authorization':token,'username': SiteConfig().username, 'password': SiteConfig().password,'myconnection':SiteConfig().connection};
+      Map<String, String> head={
+        'Authorization':token,
+        'username': SiteConfig().username,
+        'password': SiteConfig().password,
+        'myconnection':SiteConfig().connection,
+        "HttpHeaders.contentTypeHeader": "application/json",
+        'Cache-Control':'private, max-age=600'
+      };
+      print("${SiteConfig().baseUrl}$url");
       final response = await client.get("${SiteConfig().baseUrl}$url", headers:head).timeout(Duration(seconds: SiteConfig().timeout));
       if (response.statusCode == 200) {
-        // print("GET PROVIDER RESPONSE $url ${response.body}");
         return param(response.body);
       }
     }on TimeoutException catch (_) {

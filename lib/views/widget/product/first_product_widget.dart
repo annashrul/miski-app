@@ -12,6 +12,7 @@ import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/user_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/views/screen/product/detail_product_screen.dart';
+import 'package:netindo_shop/views/screen/product/product_detail_screen.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 class BadgesQ extends StatelessWidget {
   final String val;
@@ -81,7 +82,6 @@ class _ProductWidgetState extends State<ProductWidget> {
   @override
   Widget build(BuildContext context) {
     Random random = new Random();
-    int random_number = random.nextInt(10000000);
     if(int.parse(widget.stock)>0){
       child=Container();
       if(int.parse(widget.disc1)!=0&&int.parse(widget.disc2)!=0){
@@ -101,108 +101,98 @@ class _ProductWidgetState extends State<ProductWidget> {
       children: [
         Container(
           decoration: BoxDecoration(
-              color: Theme.of(context).focusColor.withOpacity(0.1),
+              color: Colors.white,
               borderRadius: BorderRadius.circular(10),
-          ),
-          child:  WidgetHelper().myPress(
-                  ()async{
-                await Future.delayed(Duration(milliseconds: 90));
-                await insertProductClick();
-                WidgetHelper().myPushAndLoad(context, DetailProducrScreen(id: widget.id), widget.countCart);
-              },
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(6),
-                        topRight: Radius.circular(6),
-                      ),
-                    ),
-                    child: WidgetHelper().baseImage(widget.gambar),
-                  ),
-                  SizedBox(height: 12),
-                  Padding(
-                    padding:scaler.getPadding(0,1),
-                    child: WidgetHelper().textQ(widget.title, scaler.getTextSize(9),SiteConfig().darkMode,FontWeight.normal,maxLines:3 ),
-                  ),
-                  Padding(
-                    padding: scaler.getPadding(0,1),
-                    child: Row(
-                      children: [
-                        WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.hargaCoret))}",  scaler.getTextSize(9),SiteConfig().moneyColor,FontWeight.normal,textDecoration: TextDecoration.lineThrough),
-                        SizedBox(width: 5),
-                        WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.harga))}",  scaler.getTextSize(9),SiteConfig().moneyColor,FontWeight.bold),
-                      ],
-                    ),
-                  ),
-                  // if(int.parse(widget.stock)>0) Padding(
-                  //   padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 0),
-                  //   child: LinearPercentIndicator(
-                  //     animation: true,
-                  //     lineHeight: 5.0,
-                  //     animationDuration: 2500,
-                  //     percent: 0.8,
-                  //     linearStrokeCap: LinearStrokeCap.roundAll,
-                  //     // progressColor: Colors.green,
-                  //     // lineHeigsht: 5.0,
-                  //     // percent: 0.5,
-                  //     backgroundColor: mode?Colors.white:Colors.grey[200],
-                  //     progressColor: mode?SiteConfig().darkMode:SiteConfig().mainColor,
-                  //   ),
-                  // ),
-
-                  if(widget.stockSales!='') Padding(
-                    padding:scaler.getPadding(0,1),
-                    child: WidgetHelper().textQ("${widget.stockSales} terjual",  scaler.getTextSize(9),Colors.grey,FontWeight.normal),
-                  ),
-                  double.parse(widget.rating)>0?Padding(
-                    padding:scaler.getPadding(0,1),
-                    child:  RatingBar.builder(
-                      itemSize: 15.0,
-                      initialRating: double.parse(widget.rating),
-                      direction: Axis.horizontal,
-                      itemCount: 5,
-                      itemPadding: EdgeInsets.only(right: 4.0),
-                      itemBuilder: (context, index) {
-                        switch (index) {
-                          case 0:
-                            return Icon(
-                              Icons.sentiment_very_dissatisfied,
-                              color: Colors.red,
-                            );
-                          case 1:
-                            return Icon(
-                              Icons.sentiment_dissatisfied,
-                              color: Colors.redAccent,
-                            );
-                          case 2:
-                            return Icon(
-                              Icons.sentiment_neutral,
-                              color: Colors.amber,
-                            );
-                          case 3:
-                            return Icon(
-                              Icons.sentiment_satisfied,
-                              color: Colors.lightGreen,
-                            );
-                          case 4:
-                            return Icon(
-                              Icons.sentiment_very_satisfied,
-                              color: Colors.green,
-                            );
-                          default:
-                            return Container();
-                        }
-                      },
-                      onRatingUpdate:null,
-                    ),
-                  ):Container(),
-                  SizedBox(height: 15),
-                ],
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey[200],
+                spreadRadius: 0,
+                blurRadius: 5,
+                // offset: Offset(2, 2), // changes position of shadow
               ),
-            color:Colors.black38
+            ],
+          ),
+          child: WidgetHelper().myRipple(
+            callback: ()async{
+              await insertProductClick();
+              WidgetHelper().myPushAndLoad(context, ProductDetailPage(id: widget.id), widget.countCart);
+            },
+            child:  Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(6),
+                      topRight: Radius.circular(6),
+                    ),
+                  ),
+                  child: WidgetHelper().baseImage(widget.gambar),
+                ),
+                SizedBox(height: 12),
+                Padding(
+                  padding:scaler.getPadding(0,1),
+                  child: WidgetHelper().textQ(widget.title, scaler.getTextSize(9),SiteConfig().darkMode,FontWeight.normal,maxLines:3 ),
+                ),
+                Padding(
+                  padding: scaler.getPadding(0,1),
+                  child: Row(
+                    children: [
+                      WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.hargaCoret))}",  scaler.getTextSize(9),SiteConfig().moneyColor,FontWeight.normal,textDecoration: TextDecoration.lineThrough),
+                      SizedBox(width: 5),
+                      WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.harga))}",  scaler.getTextSize(9),SiteConfig().moneyColor,FontWeight.bold),
+                    ],
+                  ),
+                ),
+                if(widget.stockSales!='') Padding(
+                  padding:scaler.getPadding(0,1),
+                  child: WidgetHelper().textQ("${widget.stockSales} terjual",  scaler.getTextSize(9),Colors.grey,FontWeight.normal),
+                ),
+                double.parse(widget.rating)>0?Padding(
+                  padding:scaler.getPadding(0,1),
+                  child:  RatingBar.builder(
+                    itemSize: 15.0,
+                    initialRating: double.parse(widget.rating),
+                    direction: Axis.horizontal,
+                    itemCount: 5,
+                    itemPadding: EdgeInsets.only(right: 4.0),
+                    itemBuilder: (context, index) {
+                      switch (index) {
+                        case 0:
+                          return Icon(
+                            Icons.sentiment_very_dissatisfied,
+                            color: Colors.red,
+                          );
+                        case 1:
+                          return Icon(
+                            Icons.sentiment_dissatisfied,
+                            color: Colors.redAccent,
+                          );
+                        case 2:
+                          return Icon(
+                            Icons.sentiment_neutral,
+                            color: Colors.amber,
+                          );
+                        case 3:
+                          return Icon(
+                            Icons.sentiment_satisfied,
+                            color: Colors.lightGreen,
+                          );
+                        case 4:
+                          return Icon(
+                            Icons.sentiment_very_satisfied,
+                            color: Colors.green,
+                          );
+                        default:
+                          return Container();
+                      }
+                    },
+                    onRatingUpdate:null,
+                  ),
+                ):Container(),
+                SizedBox(height: 15),
+              ],
+            )
           ),
         ),
 

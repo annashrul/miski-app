@@ -6,7 +6,6 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/site_config.dart';
-import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/database_helper.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/user_helper.dart';
@@ -45,7 +44,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       email = var_email;
       gender = var_gender;
       birthDate = DateTime.parse(var_birthDate);
-      isLoading=false;
+
     });
   }
   bool isLoading=false;
@@ -62,17 +61,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     ScreenScaler scaler = ScreenScaler()..init(context);
 
-    return isLoading?Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          WidgetHelper().loadingWidget(context,color: Colors.black)
-        ],
-      ),
-    ): RefreshWidget(
+    return RefreshWidget(
       widget: SingleChildScrollView(
-        padding:scaler.getPadding(1,3),
+        padding:scaler.getPadding(1,2),
         child:Column(
           children: <Widget>[
             wrapperHeader(context,[
@@ -87,16 +78,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Column(
                 children: FunctionHelper.arrOptDate.asMap().map((i,k) =>  MapEntry(
                     i,
-                    wrapperContent(context, k, icon: Ionicons.md_arrow_dropright_circle, callback: (){WidgetHelper().myPush(context,WrapperScreen(currentTab: 0,otherParam: i));}, i: i)
+                    wrapperContent(context, k, icon: Ionicons.md_arrow_dropright_circle, callback: (){WidgetHelper().myPush(context,HistoryTransactionScreen(status: i));}, i: i)
                 )).values.toList(),
               )
             ]),
             SizedBox(height:scaler.getHeight(1)),
             wrapperHeader(context,[
               wrapperTitle(context,(){},AntDesign.setting,'Pengaturan Umum'),
-              // wrapperContent(context,'Alamat',i: 0,icon: Icons.arrow_right,callback: (){WidgetHelper().myPush(context,AddressScreen());}),
-              wrapperContent(context,'Kebijakan & Privasi',i: 1,icon: Ionicons.md_arrow_dropright_circle),
-              wrapperContent(context,'Keluar',i: 0,icon: Ionicons.md_arrow_dropright_circle,callback: ()async{
+              wrapperContent(context,'Kebijakan & Privasi',i: 0,icon: Ionicons.md_arrow_dropright_circle),
+              wrapperContent(context,'Keluar',i: 1,icon: Ionicons.md_arrow_dropright_circle,callback: ()async{
                 WidgetHelper().notifDialog(context,"Perhatian !!","Anda yakin akan keluar dari aplikas ??", (){Navigator.pop(context);}, ()async{
                   final id = await UserHelper().getDataUser('id');
                   await db.update(UserQuery.TABLE_NAME, {'id':"${id.toString()}","is_login":"0"});
@@ -140,6 +130,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget wrapperContent(BuildContext context,String title,{Function callback, IconData icon,String desc,int i=0}){
     ScreenScaler scaler = ScreenScaler()..init(context);
+    return WidgetHelper().myRipple(
+      isRadius: false,
+      callback:callback!=null?callback:(){},
+      child: Container(
+          color: i%2==0?Color(0xFFEEEEEE):Colors.transparent,
+          padding:scaler.getPadding(1,2),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              WidgetHelper().textQ(title,scaler.getTextSize(9),SiteConfig().darkMode,FontWeight.bold),
+              if(icon!=null)Icon(icon,color:Theme.of(context).focusColor),
+              if(desc!=null)WidgetHelper().textQ(desc,10,Theme.of(context).focusColor,FontWeight.normal),
+            ],
+          )
+      )
+    );
     return FlatButton(
       color: i%2==0?Color(0xFFEEEEEE):Colors.transparent,
       padding:scaler.getPadding(0,2),
@@ -147,7 +153,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          WidgetHelper().textQ(title,10,SiteConfig().darkMode,FontWeight.bold),
+          WidgetHelper().textQ(title,scaler.getTextSize(9),SiteConfig().darkMode,FontWeight.bold),
           if(icon!=null)Icon(icon,color:Theme.of(context).focusColor),
           if(desc!=null)WidgetHelper().textQ(desc,10,Theme.of(context).focusColor,FontWeight.normal),
         ],

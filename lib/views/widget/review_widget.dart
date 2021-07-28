@@ -3,7 +3,6 @@ import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:netindo_shop/config/site_config.dart';
-import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 
 class ReviewWidget extends StatefulWidget {

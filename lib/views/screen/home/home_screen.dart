@@ -8,7 +8,6 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/site_config.dart';
-import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/database_helper.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/skeleton_helper.dart';
@@ -20,6 +19,7 @@ import 'package:netindo_shop/provider/base_provider.dart';
 import 'package:netindo_shop/provider/product_provider.dart';
 import 'package:netindo_shop/views/screen/product/cart_screen.dart';
 import 'package:netindo_shop/views/screen/product/detail_product_screen.dart';
+import 'package:netindo_shop/views/screen/product/product_detail_screen.dart';
 import 'package:netindo_shop/views/screen/wrapper_screen.dart';
 import 'package:netindo_shop/views/widget/cart_widget.dart';
 import 'package:netindo_shop/views/widget/empty_widget.dart';
@@ -27,6 +27,7 @@ import 'package:netindo_shop/views/widget/loading_widget.dart';
 import 'package:netindo_shop/views/widget/product/first_product_widget.dart';
 import 'package:netindo_shop/views/widget/product/second_product_widget.dart';
 import 'package:netindo_shop/views/widget/refresh_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -51,10 +52,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
   String q='',group='',category='',brand='';
 
   Future getProduct()async{
-    final prod = await ProductProvider().getProduct({'perpage':perpage,'id_tenant':widget.id,'id_brand':brand});
+    String url = "barang?page=1&perpage=$perpage&id_tenant=${widget.id}";
+    final data = await BaseProvider().getProvider(url,listProductTenantModelFromJson);
+    ListProductTenantModel res = ListProductTenantModel.fromJson(data.toJson());
     setState(() {
-      returnProductLocal = prod['data'];
-      total=prod['total'];
+      productTenantModel = res;
+      total=res.result.total;
       isLoading=false;
       isLoadmore=false;
     });
@@ -137,9 +140,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
   }
   Future countCart() async{
     final res = await BaseProvider().countCart(widget.id);
-    setState(() {
-      totalCart = res;
-    });
+    if(this.mounted) setState(() {totalCart = res;});
   }
   Future loadData(param)async{
     setState(() {
@@ -223,8 +224,38 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
   @override
   Widget build(BuildContext context) {
     ScreenScaler scaler = ScreenScaler()..init(context);
-
     return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: WidgetHelper().textQ("${widget.nama.toUpperCase()}",  scaler.getTextSize(10),SiteConfig().secondColor,FontWeight.bold),
+        actions: <Widget>[
+          new CartWidget(
+            iconColor: SiteConfig().secondColor,
+            labelColor: totalCart>0?Colors.redAccent:Colors.transparent,
+            labelCount: totalCart,
+            callback: (){
+              if(totalCart>0){
+                WidgetHelper().myPushAndLoad(context, CartScreen(idTenant: widget.id), countCart);
+              }
+            },
+          ),
+          IconButton(
+            icon: Icon(
+                AntDesign.filter,color: SiteConfig().secondColor
+            ),
+            onPressed: () {
+              WidgetHelper().myModal(
+                  context,
+                  ModalSearch(idTenant:widget.id,callback:(par){
+                    q=par;
+                    isLoading=true;
+                    getProduct();
+                  })
+              );
+            },
+          )
+        ],
+      ),
       key: _scaffoldKey,
       body: buildContents(context),
       backgroundColor:Colors.white,
@@ -249,53 +280,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
       widget: CustomScrollView(
           controller: controller,
           slivers: <Widget>[
-            SliverAppBar(
-              titleSpacing: scaler.getHeight(1),
-              title:WidgetHelper().textQ("${widget.nama.toUpperCase()}",  scaler.getTextSize(10),SiteConfig().secondColor,FontWeight.bold),
-              stretch: true,
-              onStretchTrigger: (){
-                return;
-              },
-              brightness: Brightness.light,
-              backgroundColor:  Colors.white,
-              snap: false,
-              floating: false,
-              pinned: true,
-              automaticallyImplyLeading: false,
-              // leading:IconButton(
-              //   icon: new Icon(UiIcons.home, color:widget.mode?Colors.white:SiteConfig().secondColor,size: 28,),
-              //   onPressed:null,
-              // ),
-              actions: <Widget>[
-                new CartWidget(
-                  iconColor: SiteConfig().secondColor,
-                  labelColor: totalCart>0?Colors.redAccent:Colors.transparent,
-                  labelCount: totalCart,
-                  callback: (){
-                    if(totalCart>0){
-                      WidgetHelper().myPushAndLoad(context, CartScreen(idTenant: widget.id), countCart);
-                    }
-                  },
-                ),
-                SizedBox(width: scaler.getWidth(2)),
-                Container(
-                  margin: scaler.getMargin(0,1),
-                  child:  WidgetHelper().iconAppbar(context,(){
-                    WidgetHelper().myModal(
-                        context,
-                        ModalSearch(idTenant:widget.id,callback:(par){
-                          q=par;
-                          isLoading=true;
-                          getProduct();
-                        })
-                    );
-                  }, AntDesign.filter,color: SiteConfig().secondColor,),
-                )
-              ],
-              expandedHeight:scaler.getHeight(20),
-              elevation: 0,
-              flexibleSpace:sliderQ(context),
-            ),
+
             SliverList(
               delegate: SliverChildListDelegate([
                 Offstage(
@@ -306,47 +291,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
-                        if(resFavoriteProduct.length>0) Padding(
-                          padding: scaler.getPadding(1,2),
-                          child: WidgetHelper().titleQ(context,"Wujudkan Barang Favorite Kamu",param: 'ad',callback: (){
-                            WidgetHelper().myPush(context,WrapperScreen(currentTab: 4));
-                          },icon: AntDesign.hearto,color: SiteConfig().secondColor),
-                        ),
-                        isLoadingFav?Container(
-                          height: MediaQuery.of(context).size.height/3,
-                          width:  MediaQuery.of(context).size.width,
-                          padding: const EdgeInsets.symmetric(horizontal:0, vertical: 0),
-                          child:LoadingSecondProduct(),
-                        ):resFavoriteProduct.length>0?Container(
-                            height: MediaQuery.of(context).size.height/3,
-                            width:  MediaQuery.of(context).size.width,
-                            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                            child:ListView.builder(
-                              padding: EdgeInsets.all(0.0),
-                              scrollDirection: Axis.horizontal,
-                              itemCount: resFavoriteProduct.length,
-                              itemBuilder: (_, index) {
-                                var val=resFavoriteProduct[index];
-                                return SecondProductWidget(
-                                    id:val['id_product'],
-                                    gambar:val['gambar'],
-                                    title:val['title'],
-                                    harga:val['harga'],
-                                    hargaCoret:val['harga_coret'],
-                                    rating:val['rating'],
-                                    stock:val['stock'],
-                                    stockSales:val['stock_sales'],
-                                    disc1:val['disc1'],
-                                    disc2:val['disc2'],
-                                    countCart:(){getFavorite();countCart();}
-                                );
-                              },
-                            )
-                        ):Text(''),
-                        isLoadmore?Container(
-                          padding: const EdgeInsets.only(left: 20,right:20,top:0,bottom:0),
-                          child: LoadingProductTenant(tot: 4),
-                        ):Container(),
+                        sliderQ(context),
                       ],
                     ),
                   ),
@@ -365,9 +310,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                   itemBuilder: (context, index) {
                     double _marginLeft = 0;
                     (index == 0) ? _marginLeft = 10 : _marginLeft = 0;
+
                     return Container(
                       padding: EdgeInsets.symmetric(horizontal: 0),
-                      margin: EdgeInsets.only(left:_marginLeft, top: 10, bottom: 10),
+                      margin: EdgeInsets.only(left:_marginLeft,right: 5, top: 15, bottom: 15),
+                      //
                       child: WidgetHelper().myPress((){
                         setState(() {
                           brand=returnBrand[index]['id'];
@@ -380,7 +327,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                         padding: EdgeInsets.only(left: 10,right:10),
                         decoration: BoxDecoration(
                           color: brand==returnBrand[index]['id']?SiteConfig().mainColor:SiteConfig().secondColor,
-                          borderRadius: BorderRadius.circular(50),
+                          borderRadius: BorderRadius.circular(6),
                         ),
                         child: Row(
                           children: <Widget>[
@@ -388,12 +335,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                               duration: Duration(milliseconds: 350),
                               curve: Curves.easeInOut,
                               vsync: this,
-                              child: WidgetHelper().textQ(returnBrand[index]['title'],scaler.getTextSize(9), brand==returnBrand[index]['id']?Colors.white:Colors.white,FontWeight.bold,letterSpacing: 2),
+                              child: WidgetHelper().textQ(returnBrand[index]['title'],scaler.getTextSize(9), brand==returnBrand[index]['id']?Colors.white:Colors.white,FontWeight.normal),
                             )
                           ],
                         ),
                       )),
-
                     );
                   },
                   scrollDirection: Axis.horizontal,
@@ -410,9 +356,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
                           isLoading?Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
                             child: LoadingProductTenant(tot: 10),
-                          ):returnProductLocal.length>0?Container(
+                          ):productTenantModel.result.data.length>0?Container(
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
                               child:new StaggeredGridView.countBuilder(
                                 padding: EdgeInsets.all(0.0),
@@ -420,20 +366,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                                 physics: ClampingScrollPhysics(),
                                 shrinkWrap: true,
                                 crossAxisCount: 4,
-                                itemCount: returnProductLocal.length,
+                                itemCount: productTenantModel.result.data.length,
                                 itemBuilder: (BuildContext context, int index) {
-                                  var valProductServer =  returnProductLocal[index];
+                                  var valProductServer =  productTenantModel.result.data[index];
                                   return ProductWidget(
-                                    id: valProductServer['id_product'],
-                                    gambar: valProductServer['gambar'],
-                                    title: '${valProductServer['title']}',
-                                    harga: valProductServer['harga'],
-                                    hargaCoret: valProductServer['harga_coret'],
-                                    rating: valProductServer['rating'].toString(),
-                                    stock: valProductServer['stock'].toString(),
-                                    stockSales: valProductServer['stock_sales'].toString(),
-                                    disc1: valProductServer['disc1'].toString(),
-                                    disc2: valProductServer['disc2'].toString(),
+                                    id: valProductServer.id,
+                                    gambar: valProductServer.gambar,
+                                    title: valProductServer.title,
+                                    harga: valProductServer.harga,
+                                    hargaCoret: valProductServer.hargaCoret,
+                                    rating: valProductServer.rating,
+                                    stock: valProductServer.stock,
+                                    stockSales: valProductServer.stockSales,
+                                    disc1: valProductServer.disc1,
+                                    disc2: valProductServer.disc2,
                                     countCart: (){
                                       countCart();
                                       getFavorite();
@@ -453,11 +399,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                       ),
                     ),
                   ),
-
                 ]),
               ),
             )
-
           ]
       ),
       callback: (){_handleRefresh();},
@@ -465,7 +409,70 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
   }
   Widget sliderQ(BuildContext context){
     ScreenScaler scaler = ScreenScaler()..init(context);
-
+    return isLoadingSlider?Padding(
+      padding: EdgeInsets.all(20.0),
+      child: WidgetHelper().baseLoading(context,Container(
+        height: scaler.getHeight(23),
+        width: double.infinity,
+        color: Colors.white,
+      )),
+      // child: SkeletonFrame(width: double.infinity,height:250)
+    ):Stack(
+      alignment: AlignmentDirectional.topStart,
+      children: <Widget>[
+        CarouselSlider(
+            options: CarouselOptions(
+              autoPlay: true,
+              height: scaler.getHeight(20),
+              onPageChanged: (index,reason) {
+                setState(() {
+                  _current=index;
+                });
+              },
+            ),
+            items:globalPromoModel.result.data.map((e){
+              return Builder(
+                builder: (BuildContext context) {
+                  return Container(
+                    margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                    child:WidgetHelper().myRipple(
+                      isRadius: false,
+                      child: Image.asset(
+                        "assets/img/slide1.jpg",
+                        fit: BoxFit.fill,
+                        height: scaler.getHeight(20),
+                        width:MediaQuery.of(context).size.width,
+                      )
+                    ),
+                  );
+                },
+              );
+            }).toList()
+        ),
+        Positioned(
+          top: scaler.getHeight(17),
+          child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: globalPromoModel.result.data.map((e){
+                return Container(
+                  width: 20.0,
+                  height: 3.0,
+                  margin: EdgeInsets.symmetric(vertical: 0.0, horizontal: 0.0),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(8),
+                      ),
+                      color: _current == globalPromoModel.result.data.indexOf(e)
+                          ? Theme.of(context).hintColor
+                          : Theme.of(context).hintColor.withOpacity(0.3)),
+                  // color: _current ==  detailProductTenantModel.result.listImage.indexOf(e)? Theme.of(context).hintColor : Theme.of(context).hintColor.withOpacity(0.3)),
+                );
+              }).toList()
+          ),
+        )
+      ],
+    );
     return FlexibleSpaceBar(
       stretchModes: [
         StretchMode.zoomBackground,

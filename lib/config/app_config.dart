@@ -61,14 +61,13 @@ class Colors {
   Color secondDarkColor(double opacity) {
     return this._secondDarkColor.withOpacity(opacity);
   }
-
   Color accentDarkColor(double opacity) {
     return this._accentDarkColor.withOpacity(opacity);
   }
 }
 
 
-class ColorsDarkMode{
+class ColorsDarkMode  {
   static final backgroundColor = Color(0xFF2C2C2C);
   static final titleColor = Color(0xFF2C2C2C);
   static final contentColor = Color(0xFF2C2C2C);

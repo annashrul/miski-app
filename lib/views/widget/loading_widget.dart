@@ -110,11 +110,30 @@ class _LoadingProductTenantState extends State<LoadingProductTenant> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              WidgetHelper().baseLoading(context,Container(width: double.infinity,height: 130.0,color: site?Theme.of(context).focusColor.withOpacity(0.1):Colors.white)),
+              WidgetHelper().baseLoading(context,Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(6),
+                    color: Colors.white
+                ),
+                  width: double.infinity,
+                  height: 130.0,
+
+              )),
               SizedBox(height: 12),
-              WidgetHelper().baseLoading(context,Container(width: MediaQuery.of(context).size.width/2,height: 5.0,color: site?Theme.of(context).focusColor.withOpacity(0.1):Colors.white)),
+              WidgetHelper().baseLoading(context,Container(decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(6),
+                  color: Colors.white
+              ),width: MediaQuery.of(context).size.width/2,height: 5.0)),
               SizedBox(height:5),
-              WidgetHelper().baseLoading(context,Container(width: MediaQuery.of(context).size.width/2,height: 5.0,color: site?Theme.of(context).focusColor.withOpacity(0.1):Colors.white)),
+              WidgetHelper().baseLoading(context,Container(decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(6),
+                  color: Colors.white
+              ),width: MediaQuery.of(context).size.width/3,height: 5.0)),
+              SizedBox(height:5),
+              WidgetHelper().baseLoading(context,Container(decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(6),
+                  color: Colors.white
+              ),width: MediaQuery.of(context).size.width/4,height: 5.0)),
             ],
           ),
         );

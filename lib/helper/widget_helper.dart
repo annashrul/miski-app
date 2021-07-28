@@ -8,18 +8,61 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:netindo_shop/config/light_color.dart';
 import 'package:netindo_shop/config/site_config.dart';
-import 'package:netindo_shop/config/ui_icons.dart';
-import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/screen_util_helper.dart';
-import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/helper/user_helper.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:touch_ripple_effect/touch_ripple_effect.dart';
 
 class WidgetHelper{
+  rating(String rating){
+    return  RatingBar.builder(
+      itemSize: 15.0,
+      initialRating: double.parse(rating),
+      direction: Axis.horizontal,
+      itemCount: 5,
+      itemPadding: EdgeInsets.only(right: 4.0),
+      itemBuilder: (context, index) {
+        switch (index) {
+          case 0:
+            return Icon(
+              Icons.sentiment_very_dissatisfied,
+              color: Colors.red,
+            );
+          case 1:
+            return Icon(
+              Icons.sentiment_dissatisfied,
+              color: Colors.redAccent,
+            );
+          case 2:
+            return Icon(
+              Icons.sentiment_neutral,
+              color: Colors.amber,
+            );
+          case 3:
+            return Icon(
+              Icons.sentiment_satisfied,
+              color: Colors.lightGreen,
+            );
+          case 4:
+            return Icon(
+              Icons.sentiment_very_satisfied,
+              color: Colors.green,
+            );
+          default:
+            return Container();
+        }
+      },
+      onRatingUpdate:null,
+    );
+  }
+
+
   animShakeWidget(BuildContext context,Widget child,{bool enable=true}){
 
     return ShakeAnimatedWidget(
@@ -79,14 +122,14 @@ class WidgetHelper{
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
       decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(0)), color:color),
-      child: WidgetHelper().textQ(txt, scaler.getTextSize(8),Colors.white,FontWeight.bold),
+      child: WidgetHelper().textQ(txt, scaler.getTextSize(9),Colors.white,FontWeight.bold),
     );
   }
 
 
   void showFloatingFlushbar(BuildContext context,String param, String desc) {
     Flushbar(
-      flushbarPosition: FlushbarPosition.TOP,
+      flushbarPosition: FlushbarPosition.BOTTOM,
       flushbarStyle: FlushbarStyle.FLOATING,
       reverseAnimationCurve: Curves.decelerate,
       forwardAnimationCurve: Curves.elasticOut,
@@ -205,6 +248,7 @@ class WidgetHelper{
     );
   }
   textQ(String txt,double size,Color color,FontWeight fontWeight,{double letterSpacing=0,TextDecoration textDecoration,TextAlign textAlign = TextAlign.left,int maxLines=2}){
+    TextStyle myText = GoogleFonts.robotoCondensed();
     return RichText(
         textAlign: textAlign,
         maxLines: maxLines,
@@ -212,7 +256,14 @@ class WidgetHelper{
         softWrap: true,
         text: TextSpan(
           text:txt,
-          style: TextStyle(letterSpacing:letterSpacing,decoration: textDecoration, fontSize:size,color: color,fontFamily:SiteConfig().fontStyle,fontWeight:fontWeight,),
+          style: myText.copyWith(
+              letterSpacing:letterSpacing,
+              decoration: textDecoration,
+              fontSize:size,
+              color: color,
+              fontWeight:fontWeight
+          )
+          // style: TextStyle(letterSpacing:letterSpacing,decoration: textDecoration, fontSize:size,color: color,fontFamily:SiteConfig().fontStyle,fontWeight:fontWeight,),
         )
     );
   }
@@ -253,17 +304,17 @@ class WidgetHelper{
               children: [
                 Icon(
                   icon,
-                  color: SiteConfig().secondColor,
+                  color: LightColor.black,
                   size: scaler.getTextSize(12),
                 ),
                 SizedBox(width: scaler.getWidth(1)),
-                WidgetHelper().textQ(txt, scaler.getTextSize(9), color,FontWeight.bold,textAlign: textAlign)
+                WidgetHelper().textQ(txt, scaler.getTextSize(10), LightColor.black,FontWeight.normal,textAlign: textAlign)
               ],
             ),
           ),
           param==''?Text(''):Align(
             alignment: Alignment.centerRight,
-            child: Icon(Ionicons.ios_arrow_dropright_circle,color: SiteConfig().secondColor,size: scaler.getTextSize(12)),
+            child: Icon(Octicons.triangle_right,color:LightColor.black,size: scaler.getTextSize(12)),
           )
         ],
       ),
@@ -304,12 +355,10 @@ class WidgetHelper{
     );
   }
 
-  appBarWithButton(BuildContext context, title,Function callback,List<Widget> widget,{Brightness brightness=Brightness.light}){
+  appBarWithButton(BuildContext context, title,Function callback,List<Widget> widget,{String param="default",Brightness brightness=Brightness.light}){
     ScreenUtilHelper.instance = ScreenUtilHelper.getInstance()..init(context);
     ScreenUtilHelper.instance = ScreenUtilHelper(allowFontScaling: false)..init(context);
-    print("TEMA ${brightness.index}");
     ScreenScaler scaler = ScreenScaler()..init(context);
-
     return  AppBar(
       elevation: 0.0,
       backgroundColor: brightness.index==1?Colors.white:Color(0xFF2C2C2C), // status bar color
@@ -319,7 +368,11 @@ class WidgetHelper{
         padding: scaler.getPadding(0,0),
         icon: new Icon(AntDesign.back, color:SiteConfig().secondColor,size: scaler.getTextSize(13)),
         onPressed: (){
-          callback();
+          if(param=="default"){
+            Navigator.pop(context);
+          }else{
+            callback();
+          }
         },
       ),
       actions:widget,// status bar brightness
@@ -385,7 +438,16 @@ class WidgetHelper{
     );
   }
 
-  myPress(Function callback,Widget child,{Color color=Colors.black38}){
+  myRipple({Widget child,Function callback,bool isRadius=true}){
+    return TouchRippleEffect(
+      borderRadius: BorderRadius.circular(isRadius?10:0),
+      rippleColor: Colors.black26,
+      onTap: callback,
+      child: child,
+    );
+  }
+
+  myPress(Function callback,Widget child,{Color color=Colors.black26}){
     return InkWell(
       highlightColor:color,
       splashColor:color,

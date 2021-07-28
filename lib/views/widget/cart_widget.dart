@@ -3,9 +3,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
-import 'package:netindo_shop/config/ui_icons.dart';
-import 'package:netindo_shop/helper/function_helper.dart';
-import 'package:netindo_shop/helper/widget_helper.dart';
 
 class CartWidget extends StatelessWidget {
   const CartWidget({
@@ -37,11 +34,11 @@ class CartWidget extends StatelessWidget {
             child: Icon(
               AntDesign.shoppingcart,
               color: this.iconColor,
-              size: scaler.getTextSize(15),
+              // size: scaler.getTextSize(15),
             ),
           ),
           Positioned(
-            left: 15,
+            left: 10,
             top:10,
             child: Container(
               // child:WidgetHelper().textQ(this.labelCount.toString(), 10, Colors.white,FontWeight.bold,textAlign: TextAlign.center,),

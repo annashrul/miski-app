@@ -9,7 +9,6 @@ import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:intl/intl.dart';
 import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/site_config.dart';
-import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/database_helper.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
@@ -47,7 +46,6 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
 
   Future getDetail()async{
     var res = await BaseProvider().getProvider("barang/${widget.id}", detailProductTenantModelFromJson);
-    // print(res);
     if(res==SiteConfig().errTimeout||res==SiteConfig().errSocket){
       setState(() {
         isLoading=false;isError=true;
@@ -89,8 +87,6 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
           kelompok = res.result.idKelompok;
         });
         if(varian.length>0){
-          print("VARIAN ${varian[0].id}");
-          print("SUB VARIAN ${subVarian.length}");
           getVarian(0);
           idVarian = varian[0].id;
           if(subVarian.length>0){
@@ -101,10 +97,6 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
         getCountCart();
         getReleatedProduct();
         getReview();
-        // loadReleatedProduct();
-        // loadReview();
-        // getFavorite();
-        // getSubTotal();
         getFavorite();
 
       }
@@ -117,7 +109,6 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
   Future checkingPrice(idTenant,id,kode,idVarian,idSubVarian,qty,price,disc1,disc2,bool isTrue,hargaMaster, hargaVarian, hargaSubVarian)async{
     WidgetHelper().loadingDialog(context,title: 'pengecekan harga bertingkat');
     var res = await FunctionHelper().checkingPriceComplex(idTenant, id, kode, idVarian, idSubVarian, qty.toString(), price.toString(), disc1.toString(), disc2.toString(), isTrue, hargaMaster.toString(), hargaVarian.toString(), hargaSubVarian.toString());
-    print('ceking ${res}');
     Navigator.pop(context);
     int hrg = 0;
     res.forEach((element) {
@@ -197,9 +188,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
       WidgetHelper().showFloatingFlushbar(context,"failed","maaf stock barang kosong");
     }
     else{
-      setState(() {
-        qty+=1;
-      });
+      setState(() {qty+=1;});
       checkingPrice(idTenant, widget.id, kode, idVarian, idSubVarian, qty, harga, diskon1, diskon2, hargaBertingkat.length>0?true:false, hargaMaster, hargaWarna, hargaUkuran);
     }
 

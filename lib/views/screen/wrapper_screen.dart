@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:netindo_shop/config/site_config.dart';
-import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/user_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
+import 'package:netindo_shop/model/tenant/list_tenant_model.dart';
+import 'package:netindo_shop/provider/base_provider.dart';
 import 'package:netindo_shop/views/screen/history/history_transaction_screen.dart';
+import 'package:netindo_shop/views/screen/home/home_screen.dart';
 import 'package:netindo_shop/views/screen/product/favorite_screen.dart';
 import 'package:netindo_shop/views/screen/profile/profile_screen.dart';
 import 'package:netindo_shop/views/screen/ticket/ticket_screen.dart';
 import 'package:netindo_shop/views/widget/cart_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'home/public_home_screen.dart';
 
@@ -28,32 +31,48 @@ class WrapperScreen extends StatefulWidget {
 }
 
 class _WrapperScreenState extends State<WrapperScreen> {
+  Widget currentPage;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   String foto='',nama='';
   final userHelper = UserHelper();
   String check='';String id='';
-
+  String namaTenant='',idTenant='';
+  bool isTenant=true;
   Future loadData() async{
+    // _selectTab(widget.currentTab);
+    SharedPreferences sess = await SharedPreferences.getInstance();
+    bool isBoolTenant=sess.getBool("isTenant");
+    String idt=sess.getString("idTenant");
+    String namat=sess.getString("namaTenant");
+    if(!isBoolTenant){
+      print("CEK STATUS TENANT ${sess.getBool("isTenant")}");
+      print("CEK ID TENANT ${sess.getString("idTenant")}");
+      currentPage = HomeScreen(id:idt,nama:namat);
+    }else{
+      print("CEK STATUS TENANT true");
+      print("CEK ID TENANT kosong");
+      currentPage = PublicHomeScreen();
+    }
     final name = await userHelper.getDataUser('nama');
     final poto = await userHelper.getDataUser('foto');
     setState(() {
+      idTenant=idt;
+      namaTenant=namat;
+      isTenant=isBoolTenant;
       nama = name;
       foto = poto;
     });
   }
 
-  Widget currentPage;
+
 
   @override
   initState() {
-    currentPage = PublicHomeScreen();
-    _selectTab(widget.currentTab);
     super.initState();
     loadData();
   }
   @override
   void didUpdateWidget(WrapperScreen oldWidget) {
-    currentPage = PublicHomeScreen();
     _selectTab(oldWidget.currentTab);
     super.didUpdateWidget(oldWidget);
     loadData();
@@ -64,38 +83,35 @@ class _WrapperScreenState extends State<WrapperScreen> {
       widget.currentTab = tabItem;
       widget.selectedTab = tabItem;
       switch (tabItem) {
+        // case 0:
+        //   widget.currentTitle = 'History';
+        //   currentPage = HistoryTransactionScreen(status:widget.otherParam==null?5:widget.otherParam);
+        //   break;
         case 0:
-          widget.currentTitle = 'History';
-          currentPage = HistoryTransactionScreen(status:widget.otherParam==null?5:widget.otherParam);
-          break;
-        case 1:
           widget.currentTitle = 'Account';
           currentPage = ProfileScreen();
           break;
-        case 2:
+        case 1:
           widget.currentTitle = 'Home';
-          currentPage = PublicHomeScreen();
+          currentPage = isTenant?PublicHomeScreen():HomeScreen(id: idTenant,nama:namaTenant);
           break;
-        case 3:
+        case 2:
           widget.currentTitle = 'Messages';
           currentPage = TicketScreen();
           break;
-        case 4:
-          widget.currentTitle = 'Favorites';
-          currentPage = FavoriteScreen();
-          break;
+        // case 4:
+        //   widget.currentTitle = 'Favorites';
+        //   currentPage = FavoriteScreen();
+        //   break;
       }
     });
   }
-  // static const _kFontFam = 'EcommerceAppUI';
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       key: _scaffoldKey,
       appBar: widget.currentTitle=='Home'?null:WidgetHelper().myAppBarNoButton(context,"Hai, $nama",<Widget>[
-        // new CartWidget(iconColor: Theme.of(context).hintColor, labelColor: Theme.of(context).accentColor),
         Container(
           color: Colors.transparent,
           padding: EdgeInsets.only(right: 20.0,top:10),
@@ -136,10 +152,10 @@ class _WrapperScreenState extends State<WrapperScreen> {
         },
         // this will be set when a new tab is tapped
         items: [
-          BottomNavigationBarItem(
-            icon: Icon(AntDesign.barchart),
-            title: new Container(height: 0.0),
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(AntDesign.barchart),
+          //   title: new Container(height: 0.0),
+          // ),
           BottomNavigationBarItem(
             icon: Icon(AntDesign.profile),
             title: new Container(height: 0.0),
@@ -167,12 +183,15 @@ class _WrapperScreenState extends State<WrapperScreen> {
             icon: new Icon(AntDesign.message1),
             title: new Container(height: 0.0),
           ),
-          BottomNavigationBarItem(
-            icon: new Icon(AntDesign.hearto),
-            title: new Container(height: 0.0),
-          ),
+          // BottomNavigationBarItem(
+          //   icon: new Icon(AntDesign.hearto),
+          //   title: new Container(height: 0.0),
+          // ),
         ],
       ),
     );
   }
 }
+
+
+
