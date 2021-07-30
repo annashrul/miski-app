@@ -27,7 +27,6 @@ class CartWidget extends StatelessWidget {
     return InkWell(
       onTap:callback,
       child: Stack(
-        // alignment: AlignmentDirectional.centerEnd,
         children: <Widget>[
           Padding(
             padding: scaler.getPadding(1,0),

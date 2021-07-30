@@ -4,6 +4,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:netindo_shop/config/site_config.dart';
+import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/user_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
@@ -48,9 +49,9 @@ class _FormReviewWidgetState extends State<FormReviewWidget> {
         Navigator.pop(context);
         if(retry>=3){
           WidgetHelper().notifDialog(context,"Terjadi Kesalahan Server","Silahkan lakukan pembuatan tiket komplain di halaman tiket", (){
-            WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2,));
+            WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: StringConfig.defaultTab,));
           },(){
-            WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2,));
+            WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: StringConfig.defaultTab,));
           },titleBtn1: "kembali",titleBtn2: "home");
         }
         else{
@@ -258,7 +259,6 @@ class _ReviewContentState extends State<ReviewContent> {
       height: MediaQuery.of(context).size.height/1.2,
       padding: EdgeInsets.only(top:10.0,left:0,right:0),
       decoration: BoxDecoration(
-
         color: Colors.white,
         borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0),topRight:Radius.circular(10.0) ),
       ),

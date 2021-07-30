@@ -4,13 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/app_theme.dart';
 import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/views/screen/splash_screen.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
-
-StreamController<bool> isLightTheme = StreamController();
 
 void main()async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +15,6 @@ void main()async{
 }
 
 class MyApp extends StatefulWidget {
-
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -50,7 +46,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title:"NSHOP",
       debugShowCheckedModeBanner: false,
-      // theme: appPrimaryTheme(),
+
       theme: ThemeData(
         dialogBackgroundColor: Colors.white,
         scaffoldBackgroundColor: Colors.white,

@@ -6,6 +6,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:netindo_shop/config/database_config.dart';
+import 'package:netindo_shop/config/light_color.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/helper/database_helper.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
@@ -108,7 +109,6 @@ class _ProductWidgetState extends State<ProductWidget> {
                 color: Colors.grey[200],
                 spreadRadius: 0,
                 blurRadius: 5,
-                // offset: Offset(2, 2), // changes position of shadow
               ),
             ],
           ),
@@ -121,6 +121,7 @@ class _ProductWidgetState extends State<ProductWidget> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Container(
+                  alignment: Alignment.center,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(6),
@@ -132,15 +133,17 @@ class _ProductWidgetState extends State<ProductWidget> {
                 SizedBox(height: 12),
                 Padding(
                   padding:scaler.getPadding(0,1),
-                  child: WidgetHelper().textQ(widget.title, scaler.getTextSize(9),SiteConfig().darkMode,FontWeight.normal,maxLines:3 ),
+                  child: WidgetHelper().textQ(widget.title, scaler.getTextSize(9),LightColor.lightblack,FontWeight.bold,maxLines:3 ),
                 ),
                 Padding(
                   padding: scaler.getPadding(0,1),
-                  child: Row(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.hargaCoret))}",  scaler.getTextSize(9),SiteConfig().moneyColor,FontWeight.normal,textDecoration: TextDecoration.lineThrough),
-                      SizedBox(width: 5),
-                      WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.harga))}",  scaler.getTextSize(9),SiteConfig().moneyColor,FontWeight.bold),
+                      int.parse(widget.hargaCoret)<1?SizedBox():WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(widget.hargaCoret))}",  scaler.getTextSize(9),SiteConfig().accentDarkColor,FontWeight.normal,textDecoration: TextDecoration.lineThrough),
+                      SizedBox(width: int.parse(widget.hargaCoret)<1?0:5),
+                      WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(widget.harga))}",  scaler.getTextSize(9),LightColor.orange,FontWeight.bold),
                     ],
                   ),
                 ),

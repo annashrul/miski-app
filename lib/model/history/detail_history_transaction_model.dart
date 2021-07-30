@@ -67,6 +67,8 @@ class Result {
     this.atasNama,
     this.kodeUnik,
     this.bankCode,
+    this.logoKurir,
+    this.logoTenant,
     this.barang,
   });
 
@@ -103,6 +105,8 @@ class Result {
   String atasNama;
   String kodeUnik;
   String bankCode;
+  String logoKurir;
+  String logoTenant;
   List<Barang> barang;
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
@@ -139,6 +143,8 @@ class Result {
     atasNama: json["atas_nama"],
     kodeUnik: json["kode_unik"],
     bankCode: json["bank_code"],
+    logoKurir: json["logo_kurir"],
+    logoTenant: json["logo_tenant"],
     barang: List<Barang>.from(json["barang"].map((x) => Barang.fromJson(x))),
   );
 
@@ -176,6 +182,8 @@ class Result {
     "atas_nama": atasNama,
     "kode_unik": kodeUnik,
     "bank_code": bankCode,
+    "logo_kurir": logoKurir,
+    "logo_tenant": logoTenant,
     "barang": List<dynamic>.from(barang.map((x) => x.toJson())),
   };
 }
@@ -204,8 +212,8 @@ class Barang {
   String kodeBarang;
   String barang;
   String gambar;
-  String varian;
-  String subvarian;
+  dynamic varian;
+  dynamic subvarian;
   int qty;
   String hargaJual;
   int disc;
@@ -221,8 +229,8 @@ class Barang {
     kodeBarang: json["kode_barang"],
     barang: json["barang"],
     gambar: json["gambar"],
-    varian: json["varian"] == null ? null : json["varian"],
-    subvarian: json["subvarian"] == null ? null : json["subvarian"],
+    varian: json["varian"],
+    subvarian: json["subvarian"],
     qty: json["qty"],
     hargaJual: json["harga_jual"],
     disc: json["disc"],
@@ -239,8 +247,8 @@ class Barang {
     "kode_barang": kodeBarang,
     "barang": barang,
     "gambar": gambar,
-    "varian": varian == null ? null : varian,
-    "subvarian": subvarian == null ? null : subvarian,
+    "varian": varian,
+    "subvarian": subvarian,
     "qty": qty,
     "harga_jual": hargaJual,
     "disc": disc,

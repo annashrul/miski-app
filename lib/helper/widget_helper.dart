@@ -96,7 +96,6 @@ class WidgetHelper{
 
   myStatus(BuildContext context, int param){
     ScreenScaler scaler = ScreenScaler()..init(context);
-
     Color color;
     String txt="";
     if(param==0){
@@ -121,19 +120,25 @@ class WidgetHelper{
     }
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-      decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(0)), color:color),
-      child: WidgetHelper().textQ(txt, scaler.getTextSize(9),Colors.white,FontWeight.bold),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+        border: Border.all(color: color)
+      ),
+      child: WidgetHelper().textQ(txt, scaler.getTextSize(9),color,FontWeight.bold),
     );
   }
 
 
   void showFloatingFlushbar(BuildContext context,String param, String desc) {
     Flushbar(
-      flushbarPosition: FlushbarPosition.BOTTOM,
+
+      flushbarPosition: FlushbarPosition.TOP,
       flushbarStyle: FlushbarStyle.FLOATING,
-      reverseAnimationCurve: Curves.decelerate,
-      forwardAnimationCurve: Curves.elasticOut,
-      padding: EdgeInsets.all(10),
+      // reverseAnimationCurve: Curves.decelerate,
+      // forwardAnimationCurve: Curves.elasticOut,
+      margin:EdgeInsets.only(top: 50),
+      // showProgressIndicator: true,
+
       borderRadius: 0,
       backgroundGradient: LinearGradient(
         colors: param=='success'?[SiteConfig().mainColor, SiteConfig().mainColor]:[Colors.red, Colors.red],
@@ -230,7 +235,7 @@ class WidgetHelper{
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          SpinKitFadingGrid(color:  SiteConfig().mainColor, shape: BoxShape.rectangle),
+          SpinKitFadingGrid(color:  SiteConfig().mainColor, shape: BoxShape.circle),
           // CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.grey), semanticsLabel: 'tunggu sebentar', backgroundColor: Colors.black),
           // SizedBox(width:10.0),
           // textQ("tunggu sebentar ...", 12,Colors.grey,FontWeight.bold)
@@ -267,6 +272,27 @@ class WidgetHelper{
         )
     );
   }
+  notifOneBtnDialog(BuildContext context,title,desc,Function callback1,{titleBtn1='Oke'}){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return Center(
+            child: AlertDialog(
+              title:textQ(title,scaler.getTextSize(9),LightColor.black,FontWeight.bold),
+              content:textQ(desc,scaler.getTextSize(9),LightColor.black,FontWeight.normal,maxLines:100),
+              actions: <Widget>[
+                FlatButton(
+                  onPressed:callback1,
+                  child:textQ(titleBtn1,scaler.getTextSize(10),LightColor.black,FontWeight.bold),
+                ),
+              ],
+            ),
+          );
+        }
+    );
+  }
   notifDialog(BuildContext context,title,desc,Function callback1, Function callback2,{titleBtn1='Batal',titleBtn2='Oke'}){
     return showDialog(
         barrierDismissible: false,
@@ -292,7 +318,7 @@ class WidgetHelper{
         }
     );
   }
-  titleQ(BuildContext context,String txt,{EdgeInsetsGeometry padding=const EdgeInsets.symmetric(horizontal: 10, vertical: 0),Color color=Colors.white,String param, Function callback,IconData icon, TextAlign textAlign=TextAlign.left}){
+  titleQ(BuildContext context,String txt,{FontWeight fontWeight = FontWeight.normal,EdgeInsetsGeometry padding=const EdgeInsets.symmetric(horizontal: 10, vertical: 0),Color color=Colors.white,String param, Function callback,IconData icon, TextAlign textAlign=TextAlign.left}){
     ScreenScaler scaler = ScreenScaler()..init(context);
     return InkWell(
       onTap:callback,
@@ -308,7 +334,7 @@ class WidgetHelper{
                   size: scaler.getTextSize(12),
                 ),
                 SizedBox(width: scaler.getWidth(1)),
-                WidgetHelper().textQ(txt, scaler.getTextSize(10), LightColor.black,FontWeight.normal,textAlign: textAlign)
+                WidgetHelper().textQ(txt, scaler.getTextSize(10), LightColor.black,fontWeight,textAlign: textAlign)
               ],
             ),
           ),
@@ -319,23 +345,9 @@ class WidgetHelper{
         ],
       ),
     );
-    // return Padding(
-    //   padding: padding,
-    //   child: ListTile(
-    //     onTap: callback,
-    //     dense: true,
-    //     contentPadding: EdgeInsets.all(0.0),
-    //     leading: icon,
-    //     title: WidgetHelper().textQ(txt, scaler.getTextSize(9), color,FontWeight.bold,textAlign: textAlign),
-    //     trailing: param==''?Text(''):InkWell(
-    //         child: Icon(Ionicons.ios_arrow_dropright_circle,color: SiteConfig().secondColor,size: scaler.getTextSize(10)),
-    //         onTap: callback
-    //     ),
-    //   ),
-    // );
   }
 
-  iconAppbar(BuildContext context,Function callback,IconData icon,{Color color=Colors.black}){
+  iconAppbar(BuildContext context,Function callback,IconData icon,{Color color=LightColor.lightblack}){
     ScreenScaler scaler = ScreenScaler()..init(context);
     return InkWell(
       onTap:callback,
@@ -355,7 +367,7 @@ class WidgetHelper{
     );
   }
 
-  appBarWithButton(BuildContext context, title,Function callback,List<Widget> widget,{String param="default",Brightness brightness=Brightness.light}){
+  appBarWithButton(BuildContext context, title,Function callback,List<Widget> widget,{String param="",Brightness brightness=Brightness.light}){
     ScreenUtilHelper.instance = ScreenUtilHelper.getInstance()..init(context);
     ScreenUtilHelper.instance = ScreenUtilHelper(allowFontScaling: false)..init(context);
     ScreenScaler scaler = ScreenScaler()..init(context);
@@ -366,7 +378,7 @@ class WidgetHelper{
       title:textQ(title.toUpperCase(),scaler.getTextSize(10),brightness.index==1?SiteConfig().secondColor:Colors.white,FontWeight.bold),
       leading: IconButton(
         padding: scaler.getPadding(0,0),
-        icon: new Icon(AntDesign.back, color:SiteConfig().secondColor,size: scaler.getTextSize(13)),
+        icon: new Icon(AntDesign.back, color:LightColor.lightblack,size: scaler.getTextSize(13)),
         onPressed: (){
           if(param=="default"){
             Navigator.pop(context);
@@ -438,12 +450,14 @@ class WidgetHelper{
     );
   }
 
-  myRipple({Widget child,Function callback,bool isRadius=true}){
+  myRipple({Widget child,Function callback,bool isRadius=true,double radius=10}){
     return TouchRippleEffect(
-      borderRadius: BorderRadius.circular(isRadius?10:0),
+      backgroundColor: Colors.transparent,
+      borderRadius: BorderRadius.circular(isRadius?radius:0),
       rippleColor: Colors.black26,
       onTap: callback,
       child: child,
+
     );
   }
 
@@ -482,13 +496,13 @@ class WidgetHelper{
   }
 
 
-  textSpaceBetween(BuildContext context,String title,String desc,{MainAxisAlignment mainAxisAlignment=MainAxisAlignment.spaceBetween,Color titleColor=Colors.black,Color descColor}){
+  textSpaceBetween(BuildContext context,String title,String desc,{FontWeight fontWeightTitle = FontWeight.normal,FontWeight fontWeightDesc = FontWeight.normal,MainAxisAlignment mainAxisAlignment=MainAxisAlignment.spaceBetween,Color titleColor=Colors.black,Color descColor}){
     ScreenScaler scaler = ScreenScaler()..init(context);
     return Row(
       mainAxisAlignment:mainAxisAlignment,
       children: [
-        WidgetHelper().textQ(title,scaler.getTextSize(9),titleColor, FontWeight.normal),
-        WidgetHelper().textQ(desc,scaler.getTextSize(9),descColor, FontWeight.normal),
+        WidgetHelper().textQ(title,scaler.getTextSize(9),titleColor, fontWeightTitle),
+        WidgetHelper().textQ(desc,scaler.getTextSize(9),descColor, fontWeightDesc),
       ],
     );
   }

@@ -1,17 +1,26 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/light_color.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/config/string_config.dart';
+import 'package:netindo_shop/helper/database_helper.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/cart/detail_cart_model.dart';
 import 'package:netindo_shop/model/review/review_model.dart';
 import 'package:netindo_shop/model/tenant/detail_product_tenant_model.dart';
 import 'package:netindo_shop/provider/base_provider.dart';
+import 'package:netindo_shop/provider/handle_http.dart';
+import 'package:netindo_shop/views/screen/product/cart_screen.dart';
 import 'package:netindo_shop/views/widget/cart_widget.dart';
+import 'package:netindo_shop/views/widget/empty_widget.dart';
+import 'package:netindo_shop/views/widget/loading_widget.dart';
+import 'package:netindo_shop/views/widget/review_widget.dart';
 import 'package:touch_ripple_effect/touch_ripple_effect.dart';
 
 class ProductDetailPage extends StatefulWidget {
@@ -31,10 +40,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   String image = 'https://onlinewhiskeystore.com/images/default.png';
   List thumbnailList=[];
   List hargaBertingkat=[], varian=[], subVarian=[], review=[];
-  bool isLoadmore=false,isError=false,isLoading=true,isLoadingReview=false,isLoadingPoductOther=false,isSelectedFavorite=false,isSubVarian=false;
+  bool isFavorite=false,isShowDesc=false,isLoading=true,isLoadingReview=true;
   int perpageReview=10,_current=0,totalReview=0,totalCart=0,total=0,stock=0,qty=0,hargaFinish=0,hargaWarna=0,hargaUkuran=0,diskon1=0,diskon2=0;
   int selectedVarian=0,selectedSubVarian=0;
-  String stockSales='',title,kode,harga,hargaMaster,hargaCoret,rating,deskripsi,idTenant,warna,ukuran,gambar,kelompok,idVarian,idSubVarian;
+  String stockSales='',title,kode,harga,hargaMaster,hargaCoret,rating,deskripsi,idTenant,tenant,warna,ukuran,gambar,idKelompok,kelompok,idVarian,idSubVarian;
+  String brand='',idBrand='';
+  int perpage=3;
 
   Future getDetail()async{
     final data = await BaseProvider().getProvider("barang/${widget.id}", detailProductTenantModelFromJson);
@@ -56,16 +67,22 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       }
       thumbnailList.add({"image":res.result.gambar});
       res.result.listImage.forEach((element) {thumbnailList.add({"image":element.image});});
-      getReview(res.result.kode);
+
       if(this.mounted){
         setState(() {
           isLoading=false;
           detailProductTenantModel = DetailProductTenantModel.fromJson(res.toJson());
           image = detailProductTenantModel.result.gambar;
           idTenant = res.result.idTenant;
+          tenant = res.result.tenant;
           stockSales=res.result.stockSales;
           kode = res.result.kode;
-          deskripsi = res.result.deskripsi;
+          kelompok=res.result.kelompok;
+          idKelompok=res.result.idKelompok;
+          brand=res.result.brand;
+          idBrand=res.result.idBrand;
+          deskripsi = detailProductTenantModel.result.deskripsi.length>200?res.result.deskripsi.substring(0,200)+" ..":res.result.deskripsi;
+          // deskripsi =StringConfig.lorem.length>200?StringConfig.lorem.substring(0,200)+" ..":StringConfig.lorem;
           varian = res.result.varian;
           hargaBertingkat=res.result.hargaBertingkat;
           review=res.result.review;
@@ -80,24 +97,33 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         });
       }
       getCountCart();
-
+      getReview(res.result.kode);
+      getFavorite();
     }
   }
   Future getReview(String kode)async{
-    final res = await BaseProvider().getProvider("review?page=1&perpage=10&kd_brg=$kode", reviewModelFromJson);
+    final res = await HandleHttp().getProvider("review?page=1&perpage=$perpage", reviewModelFromJson,context: context,callback: (){
+      print("callback");
+    });
     if(res is ReviewModel){
+      ReviewModel result=ReviewModel.fromJson(res.toJson());
       if(this.mounted){
-        print("######## REVIEW ${res.result.total}");
         setState(() {
-          reviewModel = ReviewModel.fromJson(res.toJson());
+          reviewModel = result;
+          isLoadingReview=false;
+          totalReview=result.result.total;
         });
       }
     }
   }
-
   void add()async{
-    if(this.mounted) setState(() {qty+=1;});
-    checkingPrice(idTenant, widget.id, kode, idVarian, idSubVarian, qty, harga, diskon1, diskon2, hargaBertingkat.length>0?true:false, hargaMaster, hargaWarna, hargaUkuran);
+    if(stock<1){
+      WidgetHelper().showFloatingFlushbar(context,"failed","maaf stock barang kosong");
+      return;
+    }else{
+      if(this.mounted) setState(() {qty+=1;});
+      checkingPrice(idTenant, widget.id, kode, idVarian, idSubVarian, qty, harga, diskon1, diskon2, hargaBertingkat.length>0?true:false, hargaMaster, hargaWarna, hargaUkuran);
+    }
   }
   Future checkingPrice(idTenant,id,kode,idVarian,idSubVarian,qty,price,disc1,disc2,bool isTrue,hargaMaster, hargaVarian, hargaSubVarian)async{
     WidgetHelper().loadingDialog(context,title: 'pengecekan harga bertingkat');
@@ -118,7 +144,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Future getSubTotal()async{
     await getQty();
     if(this.mounted) setState(() {total = qty>1?qty*(hargaFinish+hargaWarna+hargaUkuran):hargaFinish+hargaWarna+hargaUkuran;});
-    print("###########TOTAL=$total#################");
   }
   Future getQty()async{
     var res = await BaseProvider().getProvider('cart/detail/$idTenant/${widget.id}', detailCartModelFromJson);
@@ -132,6 +157,71 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     if(this.mounted) setState(() {totalCart = res.result.length;});
     getSubTotal();
   }
+
+  final DatabaseConfig _helper = new DatabaseConfig();
+
+  Future insertFavorite()async{
+    var parseData={
+      "id_product": widget.id.toString(),
+      "id_tenant": idTenant.toString(),
+      "kode": kode.toString(),
+      "title": title.toString(),
+      "tenant": tenant.toString(),
+      "id_kelompok": idKelompok.toString(),
+      "kelompok":kelompok.toString(),
+      "id_brand":idBrand.toString(),
+      "brand": brand.toString(),
+      "deskripsi": deskripsi.toString(),
+      "harga":harga.toString(),
+      "harga_coret": hargaCoret.toString(),
+      "berat": "0",
+      "pre_order": "0",
+      "free_return":"0",
+      "gambar":gambar.toString(),
+      "disc1": diskon1.toString(),
+      "disc2": diskon2.toString(),
+      "stock": stock.toString(),
+      "stock_sales": stockSales.toString(),
+      "rating": rating.toString(),
+      "is_favorite":"true",
+      "is_click":"false"
+    };
+    final getWhere = await _helper.getWhereByTenant(ProductQuery.TABLE_NAME, idTenant,'id_product','${widget.id}');
+
+    if(getWhere.length==0){
+      await _helper.insert(ProductQuery.TABLE_NAME, parseData);
+      setState(() {
+        isFavorite=true;
+      });
+      print("insert");
+    }else{
+      await _helper.delete(ProductQuery.TABLE_NAME, "id_product", widget.id);
+      // await _helper.updateData(ProductQuery.TABLE_NAME,"is_favorite","false", idTenant, widget.id);
+      setState(() {
+        isFavorite=false;
+      });
+      print("delete");
+
+    }
+    // print(getWhere);
+  }
+  Future getFavorite()async{
+    final getWhere = await _helper.getWhereByTenant(ProductQuery.TABLE_NAME, idTenant,'id_product','${widget.id}');
+    print("get $getWhere");
+    getWhere.forEach((element) {
+      if(element['is_favorite']=="true"){
+        setState(() {
+          isFavorite=true;
+        });
+      }
+      else{
+        setState(() {
+          isFavorite=false;
+        });
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -146,10 +236,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     controller.dispose();
     super.dispose();
   }
-
-
-
-
   Widget _productImage() {
     return AnimatedBuilder(
       builder: (context, child) {
@@ -174,8 +260,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       ),
     );
   }
-
-
   Widget _categoryWidget() {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 0,horizontal: 0),
@@ -193,7 +277,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       ),
     );
   }
-
   Widget _thumbnail(String res) {
     return AnimatedBuilder(
         animation: animation,
@@ -237,9 +320,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       initialChildSize: 0.53,
       minChildSize: 0.53,
       builder: (context, scrollController) {
-        if(deskripsi.length>300){
-          deskripsi = deskripsi.substring(0,300)+" ...";
-        }
         return Container(
           padding:ScreenScaler().getPadding(1, 1),
           decoration: BoxDecoration(
@@ -247,7 +327,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 topLeft: Radius.circular(40),
                 topRight: Radius.circular(40),
               ),
-              color: Colors.grey[100]
+              color: Colors.white
           ),
           child: SingleChildScrollView(
             controller: scrollController,
@@ -266,36 +346,78 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                         borderRadius: BorderRadius.all(Radius.circular(10))),
                   ),
                 ),
-                SizedBox(height: 10),
-                WidgetHelper().textQ(detailProductTenantModel.result.title, scaler.getTextSize(10), LightColor.titleTextColor, FontWeight.normal,maxLines: 100),
-                Container(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          WidgetHelper().textQ(FunctionHelper().formatter.format(int.parse(harga)), scaler.getTextSize(12), LightColor.orange, FontWeight.bold),
-                          WidgetHelper().textQ(FunctionHelper().formatter.format(int.parse(hargaCoret)),scaler.getTextSize(10),SiteConfig().accentDarkColor,FontWeight.normal,textDecoration: TextDecoration.lineThrough),
-                        ],
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          WidgetHelper().rating(detailProductTenantModel.result.rating),
-                          WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(detailProductTenantModel.result.stockSales))} terjual", scaler.getTextSize(10), LightColor.black, FontWeight.normal),
-                        ],
-                      ),
-                    ],
+                WidgetHelper().myRipple(
+                  callback: ()async{
+                    insertFavorite();
+                  },
+                  child: ListTile(
+                    contentPadding: EdgeInsets.all(0),
+                    title: WidgetHelper().textQ("Rp "+FunctionHelper().formatter.format(int.parse(harga)), scaler.getTextSize(12), LightColor.orange, FontWeight.bold),
+                    subtitle:  int.parse(hargaCoret)<1?WidgetHelper().textQ(detailProductTenantModel.result.title, scaler.getTextSize(9), LightColor.lightblack, FontWeight.normal,maxLines: 100):Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        WidgetHelper().textQ("Rp "+FunctionHelper().formatter.format(int.parse("200000")),scaler.getTextSize(9),SiteConfig().accentDarkColor,FontWeight.normal,textDecoration: TextDecoration.lineThrough),
+                        WidgetHelper().textQ(detailProductTenantModel.result.title, scaler.getTextSize(9), LightColor.lightblack, FontWeight.normal,maxLines: 100),
+                      ],
+                    ),
+                    trailing: Icon(Ionicons.ios_heart,color: isFavorite?LightColor.orange:LightColor.lightblack),
+                  )
+                ),
+                WidgetHelper().myRipple(
+                  callback: (){
+                    setState(() {
+                      isShowDesc = !isShowDesc;
+                    });
+                  },
+                    child: ListTile(
+                      contentPadding: EdgeInsets.all(0.0),
+                      title: WidgetHelper().textQ("Deskripsi produk", scaler.getTextSize(10), LightColor.black, FontWeight.bold),
+                      subtitle: RichText(
+                        text: TextSpan(
+                            text: isShowDesc?detailProductTenantModel.result.deskripsi:deskripsi,
+
+                            style: GoogleFonts.robotoCondensed().copyWith(color:LightColor.lightblack,fontSize: scaler.getTextSize(9)),
+                            children: <TextSpan>[
+                              detailProductTenantModel.result.deskripsi.length>200?TextSpan(text: ' lihat lebih ${isShowDesc?'sedikit':'banyak'}',
+                                  style: GoogleFonts.robotoCondensed().copyWith(color: LightColor.mainColor,fontSize: scaler.getTextSize(9),fontWeight: FontWeight.w700),
+
+                              ):TextSpan(text:'')
+                            ]
+                        ),
+                      )
+                    )
+                ),
+                if(detailProductTenantModel.result.review.length>0)Divider(),
+                if(detailProductTenantModel.result.review.length>0)WidgetHelper().myRipple(
+                  child: Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        WidgetHelper().textQ("Ulasan produk", scaler.getTextSize(10), LightColor.black, FontWeight.bold),
+                        WidgetHelper().textQ("Lihat semua", scaler.getTextSize(9), LightColor.mainColor, FontWeight.bold),
+                      ],
+                    ),
+                  )
+                ),
+                if(detailProductTenantModel.result.review.length>0)Container(
+                  child: ListView.separated(
+                    padding:EdgeInsets.all(0.0),
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: detailProductTenantModel.result.review.length,
+                    itemBuilder: (context,index){
+                      var val=detailProductTenantModel.result.review[index];
+                      return ReviewWidget(
+                        foto: val.foto,
+                        nama: val.nama,
+                        tgl: val.time,
+                        rate: val.rate.toString(),
+                        desc: val.caption,
+                      );
+                    },
+                    separatorBuilder: (context,index){return Divider();},
                   ),
                 ),
-
-                SizedBox(
-                  height: 20,
-                ),
-                WidgetHelper().textQ(deskripsi, scaler.getTextSize(10),LightColor.black,FontWeight.normal,maxLines: 1000),
-                WidgetHelper().textQ("tampilkan lebih banyak", scaler.getTextSize(10),LightColor.black,FontWeight.normal,maxLines: 1000),
               ],
             ),
           ),
@@ -308,27 +430,27 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   @override
   Widget build(BuildContext context) {
     ScreenScaler scaler = ScreenScaler()..init(context);
-
     return Scaffold(
-      // floatingActionButton: _flotingButton(),
       appBar: WidgetHelper().appBarWithButton(context,"",(){}, <Widget>[
         new CartWidget(
-          iconColor: SiteConfig().secondColor,
-          labelColor: Colors.redAccent,
-          labelCount: 0,
+          iconColor: LightColor.lightblack,
+          labelColor: totalCart>0?Colors.redAccent:Colors.transparent,
+          labelCount: totalCart,
           callback: (){
-
+            if(totalCart>0){
+              WidgetHelper().myPushAndLoad(context,CartScreen(idTenant: idTenant),(){getCountCart();});
+            }
           },
         ),
         IconButton(
           icon: Icon(
-              AntDesign.filter,color: SiteConfig().secondColor
+              Ionicons.md_share,color: LightColor.lightblack,
           ),
           onPressed: () {
 
           },
         )
-      ]),
+      ],param: "default"),
 
       body: SafeArea(
         child: Container(

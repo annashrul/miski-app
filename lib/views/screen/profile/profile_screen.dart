@@ -15,6 +15,7 @@ import 'package:netindo_shop/views/screen/address/address_screen.dart';
 import 'package:netindo_shop/views/screen/auth/login_screen.dart';
 import 'package:netindo_shop/views/screen/auth/signin_screen.dart';
 import 'package:netindo_shop/views/screen/history/history_transaction_screen.dart';
+import 'package:netindo_shop/views/screen/product/favorite_screen.dart';
 import 'package:netindo_shop/views/screen/wrapper_screen.dart';
 import 'package:netindo_shop/views/widget/profile/profile_dialog_form_widget.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
@@ -69,8 +70,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             wrapperHeader(context,[
               wrapperTitle(context,(){},AntDesign.user,'Pengaturan Akun'),
               wrapperContent(context,'Alamat',icon: Ionicons.md_arrow_dropright_circle,i: 0,callback: (){WidgetHelper().myPush(context,AddressScreen());}),
-              wrapperContent(context,'Bank',icon: Ionicons.md_arrow_dropright_circle,i: 1),
-              wrapperContent(context,'Data Diri',icon: Ionicons.md_arrow_dropright_circle,i: 0),
+              // wrapperContent(context,'Bank',icon: Ionicons.md_arrow_dropright_circle,i: 1),
+              wrapperContent(context,'Data Diri',icon: Ionicons.md_arrow_dropright_circle,i: 1),
             ]),
             SizedBox(height:scaler.getHeight(1)),
             wrapperHeader(context,[
@@ -85,12 +86,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             SizedBox(height:scaler.getHeight(1)),
             wrapperHeader(context,[
               wrapperTitle(context,(){},AntDesign.setting,'Pengaturan Umum'),
-              wrapperContent(context,'Kebijakan & Privasi',i: 0,icon: Ionicons.md_arrow_dropright_circle),
-              wrapperContent(context,'Keluar',i: 1,icon: Ionicons.md_arrow_dropright_circle,callback: ()async{
+              wrapperContent(context,'Favorite',i: 0,icon: Ionicons.ios_heart,callback: (){
+                WidgetHelper().myPush(context, FavoriteScreen());
+              }),
+              wrapperContent(context,'Kebijakan & Privasi',i: 1,icon: Ionicons.md_arrow_dropright_circle),
+              wrapperContent(context,'Keluar',i: 0,icon: Ionicons.md_arrow_dropright_circle,callback: ()async{
                 WidgetHelper().notifDialog(context,"Perhatian !!","Anda yakin akan keluar dari aplikas ??", (){Navigator.pop(context);}, ()async{
                   final id = await UserHelper().getDataUser('id');
                   await db.update(UserQuery.TABLE_NAME, {'id':"${id.toString()}","is_login":"0"});
-                  // await db.deleteAll(UserQuery.TABLE_NAME);
                   WidgetHelper().myPushRemove(context,LoginScreen());
                 });
               }),

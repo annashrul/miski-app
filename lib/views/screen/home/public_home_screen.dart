@@ -65,16 +65,6 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
     try {
       List<Placemark> p = await geolocator.placemarkFromCoordinates(_currentPosition.latitude, _currentPosition.longitude);
       Placemark place = p[0];
-      print("LOKASI ${place.name}");
-      print("LOKASI ${place.administrativeArea}");
-      print("LOKASI ${place.country}");
-      print("LOKASI ${place.isoCountryCode}");
-      print("LOKASI ${place.locality}");
-      print("LOKASI ${place.postalCode}");
-      print("LOKASI ${place.subAdministrativeArea}");
-      print("LOKASI ${place.subLocality}");
-      print("LOKASI ${place.subThoroughfare}");
-      print("LOKASI ${place.thoroughfare}");
       setState(() {
         _currentAddress = "${place.thoroughfare}, ${place.subLocality}, ${place.subAdministrativeArea}, ${place.administrativeArea}";
         isLoadingLocation=false;
@@ -262,7 +252,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                         ),
                         Container(
                           padding: EdgeInsets.only(left:scaler.getHeight(1),right:scaler.getHeight(1),top:0),
-                          child: isLoading?LoadingTenant():returnTenant.length>0?tenantLocal():tenantServer(),
+                          child: isLoading?LoadingTenant():tenantServer(),
                         ),
                         Padding(
                           padding: scaler.getPadding(1,2),
@@ -270,17 +260,17 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                         ),
                         Container(
                           padding: EdgeInsets.only(left:scaler.getHeight(1),right:scaler.getHeight(1),top:0),
-                          child: StaggeredGridView.countBuilder(
+                          child: isLoading?Container():StaggeredGridView.countBuilder(
                             padding: EdgeInsets.all(0.0),
                             shrinkWrap: true,
                             primary: false,
                             crossAxisCount: 3,
-                            itemCount:  returnTenant.length,
+                            itemCount:  listTenantModel.result.data.length,
                             itemBuilder: (BuildContext context, int index) {
-                              print(returnTenant);
+                              var val=listTenantModel.result.data[index];
                               return WidgetHelper().myPress(
                                   (){
-                                    WidgetHelper().myPush(context,CartScreen(idTenant:returnTenant[index]['id_tenant']));
+                                    WidgetHelper().myPush(context,CartScreen(idTenant:val.id));
                                   },
                                   Container(
                                     padding: EdgeInsets.all(5.0),
@@ -313,7 +303,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                                           ],
                                         ),
                                         SizedBox(height:5.0),
-                                        WidgetHelper().textQ("${returnTenant[index]['nama']}",scaler.getTextSize(9),SiteConfig().secondColor, FontWeight.normal,textAlign: TextAlign.center),
+                                        WidgetHelper().textQ("${val.nama}",scaler.getTextSize(9),SiteConfig().secondColor, FontWeight.normal,textAlign: TextAlign.center),
                                       ],
                                     ),
                                   ),

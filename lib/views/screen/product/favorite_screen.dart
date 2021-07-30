@@ -26,14 +26,17 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
   int perpage=15;
   int total=0;
   Future deleteFavorite(id)async{
-    final res = await _helper.update(ProductQuery.TABLE_NAME, {"id":id.toString(),"is_favorite":"false"});
-    if(res==true){
-      WidgetHelper().showFloatingFlushbar(context,"success","data berhasil dihapus dari favorite anda");
-      getFavorite();
-    }
-    else{
-      WidgetHelper().showFloatingFlushbar(context,"failed","Terjadi kesalahan");
-    }
+    await _helper.delete(ProductQuery.TABLE_NAME, "id", id);
+    await getFavorite();
+    WidgetHelper().showFloatingFlushbar(context,"success","data berhasil dihapus dari favorite anda");
+    // final res = await _helper.update(ProductQuery.TABLE_NAME, {"id":id.toString(),"is_favorite":"false"});
+    // if(res==true){
+    //   WidgetHelper().showFloatingFlushbar(context,"success","data berhasil dihapus dari favorite anda");
+    //   getFavorite();
+    // }
+    // else{
+    //   WidgetHelper().showFloatingFlushbar(context,"failed","Terjadi kesalahan");
+    // }
   }
   Future getFavorite()async{
     final countFav = await _helper.getWhere(ProductQuery.TABLE_NAME, "is_favorite","true","");
@@ -73,26 +76,29 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return isLoading?LoadingCart(total: 10):resFavoriteProduct.length>0?Container(
-      padding: EdgeInsets.all(0.0),
-      child: Column(
+    return Scaffold(
+      appBar: WidgetHelper().appBarWithButton(context, "Favorite",(){},<Widget>[],param: "default"),
+      body: isLoading?LoadingCart(total: 10):resFavoriteProduct.length>0?Container(
+        padding: EdgeInsets.all(0.0),
+        child: Column(
+          children: [
+            Expanded(
+              flex: 17,
+              child: buildContent(context),
+            ),
+            isLoadmore?Expanded(
+                flex: 3,
+                child: LoadingCart(total: 1)
+            ):Container()
+          ],
+        ),
+      ):Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Expanded(
-            flex: 17,
-            child: buildContent(context),
-          ),
-          isLoadmore?Expanded(
-            flex: 3,
-            child: LoadingCart(total: 1)
-          ):Container()
+          EmptyTenant()
         ],
       ),
-    ):Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        EmptyTenant()
-      ],
     );
   }
 
@@ -104,7 +110,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
       itemCount: resFavoriteProduct.length,
       itemBuilder: (context,index){
         var val = resFavoriteProduct[index];
-        print(val);
+        print("TENANT ${val["tenant"]}");
         return Dismissible(
           key: Key(hashCode.toString()),
           background: Container(

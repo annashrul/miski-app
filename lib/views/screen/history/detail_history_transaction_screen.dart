@@ -1,12 +1,17 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:netindo_shop/config/database_config.dart';
+import 'package:netindo_shop/config/light_color.dart';
 import 'package:netindo_shop/config/site_config.dart';
+import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/helper/database_helper.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/skeleton_helper.dart';
@@ -15,7 +20,9 @@ import 'package:netindo_shop/model/checkout/resi_model.dart';
 import 'package:netindo_shop/model/general_model.dart';
 import 'package:netindo_shop/model/history/detail_history_transaction_model.dart';
 import 'package:netindo_shop/provider/base_provider.dart';
+import 'package:netindo_shop/views/screen/checkout/detail_checkout_screen.dart';
 import 'package:netindo_shop/views/screen/checkout/resi_screen.dart';
+import 'package:netindo_shop/views/screen/product/product_detail_screen.dart';
 import 'package:netindo_shop/views/screen/wrapper_screen.dart';
 import 'package:netindo_shop/views/widget/product/first_product_widget.dart';
 import 'package:netindo_shop/views/widget/product/second_product_widget.dart';
@@ -75,9 +82,9 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
           Navigator.pop(context);
           if(retry>=3){
             WidgetHelper().notifDialog(context,"Terjadi Kesalahan Server","Silahkan lakukan pembuatan tiket komplain di halaman tiket", (){
-              WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2));
+              WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: StringConfig.defaultTab));
             },(){
-              WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2));
+              WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: StringConfig.defaultTab));
             },titleBtn1: "kembali",titleBtn2: "home");
           }
           else{
@@ -127,7 +134,36 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
       backgroundColor: Colors.white,
       key: scaffoldKey,
       appBar: WidgetHelper().appBarWithButton(context, "Detail Riwayat Pembelian", (){Navigator.pop(context);},<Widget>[
-      ],brightness: Brightness.light),
+        if(!isLoading&&detailHistoryTransactionModel.result.status==0)Container(
+          margin:scaler.getMarginLTRB(0, 0, 0,0),
+          padding: scaler.getPadding(0.2, 0),
+          child: WidgetHelper().myRipple(
+            isRadius: true,
+              radius: 100,
+              callback: (){
+                WidgetHelper().myPush(context,DetailCheckoutScreen(
+                  param:"bisa",
+                  invoice_no:"${detailHistoryTransactionModel.result.kdTrx}",
+                  grandtotal:"${detailHistoryTransactionModel.result.grandtotal}",
+                  kode_unik:"${detailHistoryTransactionModel.result.kodeUnik}",
+                  total_transfer:"${int.parse(detailHistoryTransactionModel.result.jumlahTf)}",
+                  bank_logo:"${detailHistoryTransactionModel.result.logo}",
+                  bank_name:"${detailHistoryTransactionModel.result.bankTujuan}",
+                  bank_atas_nama:"${detailHistoryTransactionModel.result.atasNama}",
+                  bank_acc:"${detailHistoryTransactionModel.result.rekeningTujuan}",
+                  bank_code:"${detailHistoryTransactionModel.result.bankCode}",
+                ));              },
+              child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                  ),
+                  padding: scaler.getPadding(0.5, 2),
+                  alignment: Alignment.center,
+                  child: Icon(Ionicons.md_cloud_upload,color: LightColor.lightblack,)
+              ),
+          ),
+        )
+      ]),
       body: isTimeout?TimeoutWidget(callback: ()async{
         setState(() {
           isTimeout=false;
@@ -137,48 +173,41 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
       },):(isLoading?_loading(context):buildContent(context)),
       bottomNavigationBar:isLoading?Text(''):Container(
         padding:scaler.getPadding(0,0),
-        decoration: BoxDecoration(
-          // color: Colors.grey[200],
-          // boxShadow: [BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), blurRadius: 5, offset: Offset(0, -2)),],
-        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
-          // crossAxisAlignment: Cro,
           children: <Widget>[
-            Expanded(
-              child: FlatButton(
-                  onPressed: () {checkResi();},
-                  padding:scaler.getPadding(1,0),
-                  color: SiteConfig().secondColor,
-                  // shape: StadiumBorder(),
-                  child:WidgetHelper().textQ("Lacak Resi",scaler.getTextSize(10), Theme.of(context).primaryColor, FontWeight.bold)
-                // child:Text("abus")
-              ),
-            ),
-            SizedBox(width: 10),
-            detailHistoryTransactionModel.result.resi!='-'?Expanded(
-              child: FlatButton(
-                  onPressed: () {},
-                  padding:scaler.getPadding(1,0),
-                  color: SiteConfig().secondColor,
-                  // shape: StadiumBorder(),
-                  child:WidgetHelper().textQ("Selesai",scaler.getTextSize(10), Theme.of(context).primaryColor, FontWeight.bold)
-                // child:Text("abus")
-              ),
-            ):Expanded(
+            if(detailHistoryTransactionModel.result.status!=0)Expanded(
               child: FlatButton(
                   onPressed: () {
                     WidgetHelper().myPush(context,FormReviewWidget(detailHistoryTransactionModel: detailHistoryTransactionModel));
                   },
                   padding:scaler.getPadding(1,0),
-                  color: SiteConfig().secondColor,
+                  color: LightColor.mainDarkColor,
                   // shape: StadiumBorder(),
                   child:WidgetHelper().textQ("Beri Ulasan",scaler.getTextSize(10), Theme.of(context).primaryColor, FontWeight.bold)
                 // child:Text("abus")
               ),
             ),
-
+            if(detailHistoryTransactionModel.result.resi!='-') Expanded(
+              child: FlatButton(
+                  onPressed: () {checkResi();},
+                  padding:scaler.getPadding(1,0),
+                  color: SiteConfig().secondColor,
+                  child:WidgetHelper().textQ("Lacak Resi",scaler.getTextSize(10), Theme.of(context).primaryColor, FontWeight.bold)
+                // child:Text("abus")
+              ),
+            ),
+            if(detailHistoryTransactionModel.result.resi!='-')Expanded(
+              child: FlatButton(
+                  onPressed: () {},
+                  padding:scaler.getPadding(1,0),
+                  color: LightColor.mainDarkColor,
+                  // shape: StadiumBorder(),
+                  child:WidgetHelper().textQ("Selesai",scaler.getTextSize(10), Theme.of(context).primaryColor, FontWeight.bold)
+                // child:Text("abus")
+              ),
+            ),
           ],
         ),
       ),
@@ -187,7 +216,6 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
 
   Widget buildContent(BuildContext context){
     ScreenScaler scaler = ScreenScaler()..init(context);
-
     return  SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Container(
@@ -203,7 +231,7 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          WidgetHelper().textQ("Status",scaler.getTextSize(9),SiteConfig().darkMode,FontWeight.normal),
+                          WidgetHelper().textQ("Status",scaler.getTextSize(9),LightColor.lightblack,FontWeight.normal),
                           WidgetHelper().myStatus(context,detailHistoryTransactionModel.result.status),
                         ],
                       ),
@@ -212,16 +240,16 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          WidgetHelper().textQ("Tanggal Pembelian",scaler.getTextSize(8),SiteConfig().darkMode,FontWeight.normal),
-                          WidgetHelper().textQ("${DateFormat.yMMMMEEEEd('id').format(detailHistoryTransactionModel.result.createdAt)} ${DateFormat.Hms().format(detailHistoryTransactionModel.result.createdAt)}",scaler.getTextSize(8),SiteConfig().secondColor,FontWeight.normal),
+                          WidgetHelper().textQ("Tgl pembelian",scaler.getTextSize(9),LightColor.lightblack,FontWeight.normal),
+                          WidgetHelper().textQ("${DateFormat.yMMMMEEEEd('id').format(detailHistoryTransactionModel.result.createdAt)} ${DateFormat.Hms().format(detailHistoryTransactionModel.result.createdAt)}",scaler.getTextSize(9),LightColor.lightblack,FontWeight.normal),
                         ],
                       ),
                       Divider(),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          WidgetHelper().textQ("No.Invoice",scaler.getTextSize(8),SiteConfig().darkMode,FontWeight.normal),
-                          WidgetHelper().textQ("${detailHistoryTransactionModel.result.kdTrx}",scaler.getTextSize(8),SiteConfig().secondColor,FontWeight.normal),
+                          WidgetHelper().textQ("No.Invoice",scaler.getTextSize(9),LightColor.lightblack,FontWeight.normal),
+                          WidgetHelper().textQ("${detailHistoryTransactionModel.result.kdTrx}",scaler.getTextSize(9),LightColor.lightblack,FontWeight.normal),
                         ],
                       ),
                     ],
@@ -252,10 +280,11 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      WidgetHelper().textQ("Detail Pengiriman",scaler.getTextSize(10),SiteConfig().darkMode,FontWeight.bold),
+                      WidgetHelper().textQ("Detail Pengiriman",scaler.getTextSize(10),LightColor.black,FontWeight.bold),
                     ],
                   ),
                 ),
+                SizedBox(height: 5.0),
                 Container(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -263,43 +292,48 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          WidgetHelper().textQ("Nama Toko",scaler.getTextSize(8),SiteConfig().darkMode,FontWeight.normal),
-                          WidgetHelper().textQ("${detailHistoryTransactionModel.result.tenant}",scaler.getTextSize(8),SiteConfig().secondColor,FontWeight.normal),
+                          WidgetHelper().textQ("Nama Toko",scaler.getTextSize(9),LightColor.lightblack,FontWeight.normal),
+                          WidgetHelper().textQ("${detailHistoryTransactionModel.result.tenant}",scaler.getTextSize(9),LightColor.lightblack,FontWeight.normal),
                         ],
                       ),
                       Divider(),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          WidgetHelper().textQ("Kurir Pengiriman",scaler.getTextSize(8),SiteConfig().darkMode,FontWeight.normal),
-                          WidgetHelper().textQ("${detailHistoryTransactionModel.result.kurir}",scaler.getTextSize(8),SiteConfig().secondColor,FontWeight.normal),
+                          WidgetHelper().textQ("Kurir Pengiriman",scaler.getTextSize(9),LightColor.lightblack,FontWeight.normal),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              WidgetHelper().baseImage(detailHistoryTransactionModel.result.logoKurir,height: scaler.getHeight(1)),
+                              SizedBox(width: scaler.getWidth(1)),
+                              WidgetHelper().textQ("${detailHistoryTransactionModel.result.kurir}",scaler.getTextSize(9),LightColor.lightblack,FontWeight.normal),
+                            ],
+                          ),
                         ],
                       ),
                       Divider(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          WidgetHelper().textQ("No.Resi",scaler.getTextSize(8),SiteConfig().darkMode,FontWeight.normal),
-                          WidgetHelper().textQ("${detailHistoryTransactionModel.result.resi=="-"?"Belum ada No.Resi":detailHistoryTransactionModel.result.resi}",scaler.getTextSize(8),SiteConfig().secondColor,FontWeight.normal),
-                        ],
-                      ),
-                      detailHistoryTransactionModel.result.resi=="-"?Container():GestureDetector(
-                        onTap: () {
-                          Clipboard.setData(new ClipboardData(text: detailHistoryTransactionModel.result.resi));
+                      GestureDetector(
+                        onTap: (){
+                          if(detailHistoryTransactionModel.result.resi!="-"){
+                            Clipboard.setData(new ClipboardData(text: detailHistoryTransactionModel.result.resi));
+                            WidgetHelper().showFloatingFlushbar(context,"success"," no resi berhasil disalin");
+                          }
                         },
-                        child:Row(
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            WidgetHelper().textQ("",scaler.getTextSize(8),SiteConfig().secondColor,FontWeight.bold),
-                            WidgetHelper().textQ("Salin No.Resi",scaler.getTextSize(8),SiteConfig().secondColor,FontWeight.bold),
+                            WidgetHelper().textQ("No.Resi",scaler.getTextSize(9),LightColor.lightblack,FontWeight.normal),
+                            Row(
+                              children: [
+                                WidgetHelper().textQ("${detailHistoryTransactionModel.result.resi=="-"?"Belum ada No.Resi":detailHistoryTransactionModel.result.resi}",scaler.getTextSize(9),LightColor.lightblack,FontWeight.normal),
+                                if(detailHistoryTransactionModel.result.resi!="-")Icon(Ionicons.ios_copy, color:LightColor.lightblack,size: scaler.getTextSize(9),),
+                              ],
+                            ),
                           ],
                         ),
-                      ) ,
-
+                      ),
                       Divider(),
-                      WidgetHelper().textQ("Alamat Pengiriman",scaler.getTextSize(8),SiteConfig().darkMode,FontWeight.bold),
-                      SizedBox(height: 5.0,),
-                      WidgetHelper().textQ("jalan kebon manggu rt 02/04 kelurahan padasuka kecamatan cimahi tengah kota cimahi",scaler.getTextSize(8),SiteConfig().darkMode,FontWeight.normal),
+                      WidgetHelper().textQ("jalan kebon manggu rt 02/04 kelurahan padasuka kecamatan cimahi tengah kota cimahi",scaler.getTextSize(9),LightColor.lightblack,FontWeight.normal),
                     ],
                   ),
                 ),
@@ -310,35 +344,35 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      WidgetHelper().textQ("Informasi Pembayaran",scaler.getTextSize(10),SiteConfig().darkMode,FontWeight.bold),
+                      WidgetHelper().textQ("Informasi Pembayaran",scaler.getTextSize(10),LightColor.black,FontWeight.bold),
                     ],
                   ),
                 ),
+                SizedBox(height: 5.0),
                 Container(
                   child: Column(
                     children: <Widget>[
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          WidgetHelper().textQ("Metode Pembayaran",scaler.getTextSize(8),SiteConfig().darkMode,FontWeight.normal),
-                          WidgetHelper().textQ("Transfer",scaler.getTextSize(8),SiteConfig().secondColor,FontWeight.normal),
+                          WidgetHelper().textQ("Metode Pembayaran",scaler.getTextSize(9),LightColor.lightblack,FontWeight.normal),
+                          WidgetHelper().textQ("Transfer",scaler.getTextSize(9),LightColor.lightblack,FontWeight.normal),
                         ],
                       ),
                       Divider(),
-                      SizedBox(height: 0.0),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          WidgetHelper().textQ("Total Harga",scaler.getTextSize(8),SiteConfig().darkMode,FontWeight.normal),
-                          WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(detailHistoryTransactionModel.result.subtotal))}",scaler.getTextSize(8),Colors.green,FontWeight.bold),
+                          WidgetHelper().textQ("Total Harga",scaler.getTextSize(9),LightColor.lightblack,FontWeight.normal),
+                          WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(detailHistoryTransactionModel.result.subtotal))} .-",scaler.getTextSize(9),LightColor.orange,FontWeight.normal),
                         ],
                       ),
                       SizedBox(height: 5.0),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          WidgetHelper().textQ("Total Ongkos Kirim",scaler.getTextSize(8),SiteConfig().darkMode,FontWeight.normal),
-                          WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(detailHistoryTransactionModel.result.ongkir))}",scaler.getTextSize(8),Colors.green,FontWeight.bold),
+                          WidgetHelper().textQ("Total Ongkos Kirim",scaler.getTextSize(9),LightColor.lightblack,FontWeight.normal),
+                          WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(detailHistoryTransactionModel.result.ongkir))} .-",scaler.getTextSize(9),LightColor.orange,FontWeight.normal),
                         ],
                       ),
                     ],
@@ -355,8 +389,8 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          WidgetHelper().textQ("Total Pembayaran",scaler.getTextSize(8),SiteConfig().darkMode,FontWeight.normal),
-                          WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(detailHistoryTransactionModel.result.grandtotal))}",scaler.getTextSize(8),Colors.green,FontWeight.bold),
+                          WidgetHelper().textQ("Total Pembayaran",scaler.getTextSize(9),LightColor.lightblack,FontWeight.normal),
+                          WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(detailHistoryTransactionModel.result.grandtotal))} .-",scaler.getTextSize(9),LightColor.orange,FontWeight.normal),
                         ],
                       ),
                     ],
@@ -374,7 +408,7 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
   }
 
   Widget buildItem(BuildContext context){
-
+    ScreenScaler scaler = ScreenScaler()..init(context);
     var width = MediaQuery.of(context).size.width;
     return Container(
       padding: const EdgeInsets.only(left: 0,right:0,top:10,bottom:0),
@@ -383,9 +417,51 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
       child: new StaggeredGridView.countBuilder(
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
-        crossAxisCount: 4,
+        crossAxisCount: 1,
         itemCount: detailHistoryTransactionModel.result.barang.length,
+        padding: EdgeInsets.zero,
         itemBuilder: (BuildContext context, int index) {
+          var val=detailHistoryTransactionModel.result.barang[index];
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey[200],
+                  spreadRadius: 0,
+                  blurRadius: 5,
+                ),
+              ],
+            ),
+            child: WidgetHelper().myRipple(
+              callback: (){
+                WidgetHelper().myPush(context,ProductDetailPage(id:val));
+              },
+              child: ListTile(
+                contentPadding: EdgeInsets.all(0),
+                leading: WidgetHelper().baseImage(val.gambar,height: scaler.getHeight(10),width: scaler.getWidth(10),fit: BoxFit.fill),
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    WidgetHelper().textQ(val.barang, scaler.getTextSize(9),LightColor.lightblack,FontWeight.normal),
+                    Row(
+                      textBaseline: TextBaseline.alphabetic,
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(val.hargaJual))} * ${val.qty}",  scaler.getTextSize(9),LightColor.orange,FontWeight.normal),
+                        WidgetHelper().textQ("=",  scaler.getTextSize(9),LightColor.lightblack,FontWeight.normal),
+                        WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(val.subtotal))}",  scaler.getTextSize(9),LightColor.orange,FontWeight.normal)
+                      ],
+                    ),
+                  ],
+                ),
+              )
+            ),
+          );
           return FirstProductWidget(
             id: detailHistoryTransactionModel.result.barang[index].id,
             gambar: detailHistoryTransactionModel.result.barang[index].gambar,
@@ -400,7 +476,7 @@ class _DetailHistoryTransactoinScreenState extends State<DetailHistoryTransactoi
             countCart: (){},
           );
         },
-        staggeredTileBuilder: (int index) => new StaggeredTile.fit(2),
+        staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
         mainAxisSpacing: 15.0,
         crossAxisSpacing: 15.0,
       ),

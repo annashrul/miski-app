@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:netindo_shop/config/site_config.dart';
+import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/views/screen/wrapper_screen.dart';
@@ -95,7 +96,7 @@ class _DetailPromoScreenState extends State<DetailPromoScreen> {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(10.0),
                     onTap: (){
-                      WidgetHelper().myPush(context,WrapperScreen(currentTab: 2));
+                      WidgetHelper().myPush(context,WrapperScreen(currentTab: StringConfig.defaultTab));
                     },
                     child: Container(
                       decoration: BoxDecoration(

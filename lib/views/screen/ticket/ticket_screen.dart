@@ -8,23 +8,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/widgets.dart';
 import 'package:netindo_shop/config/database_config.dart';
+import 'package:netindo_shop/config/light_color.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/helper/database_helper.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/user_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/general_model.dart';
+import 'package:netindo_shop/model/tenant/list_tenant_model.dart';
 import 'package:netindo_shop/model/ticket/detail_ticket_model.dart';
 import 'package:netindo_shop/model/ticket/list_ticket_model.dart';
 import 'package:netindo_shop/provider/base_provider.dart';
+import 'package:netindo_shop/provider/handle_http.dart';
 import 'package:netindo_shop/views/screen/checkout/detail_checkout_screen.dart';
 import 'package:netindo_shop/views/screen/wrapper_screen.dart';
 import 'package:netindo_shop/views/widget/empty_widget.dart';
 import 'package:netindo_shop/views/widget/loading_widget.dart';
 import 'package:netindo_shop/views/widget/refresh_widget.dart';
+import 'package:netindo_shop/views/widget/ticket/ticket_widget.dart';
 import 'package:netindo_shop/views/widget/timeout_widget.dart';
 
 class TicketScreen extends StatefulWidget {
@@ -37,6 +42,7 @@ class _TicketScreenState extends State<TicketScreen> {
   ListTicketModel listTicketModel;
   bool isLoading=false,isLoadmore=false,isError=false;
   int perpage=10;
+
   Future loadTicket()async{
     print("########################## load tiket chat?page=1&limit=$perpage #########################");
     var res = await BaseProvider().getProvider("chat?page=1&perpage=$perpage", listTicketModelFromJson);
@@ -94,7 +100,10 @@ class _TicketScreenState extends State<TicketScreen> {
   Widget build(BuildContext context){
     ScreenScaler scaler = ScreenScaler()..init(context);
 
-    return isLoading?LoadingTicket(total: 10):isError?TimeoutWidget(callback: ()async{
+    return isLoading?Container(
+      padding: scaler.getPadding(0, 2),
+      child: LoadingTicket(total: 10),
+    ):isError?TimeoutWidget(callback: ()async{
       setState(() {
         isLoading=true;
       });
@@ -117,89 +126,22 @@ class _TicketScreenState extends State<TicketScreen> {
                         primary: false,
                         itemCount: listTicketModel.result.data.length,
                         separatorBuilder: (context, index) {
-                          return Divider(height:1);
+                          return Divider(height:0);
                         },
                         itemBuilder: (context, index) {
                           var val = listTicketModel.result.data[index];
                           return InkWell(
                             onTap: () {
-                              // print(val.id);
-                              print(listTicketModel.result.data);
                               WidgetHelper().myPush(context,RoomTicketScreen(
                                   id: val.id,
                                   tenant:val.tenant,title:val.title,desc:val.deskripsi,createdAt:val.createdAt,status:val.status
                               ));
                             },
-                            child: Container(
-                              color:Theme.of(context).focusColor.withOpacity(0.1),
-                              padding: scaler.getPadding(1,2),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  Stack(
-                                    children: <Widget>[
-                                      SizedBox(
-                                        width: scaler.getWidth(17),
-                                        height: scaler.getHeight(7),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            // shape: BoxShape.circle,
-                                            borderRadius: BorderRadius.all(Radius.circular(50)),
-                                            color:Theme.of(context).focusColor.withOpacity(0.15),
-                                            // border: Border.all(color:SiteConfig().accentDarkColor)
-                                          ),
-                                          child: Center(
-                                            child: WidgetHelper().textQ("${DateFormat().add_yMMMd().format(val.createdAt)} \n${DateFormat().add_jm().format(val.createdAt)}", scaler.getTextSize(8), SiteConfig().darkMode,FontWeight.normal,textAlign: TextAlign.center),
-                                          ),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        bottom: 3,
-                                        right: 3,
-                                        width: 12,
-                                        height: 12,
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            // color: widget.message.user.userState == UserState.available ? Colors.green : widget.message.user.userState == UserState.away ? Colors.orange : Colors.red,
-                                            color: val.status==0?Colors.green:Colors.red,
-                                            shape: BoxShape.circle,
-                                          ),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  SizedBox(width: 15),
-                                  Flexible(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                      children: <Widget>[
-                                        Stack(
-                                          alignment: AlignmentDirectional.topEnd,
-                                          children: [
-                                            Container(
-                                              padding: EdgeInsets.only(right:10.0),
-                                              child: WidgetHelper().textQ("${val.tenant}", scaler.getTextSize(9), SiteConfig().mainColor, FontWeight.bold),
-                                            ),
-                                            Positioned(
-                                              child:Icon(AntDesign.home,color:SiteConfig().mainColor,size: 8),
-                                            )
-                                          ],
-                                        ),
-                                        WidgetHelper().textQ("${val.title}", scaler.getTextSize(9),SiteConfig().darkMode,FontWeight.normal),
-                                        Row(
-                                          crossAxisAlignment: CrossAxisAlignment.end,
-                                          children: <Widget>[
-                                            Expanded(
-                                              child:  WidgetHelper().textQ("${val.deskripsi}", scaler.getTextSize(8),Colors.grey,FontWeight.normal),
-                                            ),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              ),
+                            child: TicketWidget(
+                              status: val.status,
+                              title: val.title,
+                              tenant: val.tenant,
+                              createdAt: val.createdAt,
                             ),
                           );
                         },
@@ -246,6 +188,8 @@ class _TicketScreenState extends State<TicketScreen> {
         },
     );
   }
+
+
 
 }
 
@@ -405,57 +349,13 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
       appBar: WidgetHelper().appBarWithButton(context,widget.tenant,(){Navigator.pop(context);},<Widget>[],brightness:Brightness.light),
       body: isLoading?WidgetHelper().loadingWidget(context):Column(
         children: [
-          Container(
-            color: Theme.of(context).focusColor.withOpacity(0.15),
-            padding: scaler.getPadding(0.5,2),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Stack(
-                  children: <Widget>[
-                    SizedBox(
-                      width: scaler.getWidth(17),
-                      height: scaler.getHeight(7),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(50)),
-                          color:Theme.of(context).focusColor.withOpacity(0.15),
-                          // border: Border.all(color:SiteConfig().accentDarkColor)
-                        ),
-                        child: Center(
-                          child: WidgetHelper().textQ("${DateFormat().add_yMMMd().format(widget.createdAt)} \n${DateFormat().add_jm().format(widget.createdAt)}", scaler.getTextSize(8), SiteConfig().darkMode,FontWeight.normal,textAlign: TextAlign.center),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 3,
-                      right: 3,
-                      width: 12,
-                      height: 12,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          // color: widget.message.user.userState == UserState.available ? Colors.green : widget.message.user.userState == UserState.away ? Colors.orange : Colors.red,
-                          color: widget.status==0?Colors.green:Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-                SizedBox(width: 15),
-                Flexible(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: <Widget>[
-                      WidgetHelper().textQ("${widget.title}",scaler.getTextSize(9),SiteConfig().darkMode,FontWeight.bold),
-                      WidgetHelper().textQ("${widget.desc}",scaler.getTextSize(8),Colors.grey,FontWeight.normal,maxLines: null)
-                    ],
-                  ),
-                )
-              ],
-            ),
+          TicketWidget(
+            status: widget.status,
+            title:widget.title,
+            tenant: widget.tenant,
+            createdAt: widget.createdAt,
           ),
+
           Expanded(
             child: myTicket.length>0?buildLocal(context):buildServer(context)
           ),
@@ -614,8 +514,6 @@ class ModalTicket extends StatefulWidget {
 
 class _ModalTicketState extends State<ModalTicket> {
   int idx=0;
-  List resTenant=[];
-  DatabaseConfig _helper = DatabaseConfig();
   var titleController = TextEditingController();
   var messageController = TextEditingController();
   final FocusNode titleFocus = FocusNode();
@@ -623,16 +521,12 @@ class _ModalTicketState extends State<ModalTicket> {
   File _image;
   String fileName;
   String base64Image;
-  bool isErrorTenant=false;
-  Future getTenant()async{
-    final tenant = await _helper.getData(TenantQuery.TABLE_NAME);
-    print(tenant);
-    setState(() {
-      resTenant = tenant;
-    });
-  }
+  bool isErrorTenant=false,isLoadingTenant=true;
+  ListTenantModel listTenantModel;
+  String logo=SiteConfig().noImage;
+  List tenantData = [];
   Future postTicket()async{
-    if(resTenant.length<1){
+    if(tenantData.length<1){
       setState(() {isErrorTenant=true;});
       Timer(Duration(seconds:1), (){
         setState(() {isErrorTenant=false;});
@@ -661,21 +555,16 @@ class _ModalTicketState extends State<ModalTicket> {
         "layanan":"Barang",
         "prioritas":"0",
         "status":"0",
-        "id_tenant":resTenant[idx]['id_tenant']
+        "id_tenant":tenantData[0]["id"]
       };
       print(data);
-      var res = await BaseProvider().postProvider("chat", data);
+      var res = await HandleHttp().postProvider("chat", data,context: context,callback: (){
+
+      });
       Navigator.pop(context);
-      if(res==SiteConfig().errSocket||res==SiteConfig().errTimeout){
-        widget.callback("gagal");
-        WidgetHelper().notifDialog(context,"Perhatian", "Terjadi kesalahan koneksi",(){Navigator.pop(context);}, (){postTicket();},titleBtn1: "kembali",titleBtn2: "coba lagi");
-      }
-      else{
+      if(res!=null){
         Navigator.pop(context,"berhasil");
         widget.callback("berhasil");
-        // print("RESPONSE $res");
-        // Navigator.pop(context);
-        // WidgetHelper().notifDialog(context,"Berhasil", "Pengiriman tiket komplain berhasil dikirim",(){Navigator.pop(context);}, (){WrapperScreen(currentTab: 2);},titleBtn1: "kembali",titleBtn2: "Beranda");
       }
     }
 
@@ -687,14 +576,10 @@ class _ModalTicketState extends State<ModalTicket> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getTenant();
   }
   @override
   Widget build(BuildContext context) {
-    Widget childTenant;
-    if(resTenant.length>0){
-      childTenant = Image.network(resTenant[idx]['logo'],fit: BoxFit.contain,width: 50,);
-    }
+    ScreenScaler scaler = ScreenScaler()..init(context);
 
     return Container(
       height: _image==null?MediaQuery.of(context).size.height/1.7:MediaQuery.of(context).size.height/1.0,
@@ -762,102 +647,103 @@ class _ModalTicketState extends State<ModalTicket> {
                           messageFocus.unfocus();
                           FocusScope.of(context).unfocus();
                           WidgetHelper().myModal(context,ModalTenant(
-                            callback: (index)async{
-                              WidgetHelper().loadingDialog(context);
+                            callback: (val)async{
+                              tenantData.add(val);
                               setState(() {
-                                idx=index;
+                                logo = val["logo"];
                                 isErrorTenant=false;
                               });
-                              await getTenant();
-                              Navigator.pop(context);
+
                               Navigator.pop(context);
                             },
                             index: idx,
                           ));
                         },
                         contentPadding: EdgeInsets.all(0.0),
-                        leading: Padding(padding: EdgeInsets.all(5.0),child: childTenant,),
-                        title: WidgetHelper().textQ("${resTenant.length>0?'${resTenant[idx]['nama']}':'Silahkan pilih tenant terlebih dahulu'}",10,Colors.grey,FontWeight.bold),
-                        trailing: Icon(Icons.arrow_forward_ios,size: 15,color: Colors.grey),
+                        leading: Padding(padding: EdgeInsets.all(5.0),child: Image.network(logo,fit: BoxFit.contain,width: 50,),),
+                        title: WidgetHelper().textQ("${tenantData.length>0?'${tenantData[0]["nama"]}':'Silahkan pilih tenant terlebih dahulu'}",scaler.getTextSize(9),LightColor.lightblack,FontWeight.normal),
+                        trailing: Icon(Icons.arrow_forward_ios,size: 15,color: LightColor.lightblack),
                       ),
                     )
                 ),enable: isErrorTenant),
                 Container(
-                    padding: EdgeInsets.all(10.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey[200]),
-                        borderRadius: BorderRadius.all(
-                            Radius.circular(10.0)
-                        ),
-                      ),
-                      padding: EdgeInsets.all(10.0),
-                      child: TextField(
-                        style: TextStyle(color:Colors.grey,fontSize:12,fontFamily: SiteConfig().fontStyle,fontWeight: FontWeight.bold),
-                        controller: titleController,
-                        focusNode: titleFocus,
-                        autofocus: false,
-                        maxLines: 1,
-                        decoration: InputDecoration.collapsed(
-                            hintText: "contoh : Refund belum sampai",
-                            hintStyle: TextStyle(color:Colors.grey,fontSize: 12,fontFamily: SiteConfig().fontStyle,fontWeight: FontWeight.bold)
-                        ),
-                      ),
-                    )
+                  margin: scaler.getMarginLTRB(2, 0, 2, 0),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey[200]),
+                    borderRadius: BorderRadius.all(
+                        Radius.circular(10.0)
+                    ),
+                  ),
+                  padding: scaler.getPadding(1.5, 1),
+                  child: TextField(
+                    style: GoogleFonts.robotoCondensed(
+                      color: LightColor.lightblack,
+                      fontSize: scaler.getTextSize(10)
+                    ),
+                    controller: titleController,
+                    focusNode: titleFocus,
+                    autofocus: false,
+                    maxLines: 1,
+                    decoration: InputDecoration.collapsed(
+                        hintText: "contoh : Refund belum sampai",
+                        hintStyle: GoogleFonts.robotoCondensed(
+                            color: LightColor.lightblack,
+                            fontSize: scaler.getTextSize(10)
+                        )
+                    ),
+                  ),
                 ),
                 Container(
-                    padding: EdgeInsets.all(10.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey[200]),
-                        borderRadius: BorderRadius.all(
-                            Radius.circular(10.0)
-                        ),
-                      ),
-                      padding: EdgeInsets.all(10.0),
-                      child: TextField(
-                        style: TextStyle(color:Colors.grey,fontSize:12,fontFamily: SiteConfig().fontStyle,fontWeight: FontWeight.bold),
-                        controller: messageController,
-                        focusNode: messageFocus,
-                        autofocus: false,
-                        maxLines: 5,
-                        decoration: InputDecoration.collapsed(
-                            hintText: "contoh : Selamat siang, kenapa ketika saya refund status nya belum sampai terus ? ",
-                            hintStyle: TextStyle(color:Colors.grey,fontSize: 12,fontFamily: SiteConfig().fontStyle,fontWeight: FontWeight.bold)
-                        ),
-                      ),
-                    )
-                ),
-                InkWell(
-                  borderRadius: BorderRadius.all(
-                      Radius.circular(10.0)
+                  margin: scaler.getMarginLTRB(2, 1, 2, 0),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey[200]),
+                    borderRadius: BorderRadius.all(
+                        Radius.circular(10.0)
+                    ),
                   ),
-                  onTap: ()async{
-                    var img = await FunctionHelper().getImage('galeri');
-                    setState(() {
-                      _image = img;
-                    });
-                    messageFocus.unfocus();
-                    FocusScope.of(context).unfocus();
-                  },
-                  child: Container(
-                      padding: EdgeInsets.all(10.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).focusColor.withOpacity(0.15),
-                          border: Border.all(color: Colors.grey[200]),
-                          borderRadius: BorderRadius.all(
-                              Radius.circular(10.0)
-                          ),
-                        ),
-                        padding: EdgeInsets.all(10.0),
-                        child: Column(
-                          children: [
-                            Icon(AntDesign.upload,color: SiteConfig().darkMode),
-                            WidgetHelper().textQ("Lampirkan File",10,SiteConfig().darkMode,FontWeight.bold)
-                          ],
-                        ),
-                      )
+                  padding: scaler.getPadding(1, 1),
+                  child: TextField(
+                    style: GoogleFonts.robotoCondensed(
+                        color: LightColor.lightblack,
+                        fontSize: scaler.getTextSize(10)
+                    ),
+                    controller: messageController,
+                    focusNode: messageFocus,
+                    autofocus: false,
+                    maxLines: 5,
+                    decoration: InputDecoration.collapsed(
+                        hintText: "contoh : Selamat siang, kenapa ketika saya refund status nya belum sampai terus ? ",
+                        hintStyle: GoogleFonts.robotoCondensed(
+                            color: LightColor.lightblack,
+                            fontSize: scaler.getTextSize(10)
+                        )
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: scaler.getMarginLTRB(2, 1, 2, 1),
+                  child: WidgetHelper().myRipple(
+                    callback:  ()async{
+                      var img = await FunctionHelper().getImage('galeri');
+                      setState(() {
+                        _image = img;
+                      });
+                      messageFocus.unfocus();
+                      FocusScope.of(context).unfocus();
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      color:Theme.of(context).focusColor.withOpacity(0.15),
+                      padding: scaler.getPadding(1, 1),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(AntDesign.upload,color: SiteConfig().darkMode),
+                          WidgetHelper().textQ("Lampirkan File",10,SiteConfig().darkMode,FontWeight.bold)
+                        ],
+                      ),
+                    ),
                   ),
                 ),
                 Divider(),
@@ -885,7 +771,7 @@ class ModalTenant extends StatefulWidget {
     @required this.callback,
     @required this.index,
   }) : super(key: key);
-  Function(int idx) callback;
+  Function(dynamic data) callback;
   final int index;
   @override
   _ModalTenantState createState() => _ModalTenantState();
@@ -896,11 +782,20 @@ class _ModalTenantState extends State<ModalTenant> {
   DatabaseConfig _helper = DatabaseConfig();
   List resTenant = [];
   int idx=0;
+  ListTenantModel listTenantModel;
+  bool isLoading=true;
   Future getTenant()async{
-    final tenant = await _helper.getData(TenantQuery.TABLE_NAME);
-    setState(() {
-      resTenant = tenant;
+    var res = await HandleHttp().getProvider("tenant?page=1", listTenantModelFromJson,context: context,callback: (){
+      print("callback tenant");
     });
+    if(res is ListTenantModel){
+      ListTenantModel result=ListTenantModel.fromJson(res.toJson());
+      setState(() {
+        listTenantModel=result;
+        isLoading=false;
+      });
+    }
+
   }
   @override
   void initState() {
@@ -940,23 +835,22 @@ class _ModalTenantState extends State<ModalTenant> {
           SizedBox(height: 20.0),
           Expanded(
             child: Scrollbar(
-                child: ListView.separated(
+                child: isLoading?WidgetHelper().loadingWidget(context):ListView.separated(
                   padding: EdgeInsets.zero,
-                  itemCount: resTenant.length,
+                  itemCount: listTenantModel.result.data.length,
                   itemBuilder: (context,index){
+                    var val=listTenantModel.result.data[index];
                     return InkWell(
                       onTap: (){
                         setState(() {
                           idx =index;
                         });
-                        widget.callback(index);
+                        widget.callback(val.toJson());
                       },
                       child: ListTile(
                         contentPadding: EdgeInsets.only(left:10,right:10,top:0,bottom:0),
-                        leading: Padding(padding: EdgeInsets.all(5.0),child:  Image.network(resTenant[index]['logo'],fit: BoxFit.contain,width: 50,),),
-                        // leading: Image.network(resTenant[index]['logo'],width: 30,height: 30,),
-                        title: WidgetHelper().textQ("${resTenant[index]['nama']}", 14,SiteConfig().darkMode, FontWeight.bold),
-                        // subtitle: WidgetHelper().textQ("${widget.kurirModel.result[index].deskripsi}", 12, SiteConfig().secondColor, FontWeight.bold),
+                        leading: Padding(padding: EdgeInsets.all(5.0),child:  Image.network(val.logo,fit: BoxFit.contain,width: 50,),),
+                        title: WidgetHelper().textQ("${val.nama}", 14,SiteConfig().darkMode, FontWeight.bold),
                         trailing: widget.index==index?Icon(AntDesign.checkcircleo,color:SiteConfig().darkMode):Text(
                             ''
                         ),
@@ -987,7 +881,7 @@ class TimeAgo{
     } else if (difference.inDays >= 2) {
       return '${difference.inDays} hari yang lalu';
     } else if (difference.inDays >= 1) {
-      return (numericDates) ? '1 hari yang lalu' : 'kemari';
+      return (numericDates) ? '1 hari yang lalu' : 'kemarin';
     } else if (difference.inHours >= 2) {
       return '${difference.inHours} jam yang lalu';
     } else if (difference.inHours >= 1) {
@@ -999,7 +893,7 @@ class TimeAgo{
     } else if (difference.inSeconds >= 3) {
       return '${difference.inSeconds} detik yang lalu';
     } else {
-      return 'Just now';
+      return 'sekarang';
     }
   }
 

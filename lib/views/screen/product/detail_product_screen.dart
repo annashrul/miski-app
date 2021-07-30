@@ -666,8 +666,6 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
                         Container(
                           height: MediaQuery.of(context).size.height/1,
                           padding: scaler.getPadding(1, 2),
-
-                          // child: isLoadingReview?Text(''):reviewModel.result.data.length>0?reviewContent(context):EmptyTenant(),
                           child: isLoadingReview?Text(''):reviewModel.result.data.length>0?ListView.separated(
                               padding:EdgeInsets.all(0.0),
                               shrinkWrap: true,

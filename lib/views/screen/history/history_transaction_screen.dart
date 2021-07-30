@@ -16,6 +16,7 @@ import 'package:netindo_shop/views/screen/history/detail_history_transaction_scr
 import 'package:netindo_shop/views/widget/empty_widget.dart';
 import 'package:netindo_shop/views/widget/loading_widget.dart';
 import 'package:netindo_shop/views/widget/refresh_widget.dart';
+import 'package:netindo_shop/views/widget/review/form_review_widget.dart';
 import 'package:netindo_shop/views/widget/timeout_widget.dart';
 
 class HistoryTransactionScreen extends StatefulWidget {
@@ -115,7 +116,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
 
     return RefreshWidget(
       widget: Container(
-        padding:scaler.getPadding(0,2),
+        padding:scaler.getPadding(0,0),
         child: isTimeout?TimeoutWidget(callback: (){
           setState(() {
             isTimeout=false;
@@ -127,6 +128,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
             Expanded(
                 flex: 1,
                 child: ListView.builder(
+                  padding: scaler.getPadding(0,2),
                   scrollDirection: Axis.horizontal,
                   itemCount: FunctionHelper.arrOptDate.length,
                   itemBuilder: (context,index){
@@ -147,15 +149,14 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                           Container(
                             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
                             decoration: BoxDecoration(
-                              border: Border.all(width:filterStatus==index?2.0:1.0,color: filterStatus==index?LightColor.orange:Colors.grey[200]),
+                              border: Border.all(width:filterStatus==index?2.0:1.0,color: filterStatus==index?LightColor.mainColor:LightColor.lightblack),
                               borderRadius: BorderRadius.circular(10.0),
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                WidgetHelper().textQ("${FunctionHelper.arrOptDate[index]}", scaler.getTextSize(9),Colors.grey, FontWeight.bold),
-                                // Icon(Icons.keyboard_arrow_down,size: 17.0,color: Colors.grey,),
+                                WidgetHelper().textQ("${FunctionHelper.arrOptDate[index]}", scaler.getTextSize(9), filterStatus==index?LightColor.mainColor:LightColor.lightblack, FontWeight.bold),
                               ],
                             ),
                           )
@@ -174,6 +175,7 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                   Expanded(
                       flex:16,
                       child: ListView.separated(
+                        padding: scaler.getPadding(1,2),
                       key: PageStorageKey<String>('HistoryPembelianScreen'),
                       primary: false,
                       physics: ScrollPhysics(),
@@ -183,132 +185,170 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                         print(historyTransactionModel.result.data[index]);
                         final val=historyTransactionModel.result.data[index];
                         final valDet = historyTransactionModel.result.data[index].detail;
-                        return WidgetHelper().myPress(
-                              (){
-                              WidgetHelper().myPush(context,DetailHistoryTransactoinScreen(noInvoice:base64.encode(utf8.encode(val.kdTrx))));
-                            },
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).focusColor.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(10.0),
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey[200],
+                                spreadRadius: 0,
+                                blurRadius: 5,
                               ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.only(left:10,right:10,top:10),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
+                            ],
+                          ),
+                          child: Container(
+                            padding: scaler.getPaddingLTRB(1, 1,1,0.5),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          WidgetHelper().textQ("${val.tenant.toUpperCase()}",scaler.getTextSize(9),LightColor.black,FontWeight.bold),
+                                          SizedBox(height: 2.0),
+                                          WidgetHelper().textQ("${val.kdTrx}",scaler.getTextSize(9),LightColor.lightblack,FontWeight.normal),
+                                        ],
+                                      ),
+                                    ),
+                                    WidgetHelper().myStatus(context,val.status)
+                                  ],
+                                ),
+                                Divider(),
+                                if(valDet.length>0)Row(
+                                  children: [
+                                    WidgetHelper().baseImage(valDet[0]?.gambar,height: scaler.getHeight(3),width: scaler.getWidth(10),fit: BoxFit.fill),
+                                    SizedBox(width: scaler.getWidth(1)),
+                                    Column(
                                       children: [
                                         Container(
-                                          child: Column(
+                                          width: scaler.getWidth(60),
+                                          child: WidgetHelper().textQ(valDet[0].barang,scaler.getTextSize(9),LightColor.lightblack,FontWeight.normal),
+                                        ),
+                                        WidgetHelper().textQ("${valDet.length} * ${FunctionHelper().formatter.format(int.parse(valDet[0].hargaJual))}",scaler.getTextSize(9),LightColor.orange,FontWeight.normal),
+                                      ],
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                    ),
+                                  ],
+                                ),
+                                if(valDet.length>0)SizedBox(height: scaler.getHeight(0.5)),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      padding: scaler.getPadding(0, 0),
+                                      child: Column(
+                                        children: [
+                                          Column(
+                                            mainAxisAlignment: MainAxisAlignment.start,
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              WidgetHelper().textQ("${val.tenant.toUpperCase()}",scaler.getTextSize(9),LightColor.titleTextColor,FontWeight.bold),
-                                              SizedBox(height: 2.0),
-                                              WidgetHelper().textQ("${val.kdTrx}",scaler.getTextSize(9),LightColor.black,FontWeight.normal),
+                                              WidgetHelper().textQ("Total Belanja",scaler.getTextSize(9),LightColor.lightblack,FontWeight.normal),
+                                              WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse(val.grandtotal))} .-",scaler.getTextSize(9),LightColor.orange,FontWeight.normal),
                                             ],
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    WidgetHelper().myRipple(
+                                      isRadius: true,
+                                      radius: 100,
+                                      callback: (){
+                                        WidgetHelper().myModal(context, Container(
+                                          padding: EdgeInsets.only(top:10.0,left:0,right:0),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0),topRight:Radius.circular(10.0) ),
                                           ),
-                                        ),
-                                        WidgetHelper().myStatus(context,val.status)
-                                      ],
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.only(left: 10,right:10,top:5,bottom:5),
-                                    child: Container(
-                                      color: Colors.grey[200],
-                                      height: 1.0,
-                                      width: double.infinity,
-                                    ),
-                                  ),
-                                  if(valDet.length>0)Padding(
-                                    padding: EdgeInsets.only(left:10,right:10,top:0),
-                                    child: Row(
-                                      children: [
-                                        Image.network(valDet[0]?.gambar,height: 50,width: 50,fit: BoxFit.fill,),
-                                        SizedBox(width: 10.0),
-                                        Column(
-                                          children: [
-                                            Container(
-                                              width: MediaQuery.of(context).size.width/1.5,
-                                              child: WidgetHelper().textQ(valDet[0].barang,scaler.getTextSize(9),Colors.black87,FontWeight.normal),
+                                          // color: Colors.white,
+                                          child: Padding(
+                                            padding: scaler.getPadding(0.5, 2),
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.min,
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              children: [
+                                                SizedBox(height:10.0),
+                                                Center(
+                                                  child: Container(
+                                                    padding: EdgeInsets.only(top:10.0),
+                                                    width: 50,
+                                                    height: 10.0,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.grey[200],
+                                                      borderRadius:  BorderRadius.circular(10.0),
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(height:10.0),
+                                                WidgetHelper().myRipple(
+                                                    callback: (){
+                                                      WidgetHelper().myPush(context,DetailHistoryTransactoinScreen(noInvoice:base64.encode(utf8.encode(val.kdTrx))));
+                                                    },
+                                                    child:  Padding(
+                                                      padding: scaler.getPadding(0.5, 0),
+                                                      child: Row(
+                                                        children: [
+                                                          Icon(Ionicons.ios_arrow_dropright_circle,color: LightColor.lightblack),
+                                                          SizedBox(width: scaler.getWidth(3)),
+                                                          WidgetHelper().textQ("Detail history pembelian", scaler.getTextSize(10),LightColor.lightblack, FontWeight.bold)
+                                                        ],
+                                                      ),
+                                                    )
+                                                ),
+                                                if(val.status==0) WidgetHelper().myRipple(
+                                                    callback: (){
+                                                      WidgetHelper().myPush(context,DetailCheckoutScreen(
+                                                        param:"bisa",
+                                                        invoice_no:"${val.kdTrx}",
+                                                        grandtotal:"${val.grandtotal}",
+                                                        kode_unik:"${val.kodeUnik}",
+                                                        total_transfer:"${int.parse(val.jumlahTf)}",
+                                                        bank_logo:"${val.bankLogo}",
+                                                        bank_name:"${val.bankTujuan}",
+                                                        bank_atas_nama:"${val.atasNama}",
+                                                        bank_acc:"${val.rekeningTujuan}",
+                                                        bank_code:"${val.bankCode}",
+                                                      ));
+                                                    },
+                                                    child:  Padding(
+                                                      padding: scaler.getPadding(0.5, 0),
+                                                      child: Row(
+                                                        children: [
+                                                          Icon(Ionicons.md_cloud_upload,color: LightColor.lightblack),
+                                                          SizedBox(width: scaler.getWidth(3)),
+                                                          WidgetHelper().textQ("Upload bukti transfer", scaler.getTextSize(10),LightColor.lightblack, FontWeight.bold)
+                                                        ],
+                                                      ),
+                                                    )
+                                                ),
+                                              ],
                                             ),
-                                            WidgetHelper().textQ("${valDet.length} barang",scaler.getTextSize(8),Colors.grey,FontWeight.normal),
-                                            WidgetHelper().textQ("Ukuran ${valDet[0].subvarian!=null?valDet[0].subvarian:"-"} Warna ${valDet[0].varian!=null?valDet[0].varian:"-"}",scaler.getTextSize(8),Colors.grey,FontWeight.normal),
-                                          ],
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          mainAxisAlignment: MainAxisAlignment.start,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(height: 10),
-                                  Padding(
-                                    padding: EdgeInsets.only(left:10,right:10),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          child: Column(
-                                            children: [
-                                              Column(
-                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  WidgetHelper().textQ("Total Belanja",scaler.getTextSize(9),Colors.black87,FontWeight.normal),
-                                                  WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(val.grandtotal))}",scaler.getTextSize(9),Colors.green,FontWeight.normal),
-                                                ],
-                                              )
-                                            ],
                                           ),
+                                        ));
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
                                         ),
-                                        Container(
-                                          padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                                          child:InkWell(
-                                            onTap: (){
-                                              if(val.status==0){
-                                                WidgetHelper().myPush(context,DetailCheckoutScreen(
-                                                  param:"bisa",
-                                                  invoice_no:"${val.kdTrx}",
-                                                  grandtotal:"${val.grandtotal}",
-                                                  kode_unik:"${val.kodeUnik}",
-                                                  total_transfer:"${int.parse(val.jumlahTf)}",
-                                                  bank_logo:"${val.bankLogo}",
-                                                  bank_name:"${val.bankTujuan}",
-                                                  bank_atas_nama:"${val.atasNama}",
-                                                  bank_acc:"${val.rekeningTujuan}",
-                                                  bank_code:"${val.bankCode}",
-                                                ));
-                                              }
-                                              else{
+                                        padding: scaler.getPadding(0.5, 1),
+                                        child: Icon(Ionicons.ios_more,color: LightColor.lightblack),
+                                      ),
+                                    )
 
-                                              }
-                                            },
-                                            child: Container(
-                                                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                                decoration: BoxDecoration(
-                                                    color: SiteConfig().mainColor,
-                                                    borderRadius: BorderRadius.circular(10.0),
-                                                    boxShadow: [
-                                                      BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), offset: Offset(0, -2), blurRadius: 5.0)
-                                                    ]),
-                                                child: Center(
-                                                  child: WidgetHelper().textQ(val.status==0?"Upload Bukti Transfer":"Beri Ulasan",scaler.getTextSize(8),Colors.white, FontWeight.bold),
-                                                )
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(height: 10),
-                                ],
-                              ),
-                            )
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
                         );
                       },
                     separatorBuilder: (context,index){
@@ -329,4 +369,6 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
 
 
 }
+
+
 

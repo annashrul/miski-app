@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:netindo_shop/config/site_config.dart';
+import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/user_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
@@ -17,8 +18,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'home/public_home_screen.dart';
 
 class WrapperScreen extends StatefulWidget {
-  int currentTab = 2;
-  int selectedTab = 2;
+  int currentTab = StringConfig.defaultTab;
+  int selectedTab = StringConfig.defaultTab;
   String currentTitle = 'Home';
   int otherParam=5;
   WrapperScreen({
@@ -39,7 +40,9 @@ class _WrapperScreenState extends State<WrapperScreen> {
   String namaTenant='',idTenant='';
   bool isTenant=true;
   Future loadData() async{
-    // _selectTab(widget.currentTab);
+    var cek = await FunctionHelper().checkTenant();
+    print("tenant");
+
     SharedPreferences sess = await SharedPreferences.getInstance();
     bool isBoolTenant=sess.getBool("isTenant");
     String idt=sess.getString("idTenant");

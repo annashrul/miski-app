@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +8,9 @@ import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:netindo_shop/config/database_config.dart';
+import 'package:netindo_shop/config/light_color.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/helper/database_helper.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
@@ -14,8 +18,13 @@ import 'package:netindo_shop/helper/skeleton_helper.dart';
 import 'package:netindo_shop/helper/user_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/promo/global_promo_model.dart';
+import 'package:netindo_shop/model/tenant/listGroupProductModel.dart';
+import 'package:netindo_shop/model/tenant/listGroupProductModel.dart' as Prefix;
+import 'package:netindo_shop/model/tenant/list_brand_product_model.dart';
+import 'package:netindo_shop/model/tenant/list_category_product_model.dart';
 import 'package:netindo_shop/model/tenant/list_product_tenant_model.dart';
 import 'package:netindo_shop/provider/base_provider.dart';
+import 'package:netindo_shop/provider/handle_http.dart';
 import 'package:netindo_shop/provider/product_provider.dart';
 import 'package:netindo_shop/views/screen/product/cart_screen.dart';
 import 'package:netindo_shop/views/screen/product/detail_product_screen.dart';
@@ -29,6 +38,7 @@ import 'package:netindo_shop/views/widget/product/second_product_widget.dart';
 import 'package:netindo_shop/views/widget/refresh_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sticky_headers/sticky_headers.dart';
+import 'package:async/async.dart' show AsyncMemoizer;
 
 class HomeScreen extends StatefulWidget {
   final String id;
@@ -39,27 +49,53 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  {
+  final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   GlobalKey key = GlobalKey();
   final userRepository = UserHelper();
-  final DatabaseConfig _helper = new DatabaseConfig();
   ListProductTenantModel productTenantModel;
   GlobalPromoModel globalPromoModel;
+  ListGroupProductModel listGroupProductModel;
+  ListCategoryProductModel listCategoryProductModel;
   ScrollController controller;
-  bool isLoadingFav=true,isLoading=false,isLoadingSlider=false,isLoadmore=false,isTimeout=false,isShowChild=false;
+  bool isLoadingCategory=true,isLoadingGroup=true,isLoadingFav=true,isLoading=true,isLoadingSlider=true,isLoadmore=false,isTimeout=false,isShowChild=false;
   int _current=0,perpage=10,totalCart=0,total=0;
   List returnProductLocal = [],returnGroup = [], returnCategory = [],returnBrand = [],resFavoriteProduct = [];
   String q='',group='',category='',brand='';
-
   Future getProduct()async{
     String url = "barang?page=1&perpage=$perpage&id_tenant=${widget.id}";
-    final data = await BaseProvider().getProvider(url,listProductTenantModelFromJson);
+    if(group!=""){
+      url+="&kelompok=$group";
+    }
+    if(q!=""){
+      url+="&q=$q";
+    }
+    final data = await HandleHttp().getProvider(url,listProductTenantModelFromJson,context: context,callback: (){
+      print("callback product");
+    });
     ListProductTenantModel res = ListProductTenantModel.fromJson(data.toJson());
     setState(() {
       productTenantModel = res;
       total=res.result.total;
       isLoading=false;
       isLoadmore=false;
+      q="";
+    });
+  }
+  Future getGroup()async{
+    String url = "kelompok?page=1";
+    final data = await HandleHttp().getProvider(url,listGroupProductModelFromJson,context: context,callback: (){
+      print("callback group product");
+    });
+    ListGroupProductModel res = ListGroupProductModel.fromJson(data.toJson());
+    returnGroup.add({"id":"","title":"semua"});
+    res.result.data.forEach((element) {
+      returnGroup.add({"id":element.id,"title":element.title});
+    });
+    print("############## KELOMPOK ${returnGroup.length}");
+    setState(() {
+      listGroupProductModel = res;
+      isLoadingGroup=false;
     });
   }
   Future getPromo()async{
@@ -72,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
     }
     else{
       if(res is GlobalPromoModel){
-        GlobalPromoModel result = res;
+        GlobalPromoModel result =  GlobalPromoModel.fromJson(res.toJson());
         setState(() {
           globalPromoModel = GlobalPromoModel.fromJson(result.toJson());
           isLoadingSlider=false;
@@ -82,110 +118,40 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
     }
 
   }
-  Future getFavorite()async{
-    final res = await _helper.getWhereByTenant(ProductQuery.TABLE_NAME,widget.id,"is_favorite","true");
+  Future getCategory()async{
+    String url = "kategori?page=1&perpage=30";
+    final data = await HandleHttp().getProvider(url,listCategoryProductModelFromJson,context: context,callback: (){
+      print("callback category product");
+    });
+    ListCategoryProductModel res = ListCategoryProductModel.fromJson(data.toJson());
     setState(() {
-      resFavoriteProduct = res;
-      isLoadingFav=false;
+      listCategoryProductModel = res;
+      isLoadingCategory=false;
     });
   }
-  Future loadGroup()async{
-    var group = await _helper.getData(GroupQuery.TABLE_NAME);
-    List groups = [];
-    group.forEach((element) {
-      groups.add({
-        "id": element['id_groups'],
-        "title": element['title'],
-        "id_kategori":element['id_category'],
-        "kategori":element['category'],
-        "status": element['status'],
-        "image": element['image'],
-        "isSelected":false
-      });
-    });
-    setState(() {
-      returnGroup=groups;
-    });
-  }
-  Future loadCategory()async{
-    var cat = await _helper.getData(CategoryQuery.TABLE_NAME);
-    List catagories = [];
-    cat.forEach((element) {
-      catagories.add({
-        "id": element['id_category'],
-        "title": element['title'],
-        "isSelected":false
-      });
-    });
-    setState(() {
-      returnCategory=catagories;
-    });
-  }
-  Future loadBrand()async{
-    var br = await _helper.getData(BrandQuery.TABLE_NAME);
-    print("BRAND");
-    print(br);
-    List brand = [];
-    br.forEach((element) {
-      brand.add({
-        "id": element['id_brand'],
-        "title": element['title'],
-        "image": element['image'],
-        "isSelected":false
-      });
-    });
-    setState(() {
-      returnBrand=brand;
-    });
-  }
+
   Future countCart() async{
     final res = await BaseProvider().countCart(widget.id);
     if(this.mounted) setState(() {totalCart = res;});
   }
-  Future loadData(param)async{
+  Future<void> _handleRefresh()async {
     setState(() {
-      isTimeout=false;
+      isLoadingCategory=true;
       isLoading=true;
+      isLoadingGroup=true;
       isLoadingSlider=true;
     });
-    await getProduct();
-    await getPromo();
-    await countCart();
-    var totalProduct = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=?",[widget.id]);
-    await FunctionHelper().setSession("id_tenant", widget.id);
-    if(totalProduct.length<1){
-      setState(() {
-        isTimeout=false;
-        isLoading=true;
-      });
-      await _helper.delete(ProductQuery.TABLE_NAME, "id_tenant", widget.id);
-      await FunctionHelper().insertProduct(widget.id);
-      await getProduct();
-    }
-    if(param=='refresh'){
-      setState(() {
-        isTimeout=false;
-        isLoading=true;
-      });
-      await _helper.delete(ProductQuery.TABLE_NAME, "id_tenant", widget.id);
-      await FunctionHelper().insertProduct(widget.id);
-      await getProduct();
-    }
-    if(totalProduct.length<5&&totalProduct.length>1&&param!='refresh'){
-      await _helper.delete(ProductQuery.TABLE_NAME, "id_tenant", widget.id);
-      await FunctionHelper().insertProduct(widget.id);
-      await getProduct();
-    }
-  }
-  Future<void> _handleRefresh()async {
-    await FunctionHelper().getFilterLocal(widget.id);
+    returnGroup.clear();
+    // await FunctionHelper().getFilterLocal(widget.id);
     await FunctionHelper().handleRefresh((){
-      setState(() {
-        q='';
-      });
-      loadData('refresh');
+      getProduct();
+      getGroup();
+      getPromo();
+      getCategory();
     });
   }
+
+
   void _scrollListener() {
     if (!isLoading) {
       if (controller.position.pixels == controller.position.maxScrollExtent) {
@@ -207,19 +173,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
   void initState(){
     // TODO: implement initState
     super.initState();
-    getFavorite();
-    loadBrand();
-    loadGroup();
-    loadCategory();
-    loadData('');
+    getProduct();
+    getGroup();
+    getPromo();
+    getCategory();
+    countCart();
     controller = new ScrollController()..addListener(_scrollListener);
-
   }
   @override
   void dispose() {
     controller.removeListener(_scrollListener);
     super.dispose();
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -230,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
         title: WidgetHelper().textQ("${widget.nama.toUpperCase()}",  scaler.getTextSize(10),SiteConfig().secondColor,FontWeight.bold),
         actions: <Widget>[
           new CartWidget(
-            iconColor: SiteConfig().secondColor,
+            iconColor: LightColor.lightblack,
             labelColor: totalCart>0?Colors.redAccent:Colors.transparent,
             labelCount: totalCart,
             callback: (){
@@ -241,13 +208,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
           ),
           IconButton(
             icon: Icon(
-                AntDesign.filter,color: SiteConfig().secondColor
+                AntDesign.filter,color: LightColor.lightblack
             ),
             onPressed: () {
               WidgetHelper().myModal(
                   context,
                   ModalSearch(idTenant:widget.id,callback:(par){
-                    q=par;
+                    setState(() {q=par;});
                     isLoading=true;
                     getProduct();
                   })
@@ -273,73 +240,119 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
       )
     );
   }
+
   Widget buildContents(BuildContext context){
     ScreenScaler scaler = ScreenScaler()..init(context);
-
     return RefreshWidget(
       widget: CustomScrollView(
           controller: controller,
           slivers: <Widget>[
-
             SliverList(
               delegate: SliverChildListDelegate([
                 Offstage(
                   offstage: false,
                   child: Container(
-                    // color:widget.mode?SiteConfig().darkMode:Colors.white,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
                         sliderQ(context),
+                        isLoadingCategory?LoadingCategory():Container(
+                          // alignment: Alignment.,
+                          height: scaler.getHeight(8.5),
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            itemCount: listCategoryProductModel.result.data.length,
+                            itemBuilder: (context, index) => Container(
+                                margin: scaler.getMarginLTRB(1, 1, 0, 0),
+                                width: scaler.getWidth(13),
+                                child: InkWell(
+                                  onTap: (){},
+                                  child:Stack(
+                                    alignment: Alignment.topCenter,
+                                    children: <Widget>[
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(5.0),
+                                        child: Container(
+                                          height: 50.0,
+                                          color: Colors.grey[200],
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: 20.0,
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: <Widget>[
+                                            WidgetHelper().baseImage(
+                                              listCategoryProductModel.result.data[index].image,
+                                              height: 40.0,
+                                              width: 40.0,
+                                              fit: BoxFit.cover,
+                                            ),
+                                            Flexible(
+                                              child: WidgetHelper().textQ(listCategoryProductModel.result.data[index].title.toLowerCase(), scaler.getTextSize(9), LightColor.lightblack, FontWeight.bold,maxLines: 2),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                            ),
+                          ),
+                        ),
+                        Divider(thickness: 3,)
                       ],
                     ),
                   ),
                 ),
-
               ]),
             ),
             SliverStickyHeader(
               header: Container(
                 color: Colors.white,
                 height: scaler.getHeight(5),
-                child: ListView.builder(
+                child: isLoadingGroup?LoadingOption():ListView.builder(
                   padding: EdgeInsets.only(left:0.0,top:0,bottom:0),
-                  itemCount: returnBrand.length,
+                  itemCount: returnGroup.length,
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
                     double _marginLeft = 0;
                     (index == 0) ? _marginLeft = 10 : _marginLeft = 0;
-
+                    var val = returnGroup[index];
                     return Container(
                       padding: EdgeInsets.symmetric(horizontal: 0),
                       margin: EdgeInsets.only(left:_marginLeft,right: 5, top: 15, bottom: 15),
-                      //
-                      child: WidgetHelper().myPress((){
-                        setState(() {
-                          brand=returnBrand[index]['id'];
-                          isLoading=true;
-                        });
-                        getProduct();
-                      }, AnimatedContainer(
-                        duration: Duration(milliseconds: 350),
-                        curve: Curves.easeInOut,
-                        padding: EdgeInsets.only(left: 10,right:10),
-                        decoration: BoxDecoration(
-                          color: brand==returnBrand[index]['id']?SiteConfig().mainColor:SiteConfig().secondColor,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Row(
-                          children: <Widget>[
-                            AnimatedSize(
-                              duration: Duration(milliseconds: 350),
-                              curve: Curves.easeInOut,
-                              vsync: this,
-                              child: WidgetHelper().textQ(returnBrand[index]['title'],scaler.getTextSize(9), brand==returnBrand[index]['id']?Colors.white:Colors.white,FontWeight.normal),
-                            )
-                          ],
-                        ),
-                      )),
+                      child: WidgetHelper().myRipple(
+                        callback: (){
+                          setState(() {
+                            group=val["id"];
+                            isLoading=true;
+                          });
+                          getProduct();
+                        },
+                        child: AnimatedContainer(
+                          height: scaler.getHeight(5) ,
+                          duration: Duration(milliseconds: 350),
+                          curve: Curves.easeInOut,
+                          padding: EdgeInsets.only(left: 10,right:10),
+                          decoration: BoxDecoration(
+                            border: Border.all(width:group==val["id"]?2.0:1.0,color: group==val["id"]?LightColor.mainColor:LightColor.lightblack),
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: Row(
+                            children: <Widget>[
+                              AnimatedSize(
+                                duration: Duration(milliseconds: 350),
+                                curve: Curves.easeInOut,
+                                vsync: this,
+                                child: WidgetHelper().textQ("${val["title"]}".toLowerCase(),scaler.getTextSize(9), group==val["id"]?LightColor.mainColor:LightColor.lightblack,FontWeight.bold),
+                              )
+                            ],
+                          ),
+                        )
+                      ),
                     );
                   },
                   scrollDirection: Axis.horizontal,
@@ -382,12 +395,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                                     disc2: valProductServer.disc2,
                                     countCart: (){
                                       countCart();
-                                      getFavorite();
                                     },
                                   );
                                 },
                                 staggeredTileBuilder: (int index) => new StaggeredTile.fit(2),
-                                mainAxisSpacing: scaler.getHeight(1),
+                                mainAxisSpacing: scaler.getHeight(0.5),
                                 crossAxisSpacing:scaler.getWidth(1),
                               )
                           ):EmptyTenant(),
@@ -410,7 +422,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
   Widget sliderQ(BuildContext context){
     ScreenScaler scaler = ScreenScaler()..init(context);
     return isLoadingSlider?Padding(
-      padding: EdgeInsets.all(20.0),
+      padding: EdgeInsets.all(10.0),
       child: WidgetHelper().baseLoading(context,Container(
         height: scaler.getHeight(23),
         width: double.infinity,
@@ -473,77 +485,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
         )
       ],
     );
-    return FlexibleSpaceBar(
-      stretchModes: [
-        StretchMode.zoomBackground,
-        StretchMode.blurBackground,
-        StretchMode.fadeTitle
-      ],
-      collapseMode: CollapseMode.none,
-      background:  isLoadingSlider?Padding(
-          padding: EdgeInsets.all(20.0),
-          child: WidgetHelper().baseLoading(context,Container(
-            height: scaler.getHeight(23),
-            width: double.infinity,
-            color: Colors.white,
-          )),
-          // child: SkeletonFrame(width: double.infinity,height:250)
-      ):Stack(
-        alignment: AlignmentDirectional.topStart,
-        children: <Widget>[
-          CarouselSlider(
-              options: CarouselOptions(
-                // viewportFraction: 1.0,
-                autoPlay: true,
-                height: 300,
-                onPageChanged: (index,reason) {
-                  setState(() {
-                    _current=index;
-                  });
-                },
-              ),
-              items:globalPromoModel.result.data.map((e){
-                return Builder(
-                  builder: (BuildContext context) {
-                    return Container(
-                      margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-                      // height: 70,
-                      child:Image.asset(
-                        "assets/img/slide1.jpg",
-                        fit: BoxFit.fill,
-                        width:
-                        MediaQuery.of(context).size.width,
-                      ),
-                    );
-                  },
-                );
-              }).toList()
-          ),
-          Positioned(
-            top: scaler.getHeight(17),
-            child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: globalPromoModel.result.data.map((e){
-                  return Container(
-                    width: 20.0,
-                    height: 3.0,
-                    margin: EdgeInsets.symmetric(vertical: 0.0, horizontal: 0.0),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(8),
-                        ),
-                        color: _current == globalPromoModel.result.data.indexOf(e)
-                            ? Theme.of(context).hintColor
-                            : Theme.of(context).hintColor.withOpacity(0.3)),
-                    // color: _current ==  detailProductTenantModel.result.listImage.indexOf(e)? Theme.of(context).hintColor : Theme.of(context).hintColor.withOpacity(0.3)),
-                  );
-                }).toList()
-            ),
-          )
-        ],
-      ),
-    );
   }
 
 }
@@ -566,18 +507,19 @@ class _ModalSearchState extends State<ModalSearch> {
   List resSearch=[];
   List resClick=[];
   Future loadData()async{
-    if(qController.text!=''){
-      var res = await db.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and title LIKE '%${qController.text}%' or deskripsi LIKE '%${qController.text}%'",[widget.idTenant]);
-      // var res = await db.readData(ProductQuery.TABLE_NAME, widget.idTenant,colWhere: ['title'],valWhere: ['${qController.text}']);
-      setState(() {
-        resProduct=res;
-      });
-    }else{
-      setState(() {
-        resProduct=[];
-      });
-      loadSearch();
-    }
+    widget.callback(qController.text);
+    // if(qController.text!=''){
+    //   var res = await db.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and title LIKE '%${qController.text}%' or deskripsi LIKE '%${qController.text}%'",[widget.idTenant]);
+    //   // var res = await db.readData(ProductQuery.TABLE_NAME, widget.idTenant,colWhere: ['title'],valWhere: ['${qController.text}']);
+    //   setState(() {
+    //     resProduct=res;
+    //   });
+    // }else{
+    //   setState(() {
+    //     resProduct=[];
+    //   });
+    //   loadSearch();
+    // }
   }
   Future loadSearch()async{
     var res = await db.getRow("SELECT * FROM ${SearchingQuery.TABLE_NAME} ORDER BY title DESC");
@@ -595,7 +537,6 @@ class _ModalSearchState extends State<ModalSearch> {
   String idProduct='';
   Future store()async{
     if(qController.text!=''){
-
       final check = await db.getWhere(SearchingQuery.TABLE_NAME, "id_product","$idProduct", '');
       if(check.length>0){
         await db.delete(SearchingQuery.TABLE_NAME,"id_product","$idProduct");
@@ -608,7 +549,7 @@ class _ModalSearchState extends State<ModalSearch> {
 
     loadSearch();
     Navigator.of(context).pop();
-    WidgetHelper().myPush(context, DetailProducrScreen(id: idProduct));
+    // WidgetHelper().myPush(context, DetailProducrScreen(id: idProduct));
   }
   @override
   void initState() {
@@ -644,8 +585,10 @@ class _ModalSearchState extends State<ModalSearch> {
               keyboardType: TextInputType.multiline,
               cursorColor: Theme.of(context).focusColor.withOpacity(0.8),
               controller: qController,
+              autofocus: true,
               style:TextStyle(color: Colors.black,fontFamily: SiteConfig().fontStyle),
               decoration: InputDecoration(
+
                 contentPadding: EdgeInsets.all(20),
                 hintText: 'Tulis sesuatu disini ...',
                 hintStyle: TextStyle(color: Colors.black,fontFamily: SiteConfig().fontStyle),
@@ -680,66 +623,66 @@ class _ModalSearchState extends State<ModalSearch> {
               },
             ),
           ),
-          resProduct.length>0?Expanded(
-              flex: 1,
-              child: Scrollbar(child: ListView.separated(
-                  itemBuilder: (context,index){
-                    return ListTile(
-                      onTap: ()async{
-                        setState(() {
-                          qController.text = resProduct[index]['title'];
-                          idProduct = resProduct[index]['id_product'];
-                        });
-                        loadData();
-                        widget.callback(resProduct[index]['title']);
-                        store();
-
-                      },
-                      title: WidgetHelper().textQ("${resProduct[index]['title']}",10,Colors.black87,FontWeight.normal),
-                    );
-                  },
-                  separatorBuilder:(context,index){
-                    return  Divider(height: 1);
-                  },
-                  itemCount: resProduct.length
-              ))
-          ):
-          (resSearch.length>0?Expanded(
-              flex: 1,
-              child: ListView.separated(
-                  itemBuilder: (context,index){
-                    return ListTile(
-                      onTap: (){
-                        setState(() {
-                          qController.text = resSearch[index]['title'];
-                          idProduct = resSearch[index]['id_product'];
-                        });
-                        loadData();
-                        widget.callback(resSearch[index]['title']);
-                        store();
-                      },
-                      trailing: IconButton(
-                          icon: Icon(AntDesign.close,color:Colors.grey),
-                          onPressed:()async{
-                            await db.delete(SearchingQuery.TABLE_NAME,"id",resSearch[index]['id']);
-                            loadSearch();
-                          }
-                      ),
-                      title: WidgetHelper().textQ("${resSearch[index]['title']}",10,Colors.black87,FontWeight.normal),
-                    );
-                  },
-                  separatorBuilder:(context,index){
-                    return  Divider(height: 1);
-                  },
-                  itemCount: resSearch.length
-              )
-          ):Expanded(
-            child: ListView(
-              children: [
-                EmptyTenant()
-              ],
-            ),
-          )),
+          // resProduct.length>0?Expanded(
+          //     flex: 1,
+          //     child: Scrollbar(child: ListView.separated(
+          //         itemBuilder: (context,index){
+          //           return ListTile(
+          //             onTap: ()async{
+          //               setState(() {
+          //                 qController.text = resProduct[index]['title'];
+          //                 idProduct = resProduct[index]['id_product'];
+          //               });
+          //               loadData();
+          //               widget.callback(resProduct[index]['title']);
+          //               store();
+          //
+          //             },
+          //             title: WidgetHelper().textQ("${resProduct[index]['title']}",10,Colors.black87,FontWeight.normal),
+          //           );
+          //         },
+          //         separatorBuilder:(context,index){
+          //           return  Divider(height: 1);
+          //         },
+          //         itemCount: resProduct.length
+          //     ))
+          // ):
+          // (resSearch.length>0?Expanded(
+          //     flex: 1,
+          //     child: ListView.separated(
+          //         itemBuilder: (context,index){
+          //           return ListTile(
+          //             onTap: (){
+          //               setState(() {
+          //                 qController.text = resSearch[index]['title'];
+          //                 idProduct = resSearch[index]['id_product'];
+          //               });
+          //               loadData();
+          //               widget.callback(resSearch[index]['title']);
+          //               store();
+          //             },
+          //             trailing: IconButton(
+          //                 icon: Icon(AntDesign.close,color:Colors.grey),
+          //                 onPressed:()async{
+          //                   await db.delete(SearchingQuery.TABLE_NAME,"id",resSearch[index]['id']);
+          //                   loadSearch();
+          //                 }
+          //             ),
+          //             title: WidgetHelper().textQ("${resSearch[index]['title']}",10,Colors.black87,FontWeight.normal),
+          //           );
+          //         },
+          //         separatorBuilder:(context,index){
+          //           return  Divider(height: 1);
+          //         },
+          //         itemCount: resSearch.length
+          //     )
+          // ):Expanded(
+          //   child: ListView(
+          //     children: [
+          //       EmptyTenant()
+          //     ],
+          //   ),
+          // )),
           // resClick.length>0?WidgetHelper().titleQ("Barang yang pernah dilihat",param: ""):Container(),
           // Expanded(
           //     flex: 13,

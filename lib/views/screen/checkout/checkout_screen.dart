@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:netindo_shop/config/light_color.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/user_helper.dart';
@@ -38,9 +39,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   ListAddressModel listAddressModel;
   var detailProduct = [];
   bool isLoading=false,isLoadingKurir=false,isLoadingBank=false,isSelectedKurir=false,isSelectedBank=false;
-  String title='',penerima='',noHp='',mainAddress='';
+  String title='',penerima='',noHp='',mainAddress='',kdKec='';
   int isMainAddress=0;
-  String alamat='', idMember='',kurirTitle='',kurirDeskripsi='',service='',idBankTujuan='',atasNama='',noRekening='';
+  String alamat='', idMember='',kurirTitle='',kurirDeskripsi="",layananTitle='',service='',idBankTujuan='',atasNama='',noRekening='';
   int grandTotal=0,subTotal=0,ongkirTotal=0,hrgPerBarang=0;
   int cost=0;
   bool isPostLoading=false;
@@ -55,7 +56,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         cartModel = CartModel.fromJson(res.toJson());
         isLoading=false;
       });
-      // print("CART")
       for(var i=0;i<cartModel.result.length;i++){
         int disc1Nominal = FunctionHelper().percentToRp(int.parse(cartModel.result[i].disc1), int.parse(cartModel.result[i].hargaMaster));
         int disc2Nominal = FunctionHelper().percentToRp(int.parse(cartModel.result[i].disc2), int.parse(cartModel.result[i].hargaMaster));
@@ -70,8 +70,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           "tax":"0"
         });
       }
-      print('id member $idMember');
-      print('id tenant ${widget.idTenant}');
+
       getGrandTotal();
       getSubtotal();
       getBank();
@@ -87,7 +86,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         isLoadingKurir=false;
       });
       selectedKurir(0,'-');
-      print("KURIR $kurirTitle");
     }
   }
   Future getAlamat()async{
@@ -95,33 +93,45 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     var res = await BaseProvider().getProvider("member_alamat?page=1&id_member=$idUser", listAddressModelFromJson);
     if(res==SiteConfig().errSocket||res==SiteConfig().errTimeout){
       setState(() {
-        // isError=true;
         isLoading=false;
         // isLoadmore=false;
       });
     }
     else{
       if(res is ListAddressModel){
-        ListAddressModel resullt = res;
-        print("ALAMAT ${resullt.toJson()}");
+        ListAddressModel resullt = ListAddressModel.fromJson(res.toJson());
+        if(resullt.result.data.length<1){
+          return WidgetHelper().notifOneBtnDialog(context, "Perhatian", "Silahkan isi alamat lengkap anda terlebih dahulu", (){
+            Navigator.pop(context);
+            WidgetHelper().myPushAndLoad(context, AddressScreen(),(){
+              getAlamat();
+            });
+          });
+        }
         setState(() {
-          idxAddress=0;
-          title=resullt.result.data[0].title;
-          penerima = resullt.result.data[0].penerima;
-          noHp = resullt.result.data[0].noHp;
-          mainAddress = resullt.result.data[0].mainAddress;
-          isMainAddress=resullt.result.data[0].ismain;
-          // listAddressModel = ListAddressModel.fromJson(resullt.toJson());
-          // isError=false;
           isLoading=false;
+          listAddressModel=resullt;
         });
+        stateAddress(resullt.result.data[0].toJson());
       }
     }
   }
+  void stateAddress(val){
+    setState(() {
+      title=val["title"];
+      penerima = val["penerima"];
+      noHp = val["no_hp"];
+      mainAddress = val["main_address"];
+      isMainAddress=val["ismain"];
+      kdKec=val["kd_kec"];
+    });
+    getKurir();
+  }
   Future selectedKurir(idx,param)async{
-    print(kurirModel.result[idx].kurir);
+    print("KURIR ${kurirModel.result[idx].toJson()}");
     setState(() {
       isSelectedKurir = true;
+      kurirDeskripsi = kurirModel.result[idx].deskripsi;
       kurirTitle = kurirModel.result[idx].kurir;
     });
     WidgetHelper().loadingDialog(context);
@@ -133,21 +143,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   void selectedLayanan(idx){
     setState(() {
       service = checkOngkirModel.result.ongkir[idx].service;
-      kurirDeskripsi = "${checkOngkirModel.result.ongkir[idx].service} | ${FunctionHelper().formatter.format(checkOngkirModel.result.ongkir[idx].cost)} | ${checkOngkirModel.result.ongkir[idx].estimasi}";
+      layananTitle = "${checkOngkirModel.result.ongkir[idx].service} | ${FunctionHelper().formatter.format(checkOngkirModel.result.ongkir[idx].cost)} | ${checkOngkirModel.result.ongkir[idx].estimasi}";
       cost = checkOngkirModel.result.ongkir[idx].cost;
     });
     getGrandTotal();
     Navigator.pop(context);
   }
   Future getOngkir(kurir)async{
-    var res = await BaseProvider().postProvider(
-        'kurir/cek/ongkir',{
-      "ke":"1470",
-      "berat":"100",
-      "kurir":"$kurir"
-    }
+    var res = await BaseProvider().postProvider('kurir/cek/ongkir',{
+        "ke":kdKec,
+        "berat":"100",
+        "kurir":"$kurir"
+      }
     );
-    print(res);
     if(res == 'TimeoutException'|| res=='SocketException'){
       WidgetHelper().notifDialog(context,"Terjadi Kesalahan Server","Mohon maaf server kami sedang dalam masalah", (){},(){});
     }
@@ -161,10 +169,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       }
       else{
         var resLayanan = CheckOngkirModel.fromJson(res);
-        print(resLayanan.toJson());
         setState(() {
           checkOngkirModel = CheckOngkirModel.fromJson(resLayanan.toJson());
-          kurirDeskripsi = "${resLayanan.result.ongkir[0].service} | ${FunctionHelper().formatter.format(resLayanan.result.ongkir[0].cost)} | ${resLayanan.result.ongkir[0].estimasi}";
+          layananTitle = "${resLayanan.result.ongkir[0].service} | ${FunctionHelper().formatter.format(resLayanan.result.ongkir[0].cost)} | ${resLayanan.result.ongkir[0].estimasi}";
           service = checkOngkirModel.result.ongkir[0].service;
           cost = resLayanan.result.ongkir[0].cost;
         });
@@ -225,7 +232,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       "no_rek":"${noRekening==''?bankModel.result.data[0].noRekening:noRekening}",
       "detail":"$detailProduct"
     };
-    print("DATA $data");
     var res = await BaseProvider().postProvider("transaction", data);
     if(res == '${SiteConfig().errTimeout}'|| res=='${SiteConfig().errSocket}'){
       Navigator.pop(context);
@@ -240,6 +246,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       else{
         var resposneCheckout = CheckoutModel.fromJson(res);
         WidgetHelper().myPush(context,DetailCheckoutScreen(
+          param: "teibisa",
           invoice_no:"${resposneCheckout.result.invoiceNo}",
           grandtotal:"${resposneCheckout.result.grandtotal}",
           kode_unik:"${resposneCheckout.result.kodeUnik}",
@@ -261,17 +268,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     isLoading=true;
     isLoadingKurir=true;
     isLoadingBank=true;
-    getKurir();
     getProduct();
     getAlamat();
   }
   int idxKurir=0;
   int idxLayanan=0;
-  int idxAddress=100000;
+  int idxAddress=0;
   @override
   Widget build(BuildContext context) {
     ScreenScaler scaler = ScreenScaler()..init(context);
-
     return Scaffold(
       backgroundColor:Colors.white,
       key: _scaffoldKey,
@@ -285,31 +290,33 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                WidgetHelper().titleQ(context,isMainAddress==1?"Utama".toUpperCase():title.toUpperCase(),icon: AntDesign.home,color: SiteConfig().secondColor,param: '-',callback: (){
-                  WidgetHelper().myModal(context, ModalAddress(
-                      idx:idxAddress,callback:(int index,int isMain,String id,String ttl, String pnrm, String no, String main){
-                    setState(() {
-                      idxAddress = index;
-                      title=ttl;
-                      penerima = pnrm;
-                      noHp = no;
-                      mainAddress = main;
-                      isMainAddress=isMain;
-                    });
-                  }
-                  ));
-                }),
-                SizedBox(height: scaler.getHeight(0.5)),
-                Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      WidgetHelper().textQ("$penerima ( $noHp )",scaler.getTextSize(9),Colors.black87, FontWeight.normal),
-                      SizedBox(height: scaler.getHeight(0.5)),
-                      WidgetHelper().textQ("$mainAddress",scaler.getTextSize(9),Colors.black87, FontWeight.normal),
-                    ],
-                  ),
-                ),
+               WidgetHelper().myRipple(
+                 callback: (){
+                   WidgetHelper().myPushAndLoad(context, AddressScreen(callback: (data){
+                     setState(() {
+                       idxAddress=data["index"];
+                     });
+                     stateAddress(data);
+                   },indexArr: idxAddress), (){});
+                 },
+                 child: ListTile(
+                   title:Row(
+                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                     children: [
+                       WidgetHelper().textQ("${isMainAddress==1?"Utama":title}".toUpperCase(), scaler.getTextSize(9), LightColor.black, FontWeight.bold),
+                       WidgetHelper().textQ("Pilih alamat lain", scaler.getTextSize(9), LightColor.mainColor, FontWeight.bold),
+                     ],
+                   ),
+                   subtitle: Column(
+                     crossAxisAlignment: CrossAxisAlignment.start,
+                     children: [
+                       WidgetHelper().textQ("$penerima ( $noHp )",scaler.getTextSize(9),LightColor.lightblack, FontWeight.normal),
+                       WidgetHelper().textQ("$mainAddress".toLowerCase(),scaler.getTextSize(9),LightColor.lightblack, FontWeight.normal),
+                     ],
+                   ),
+                   contentPadding: EdgeInsets.all(0),
+                 )
+               ),
               ],
             ),
           ),
@@ -322,13 +329,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                WidgetHelper().titleQ(context,'Jasa Pengiriman'.toUpperCase(),icon:FontAwesome.truck,param: '',color: SiteConfig().secondColor),
+                WidgetHelper().titleQ(context,'Jasa Pengiriman',icon:FontAwesome.truck,param: '',color: LightColor.black,fontWeight: FontWeight.bold),
                 SizedBox(height: scaler.getHeight(0.5)),
-                jasaPengiriman(context,"PILIH KURIR", kurirTitle, (){modalKurir(context);}),
+                jasaPengiriman(context,"Pilih kurir", "$kurirDeskripsi ( $kurirTitle )", (){modalKurir(context);}),
                 SizedBox(height: scaler.getHeight(0.5)),
-                jasaPengiriman(context,"PILIH LAYANAN", kurirDeskripsi, (){if(kurirTitle!='')modalLayanan(context);}),
+                jasaPengiriman(context,"Pilih layanan", layananTitle, (){if(kurirTitle!='')modalLayanan(context);}),
                 SizedBox(height: scaler.getHeight(0.5)),
-                jasaPengiriman(context,"GUNAKAN VOUCHER", '-', (){}),
+                jasaPengiriman(context,"Gunakan voucher", '-', (){}),
               ],
             ),
           ),
@@ -344,7 +351,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    WidgetHelper().titleQ(context,"RINGKASAN BELANJA",icon: AntDesign.shoppingcart,color: SiteConfig().secondColor,param: ''),
+                    WidgetHelper().titleQ(context,"Ringkasan belanja",icon: AntDesign.shoppingcart,param: '',color: LightColor.black,fontWeight: FontWeight.bold),
                     new Container(
                       padding: EdgeInsets.all(10.0),
                       decoration: new BoxDecoration(
@@ -366,49 +373,53 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       itemBuilder: (context,index){
                         var val = cartModel.result[index];
                         var subTot=int.parse(val.hargaJual)*int.parse(val.qty);
-                        return InkWell(
-                          onTap: (){WidgetHelper().myPush(context,DetailProducrScreen(id: val.id));},
-                          child: Container(
-                            color:Colors.transparent,
-                            child: Row(
-                              children: [
-                                CachedNetworkImage(
-                                  height: 50,
-                                  imageUrl: SiteConfig().noImage,
-                                  fit:BoxFit.fill,
-                                  placeholder: (context, url) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width: 50),
-                                  errorWidget: (context, url, error) => Image.network(SiteConfig().noImage, fit:BoxFit.fill,width:50),
-                                ),
-                                SizedBox(width:scaler.getWidth(2)),
-                                Expanded(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.max,
-                                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                                    // crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Container(width:scaler.getWidth(90),child: WidgetHelper().textQ(val.barang,scaler.getTextSize(9),SiteConfig().darkMode,FontWeight.normal)),
-                                      SizedBox(height:scaler.getHeight(0.5)),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          WidgetHelper().textSpaceBetween(
-                                              context,
-                                              "${val.qty} ITEM * ",
-                                              "Rp ${FunctionHelper().formatter.format(int.parse("${val.hargaJual}"))} .-",
-                                              titleColor: SiteConfig().moneyColor,
-                                              descColor: SiteConfig().moneyColor,
-                                              mainAxisAlignment: MainAxisAlignment.start
-                                          ),
-                                          WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse("$subTot"))} .-",scaler.getTextSize(9),SiteConfig().moneyColor,FontWeight.normal)
-                                        ],
-                                      ),
-                                      // WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse("${cartModel.result[index].hargaJual}"))} .-",scaler.getTextSize(9),SiteConfig().moneyColor,FontWeight.normal),
-                                      // WidgetHelper().textQ(cartModel.result[index].qty,scaler.getTextSize(9),SiteConfig().moneyColor,FontWeight.normal),
-                                    ],
+                        return Container(
+                          margin: scaler.getMarginLTRB(0, 0, 0, 0.5),
+                          padding: scaler.getPaddingLTRB(0, 0, 1, 0),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey[200],
+                                spreadRadius: 0,
+                                blurRadius: 5,
+                              ),
+                            ],
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                          ),
+                          child: WidgetHelper().myRipple(
+                              child: Row(
+                                children: [
+                                  WidgetHelper().baseImage(val.gambar,height: scaler.getHeight(5)),
+                                  SizedBox(width:scaler.getWidth(2)),
+                                  Expanded(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.max,
+                                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                                      children: [
+                                        Container(width:scaler.getWidth(90),child: WidgetHelper().textQ(val.barang,scaler.getTextSize(9),LightColor.lightblack,FontWeight.normal)),
+                                        // SizedBox(height:scaler.getHeight(0.5)),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            WidgetHelper().textSpaceBetween(
+                                                context,
+                                                "${val.qty} * ",
+                                                "${FunctionHelper().formatter.format(int.parse("${val.hargaJual}"))} .-",
+                                                titleColor: LightColor.orange,
+                                                descColor: SiteConfig().moneyColor,
+                                                mainAxisAlignment: MainAxisAlignment.start
+                                            ),
+                                            WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse("$subTot"))} .-",scaler.getTextSize(9),LightColor.orange,FontWeight.bold)
+                                          ],
+                                        ),
+                                        // WidgetHelper().textQ("Rp ${FunctionHelper().formatter.format(int.parse("${cartModel.result[index].hargaJual}"))} .-",scaler.getTextSize(9),SiteConfig().moneyColor,FontWeight.normal),
+                                        // WidgetHelper().textQ(cartModel.result[index].qty,scaler.getTextSize(9),SiteConfig().moneyColor,FontWeight.normal),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
+                                ],
+                              )
                           ),
                         );
                       }
@@ -418,11 +429,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 Container(
                   child: Column(
                     children: [
-                      WidgetHelper().textSpaceBetween(context,"TOTAL BELANJA","Rp ${FunctionHelper().formatter.format(subTotal)} .-",descColor: SiteConfig().moneyColor),
+                      WidgetHelper().textSpaceBetween(context,"Total belanja","Rp ${FunctionHelper().formatter.format(subTotal)} .-",titleColor: LightColor.lightblack,descColor: LightColor.orange,fontWeightDesc: FontWeight.bold,fontWeightTitle: FontWeight.bold),
                       Divider(),
-                      WidgetHelper().textSpaceBetween(context,"TOTAL ONGKOS KIRIM","Rp ${FunctionHelper().formatter.format(cost)} .-",descColor: SiteConfig().moneyColor),
+                      WidgetHelper().textSpaceBetween(context,"Total ongkos kirim","Rp ${FunctionHelper().formatter.format(cost)} .-",titleColor: LightColor.lightblack,descColor: LightColor.orange,fontWeightDesc: FontWeight.bold,fontWeightTitle: FontWeight.bold),
                       Divider(),
-                      WidgetHelper().textSpaceBetween(context,"DISKON VOUCHER","Rp ${FunctionHelper().formatter.format(0)} .-",descColor: SiteConfig().moneyColor),
+                      WidgetHelper().textSpaceBetween(context,"Diskon voucher","Rp ${FunctionHelper().formatter.format(0)} .-",titleColor: LightColor.lightblack,descColor: LightColor.orange,fontWeightDesc: FontWeight.bold,fontWeightTitle: FontWeight.bold),
                     ],
                   ),
                 ),
@@ -440,12 +451,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     ScreenScaler scaler = ScreenScaler()..init(context);
     return Container(
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-          border: Border.all(color:SiteConfig().secondColor,width: 1)
-      ),
-      child: InkWell(
-        onTap:callback,
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey[200],
+            spreadRadius: 0,
+            blurRadius: 5,
+          ),
+        ],
         borderRadius: BorderRadius.all(Radius.circular(10)),
+        // border: Border.all(color:SiteConfig().secondColor,width: 1),
+      ),
+      child: WidgetHelper().myRipple(
+        callback: callback,
         child: Container(
           padding: EdgeInsets.only(left:10.0,right: 10.0,top:5,bottom: 5),
           child: Row(
@@ -454,15 +472,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  WidgetHelper().textQ(title,scaler.getTextSize(9),SiteConfig().darkMode, FontWeight.normal),
+                  WidgetHelper().textQ(title,scaler.getTextSize(9),LightColor.lightblack, FontWeight.bold),
                   SizedBox(height: 5.0),
-                  WidgetHelper().textQ(desc,scaler.getTextSize(9),SiteConfig().darkMode, FontWeight.normal)
+                  WidgetHelper().textQ(desc,scaler.getTextSize(9),LightColor.lightblack, FontWeight.normal)
                 ],
               ),
-              Icon(Ionicons.ios_arrow_dropright_circle,color: SiteConfig().secondColor,size: scaler.getTextSize(10)),
+              Icon(Ionicons.ios_arrow_dropright,color: LightColor.lightblack,),
             ],
           ),
-        ),
+        )
       ),
     );
   }
@@ -479,8 +497,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                WidgetHelper().textQ("Total Tagihan",scaler.getTextSize(10),SiteConfig().secondColor, FontWeight.bold),
-                WidgetHelper().textQ("Rp "+FunctionHelper().formatter.format(grandTotal)+" .-",scaler.getTextSize(10),SiteConfig().moneyColor, FontWeight.bold),
+                WidgetHelper().textQ("Total tagihan",scaler.getTextSize(10),LightColor.black, FontWeight.bold),
+                WidgetHelper().textQ("Rp "+FunctionHelper().formatter.format(grandTotal)+" .-",scaler.getTextSize(10),LightColor.orange, FontWeight.bold),
               ],
             ),
           ),
@@ -515,8 +533,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               padding:scaler.getPadding(0.5,2),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.all(Radius.circular(10)),
-                                color:SiteConfig().mainColor,
-                                // border: Border.all(color:SiteConfig().accentDarkColor)
+                                color: SiteConfig().accentDarkColor,
                               ),
                               child: Row(
                                 children: [
@@ -528,12 +545,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           ),
                           Expanded(
                             child: Scrollbar(
-                                child: isLoading?WidgetHelper().loadingWidget(context):ModalBank(
-                                  bankModel: bankModel,
-                                  callback: (idx){
-                                    selectedBank(idx);
-                                  },
-                                  // isSelected: isSelectedBank
+                                child: isLoading?WidgetHelper().loadingWidget(context):Padding(
+                                  padding:scaler.getPadding(0.5,2),
+                                  child: ModalBank(
+                                    bankModel: bankModel,
+                                    callback: (idx){
+                                      selectedBank(idx);
+                                    },
+                                    // isSelected: isSelectedBank
+                                  ),
                                 )
                             ),
                           ),
@@ -554,7 +574,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 child: Container(
                                   padding:scaler.getPadding(1.0,0.0),
                                   width: scaler.getWidth(100),
-                                  child: WidgetHelper().textQ("BERIKUTNYA",scaler.getTextSize(10),Colors.white, FontWeight.bold,textAlign: TextAlign.center),
+                                  child: WidgetHelper().textQ("Bayar",scaler.getTextSize(10),Colors.white, FontWeight.bold,textAlign: TextAlign.center),
                                 ),
                               ),
                             ),
@@ -569,100 +589,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         ],
       ),
     );
-    return Container(
-      height: scaler.getHeight(4),
-      padding: scaler.getPadding(0,2),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              WidgetHelper().textQ("Total Tagihan",scaler.getTextSize(10),SiteConfig().secondColor, FontWeight.bold),
-              WidgetHelper().textQ("Rp "+FunctionHelper().formatter.format(grandTotal)+" .-",scaler.getTextSize(10),SiteConfig().moneyColor, FontWeight.bold),
-            ],
-          ),
-          WidgetHelper().buttonQ(context,(){
-            WidgetHelper().myModal(
-                context,
-                Container(
-                  height:scaler.getHeight(50),
-                  child:Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      SizedBox(height:scaler.getHeight(0.5)),
-                      Center(
-                        child: Container(
-                          width: scaler.getWidth(10),
-                          height:scaler.getHeight(0.5),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius:  BorderRadius.circular(10.0),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height:scaler.getHeight(0.5)),
-                      Container(
-                          margin: scaler.getMargin(0, 2),
-                          width: double.infinity,
-                          padding:scaler.getPadding(0.5,2),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            color:SiteConfig().mainColor,
-                            // border: Border.all(color:SiteConfig().accentDarkColor)
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(AntDesign.infocirlceo,color: Colors.white),
-                              SizedBox(width:scaler.getWidth(1)),
-                              WidgetHelper().textQ("Pilih bank untuk melanjutkan proses checkout",scaler.getTextSize(9),Colors.white, FontWeight.bold)
-                            ],
-                          )
-                      ),
-                      Expanded(
-                        child: Scrollbar(
-                            child: isLoading?WidgetHelper().loadingWidget(context):ModalBank(
-                              bankModel: bankModel,
-                              callback: (idx){
-                                selectedBank(idx);
-                              },
-                              // isSelected: isSelectedBank
-                            )
-                        ),
-                      ),
-                      Align(
-                        widthFactor: scaler.getWidth(100),
-                        alignment: Alignment.bottomCenter,
-                        child:Padding(
-                          padding:scaler.getPadding(0.5,2),
-                          child: FlatButton(
-                            shape: StadiumBorder(),
-                            onPressed: (){
-                              WidgetHelper().notifDialog(context,"Perhatian","Anda yakin akan melakukan proses checkout sekarang ??",(){Navigator.pop(context);},(){
-                                Navigator.pop(context);
-                                checkout();
-                              });
-                            },
-                            color: SiteConfig().mainColor,
-                            child: Container(
-                              width: scaler.getWidth(100),
-                              child: WidgetHelper().textQ("BERIKUTNYA",scaler.getTextSize(10),Colors.white, FontWeight.bold,textAlign: TextAlign.center),
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                )
-            );
-          },"berikutnya")
-          
-        ],
-      ),
-    );
+
   }
  
   Widget modalKurir(BuildContext context){
@@ -848,12 +775,7 @@ class _ModalAddressState extends State<ModalAddress> {
                                 ),
                                 IconButton(
                                   icon: Icon(AntDesign.checkcircleo,color: widget.idx==index?Colors.grey:Colors.transparent),
-                                  onPressed: (){
-                                    // setState(() {
-                                    //   widget.idx=index;
-                                    // });
-                                    // widget.callback(index,val.ismain,val.id,val.title,val.penerima,val.noHp,val.mainAddress);
-                                  },
+                                  onPressed: (){},
                                 )
                               ],
                             ),
@@ -956,6 +878,8 @@ class _ModalKurirState extends State<ModalKurir> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Container(
       height: MediaQuery.of(context).size.height/2,
       decoration: BoxDecoration(
@@ -994,7 +918,7 @@ class _ModalKurirState extends State<ModalKurir> {
                   children: [
                     Icon(Icons.info_outline,color: Colors.white),
                     SizedBox(width: 5),
-                    WidgetHelper().textQ("Perkiraan tiba dihitung sejak pesanan dikirim",12,Colors.white, FontWeight.bold)
+                    WidgetHelper().textQ("Perkiraan tiba dihitung sejak pesanan dikirim",scaler.getTextSize(9),Colors.white, FontWeight.bold)
                   ],
                 )
             ),
@@ -1005,22 +929,20 @@ class _ModalKurirState extends State<ModalKurir> {
                   padding: EdgeInsets.zero,
                   itemCount: widget.kurirModel.result.length,
                   itemBuilder: (context,index){
-                    return InkWell(
-                      onTap: (){
-                        setState(() {
-                          idx =index;
-                        });
+                    return WidgetHelper().myRipple(
+                      isRadius: false,
+                      callback: (){
+                        idx =index;
                         widget.callback(index);
+                        setState(() {});
                       },
                       child: ListTile(
                         contentPadding: EdgeInsets.only(left:10,right:10,top:0,bottom:0),
-                        leading: Image.network(widget.kurirModel.result[index].gambar,width: 50,height: 50,),
-                        title: WidgetHelper().textQ("${widget.kurirModel.result[index].kurir}", 14,site?Colors.white:SiteConfig().darkMode, FontWeight.bold),
-                        subtitle: WidgetHelper().textQ("${widget.kurirModel.result[index].deskripsi}", 12, SiteConfig().secondColor, FontWeight.bold),
-                        trailing: widget.index==index?Icon(AntDesign.checkcircleo,color: site?Colors.grey[200]:SiteConfig().darkMode):Text(
-                          ''
-                        ),
-                      ),
+                        leading: WidgetHelper().baseImage(widget.kurirModel.result[index].gambar,width: 50,height: 50,),
+                        title: WidgetHelper().textQ("${widget.kurirModel.result[index].kurir}", scaler.getTextSize(9),LightColor.lightblack, FontWeight.bold),
+                        subtitle: WidgetHelper().textQ("${widget.kurirModel.result[index].deskripsi}",scaler.getTextSize(9),LightColor.lightblack, FontWeight.normal),
+                        trailing:Icon(Ionicons.ios_checkmark_circle_outline,color: widget.index==index?LightColor.lightblack:Colors.transparent),
+                      )
                     );
                   },
                   separatorBuilder: (context, index) {return Divider(height: 1);},
@@ -1066,6 +988,8 @@ class _ModalLayananState extends State<ModalLayanan> {
   }
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Container(
       decoration: BoxDecoration(
           color: site?SiteConfig().darkMode:Colors.transparent,
@@ -1104,7 +1028,7 @@ class _ModalLayananState extends State<ModalLayanan> {
                   children: [
                     Icon(Icons.info_outline,color: Colors.white),
                     SizedBox(width: 5),
-                    WidgetHelper().textQ("Perkiraan tiba dihitung sejak pesanan dikirim",12,Colors.white, FontWeight.bold)
+                    WidgetHelper().textQ("Perkiraan tiba dihitung sejak pesanan dikirim",scaler.getTextSize(9),Colors.white, FontWeight.bold)
                   ],
                 )
             ),
@@ -1115,14 +1039,13 @@ class _ModalLayananState extends State<ModalLayanan> {
                   padding: EdgeInsets.zero,
                   itemCount: widget.checkOngkirModel.result.ongkir.length,
                   itemBuilder: (context,index){
-                    return InkWell(
-                      onTap: (){
-                        widget.callback(index);
-                      },
+                    return WidgetHelper().myRipple(
+                      isRadius: false,
+                      callback: ()=>widget.callback(index),
                       child: ListTile(
                         contentPadding: EdgeInsets.only(left:10,right:10,top:0,bottom:0),
-                        title: WidgetHelper().textQ("${widget.checkOngkirModel.result.ongkir[index].service} | ${widget.checkOngkirModel.result.ongkir[index].cost} | ${widget.checkOngkirModel.result.ongkir[index].estimasi}", 12,site?Colors.white:Colors.black, FontWeight.bold),
-                         trailing: widget.index==index?Icon(AntDesign.checkcircleo,color: site?Colors.grey[200]:SiteConfig().darkMode):Text('')
+                        title: WidgetHelper().textQ("${widget.checkOngkirModel.result.ongkir[index].service} | ${widget.checkOngkirModel.result.ongkir[index].cost} | ${widget.checkOngkirModel.result.ongkir[index].estimasi}", scaler.getTextSize(9),LightColor.lightblack, FontWeight.bold),
+                        trailing:Icon(Ionicons.ios_checkmark_circle_outline,color: widget.index==index?LightColor.lightblack:Colors.transparent),
                       )
                     );
                   },
@@ -1155,7 +1078,6 @@ class _ModalBankState extends State<ModalBank> {
   bool isSelect=false;
   int num = 0;
   void isSelectedBank(idx){
-    // print(widget.isSelected);
     setState(() {
       num = idx;
     });
@@ -1172,21 +1094,20 @@ class _ModalBankState extends State<ModalBank> {
   Widget build(BuildContext context) {
     ScreenScaler scaler = ScreenScaler()..init(context);
     return ListView.separated(
-      padding: EdgeInsets.zero,
       itemCount: widget.bankModel.result.data.length,
       itemBuilder: (context,index){
-        return InkWell(
-          onTap: (){
-            print(widget.bankModel.result.data[index].atasNama);
+        return WidgetHelper().myRipple(
+          isRadius: false,
+          callback: (){
             widget.callback(index);
             isSelectedBank(index);
           },
           child: ListTile(
-            trailing: num==index?Icon(AntDesign.checkcircleo,color:SiteConfig().darkMode):Text(''),
-            contentPadding: EdgeInsets.only(left:5,right:10,top:0,bottom:0),
-            leading:WidgetHelper().baseImage(widget.bankModel.result.data[index].logo,width: scaler.getWidth(15)),
-            title: WidgetHelper().textQ("${widget.bankModel.result.data[index].atasNama}", scaler.getTextSize(9),SiteConfig().darkMode, FontWeight.bold),
-            subtitle: WidgetHelper().textQ(widget.bankModel.result.data[index].noRekening,  scaler.getTextSize(9), SiteConfig().secondColor, FontWeight.bold),
+            trailing: num==index?Icon(Ionicons.ios_checkmark_circle_outline,color:LightColor.lightblack):Text(''),
+            contentPadding: EdgeInsets.all(0.0),
+            leading:WidgetHelper().baseImage(widget.bankModel.result.data[index].logo,fit: BoxFit.contain),
+            title: WidgetHelper().textQ("${widget.bankModel.result.data[index].atasNama}", scaler.getTextSize(9),LightColor.lightblack, FontWeight.bold),
+            subtitle: WidgetHelper().textQ(widget.bankModel.result.data[index].noRekening,  scaler.getTextSize(9), LightColor.lightblack, FontWeight.normal),
           ),
         );
       },

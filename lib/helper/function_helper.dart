@@ -2,12 +2,14 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/helper/database_helper.dart';
 import 'package:netindo_shop/helper/user_helper.dart';
+import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/address/kecamatan_model.dart';
 import 'package:netindo_shop/model/address/kota_model.dart';
 import 'package:netindo_shop/model/address/provinsi_model.dart';
@@ -17,7 +19,9 @@ import 'package:netindo_shop/model/tenant/listGroupProductModel.dart';
 import 'package:netindo_shop/model/tenant/list_brand_product_model.dart';
 import 'package:netindo_shop/model/tenant/list_category_product_model.dart';
 import 'package:netindo_shop/model/tenant/list_product_tenant_model.dart';
+import 'package:netindo_shop/model/tenant/list_tenant_model.dart';
 import 'package:netindo_shop/provider/base_provider.dart';
+import 'package:netindo_shop/views/screen/auth/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FunctionHelper{
@@ -32,6 +36,47 @@ class FunctionHelper{
     "Selesai",
     "Semua status",
   ];
+
+
+  Future checkTenant()async{
+    ListTenantModel listTenantModel;
+    final tenant = await BaseProvider().getProvider("tenant?page=1",listTenantModelFromJson);
+    SharedPreferences sess = await SharedPreferences.getInstance();
+    sess.setBool("isTenant", true);
+    if(tenant is ListTenantModel){
+      ListTenantModel dataTenant=ListTenantModel.fromJson(tenant.toJson());
+      if(dataTenant.result.data.length==1){
+        final val = dataTenant.result.data[0];
+        listTenantModel = dataTenant;
+        sess.setString("namaTenant", val.nama);
+        sess.setString("idTenant", val.id);
+        sess.setBool("isTenant", false);
+        return listTenantModel;
+      }
+    }
+  }
+
+  getCurrentLocation(){
+    final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
+    geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best).then((Position position) async {
+      String _currentAddress;
+      print(position);
+      try {
+        List<Placemark> p = await geolocator.placemarkFromCoordinates(position.latitude, position.longitude);
+        Placemark place = p[0];
+        _currentAddress = "${place.thoroughfare}, ${place.subLocality}, ${place.subAdministrativeArea}, ${place.administrativeArea}";
+        print(_currentAddress);
+        return place;
+      } catch (e) {
+        print(e);
+      }
+    }).catchError((e) {
+      print(e);
+    });
+
+
+  }
+
   Future getImage(param) async {
     ImageSource imageSource;
     if(param == 'kamera'){
@@ -82,7 +127,7 @@ class FunctionHelper{
     if(res is ConfigAuthModel){
       ConfigAuthModel result = res;
       // print("CONFIG $re")
-      return result.result.type;
+      return result.result.toJson();
     }
   }
   Future<List> checkingPriceComplex(idTenant,idBarang,kode,idVarian,idSubVarian,qty,harga,disc1,disc2,isTrue,hargaMaster,hargaVarian,hargaSubVarian) async {
@@ -196,7 +241,33 @@ class FunctionHelper{
     return newArr;
   }
 
+  Future dataProduct(element)async{
+    var data= {
+      "id_product": element.id.toString(),
+      "id_tenant": element.idTenant.toString(),
+      "kode": element.kode.toString(),
+      "title": element.title.toString(),
+      "tenant": element.tenant.toString(),
+      "id_kelompok": element.idKelompok.toString(),
+      "kelompok": element.kelompok.toString(),
+      "id_brand":element.idBrand.toString(),
+      "brand": element.brand.toString(),
+      "deskripsi": element.deskripsi.toString(),
+      "harga": element.harga.toString(),
+      "harga_coret": element.hargaCoret.toString(),
+      "berat": element.berat.toString(),
+      "pre_order": element.preOrder.toString(),
+      "free_return": element.freeReturn.toString(),
+      "gambar": element.gambar.toString(),
+      "disc1": element.disc1.toString(),
+      "disc2": element.disc2.toString(),
+      "stock": element.stock.toString(),
+      "stock_sales": element.stockSales,
+      "rating": element.rating.toString(),
+    };
+    return data;
 
+  }
 
   Future insertProduct(idTenant)async{
     print("INSERT");
@@ -403,7 +474,11 @@ class FunctionHelper{
     final idTenant = await getSession("id_tenant");
     await _helper.updateData(ProductQuery.TABLE_NAME,"is_click", "true", idTenant, idProduct.toString());
   }
-
+  Future logout(BuildContext context)async{
+    final id = await UserHelper().getDataUser('id');
+    await _helper.update(UserQuery.TABLE_NAME, {'id':"${id.toString()}","is_login":"0"});
+    WidgetHelper().myPushRemove(context,LoginScreen());
+  }
 
 
 }

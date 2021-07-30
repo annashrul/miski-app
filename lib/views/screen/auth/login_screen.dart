@@ -6,6 +6,7 @@ import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 // import 'package:google_sign_in/google_sign_in.dart';
 import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/site_config.dart';
+import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/helper/database_helper.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/screen_util_helper.dart';
@@ -52,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }
       await _helper.insert(UserQuery.TABLE_NAME,data);
       Navigator.pop(context);
-      WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2));
+      WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: StringConfig.defaultTab));
     }
   }
   bool isLoadingReOtp=false;
@@ -131,7 +132,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ));
           }
           else{
-            WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: 2));
+            WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: StringConfig.defaultTab));
           }
         }
         else{
@@ -184,9 +185,8 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isLoading=false;
   Future getConfig() async{
     var result= await FunctionHelper().getConfig();
-    print("RESULT CONFIG $result");
     setState(() {
-      type = result;
+      type = result["type"];
       isLoading=false;
     });
   }

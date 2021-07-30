@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
@@ -611,13 +612,13 @@ class LoadingTicket extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: EdgeInsets.symmetric(vertical: 7),
+      // padding: EdgeInsets.symmetric(vertical: 7),
       child: Column(
         children: <Widget>[
           Offstage(
             offstage: false,
             child: ListView.separated(
-              padding: EdgeInsets.symmetric(vertical: 15),
+              // padding: EdgeInsets.symmetric(vertical: 15),
               shrinkWrap: true,
               primary: false,
               itemCount: total,
@@ -626,18 +627,17 @@ class LoadingTicket extends StatelessWidget {
               },
               itemBuilder: (context, index) {
                 return Container(
-                  color: Theme.of(context).focusColor.withOpacity(0.15),
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                  child: Row(
+                  // color: Theme.of(context).focusColor.withOpacity(0.15),
+                  padding: EdgeInsets.symmetric(horizontal: 0, vertical:0),
+                  child:WidgetHelper().baseLoading(context, Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
                       Container(
+                        width: 60,height: 60,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(50)),
-                          color:Colors.transparent,
-                          // border: Border.all(color:SiteConfig().accentDarkColor)
+                          color:Colors.grey,
                         ),
-                        child:SkeletonFrame(width: 60,height: 60),
                       ),
                       SizedBox(width: 15),
                       Flexible(
@@ -649,19 +649,37 @@ class LoadingTicket extends StatelessWidget {
                               alignment: AlignmentDirectional.topEnd,
                               children: [
                                 Container(
-                                  padding: EdgeInsets.only(right:10.0,bottom: 5.0),
-                                  child: SkeletonFrame(width: MediaQuery.of(context).size.width/4,height: 10),
+                                  width: MediaQuery.of(context).size.width/4,height: 10,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.all(Radius.circular(50)),
+                                    color:Colors.grey,
+                                  ),
                                 ),
+
                               ],
                             ),
-                            SkeletonFrame(width: MediaQuery.of(context).size.width/2,height: 10),
-                            SizedBox(height: 5.0),
-                            SkeletonFrame(width: MediaQuery.of(context).size.width/3,height: 10),
+                            SizedBox(height: 10),
+                            Container(
+                              width: MediaQuery.of(context).size.width/2,height: 10,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(50)),
+                                color:Colors.grey[200],
+                              ),
+                            ),
+                            SizedBox(height: 5),
+                            Container(
+                              width: MediaQuery.of(context).size.width/3,height: 10,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(50)),
+                                color:Colors.grey[200],
+                              ),
+                            ),
+
                           ],
                         ),
                       )
                     ],
-                  ),
+                  )),
                 );
               },
             ),
@@ -718,4 +736,86 @@ class LoadingRoomTicket extends StatelessWidget {
 }
 
 
+
+class LoadingOption extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return ListView.builder(
+      primary: false,
+      physics: ScrollPhysics(),
+      itemCount:10,
+      scrollDirection: Axis.horizontal,
+      itemBuilder: (context,index){
+        double _marginLeft = 0;
+        (index == 0) ? _marginLeft = 10 : _marginLeft = 0;
+        return WidgetHelper().baseLoading(context,Container(
+          padding: EdgeInsets.symmetric(horizontal: 0),
+          margin: EdgeInsets.only(left:_marginLeft,right: 5, top: 15, bottom: 15),
+          child: AnimatedContainer(
+            height: scaler.getHeight(2),
+            width: scaler.getWidth(10),
+            duration: Duration(milliseconds: 350),
+            curve: Curves.easeInOut,
+            padding: EdgeInsets.only(left: 10,right:10),
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+          ),
+        ));
+      },
+
+    );
+  }
+}
+
+
+class LoadingCategory extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return Container(
+      alignment: Alignment.center,
+      height: scaler.getHeight(8.5),
+      child: ListView.builder(
+        shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
+        itemCount: 5,
+        itemBuilder: (context, index) => WidgetHelper().baseLoading(context,Container(
+            margin: const EdgeInsets.all(10.0),
+            width: 70.0,
+            child: Stack(
+              alignment: Alignment.topCenter,
+              children: <Widget>[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(5.0),
+                  child: Container(
+                    height: 50.0,
+                    color: Colors.grey[200],
+                  ),
+                ),
+                Positioned(
+                  top: 20.0,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        height: scaler.getHeight(4),
+                        width: scaler.getWidth(10),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            )
+        )),
+      ),
+    );
+  }
+}
 
