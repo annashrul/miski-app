@@ -31,7 +31,9 @@ import 'package:netindo_shop/views/screen/product/detail_product_screen.dart';
 import 'package:netindo_shop/views/screen/product/product_detail_screen.dart';
 import 'package:netindo_shop/views/screen/wrapper_screen.dart';
 import 'package:netindo_shop/views/widget/cart_widget.dart';
+import 'package:netindo_shop/views/widget/choose_widget.dart';
 import 'package:netindo_shop/views/widget/empty_widget.dart';
+import 'package:netindo_shop/views/widget/icon_appbar_widget.dart';
 import 'package:netindo_shop/views/widget/loading_widget.dart';
 import 'package:netindo_shop/views/widget/product/first_product_widget.dart';
 import 'package:netindo_shop/views/widget/product/second_product_widget.dart';
@@ -192,37 +194,62 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
   Widget build(BuildContext context) {
     ScreenScaler scaler = ScreenScaler()..init(context);
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: WidgetHelper().textQ("${widget.nama.toUpperCase()}",  scaler.getTextSize(10),SiteConfig().secondColor,FontWeight.bold),
-        actions: <Widget>[
-          new CartWidget(
-            iconColor: LightColor.lightblack,
-            labelColor: totalCart>0?Colors.redAccent:Colors.transparent,
-            labelCount: totalCart,
-            callback: (){
-              if(totalCart>0){
-                WidgetHelper().myPushAndLoad(context, CartScreen(idTenant: widget.id), countCart);
-              }
-            },
-          ),
-          IconButton(
-            icon: Icon(
-                AntDesign.filter,color: LightColor.lightblack
-            ),
-            onPressed: () {
-              WidgetHelper().myModal(
-                  context,
-                  ModalSearch(idTenant:widget.id,callback:(par){
-                    setState(() {q=par;});
-                    isLoading=true;
-                    getProduct();
-                  })
-              );
-            },
-          )
-        ],
-      ),
+      appBar: WidgetHelper().myAppBarNoButton(context, "${widget.nama.toUpperCase()}", <Widget>[
+        new CartWidget(
+          iconColor: LightColor.lightblack,
+          labelColor: totalCart>0?Colors.redAccent:Colors.transparent,
+          labelCount: totalCart,
+          callback: (){
+            if(totalCart>0){
+              WidgetHelper().myPushAndLoad(context, CartScreen(idTenant: widget.id), countCart);
+            }
+          },
+        ),
+        IconAppBarWidget(
+          icon: AntDesign.filter,
+          callback: (){
+            WidgetHelper().myModal(
+                context,
+                ModalSearch(idTenant:widget.id,callback:(par){
+                  setState(() {q=par;});
+                  isLoading=true;
+                  getProduct();
+                })
+            );
+          },
+        )
+      ]),
+      //
+      // appBar: AppBar(
+      //   toolbarHeight: scaler.getHeight(4),
+      //   automaticallyImplyLeading: false,
+      //   title: WidgetHelper().textQ("${widget.nama.toUpperCase()}",  scaler.getTextSize(10),SiteConfig().secondColor,FontWeight.bold),
+      //   actions: <Widget>[
+      //     new CartWidget(
+      //       iconColor: LightColor.lightblack,
+      //       labelColor: totalCart>0?Colors.redAccent:Colors.transparent,
+      //       labelCount: totalCart,
+      //       callback: (){
+      //         if(totalCart>0){
+      //           WidgetHelper().myPushAndLoad(context, CartScreen(idTenant: widget.id), countCart);
+      //         }
+      //       },
+      //     ),
+      //     IconAppBarWidget(
+      //       icon: AntDesign.filter,
+      //       callback: (){
+      //         WidgetHelper().myModal(
+      //           context,
+      //           ModalSearch(idTenant:widget.id,callback:(par){
+      //             setState(() {q=par;});
+      //             isLoading=true;
+      //             getProduct();
+      //           })
+      //         );
+      //       },
+      //     )
+      //   ],
+      // ),
       key: _scaffoldKey,
       body: buildContents(context),
       backgroundColor:Colors.white,
@@ -236,7 +263,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
           );
         },
         child: Icon(AntDesign.totop, size: scaler.getTextSize(15), color:SiteConfig().secondColor),
-        // backgroundColor:SiteConfig().mainColor,
       )
     );
   }
@@ -265,7 +291,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                             scrollDirection: Axis.horizontal,
                             itemCount: listCategoryProductModel.result.data.length,
                             itemBuilder: (context, index) => Container(
-                                margin: scaler.getMarginLTRB(1, 1, 0, 0),
+                                margin: scaler.getMarginLTRB(2, 1, 0, 0),
                                 width: scaler.getWidth(13),
                                 child: InkWell(
                                   onTap: (){},
@@ -275,19 +301,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                                       ClipRRect(
                                         borderRadius: BorderRadius.circular(5.0),
                                         child: Container(
-                                          height: 50.0,
+                                          height: scaler.getHeight(5),
                                           color: Colors.grey[200],
                                         ),
                                       ),
                                       Positioned(
-                                        top: 20.0,
+                                        top:scaler.getTextSize(10),
                                         child: Column(
                                           mainAxisSize: MainAxisSize.min,
                                           children: <Widget>[
                                             WidgetHelper().baseImage(
                                               listCategoryProductModel.result.data[index].image,
-                                              height: 40.0,
-                                              width: 40.0,
+                                              height: scaler.getHeight(4),
+                                              width: scaler.getWidth(10),
                                               fit: BoxFit.cover,
                                             ),
                                             Flexible(
@@ -311,48 +337,26 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
             ),
             SliverStickyHeader(
               header: Container(
+                margin: scaler.getMarginLTRB(0,0,0,1),
                 color: Colors.white,
-                height: scaler.getHeight(5),
+                height: scaler.getHeight(3),
                 child: isLoadingGroup?LoadingOption():ListView.builder(
-                  padding: EdgeInsets.only(left:0.0,top:0,bottom:0),
+                  padding: scaler.getPadding(0,2),
                   itemCount: returnGroup.length,
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
-                    double _marginLeft = 0;
-                    (index == 0) ? _marginLeft = 10 : _marginLeft = 0;
+                    double _marginRight = 2;
+                    (index == 5) ? _marginRight = 0 : _marginRight = 2;
                     var val = returnGroup[index];
-                    return Container(
-                      padding: EdgeInsets.symmetric(horizontal: 0),
-                      margin: EdgeInsets.only(left:_marginLeft,right: 5, top: 15, bottom: 15),
-                      child: WidgetHelper().myRipple(
-                        callback: (){
-                          setState(() {
-                            group=val["id"];
-                            isLoading=true;
-                          });
-                          getProduct();
-                        },
-                        child: AnimatedContainer(
-                          height: scaler.getHeight(5) ,
-                          duration: Duration(milliseconds: 350),
-                          curve: Curves.easeInOut,
-                          padding: EdgeInsets.only(left: 10,right:10),
-                          decoration: BoxDecoration(
-                            border: Border.all(width:group==val["id"]?2.0:1.0,color: group==val["id"]?LightColor.mainColor:LightColor.lightblack),
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          child: Row(
-                            children: <Widget>[
-                              AnimatedSize(
-                                duration: Duration(milliseconds: 350),
-                                curve: Curves.easeInOut,
-                                vsync: this,
-                                child: WidgetHelper().textQ("${val["title"]}".toLowerCase(),scaler.getTextSize(9), group==val["id"]?LightColor.mainColor:LightColor.lightblack,FontWeight.bold),
-                              )
-                            ],
-                          ),
-                        )
-                      ),
+                    return ChooseWidget(
+                      res: {"right":_marginRight,"isActive":group==val["id"],"title":val["title"]},
+                      callback: (){
+                        setState(() {
+                          group=val["id"];
+                          isLoading=true;
+                        });
+                        getProduct();
+                      },
                     );
                   },
                   scrollDirection: Axis.horizontal,

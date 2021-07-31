@@ -27,23 +27,21 @@ class CartWidget extends StatelessWidget {
     return InkWell(
       onTap:callback,
       child: Stack(
+        alignment: AlignmentDirectional.center,
         children: <Widget>[
-          Padding(
-            padding: scaler.getPadding(1,0),
+          Container(
+            alignment: Alignment.center,
             child: Icon(
               AntDesign.shoppingcart,
               color: this.iconColor,
-              // size: scaler.getTextSize(15),
             ),
           ),
           Positioned(
-            left: 10,
-            top:10,
+            left: scaler.getTextSize(9),
+            top: scaler.getTextSize(5),
             child: Container(
-              // child:WidgetHelper().textQ(this.labelCount.toString(), 10, Colors.white,FontWeight.bold,textAlign: TextAlign.center,),
-              // padding: EdgeInsets.only(top: 2,left: 10),
               decoration: BoxDecoration(color: this.labelColor, borderRadius: BorderRadius.all(Radius.circular(10))),
-              constraints: BoxConstraints(minWidth: 10, maxWidth: 10, minHeight: 10, maxHeight: 10),
+              constraints: BoxConstraints(minWidth: scaler.getTextSize(8), maxWidth: scaler.getTextSize(8), minHeight: scaler.getTextSize(8), maxHeight: scaler.getTextSize(8)),
             ),
           ),
         ],

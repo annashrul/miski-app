@@ -372,38 +372,79 @@ class WidgetHelper{
     ScreenUtilHelper.instance = ScreenUtilHelper(allowFontScaling: false)..init(context);
     ScreenScaler scaler = ScreenScaler()..init(context);
     return  AppBar(
+      titleSpacing: 0.0,
+      automaticallyImplyLeading: false,
+      toolbarHeight: scaler.getHeight(4),
       elevation: 0.0,
       backgroundColor: brightness.index==1?Colors.white:Color(0xFF2C2C2C), // status bar color
       brightness: brightness,
-      title:textQ(title.toUpperCase(),scaler.getTextSize(10),brightness.index==1?SiteConfig().secondColor:Colors.white,FontWeight.bold),
-      leading: IconButton(
-        padding: scaler.getPadding(0,0),
-        icon: new Icon(AntDesign.back, color:LightColor.lightblack,size: scaler.getTextSize(13)),
-        onPressed: (){
-          if(param=="default"){
-            Navigator.pop(context);
-          }else{
-            callback();
-          }
-        },
+      title:Row(
+        children: [
+          Container(
+            padding: scaler.getPadding(0, 1),
+            child: WidgetHelper().myRipple(
+                callback: ()=>param=="default"?Navigator.pop(context):callback(),
+                isRadius: true,
+                radius: 100,
+                child: Stack(
+                  alignment: AlignmentDirectional.center,
+                  children: <Widget>[
+                    Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                        ),
+                        padding: scaler.getPadding(0, 0),
+                        alignment: Alignment.center,
+                        child: Icon(Ionicons.ios_arrow_dropleft,color: LightColor.lightblack)
+                    ),
+                  ],
+                )
+            ),
+          ),
+          textQ(title.toUpperCase(),scaler.getTextSize(10),brightness.index==1?SiteConfig().secondColor:Colors.white,FontWeight.bold)
+        ],
       ),
+
+      // leading: Container(
+      //   padding: scaler.getPadding(0, 1),
+      //   child: WidgetHelper().myRipple(
+      //     callback: (){
+      //       // if(param=="default"){
+      //       //   Navigator.pop(context);
+      //       // }
+      //       // else{
+      //       //   callback();
+      //       // }
+      //     },
+      //       isRadius: true,
+      //       radius: 100,
+      //       child: Stack(
+      //         alignment: AlignmentDirectional.center,
+      //         children: <Widget>[
+      //           Container(
+      //               decoration: BoxDecoration(
+      //                 shape: BoxShape.circle,
+      //               ),
+      //               padding: scaler.getPadding(0, 0),
+      //               alignment: Alignment.center,
+      //               child: Icon(Ionicons.ios_arrow_round_back,color: LightColor.lightblack)
+      //           ),
+      //         ],
+      //       )
+      //   ),
+      // ),
       actions:widget,// status bar brightness
     );
   }
   myAppBarNoButton(BuildContext context,String title,List<Widget> widget,{Brightness brightness=Brightness.light}){
     ScreenScaler scaler = ScreenScaler()..init(context);
     return AppBar(
+      toolbarHeight: scaler.getHeight(4),
       automaticallyImplyLeading: false,
       backgroundColor: brightness.index==0?SiteConfig().darkMode:Colors.white, // status bar color
       brightness: brightness,
       title:textQ(title.toUpperCase(),scaler.getTextSize(10),brightness.index==0?Colors.white:SiteConfig().secondColor,FontWeight.bold),
       elevation: 0,
-      // leading:Padding(
-      //   padding: EdgeInsets.only(left:20.0,top:10.0,bottom:10.0),
-      //   child:  CircleAvatar(
-      //     backgroundImage:NetworkImage('http://ptnetindo.com:6700/images/customer/default.png',scale: 10.0),
-      //   ),
-      // ),
       actions:widget,
     );
 

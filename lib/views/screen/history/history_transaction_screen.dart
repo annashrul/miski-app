@@ -13,6 +13,7 @@ import 'package:netindo_shop/model/history/history_transaction_model.dart';
 import 'package:netindo_shop/provider/base_provider.dart';
 import 'package:netindo_shop/views/screen/checkout/detail_checkout_screen.dart';
 import 'package:netindo_shop/views/screen/history/detail_history_transaction_screen.dart';
+import 'package:netindo_shop/views/widget/choose_widget.dart';
 import 'package:netindo_shop/views/widget/empty_widget.dart';
 import 'package:netindo_shop/views/widget/loading_widget.dart';
 import 'package:netindo_shop/views/widget/refresh_widget.dart';
@@ -132,35 +133,16 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                   scrollDirection: Axis.horizontal,
                   itemCount: FunctionHelper.arrOptDate.length,
                   itemBuilder: (context,index){
-                    print(FunctionHelper.arrOptDate.length-1);
                     double _marginRight = 2;
                     (index == 5) ? _marginRight = 0 : _marginRight = 2;
-                    return  Container(
-                      margin: scaler.getMarginLTRB(0, 0, _marginRight, 0),
-                      child: WidgetHelper().myPress(
-                              (){
-                            setState(() {
-                              isLoading=true;
-                              filterStatus = index;
-                            });
-                            loadHistory();
-
-                          },
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-                            decoration: BoxDecoration(
-                              border: Border.all(width:filterStatus==index?2.0:1.0,color: filterStatus==index?LightColor.mainColor:LightColor.lightblack),
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                WidgetHelper().textQ("${FunctionHelper.arrOptDate[index]}", scaler.getTextSize(9), filterStatus==index?LightColor.mainColor:LightColor.lightblack, FontWeight.bold),
-                              ],
-                            ),
-                          )
-                      ),
+                    return ChooseWidget(
+                      res: {"right":_marginRight,"isActive":filterStatus==index,"title":FunctionHelper.arrOptDate[index]},
+                      callback: (){
+                        isLoading=true;
+                        filterStatus = index;
+                        loadHistory();
+                        setState(() {});
+                      },
                     );
                   },
                 )
