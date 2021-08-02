@@ -105,20 +105,10 @@ class _SecureCodeScreenState extends State<SecureCodeScreen> {
         ),
       ),
       body: widget.param=='otp'?SecureCodeHelper(
-          showFingerPass: false,
-          forgotPin: 'Lupa OTP ? Klik Disini',
-          title: "Keamanan",
           passLength: 4,
-          bgImage: "assets/images/bg.jpg",
           borderColor:  SiteConfig().mainColor,
-          showWrongPassDialog: true,
-          wrongPassContent: "OTP Tidak Sesuai",
-          wrongPassTitle: "Opps!",
-          wrongPassCancelButtonText: "Batal",
           deskripsi: 'Masukan Kode OTP Yang Kami Kirim Melalui Pesan ${widget.desc} Untuk Melanjutkan Ke Halaman Berikutnya ${SiteConfig().showCode?widget.code:''}',
           passCodeVerify: (passcode) async {
-            print(passcode);
-            print(widget.code.split(''));
             var code = widget.code.split('');
             for (int i = 0; i < code.length; i++) {
               if (passcode[i] != int.parse(code[i])) {
@@ -131,11 +121,7 @@ class _SecureCodeScreenState extends State<SecureCodeScreen> {
             widget.callback(context,true);
           }
       ):SecureCodeHelper(
-          showFingerPass: true,
-          forgotPin: 'Lupa PIN ? Klik Disini',
-          title: "Keamanan",
-          passLength: 4,
-          bgImage: "assets/images/bg.jpg",
+          passLength: 6,
           borderColor: Colors.black,
           showWrongPassDialog: true,
           wrongPassContent: "Pin Tidak Sesuai",

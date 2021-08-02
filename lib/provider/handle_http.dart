@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' show Client;
 import 'package:netindo_shop/config/site_config.dart';
+import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/user_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
@@ -12,6 +13,9 @@ import 'package:netindo_shop/model/general_model.dart';
 class HandleHttp{
   Client client = Client();
   final userRepository = UserHelper();
+
+
+
   Future getProvider(url,param,{BuildContext context,Function callback})async{
     try{
       final token= await userRepository.getDataUser('token');
@@ -50,31 +54,14 @@ class HandleHttp{
         });
       }
     }on TimeoutException catch (_) {
-      if(context==null){
-        return SiteConfig().errTimeout;
-      }
-      else{
-        print("###################################### GET TimeoutException $url ");
-        return WidgetHelper().notifOneBtnDialog(context,SiteConfig().titleErrTimeout,SiteConfig().descErrTimeout,(){
-          callback();
-        });
-      }
+      print("###################################### GET TimeoutException $url ");
+      return Navigator.pushNamed(context, "error");
     } on SocketException catch (_) {
-      if(context==null){
-        return SiteConfig().errTimeout;
-      }
-      else{
-        return WidgetHelper().notifOneBtnDialog(context,SiteConfig().titleErrTimeout,SiteConfig().descErrTimeout,(){
-          print("###################################### GET SocketException $url ");
-          callback();
-        });
-      }
+      print("###################################### GET SocketException $url ");
+      return Navigator.pushNamed(context, "error");
     } on Error catch (e) {
-      return WidgetHelper().notifOneBtnDialog(context,"Terjadi Kesalahan Syntax","Mohon segera hubungi admin kami",()async{
-        Navigator.pop(context);
-        await FunctionHelper().logout(context);
-      });
-      // print('General Error: $e');
+      print("###################################### GET Error $url ");
+      return WidgetHelper().showFloatingFlushbar(context, "failed", StringConfig.errSyntax);
     }
   }
   Future postProvider(url,Map<String, Object> data,{BuildContext context,Function callback}) async {
@@ -99,33 +86,25 @@ class HandleHttp{
       else if(request.statusCode==400){
         final jsonResponse = json.decode(request.body);
         Navigator.pop(context);
-        print(jsonResponse['msg']);
-        if(jsonResponse['msg']=='PIN Tidak Sesuai.'||jsonResponse['msg']=='PIN anda tidak sesuai.'|| jsonResponse['msg']=='PIN tidak valid'){
-          return WidgetHelper().notifOneBtnDialog(context,"Terjadi Kesalahan",jsonResponse['msg'],()=>Navigator.pop(context));
-        }
-        else{
-          print("error bukan pin");
-          return WidgetHelper().notifOneBtnDialog(context,"Terjadi Kesalahan",jsonResponse['msg'],(){callback();});
-        }
+        return WidgetHelper().showFloatingFlushbar(context, "failed", jsonResponse['msg']);
       }
       else if(request.statusCode==404){
-        return WidgetHelper().notifOneBtnDialog(context,"Informasi !","url not found",(){Navigator.pop(context);});
+        print("=================== request.statusCode==404  $url = $TimeoutException ============================");
+        Navigator.pop(context);
+        return WidgetHelper().showFloatingFlushbar(context, "failed", "terjadi kesalahan url");
       }
     } on TimeoutException catch (_) {
       print("=================== TimeoutException $url = $TimeoutException ============================");
-      if(context!=null){
-        return WidgetHelper().notifOneBtnDialog(context,SiteConfig().titleErrTimeout,SiteConfig().descErrTimeout,(){Navigator.pop(context);});
-      }else{
-        return SiteConfig().errTimeout;
-      }
-
+      Navigator.pop(context);
+      return WidgetHelper().showFloatingFlushbar(context, "failed", StringConfig.descErrTimeout);
     } on SocketException catch (_) {
       print("=================== SocketException $url = $SocketException ============================");
-      if(context!=null){
-        return WidgetHelper().notifOneBtnDialog(context,SiteConfig().titleErrTimeout,SiteConfig().descErrTimeout,(){Navigator.pop(context);});
-      }else{
-        return SiteConfig().errSocket;
-      }
+      Navigator.pop(context);
+      return WidgetHelper().showFloatingFlushbar(context, "failed", StringConfig.msgConnection);
+    } on Error catch (e) {
+      print("###################################### GET Error $url ");
+      Navigator.pop(context);
+      return WidgetHelper().showFloatingFlushbar(context, "failed", StringConfig.errSyntax);
     }
   }
   Future putProvider(url,Map<String, Object> data,{BuildContext context}) async {
@@ -145,29 +124,26 @@ class HandleHttp{
       }
       else if(request.statusCode==400){
         final jsonResponse = json.decode(request.body);
-        return WidgetHelper().notifOneBtnDialog(context,"Terjadi Kesalahan",jsonResponse['msg'],(){Navigator.pop(context);});
-      }
-      else if(request.statusCode==413){
         Navigator.pop(context);
-        // final jsonResponse = json.decode(request.body);
-        print("jsonResponse");
-        return WidgetHelper().notifOneBtnDialog(context,"Terjadi Kesalahan","File terlalu besar",(){Navigator.pop(context);});
+        return WidgetHelper().showFloatingFlushbar(context, "failed", jsonResponse['msg']);
+      }
+      else if(request.statusCode==404){
+        print("=================== request.statusCode==404  $url = $TimeoutException ============================");
+        Navigator.pop(context);
+        return WidgetHelper().showFloatingFlushbar(context, "failed", "terjadi kesalahan url");
       }
     } on TimeoutException catch (_) {
       print("=================== TimeoutException $url = $TimeoutException ============================");
-      if(context!=null){
-        return WidgetHelper().notifOneBtnDialog(context,SiteConfig().titleErrTimeout,SiteConfig().descErrTimeout,(){Navigator.pop(context);});
-      }else{
-        return SiteConfig().errTimeout;
-      }
-
+      Navigator.pop(context);
+      return WidgetHelper().showFloatingFlushbar(context, "failed", StringConfig.descErrTimeout);
     } on SocketException catch (_) {
       print("=================== SocketException $url = $SocketException ============================");
-      if(context!=null){
-        return WidgetHelper().notifOneBtnDialog(context,SiteConfig().titleErrTimeout,SiteConfig().descErrTimeout,(){Navigator.pop(context);});
-      }else{
-        return SiteConfig().errSocket;
-      }
+      Navigator.pop(context);
+      return WidgetHelper().showFloatingFlushbar(context, "failed", StringConfig.msgConnection);
+    } on Error catch (e) {
+      print("###################################### GET Error $url ");
+      Navigator.pop(context);
+      return WidgetHelper().showFloatingFlushbar(context, "failed", StringConfig.errSyntax);
     }
   }
   Future deleteProvider(url,param,{BuildContext context}) async {
@@ -188,26 +164,28 @@ class HandleHttp{
       if(request.statusCode==200){
         return param(request.body);
       }
-      else{
-        if(context!=null){
-          return WidgetHelper().notifOneBtnDialog(context,SiteConfig().titleErrTimeout,SiteConfig().descErrTimeout,(){Navigator.pop(context);});
-        }else{
-          return General.fromJson(jsonDecode(request.body));
-        }
+      else if(request.statusCode==400){
+        final jsonResponse = json.decode(request.body);
+        Navigator.pop(context);
+        return WidgetHelper().showFloatingFlushbar(context, "failed", jsonResponse['msg']);
+      }
+      else if(request.statusCode==404){
+        print("=================== request.statusCode==404  $url = $TimeoutException ============================");
+        Navigator.pop(context);
+        return WidgetHelper().showFloatingFlushbar(context, "failed", "terjadi kesalahan url");
       }
     } on TimeoutException catch (_) {
-      if(context!=null){
-        return WidgetHelper().notifOneBtnDialog(context,SiteConfig().titleErrTimeout,SiteConfig().descErrTimeout,(){Navigator.pop(context);});
-      }else{
-        return SiteConfig().errTimeout;
-      }
+      print("=================== TimeoutException $url = $TimeoutException ============================");
+      Navigator.pop(context);
+      return WidgetHelper().showFloatingFlushbar(context, "failed", StringConfig.descErrTimeout);
     } on SocketException catch (_) {
-      if(context!=null){
-        return WidgetHelper().notifOneBtnDialog(context,SiteConfig().titleErrTimeout,SiteConfig().descErrTimeout,(){Navigator.pop(context);});
-      }else{
-        return SiteConfig().errSocket;
-      }
-
+      print("=================== SocketException $url = $SocketException ============================");
+      Navigator.pop(context);
+      return WidgetHelper().showFloatingFlushbar(context, "failed", StringConfig.msgConnection);
+    } on Error catch (e) {
+      print("###################################### GET Error $url ");
+      Navigator.pop(context);
+      return WidgetHelper().showFloatingFlushbar(context, "failed", StringConfig.errSyntax);
     }
 
   }

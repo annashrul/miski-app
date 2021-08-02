@@ -13,6 +13,7 @@ import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/light_color.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/helper/screen_util_helper.dart';
@@ -131,14 +132,9 @@ class WidgetHelper{
 
   void showFloatingFlushbar(BuildContext context,String param, String desc) {
     Flushbar(
-
       flushbarPosition: FlushbarPosition.TOP,
       flushbarStyle: FlushbarStyle.FLOATING,
-      // reverseAnimationCurve: Curves.decelerate,
-      // forwardAnimationCurve: Curves.elasticOut,
       margin:EdgeInsets.only(top: 50),
-      // showProgressIndicator: true,
-
       borderRadius: 0,
       backgroundGradient: LinearGradient(
         colors: param=='success'?[SiteConfig().mainColor, SiteConfig().mainColor]:[Colors.red, Colors.red],
@@ -153,13 +149,13 @@ class WidgetHelper{
       ],
       icon: Icon(
         param=='success'?Icons.check_circle_outline:Icons.info_outline,
-        size: 28.0,
-        color: SiteConfig().secondDarkColor,
+        color:config.Colors.secondDarkColors,
       ),
       duration: Duration(seconds: 3),
       leftBarIndicatorColor: param=='success'?Colors.blue[300]:Colors.red[300],
       dismissDirection: FlushbarDismissDirection.HORIZONTAL,
-      messageText: textQ(desc,12,SiteConfig().secondDarkColor, FontWeight.bold),
+      messageText: config.MyFont.title(context: context,text:desc,color: config.Colors.secondDarkColors),
+
     )..show(context);
   }
   myModal(BuildContext context,Widget child){
@@ -347,26 +343,6 @@ class WidgetHelper{
     );
   }
 
-  iconAppbar(BuildContext context,Function callback,IconData icon,{Color color=LightColor.lightblack}){
-    ScreenScaler scaler = ScreenScaler()..init(context);
-    return InkWell(
-      onTap:callback,
-      child: Stack(
-        children: <Widget>[
-          Padding(
-            padding: scaler.getPadding(1,0),
-            child: Icon(
-              icon,
-              color: color,
-              size: scaler.getTextSize(15),
-            ),
-          ),
-
-        ],
-      ),
-    );
-  }
-
   appBarWithButton(BuildContext context, title,Function callback,List<Widget> widget,{String param="",Brightness brightness=Brightness.light}){
     ScreenUtilHelper.instance = ScreenUtilHelper.getInstance()..init(context);
     ScreenUtilHelper.instance = ScreenUtilHelper(allowFontScaling: false)..init(context);
@@ -380,78 +356,40 @@ class WidgetHelper{
       brightness: brightness,
       title:Row(
         children: [
-          Container(
-            padding: scaler.getPadding(0, 1),
-            child: WidgetHelper().myRipple(
-                callback: ()=>param=="default"?Navigator.pop(context):callback(),
-                isRadius: true,
-                radius: 100,
+          myRipple(
+            callback: ()=>param=="default"?Navigator.pop(context):callback(),
+              isRadius: true,
+              radius: 100,
+              child:Container(
+                padding: scaler.getPadding(0.5, 1),
                 child: Stack(
                   alignment: AlignmentDirectional.center,
                   children: <Widget>[
                     Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                        ),
-                        padding: scaler.getPadding(0, 0),
                         alignment: Alignment.center,
-                        child: Icon(Ionicons.ios_arrow_dropleft,color: LightColor.lightblack)
+                        child: Icon(Entypo.arrow_bold_left,color: LightColor.black)
                     ),
                   ],
-                )
-            ),
+                ),
+              )
           ),
-          textQ(title.toUpperCase(),scaler.getTextSize(10),brightness.index==1?SiteConfig().secondColor:Colors.white,FontWeight.bold)
+          textQ(title.toUpperCase(),scaler.getTextSize(10),LightColor.black,FontWeight.bold)
         ],
       ),
-
-      // leading: Container(
-      //   padding: scaler.getPadding(0, 1),
-      //   child: WidgetHelper().myRipple(
-      //     callback: (){
-      //       // if(param=="default"){
-      //       //   Navigator.pop(context);
-      //       // }
-      //       // else{
-      //       //   callback();
-      //       // }
-      //     },
-      //       isRadius: true,
-      //       radius: 100,
-      //       child: Stack(
-      //         alignment: AlignmentDirectional.center,
-      //         children: <Widget>[
-      //           Container(
-      //               decoration: BoxDecoration(
-      //                 shape: BoxShape.circle,
-      //               ),
-      //               padding: scaler.getPadding(0, 0),
-      //               alignment: Alignment.center,
-      //               child: Icon(Ionicons.ios_arrow_round_back,color: LightColor.lightblack)
-      //           ),
-      //         ],
-      //       )
-      //   ),
-      // ),
       actions:widget,// status bar brightness
     );
   }
-  myAppBarNoButton(BuildContext context,String title,List<Widget> widget,{Brightness brightness=Brightness.light}){
+  myAppBarNoButton(BuildContext context,String title,List<Widget> widget){
     ScreenScaler scaler = ScreenScaler()..init(context);
     return AppBar(
       toolbarHeight: scaler.getHeight(4),
       automaticallyImplyLeading: false,
-      backgroundColor: brightness.index==0?SiteConfig().darkMode:Colors.white, // status bar color
-      brightness: brightness,
-      title:textQ(title.toUpperCase(),scaler.getTextSize(10),brightness.index==0?Colors.white:SiteConfig().secondColor,FontWeight.bold),
+      title:textQ(title.toUpperCase(),scaler.getTextSize(10),LightColor.black,FontWeight.bold),
       elevation: 0,
       actions:widget,
     );
 
   }
-
-
-
   pembatas(BuildContext context){
     return Container(
       width: MediaQuery.of(context).size.width,
@@ -462,7 +400,6 @@ class WidgetHelper{
       ),
     );
   }
-
   buttonQ(BuildContext context,Function callback,String title,{isColor=false,Color color}){
     ScreenScaler scaler = ScreenScaler()..init(context);
     return FlatButton(
@@ -490,18 +427,17 @@ class WidgetHelper{
       ),
     );
   }
-
   myRipple({Widget child,Function callback,bool isRadius=true,double radius=10}){
     return TouchRippleEffect(
+
       backgroundColor: Colors.transparent,
       borderRadius: BorderRadius.circular(isRadius?radius:0),
-      rippleColor: Colors.black26,
+      rippleColor: Color(0xFFD3D3D3),
       onTap: callback,
       child: child,
 
     );
   }
-
   myPress(Function callback,Widget child,{Color color=Colors.black26}){
     return InkWell(
       highlightColor:color,
@@ -514,7 +450,6 @@ class WidgetHelper{
       child: child,
     );
   }
-
   myImage(String img,double width, double height, BoxFit boxFit){
     return CachedNetworkImage(
       width: width,
@@ -526,6 +461,7 @@ class WidgetHelper{
     );
   }
   baseImage(String img,{double width, double height,BoxFit fit = BoxFit.contain}){
+
     return CachedNetworkImage(
       imageUrl:img,
       width: width,
@@ -535,8 +471,6 @@ class WidgetHelper{
       errorWidget: (context, url, error) => Image.asset(SiteConfig().localAssets+'logo.jpeg',fit:BoxFit.contain),
     );
   }
-
-
   textSpaceBetween(BuildContext context,String title,String desc,{FontWeight fontWeightTitle = FontWeight.normal,FontWeight fontWeightDesc = FontWeight.normal,MainAxisAlignment mainAxisAlignment=MainAxisAlignment.spaceBetween,Color titleColor=Colors.black,Color descColor}){
     ScreenScaler scaler = ScreenScaler()..init(context);
     return Row(
@@ -547,5 +481,65 @@ class WidgetHelper{
       ],
     );
   }
+  iconAppbar({BuildContext context,Function callback,IconData icon,String title=''}){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return Container(
+      margin: scaler.getMarginLTRB(0, 0, 1, 0),
+      child: WidgetHelper().myRipple(
+          isRadius: true,
+          radius: 100,
+          callback: callback,
+          child: Container(
+            padding: scaler.getPadding(0,2.5),
+            child: Stack(
+              alignment: AlignmentDirectional.center,
+              children: <Widget>[
+                Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                    ),
+                    child: icon!=null?Icon(icon,color:Theme.of(context).hintColor):config.MyFont.title(context: context,text: title)
+                ),
+              ],
+            ),
+          )
+      ),
+    );
+  }
 
+  iconAppBarBadges({BuildContext context,Function callback,IconData icon,bool isActive=true}){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return Container(
+      margin: scaler.getMarginLTRB(0, 0, 0, 0),
+      child: myRipple(
+        callback:callback,
+        isRadius: true,
+        radius: 100,
+        child: Container(
+          padding: scaler.getPadding(0,2.5),
+          child: Stack(
+            alignment: AlignmentDirectional.center,
+            children: <Widget>[
+              Container(
+                alignment: Alignment.center,
+                child: Icon(
+                  icon,
+                  color: Theme.of(context).hintColor,
+                ),
+              ),
+              Positioned(
+                left: scaler.getTextSize(9),
+                top: scaler.getTextSize(7),
+                child: Container(
+                  decoration: BoxDecoration(color: isActive?Colors.red:Colors.transparent, borderRadius: BorderRadius.all(Radius.circular(10))),
+                  constraints: BoxConstraints(minWidth: scaler.getTextSize(8), maxWidth: scaler.getTextSize(8), minHeight: scaler.getTextSize(8), maxHeight: scaler.getTextSize(8)),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

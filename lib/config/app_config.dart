@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:netindo_shop/config/string_config.dart';
 
 class AppConfig {
   BuildContext _context;
@@ -35,34 +38,34 @@ class AppConfig {
 }
 
 class Colors {
-  Color _mainColor = Color(0xFF009DB5);
-  Color _mainDarkColor = Color(0xFF22B7CE);
-  Color _secondColor = Color(0xFF04526B);
-  Color _secondDarkColor = Color(0xFFE7F6F8);
-  Color _accentColor = Color(0xFFADC4C8);
-  Color _accentDarkColor = Color(0xFFADC4C8);
+  static const Color mainColors = Color(0xFF009DB5);
+  static const Color mainDarkColors = Color(0xFF22B7CE);
+  static const Color secondColors = Color(0xFF04526B);
+  static const Color secondDarkColors = Color(0xFFD3D3D3);
+  static const Color accentColors = Color(0xFFADC4C8);
+  static const Color accentDarkColors = Color(0xFFADC4C8);
 
   Color mainColor(double opacity) {
-    return this._mainColor.withOpacity(opacity);
+    return mainColors.withOpacity(opacity);
   }
 
   Color secondColor(double opacity) {
-    return this._secondColor.withOpacity(opacity);
+    return secondColors.withOpacity(opacity);
   }
 
   Color accentColor(double opacity) {
-    return this._accentColor.withOpacity(opacity);
+    return accentColors.withOpacity(opacity);
   }
 
   Color mainDarkColor(double opacity) {
-    return this._mainDarkColor.withOpacity(opacity);
+    return mainDarkColors.withOpacity(opacity);
   }
 
   Color secondDarkColor(double opacity) {
-    return this._secondDarkColor.withOpacity(opacity);
+    return secondDarkColors.withOpacity(opacity);
   }
   Color accentDarkColor(double opacity) {
-    return this._accentDarkColor.withOpacity(opacity);
+    return accentDarkColors.withOpacity(opacity);
   }
 }
 
@@ -78,4 +81,84 @@ class ColorsLightMode{
   static final backgroundColor = Color(0xFFE7F6F8);
   static final titleColor = Color(0xFF009DB5);
   static final contentColor = Color(0xFF04526B);
+}
+
+
+class MyFont{
+  static style({BuildContext context,TextStyle style,Color color,double fontSize,FontWeight fontWeight}){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return GoogleFonts.robotoCondensed(
+        fontWeight:fontWeight!=null?fontWeight:style.fontWeight,
+        fontSize: scaler.getTextSize(fontSize!=null?fontSize:style.fontSize),
+        color: color!=null?color:style.color,
+
+    );
+    return style.copyWith(fontWeight:style.fontWeight,fontSize: scaler.getTextSize(fontSize),color: color!=null?color:style.color);
+  }
+  static core({
+    BuildContext context,
+    TextStyle themeStyle,
+    String text,
+    double fontSize,
+    TextAlign textAlign = TextAlign.left,
+    int maxLines=2,
+    Color color,
+    FontWeight fontWeight
+  }){
+    return RichText(
+        maxLines: maxLines,
+        textAlign: textAlign,
+        overflow: TextOverflow.ellipsis,
+        softWrap: true,
+        text: TextSpan(
+          text:text,
+          style: style(context: context,style: Theme.of(context).textTheme.headline1,color: color,fontSize: fontSize,fontWeight: fontWeight)
+        )
+    );
+  }
+
+  static title({BuildContext context,TextAlign textAlign = TextAlign.left,String text,int maxLines=10,Color color,double fontSize,FontWeight fontWeight}){
+    return core(
+        context: context,
+        themeStyle:  Theme.of(context).textTheme.headline1,
+        fontSize:fontSize,
+        textAlign: textAlign,
+        maxLines: maxLines,
+        color: color,
+        text: text,
+      fontWeight: fontWeight
+    );
+  }
+  static subtitle({BuildContext context,TextAlign textAlign = TextAlign.left,String text,int maxLines=10,Color color,double fontSize,FontWeight fontWeight=FontWeight.normal}){
+    return core(
+        context: context,
+        themeStyle:  Theme.of(context).textTheme.subtitle1,
+        fontSize:fontSize,
+        textAlign: textAlign,
+        maxLines: maxLines,
+        color: color,
+        text: text,
+        fontWeight: fontWeight
+
+    );
+  }
+
+  static fieldStyle({BuildContext context,Color color,FontWeight fontWeight = FontWeight.w500}){
+    ScreenScaler scaler = ScreenScaler()..init(context);
+    return GoogleFonts.robotoCondensed(
+        fontWeight:fontWeight,
+        fontSize: scaler.getTextSize(11),
+        color: color!=null?color:Theme.of(context).accentColor
+    );
+  }
+}
+
+class ScreenScale{
+  BuildContext context;
+  ScreenScaler scaler;
+
+  ScreenScale(_context){
+    this.context = _context;
+    this.scaler = ScreenScaler()..init(context);
+  }
 }

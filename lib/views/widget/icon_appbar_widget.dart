@@ -34,7 +34,7 @@ class IconAppBarWidget extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                   ),
-                  padding: scaler.getPadding(0.5, 1.5),
+                  padding: scaler.getPadding(0, 1.5),
                   alignment: Alignment.center,
                   child: this.isIcon?Icon(this.icon,color: LightColor.lightblack):WidgetHelper().textQ(this.title,scaler.getTextSize(9),LightColor.mainColor,FontWeight.bold)
               ),

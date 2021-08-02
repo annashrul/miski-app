@@ -2,9 +2,11 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/views/screen/auth/signin_screen.dart';
+import "package:netindo_shop/config/app_config.dart" as config;
 
 typedef void DeleteCode();
 typedef Future<bool> PassCodeVerify(List<int> passcode);
@@ -19,7 +21,7 @@ class SecureCodeHelper extends StatefulWidget {
   final String wrongPassTitle;
   final String wrongPassContent;
   final String wrongPassCancelButtonText;
-  final String bgImage;
+
   final Color numColor;
   final String fingerPrintImage;
   final Color borderColor;
@@ -29,7 +31,7 @@ class SecureCodeHelper extends StatefulWidget {
   final String forgotPin;
   SecureCodeHelper({
     this.onSuccess,
-    this.title,
+    this.title="",
     this.borderColor,
     this.foregroundColor = Colors.transparent,
     this.passLength,
@@ -37,7 +39,6 @@ class SecureCodeHelper extends StatefulWidget {
     this.fingerFunction,
     this.fingerVerify = false,
     this.showFingerPass = false,
-    this.bgImage,
     this.numColor = Colors.grey,
     this.fingerPrintImage,
     this.showWrongPassDialog = false,
@@ -48,7 +49,7 @@ class SecureCodeHelper extends StatefulWidget {
     this.forgotPin,
   })  : assert(title != null),
         assert(passLength <= 8),
-        assert(bgImage != null),
+
         assert(borderColor != null),
         assert(foregroundColor != null),
         assert(passCodeVerify != null),
@@ -88,7 +89,8 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
               });
             });
             if (widget.showWrongPassDialog) {
-              WidgetHelper().notifDialog(context, widget.wrongPassTitle, widget.wrongPassContent, (){Navigator.pop(context);},(){Navigator.pop(context);});
+              WidgetHelper().showFloatingFlushbar(context, "failed", widget.wrongPassContent);
+              // WidgetHelper().notifDialog(context, widget.wrongPassTitle, widget.wrongPassContent, (){Navigator.pop(context);},(){Navigator.pop(context);});
             }
           }
         });
@@ -128,10 +130,10 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
       _fingerPrint();
     });
     final height = MediaQuery.of(context).size.height;
-
+    final scaler = config.ScreenScale(context).scaler;
     return Scaffold(
-      backgroundColor:Colors.white,
       body: Stack(
+        alignment: Alignment.center,
         children: <Widget>[
           Positioned(
               top: -height * .15,
@@ -139,44 +141,18 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
               child: BezierContainer()
           ),
           Container(
+            alignment: Alignment.center,
             height: MediaQuery.of(context).size.height,
-            padding: EdgeInsets.symmetric(horizontal: 20),
+
+            padding: scaler.getPadding(2,4),
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
+                  config.MyFont.title(context: context,text:widget.deskripsi,textAlign: TextAlign.center),
                   SizedBox(
-                    height: Platform.isIOS ? 50 : 50,
-                  ),
-                  Image.asset("assets/img/secure.png",height:70),
-                  // WidgetHelper().textQ(widget.title,18,Colors.black,FontWeight.bold),
-                  SizedBox(
-                    height: Platform.isIOS ? 40 : 15,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          RichText(
-                              overflow: TextOverflow.clip,
-                              softWrap: true,
-                              textAlign: TextAlign.center,
-                              text: TextSpan(
-                                text:widget.deskripsi,
-                                style: TextStyle(fontSize:12,color:SiteConfig().secondColor,fontFamily:SiteConfig().fontStyle,fontWeight:FontWeight.normal),
-                              )
-                          )
-                          // WidgetHelper().textQ(widget.deskripsi,12,Colors.black,FontWeight.bold)
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: Platform.isIOS ? 40 : 15,
+                    height: scaler.getHeight(4),
                   ),
                   CodePanel(
                     codeLength: widget.passLength,
@@ -187,15 +163,7 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
                     fingerVerify: widget.fingerVerify,
                     status: _currentState,
                   ),
-                  widget.showFingerPass ?SizedBox(
-                    height: Platform.isIOS ? 40 : 40,
-                  ):Container(),
-                  widget.showFingerPass ? forgotScreen() :Container(),
-                  widget.showFingerPass ?SizedBox(
-                    height: Platform.isIOS ? 40 : 15,
-                  ):Container(),
                   Container(
-                    // color:Theme.of(context).focusColor.withOpacity(0.1),
                     padding: EdgeInsets.only(left: 0, top: 10),
                     child:
                     NotificationListener<OverscrollIndicatorNotification>(
@@ -251,14 +219,11 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
+                    
                     SizedBox(
-                      height: Platform.isIOS ? 50 : 50,
+                      height: config.ScreenScale(context).scaler.getHeight(5),
                     ),
-                    Image.asset("assets/img/secure.png",height:70),
-                    // WidgetHelper().textQ(widget.title,18,Colors.black,FontWeight.bold),
-                    SizedBox(
-                      height: Platform.isIOS ? 40 : 15,
-                    ),
+                   
                     Padding(
                       padding: EdgeInsets.all(10.0),
                       child: Center(
@@ -374,13 +339,12 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
         height: 50,
         width: 50,
         decoration: BoxDecoration(
-            // borderRadius:  BorderRadius.circular(10.0),
+          border: Border.all(color: config.Colors.secondDarkColors),
           boxShadow: [
             BoxShadow(color: Theme.of(context).hintColor.withOpacity(0.1), offset: Offset(0, 3), blurRadius: 10)
           ],
-            // color: Colors.grey[200],
-            shape: BoxShape.circle,
-            ),
+          shape: BoxShape.circle,
+        ),
         child: Center(
           // child:RichText(overflow: TextOverflow.ellipsis, text: TextSpan(style:TextStyle(fontFamily:'Poppins',fontWeight:FontWeight.bold,color:Colors.black,fontSize: 16), children: [TextSpan(text:number.toString())])),
           child:WidgetHelper().textQ(number.toString(), 16,SiteConfig().mainColor,FontWeight.bold),
@@ -412,7 +376,7 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
 
             ),
         child: Center(
-          child:Icon(Icons.cancel,color: Colors.redAccent),
+          child:Icon(Ionicons.ios_close_circle_outline,color:config.Colors.secondDarkColors,size: config.ScreenScale(context).scaler.getTextSize(15),),
           // child: Text('Ulangi',style:TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(40),color:widget.numColor,fontWeight:FontWeight.bold,fontFamily:ThaibahFont().fontQ)),
         ),
       ),
@@ -445,7 +409,7 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
             borderRadius:  BorderRadius.circular(10.0),
         ),
         child: Center(
-          child:Icon(Icons.backspace,color:Colors.redAccent),
+          child:Icon(Ionicons.ios_backspace,color:config.Colors.secondDarkColors,size: config.ScreenScale(context).scaler.getTextSize(15)),
         ),
       ),
     );
@@ -493,8 +457,7 @@ class CodePanel extends StatelessWidget {
             height: H,
             child: new Container(
               decoration: new BoxDecoration(
-                borderRadius:  BorderRadius.circular(10.0),
-                shape: BoxShape.rectangle,
+                shape: BoxShape.circle,
                 border: new Border.all(color: color, width: 1.0),
                 color: Colors.green.shade500,
               ),
@@ -517,8 +480,7 @@ class CodePanel extends StatelessWidget {
               height: H,
               child: Container(
                 decoration: new BoxDecoration(
-                    borderRadius:  BorderRadius.circular(10.0),
-                    shape: BoxShape.rectangle,
+                    shape: BoxShape.circle,
                     border: new Border.all(color: color, width: 2.0),
                     color: foregroundColor
                 ),
@@ -529,8 +491,7 @@ class CodePanel extends StatelessWidget {
               height: H,
               child: new Container(
                 decoration: new BoxDecoration(
-                  borderRadius:  BorderRadius.circular(10.0),
-                  shape: BoxShape.rectangle,
+                  shape: BoxShape.circle,
                   border: new Border.all(color: color, width: 1.0),
                   color: color,
                 ),

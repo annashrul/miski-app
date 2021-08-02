@@ -1,5 +1,6 @@
 
 import 'package:netindo_shop/config/database_config.dart';
+import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/helper/database_helper.dart';
 
 class UserHelper{
@@ -8,23 +9,24 @@ class UserHelper{
     final countTable = await _helper.queryRowCount(UserQuery.TABLE_NAME);
     if(countTable>0){
       final users = await _helper.getData(UserQuery.TABLE_NAME);
-      if(param=='id'){return users[0]['id'];}
-      if(param=='id_user'){return users[0]['id_user'];}
-      if(param=='nama'){return users[0]['nama'];}
-      if(param=='token'){return users[0]['token'];}
-      if(param=='email'){return users[0]['email'];}
-      if(param=='jenis_kelamin'){return users[0]['jenis_kelamin'];}
-      if(param=='status'){return users[0]['status'];}
-      if(param=='alamat'){return users[0]['alamat'];}
-      if(param=='tgl_ultah'){return users[0]['tgl_ultah'];}
-      if(param=='tlp'){return users[0]['tlp'];}
-      if(param=='foto'){return users[0]['foto'].replaceAll(' ','');}
-      if(param=='biografi'){return users[0]['biografi'];}
-      if(param=='last_login'){return users[0]['last_login'];}
-      if(param=='is_login'){print("return is login");return users[0]['is_login'];}
-      if(param=='onboarding'){return users[0]['onboarding'];}
-      if(param=='exit_app'){return users[0]['exit_app'];}
-      if(param=='onesignal_id'){return users[0]['onesignal_id'];}
+      return users[0][param];
+      if(param==StringConfig.id){return users[0][StringConfig.id];}
+      if(param==StringConfig.id_user){return users[0][StringConfig.id_user];}
+      if(param==StringConfig.nama){return users[0][StringConfig.nama];}
+      if(param==StringConfig.token){return users[0][StringConfig.token];}
+      if(param==StringConfig.email){return users[0][StringConfig.email];}
+      if(param==StringConfig.jenis_kelamin){return users[0][StringConfig.jenis_kelamin];}
+      if(param==StringConfig.status){return users[0][StringConfig.status];}
+      if(param==StringConfig.alamat){return users[0][StringConfig.alamat];}
+      if(param==StringConfig.tgl_ultah){return users[0][StringConfig.tgl_ultah];}
+      if(param==StringConfig.tlp){return users[0][StringConfig.tlp];}
+      if(param==StringConfig.foto){return users[0][StringConfig.foto].replaceAll(' ','');}
+      if(param==StringConfig.biografi){return users[0][StringConfig.biografi];}
+      if(param==StringConfig.last_login){return users[0][StringConfig.last_login];}
+      if(param==StringConfig.is_login){return users[0][StringConfig.is_login];}
+      if(param==StringConfig.onboarding){return users[0][StringConfig.onboarding];}
+      if(param==StringConfig.exit_app){return users[0][StringConfig.exit_app];}
+      if(param==StringConfig.onesignal_id){return users[0][StringConfig.onesignal_id];}
     }
 
 

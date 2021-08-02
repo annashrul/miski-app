@@ -1,46 +1,33 @@
 import 'dart:async';
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:netindo_shop/config/database_config.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:netindo_shop/config/light_color.dart';
 import 'package:netindo_shop/config/site_config.dart';
-import 'package:netindo_shop/helper/database_helper.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
-import 'package:netindo_shop/helper/skeleton_helper.dart';
 import 'package:netindo_shop/helper/user_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/promo/global_promo_model.dart';
 import 'package:netindo_shop/model/tenant/listGroupProductModel.dart';
-import 'package:netindo_shop/model/tenant/listGroupProductModel.dart' as Prefix;
-import 'package:netindo_shop/model/tenant/list_brand_product_model.dart';
 import 'package:netindo_shop/model/tenant/list_category_product_model.dart';
 import 'package:netindo_shop/model/tenant/list_product_tenant_model.dart';
 import 'package:netindo_shop/provider/base_provider.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
-import 'package:netindo_shop/provider/product_provider.dart';
 import 'package:netindo_shop/views/screen/product/cart_screen.dart';
-import 'package:netindo_shop/views/screen/product/detail_product_screen.dart';
-import 'package:netindo_shop/views/screen/product/product_detail_screen.dart';
-import 'package:netindo_shop/views/screen/wrapper_screen.dart';
 import 'package:netindo_shop/views/widget/cart_widget.dart';
 import 'package:netindo_shop/views/widget/choose_widget.dart';
 import 'package:netindo_shop/views/widget/empty_widget.dart';
 import 'package:netindo_shop/views/widget/icon_appbar_widget.dart';
 import 'package:netindo_shop/views/widget/loading_widget.dart';
 import 'package:netindo_shop/views/widget/product/first_product_widget.dart';
-import 'package:netindo_shop/views/widget/product/second_product_widget.dart';
 import 'package:netindo_shop/views/widget/refresh_widget.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sticky_headers/sticky_headers.dart';
-import 'package:async/async.dart' show AsyncMemoizer;
+
+import '../wrapper_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final String id;
@@ -50,7 +37,7 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, WidgetsBindingObserver  {
   final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   GlobalKey key = GlobalKey();
@@ -171,24 +158,27 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
       }
     }
   }
+  bool isFetch=false;
+
   @override
   void initState(){
     // TODO: implement initState
     super.initState();
+    controller = new ScrollController()..addListener(_scrollListener);
     getProduct();
     getGroup();
     getPromo();
     getCategory();
     countCart();
-    controller = new ScrollController()..addListener(_scrollListener);
+
+    WidgetsBinding.instance.addObserver(this);
   }
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     controller.removeListener(_scrollListener);
     super.dispose();
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -219,37 +209,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
           },
         )
       ]),
-      //
-      // appBar: AppBar(
-      //   toolbarHeight: scaler.getHeight(4),
-      //   automaticallyImplyLeading: false,
-      //   title: WidgetHelper().textQ("${widget.nama.toUpperCase()}",  scaler.getTextSize(10),SiteConfig().secondColor,FontWeight.bold),
-      //   actions: <Widget>[
-      //     new CartWidget(
-      //       iconColor: LightColor.lightblack,
-      //       labelColor: totalCart>0?Colors.redAccent:Colors.transparent,
-      //       labelCount: totalCart,
-      //       callback: (){
-      //         if(totalCart>0){
-      //           WidgetHelper().myPushAndLoad(context, CartScreen(idTenant: widget.id), countCart);
-      //         }
-      //       },
-      //     ),
-      //     IconAppBarWidget(
-      //       icon: AntDesign.filter,
-      //       callback: (){
-      //         WidgetHelper().myModal(
-      //           context,
-      //           ModalSearch(idTenant:widget.id,callback:(par){
-      //             setState(() {q=par;});
-      //             isLoading=true;
-      //             getProduct();
-      //           })
-      //         );
-      //       },
-      //     )
-      //   ],
-      // ),
+
       key: _scaffoldKey,
       body: buildContents(context),
       backgroundColor:Colors.white,
@@ -284,7 +244,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
                       children: <Widget>[
                         sliderQ(context),
                         isLoadingCategory?LoadingCategory():Container(
-                          // alignment: Alignment.,
                           height: scaler.getHeight(8.5),
                           child: ListView.builder(
                             shrinkWrap: true,
@@ -496,76 +455,28 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin  
 
 
 class ModalSearch extends StatefulWidget {
-  bool mode;
-  String idTenant;
-  Function(String q) callback;
-  ModalSearch({this.mode,this.idTenant,this.callback});
+  final String idTenant;
+  final Function(String q) callback;
+  ModalSearch({this.idTenant,this.callback});
   @override
   _ModalSearchState createState() => _ModalSearchState();
 }
 
 class _ModalSearchState extends State<ModalSearch> {
-  DatabaseConfig db= DatabaseConfig();
   final qController = TextEditingController();
-  List resProduct=[];
-  List resSearch=[];
-  List resClick=[];
   Future loadData()async{
     widget.callback(qController.text);
-    // if(qController.text!=''){
-    //   var res = await db.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and title LIKE '%${qController.text}%' or deskripsi LIKE '%${qController.text}%'",[widget.idTenant]);
-    //   // var res = await db.readData(ProductQuery.TABLE_NAME, widget.idTenant,colWhere: ['title'],valWhere: ['${qController.text}']);
-    //   setState(() {
-    //     resProduct=res;
-    //   });
-    // }else{
-    //   setState(() {
-    //     resProduct=[];
-    //   });
-    //   loadSearch();
-    // }
-  }
-  Future loadSearch()async{
-    var res = await db.getRow("SELECT * FROM ${SearchingQuery.TABLE_NAME} ORDER BY title DESC");
-    // var res = await db.getData(SearchingQuery.TABLE_NAME,orderBy: 'title');
-    setState(() {
-      resSearch = res;
-    });
-  }
-  Future loadClick()async{
-    var res = await db.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE id_tenant=? and is_click=?",["${widget.idTenant}","true"]);
-    setState(() {
-      resClick=res;
-    });
-  }
-  String idProduct='';
-  Future store()async{
-    if(qController.text!=''){
-      final check = await db.getWhere(SearchingQuery.TABLE_NAME, "id_product","$idProduct", '');
-      if(check.length>0){
-        await db.delete(SearchingQuery.TABLE_NAME,"id_product","$idProduct");
-        await db.insert(SearchingQuery.TABLE_NAME,{"id_product":"${idProduct.toString()}","title":"${qController.text.toString()}"});
-      }
-      else{
-        await db.insert(SearchingQuery.TABLE_NAME,{"id_product":"${idProduct.toString()}","title":"${qController.text.toString()}"});
-      }
-    }
-
-    loadSearch();
-    Navigator.of(context).pop();
-    // WidgetHelper().myPush(context, DetailProducrScreen(id: idProduct));
   }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    loadClick();
-    loadSearch();
   }
   @override
   Widget build(BuildContext context) {
+    ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Container(
-      // height: MediaQuery.of(context).size.height/2.0,
       decoration: BoxDecoration(
           color:Colors.white,
           borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20.0))
@@ -579,36 +490,29 @@ class _ModalSearchState extends State<ModalSearch> {
           Container(
             decoration: BoxDecoration(
               color: Theme.of(context).focusColor.withOpacity(0.1),
-              // color:widget.mode?Theme.of(context).focusColor.withOpacity(0.15):SiteConfig().secondColor,
               boxShadow: [
                 BoxShadow(color: Theme.of(context).hintColor.withOpacity(0.10), offset: Offset(0, -4), blurRadius: 10)
               ],
             ),
             child: TextFormField(
               textInputAction: TextInputAction.search,
-              keyboardType: TextInputType.multiline,
-              cursorColor: Theme.of(context).focusColor.withOpacity(0.8),
               controller: qController,
               autofocus: true,
-              style:TextStyle(color: Colors.black,fontFamily: SiteConfig().fontStyle),
+              style:GoogleFonts.robotoCondensed().copyWith(color:LightColor.black,fontSize: scaler.getTextSize(10)),
               decoration: InputDecoration(
-
                 contentPadding: EdgeInsets.all(20),
                 hintText: 'Tulis sesuatu disini ...',
-                hintStyle: TextStyle(color: Colors.black,fontFamily: SiteConfig().fontStyle),
+                hintStyle:GoogleFonts.robotoCondensed().copyWith(color:LightColor.black,fontSize: scaler.getTextSize(10)),
                 border: UnderlineInputBorder(borderSide: BorderSide.none),
                 enabledBorder: UnderlineInputBorder(borderSide: BorderSide.none),
                 focusedBorder: UnderlineInputBorder(borderSide: BorderSide.none),
                 suffixIcon: IconButton(
                   padding: EdgeInsets.only(right: 30),
                   onPressed: () {
-                    // replyTicket();
-                    // _scrollToBottom();
                     if(qController.text!=''){
-                      setState(() {
-                        qController.text='';
-                      });
+                      qController.text='';
                       loadData();
+                      setState(() {});
                     }
                   },
                   icon: Icon(
@@ -618,168 +522,12 @@ class _ModalSearchState extends State<ModalSearch> {
                   ),
                 ),
               ),
-              onChanged: (e)async{
-                loadData();
-              },
               onFieldSubmitted: (e){
                 widget.callback(qController.text);
-                store();
+                Navigator.pop(context);
               },
             ),
           ),
-          // resProduct.length>0?Expanded(
-          //     flex: 1,
-          //     child: Scrollbar(child: ListView.separated(
-          //         itemBuilder: (context,index){
-          //           return ListTile(
-          //             onTap: ()async{
-          //               setState(() {
-          //                 qController.text = resProduct[index]['title'];
-          //                 idProduct = resProduct[index]['id_product'];
-          //               });
-          //               loadData();
-          //               widget.callback(resProduct[index]['title']);
-          //               store();
-          //
-          //             },
-          //             title: WidgetHelper().textQ("${resProduct[index]['title']}",10,Colors.black87,FontWeight.normal),
-          //           );
-          //         },
-          //         separatorBuilder:(context,index){
-          //           return  Divider(height: 1);
-          //         },
-          //         itemCount: resProduct.length
-          //     ))
-          // ):
-          // (resSearch.length>0?Expanded(
-          //     flex: 1,
-          //     child: ListView.separated(
-          //         itemBuilder: (context,index){
-          //           return ListTile(
-          //             onTap: (){
-          //               setState(() {
-          //                 qController.text = resSearch[index]['title'];
-          //                 idProduct = resSearch[index]['id_product'];
-          //               });
-          //               loadData();
-          //               widget.callback(resSearch[index]['title']);
-          //               store();
-          //             },
-          //             trailing: IconButton(
-          //                 icon: Icon(AntDesign.close,color:Colors.grey),
-          //                 onPressed:()async{
-          //                   await db.delete(SearchingQuery.TABLE_NAME,"id",resSearch[index]['id']);
-          //                   loadSearch();
-          //                 }
-          //             ),
-          //             title: WidgetHelper().textQ("${resSearch[index]['title']}",10,Colors.black87,FontWeight.normal),
-          //           );
-          //         },
-          //         separatorBuilder:(context,index){
-          //           return  Divider(height: 1);
-          //         },
-          //         itemCount: resSearch.length
-          //     )
-          // ):Expanded(
-          //   child: ListView(
-          //     children: [
-          //       EmptyTenant()
-          //     ],
-          //   ),
-          // )),
-          // resClick.length>0?WidgetHelper().titleQ("Barang yang pernah dilihat",param: ""):Container(),
-          // Expanded(
-          //     flex: 13,
-          //     child: ListView.separated(
-          //         itemBuilder: (context,index){
-          //           var val = resClick[index];
-          //           return Padding(
-          //             padding: EdgeInsets.only(bottom: 10.0),
-          //             child: Stack(
-          //               alignment: AlignmentDirectional.topEnd,
-          //               children: [
-          //                 InkWell(
-          //                   onTap: (){
-          //                     WidgetHelper().myPush(context,DetailProducrScreen(id: val['id_product']));
-          //                   },
-          //                   child: Container(
-          //                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 7),
-          //                     decoration: BoxDecoration(
-          //                       color: Theme.of(context).focusColor.withOpacity(0.15),
-          //                       boxShadow: [
-          //                         BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.1), blurRadius: 5, offset: Offset(0, 2)),
-          //                       ],
-          //                       // borderRadius: BorderRadius.circular(10.0)
-          //                     ),
-          //                     child: Row(
-          //                       mainAxisAlignment: MainAxisAlignment.start,
-          //                       children: <Widget>[
-          //                         Hero(
-          //                           tag: "${val['id']}${val['id_product']}${val['id_tenant']}",
-          //                           child: Container(
-          //                             height: 90,
-          //                             width: 90,
-          //                             decoration: BoxDecoration(
-          //                               borderRadius: BorderRadius.all(Radius.circular(5)),
-          //                               image: DecorationImage(image: NetworkImage(val['gambar']), fit: BoxFit.cover),
-          //                             ),
-          //                           ),
-          //                         ),
-          //                         SizedBox(width: 15),
-          //                         Flexible(
-          //                           child: Row(
-          //                             crossAxisAlignment: CrossAxisAlignment.center,
-          //                             children: <Widget>[
-          //                               Expanded(
-          //                                 child: Column(
-          //                                   crossAxisAlignment: CrossAxisAlignment.start,
-          //                                   children: <Widget>[
-          //                                     Stack(
-          //                                       alignment: AlignmentDirectional.topEnd,
-          //                                       children: [
-          //                                         Container(
-          //                                           padding: EdgeInsets.only(right:10.0),
-          //                                           child: WidgetHelper().textQ("${val['tenant']}", 12, SiteConfig().mainColor, FontWeight.normal),
-          //                                         ),
-          //                                         Positioned(
-          //                                           child:Icon(UiIcons.home,color:SiteConfig().mainColor,size: 8),
-          //                                         )
-          //                                       ],
-          //                                     ),
-          //                                     Row(
-          //                                       children: [
-          //                                         Expanded(child: WidgetHelper().textQ("${val['title']}", 12, widget.mode?Colors.white:SiteConfig().darkMode, FontWeight.normal)),
-          //                                         int.parse(val['disc1'])==0?Container():SizedBox(width: 5),
-          //                                         int.parse(val['disc1'])==0?Container():WidgetHelper().textQ("( diskon ${val['disc1']} + ${val['disc2']} )", 10,Colors.grey,FontWeight.normal),
-          //                                       ],
-          //                                     ),
-          //                                     Row(
-          //                                       children: [
-          //                                         WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(val['harga_coret']))}", 10,Colors.green,FontWeight.normal,textDecoration: TextDecoration.lineThrough),
-          //                                         SizedBox(width: 5),
-          //                                         WidgetHelper().textQ("${FunctionHelper().formatter.format(int.parse(val['harga']))}", 12,Colors.green,FontWeight.normal),
-          //                                       ],
-          //                                     ),
-          //                                   ],
-          //                                 ),
-          //                               ),
-          //
-          //                             ],
-          //                           ),
-          //                         )
-          //                       ],
-          //                     ),
-          //                   ),
-          //                 ),
-          //               ],
-          //             ),
-          //           );
-          //         },
-          //         separatorBuilder: (context,index){return Divider(height: 1);},
-          //         itemCount: resClick.length
-          //     )
-          // )
-
         ],
       ),
     );

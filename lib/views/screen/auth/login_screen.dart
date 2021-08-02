@@ -300,6 +300,26 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+  Widget _facebookButton(BuildContext context) {
+    return Container(
+      height: 50,
+      margin: EdgeInsets.symmetric(vertical: 20),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+      ),
+      child: WidgetHelper().myPress((){WidgetHelper().myPush(context,RegisterScreen());},Container(
+        decoration: BoxDecoration(
+          color: SiteConfig().mainDarkColor,
+          borderRadius: BorderRadius.only(
+              bottomRight: Radius.circular(5),
+              topRight: Radius.circular(5)),
+        ),
+        alignment: Alignment.center,
+        child:  WidgetHelper().textQ("Register",14,Colors.white,FontWeight.bold,letterSpacing: 10),
+      )),
+    );
+  }
+
   Widget _submitButton() {
     return WidgetHelper().myPress((){
       // handleGoogle();
@@ -360,25 +380,6 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ],
       ),
-    );
-  }
-  Widget _facebookButton(BuildContext context) {
-    return Container(
-      height: 50,
-      margin: EdgeInsets.symmetric(vertical: 20),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-      ),
-      child: WidgetHelper().myPress((){WidgetHelper().myPush(context,RegisterScreen());},Container(
-        decoration: BoxDecoration(
-          color: SiteConfig().mainDarkColor,
-          borderRadius: BorderRadius.only(
-              bottomRight: Radius.circular(5),
-              topRight: Radius.circular(5)),
-        ),
-        alignment: Alignment.center,
-        child:  WidgetHelper().textQ("Register",14,Colors.white,FontWeight.bold,letterSpacing: 10),
-      )),
     );
   }
   Widget _createAccountLabel() {

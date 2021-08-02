@@ -256,7 +256,7 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                         ),
                         Padding(
                           padding: scaler.getPadding(1,2),
-                          child: WidgetHelper().titleQ(context,"${StringConfig().selesaikanPesananAnda}",color:SiteConfig().secondColor,param: '',callback: (){},icon:AntDesign.shoppingcart),
+                          child: WidgetHelper().titleQ(context,"${StringConfig.selesaikanPesananAnda}",color:SiteConfig().secondColor,param: '',callback: (){},icon:AntDesign.shoppingcart),
                         ),
                         Container(
                           padding: EdgeInsets.only(left:scaler.getHeight(1),right:scaler.getHeight(1),top:0),

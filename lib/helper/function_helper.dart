@@ -21,6 +21,7 @@ import 'package:netindo_shop/model/tenant/list_category_product_model.dart';
 import 'package:netindo_shop/model/tenant/list_product_tenant_model.dart';
 import 'package:netindo_shop/model/tenant/list_tenant_model.dart';
 import 'package:netindo_shop/provider/base_provider.dart';
+import 'package:netindo_shop/provider/handle_http.dart';
 import 'package:netindo_shop/views/screen/auth/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -122,11 +123,10 @@ class FunctionHelper{
     return txt.split('.')[0];
   }
 
-  Future getConfig() async{
-    var res = await BaseProvider().getProvider('auth/config', configAuthModelFromJson);
+  Future getConfig({BuildContext context}) async{
+    var res = await HandleHttp().getProvider('auth/config', configAuthModelFromJson,context: context);
     if(res is ConfigAuthModel){
       ConfigAuthModel result = res;
-      // print("CONFIG $re")
       return result.result.toJson();
     }
   }

@@ -9,7 +9,7 @@ packages:
     source: hosted
     version: "1.0.6"
   async:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: async
       url: "https://pub.dartlang.org"
@@ -106,20 +106,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.3"
-  device_info:
-    dependency: "direct main"
-    description:
-      name: device_info
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.4.2+10"
-  device_info_platform_interface:
-    dependency: transitive
-    description:
-      name: device_info_platform_interface
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.1"
   equatable:
     dependency: transitive
     description:
@@ -623,13 +609,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.0"
-  uni_links:
-    dependency: "direct main"
-    description:
-      name: uni_links
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.2.0"
   uuid:
     dependency: transitive
     description:

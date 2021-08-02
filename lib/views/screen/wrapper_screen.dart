@@ -1,31 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
-import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/user_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/model/tenant/list_tenant_model.dart';
-import 'package:netindo_shop/provider/base_provider.dart';
-import 'package:netindo_shop/views/screen/history/history_transaction_screen.dart';
 import 'package:netindo_shop/views/screen/home/home_screen.dart';
-import 'package:netindo_shop/views/screen/product/favorite_screen.dart';
 import 'package:netindo_shop/views/screen/profile/profile_screen.dart';
 import 'package:netindo_shop/views/screen/ticket/ticket_screen.dart';
-import 'package:netindo_shop/views/widget/cart_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'home/public_home_screen.dart';
 
 class WrapperScreen extends StatefulWidget {
   int currentTab = StringConfig.defaultTab;
   int selectedTab = StringConfig.defaultTab;
   String currentTitle = 'Home';
-  int otherParam=5;
   WrapperScreen({
     Key key,
     this.currentTab,
-    this.otherParam,
   }) : super(key: key);
   @override
   _WrapperScreenState createState() => _WrapperScreenState();
@@ -42,7 +33,6 @@ class _WrapperScreenState extends State<WrapperScreen> {
   Future loadData() async{
     var cek = await FunctionHelper().checkTenant();
     print("tenant");
-
     SharedPreferences sess = await SharedPreferences.getInstance();
     bool isBoolTenant=sess.getBool("isTenant");
     String idt=sess.getString("idTenant");
@@ -51,7 +41,8 @@ class _WrapperScreenState extends State<WrapperScreen> {
       print("CEK STATUS TENANT ${sess.getBool("isTenant")}");
       print("CEK ID TENANT ${sess.getString("idTenant")}");
       currentPage = HomeScreen(id:idt,nama:namat);
-    }else{
+    }
+    else{
       print("CEK STATUS TENANT true");
       print("CEK ID TENANT kosong");
       currentPage = PublicHomeScreen();
@@ -68,7 +59,6 @@ class _WrapperScreenState extends State<WrapperScreen> {
   }
 
 
-
   @override
   initState() {
     super.initState();
@@ -80,16 +70,11 @@ class _WrapperScreenState extends State<WrapperScreen> {
     super.didUpdateWidget(oldWidget);
     loadData();
   }
-
   void _selectTab(int tabItem) {
     setState(() {
       widget.currentTab = tabItem;
       widget.selectedTab = tabItem;
       switch (tabItem) {
-        // case 0:
-        //   widget.currentTitle = 'History';
-        //   currentPage = HistoryTransactionScreen(status:widget.otherParam==null?5:widget.otherParam);
-        //   break;
         case 0:
           widget.currentTitle = 'Account';
           currentPage = ProfileScreen();
@@ -102,10 +87,6 @@ class _WrapperScreenState extends State<WrapperScreen> {
           widget.currentTitle = 'Messages';
           currentPage = TicketScreen();
           break;
-        // case 4:
-        //   widget.currentTitle = 'Favorites';
-        //   currentPage = FavoriteScreen();
-        //   break;
       }
     });
   }
@@ -137,7 +118,7 @@ class _WrapperScreenState extends State<WrapperScreen> {
             ],
           ),
         )
-      ],brightness: Brightness.light),
+      ]),
       body:currentPage,
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
@@ -195,6 +176,5 @@ class _WrapperScreenState extends State<WrapperScreen> {
     );
   }
 }
-
 
 

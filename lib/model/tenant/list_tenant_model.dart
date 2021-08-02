@@ -43,12 +43,12 @@ class Result {
     this.data,
   });
 
-  String total;
-  int lastPage;
-  int perPage;
-  String currentPage;
-  int from;
-  int to;
+  var total;
+  var lastPage;
+  var perPage;
+  var currentPage;
+  var from;
+  var to;
   List<Datum> data;
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(

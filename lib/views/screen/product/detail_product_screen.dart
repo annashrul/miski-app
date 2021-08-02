@@ -377,7 +377,7 @@ class _DetailProducrScreenState extends State<DetailProducrScreen> with SingleTi
               SizedBox(width: scaler.getWidth(2)),
               Container(
                 margin: scaler.getMargin(0,1),
-                child:  WidgetHelper().iconAppbar(context,(){insertFavorite();}, AntDesign.hearto,color: isSelectedFavorite?Colors.redAccent:SiteConfig().secondColor),
+                // child:  WidgetHelper().iconAppbar(context,(){insertFavorite();}, AntDesign.hearto,color: isSelectedFavorite?Colors.redAccent:SiteConfig().secondColor),
               )
             ],
             // backgroundColor: Theme.of(context).primaryColor,
