@@ -9,6 +9,8 @@ import 'package:netindo_shop/pages/component/home/home_component.dart';
 import 'package:netindo_shop/pages/component/main_component.dart';
 import 'package:netindo_shop/pages/component/on_boarding_component.dart';
 import 'package:netindo_shop/pages/component/splash_screen_component.dart';
+import 'file:///E:/NETINDO/netindo_shop/lib/pages/widget/product/detail/detail_product_widget.dart';
+import 'package:netindo_shop/pages/widget/product/cart/cart_widget.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -27,6 +29,10 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => MainComponent(currentTab: args));
       case '/${StringConfig.home}':
         return MaterialPageRoute(builder: (_) => HomeComponent());
+      case '/${StringConfig.detailProduct}':
+        return MaterialPageRoute(builder: (_) => DetailProductWidget(data: args));
+      case '/${StringConfig.cart}':
+        return MaterialPageRoute(builder: (_) => CartWidget());
       // case '/Categories':
       //   return MaterialPageRoute(builder: (_) => CategoriesWidget());
       // case '/Orders':

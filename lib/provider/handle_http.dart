@@ -28,8 +28,8 @@ class HandleHttp{
       };
       final response = await client.get("${SiteConfig().baseUrl}$url", headers:head).timeout(Duration(seconds: SiteConfig().timeout));
       final jsonResponse = json.decode(response.body);
+      print("=================== SUCCESS $url = ${response.statusCode} ==========================");
       if (response.statusCode == 200) {
-        print("=================== SUCCESS $url = ${response.statusCode} ==========================");
         if(jsonResponse['result'].length>0){
           return param(response.body);
         }else{
@@ -53,6 +53,10 @@ class HandleHttp{
           Navigator.pop(context);
         });
       }
+      else if(response.statusCode==404){
+        Navigator.pop(context);
+        return WidgetHelper().showFloatingFlushbar(context, "failed", "terjadi kesalahan url");
+      }
     }on TimeoutException catch (_) {
       print("###################################### GET TimeoutException $url ");
       return Navigator.pushNamed(context, "error");
@@ -61,6 +65,8 @@ class HandleHttp{
       return Navigator.pushNamed(context, "error");
     } on Error catch (e) {
       print("###################################### GET Error $url ");
+      return WidgetHelper().showFloatingFlushbar(context, "failed", StringConfig.errSyntax);
+    } catch(_){
       return WidgetHelper().showFloatingFlushbar(context, "failed", StringConfig.errSyntax);
     }
   }

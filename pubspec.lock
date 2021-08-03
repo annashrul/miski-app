@@ -92,13 +92,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.3"
-  curved_navigation_bar:
-    dependency: "direct main"
-    description:
-      name: curved_navigation_bar
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.3.4"
   datetime_picker_formfield:
     dependency: "direct main"
     description:
@@ -588,13 +581,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.17"
-  timeago:
-    dependency: "direct main"
-    description:
-      name: timeago
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.27"
   touch_ripple_effect:
     dependency: "direct main"
     description:

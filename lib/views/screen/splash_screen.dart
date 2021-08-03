@@ -23,13 +23,12 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   final userHelper=UserHelper();
   final DatabaseConfig _db = new DatabaseConfig();
-  ListTenantModel listTenantModel;
   Future loadData() async{
     var result= await FunctionHelper().getConfig();
-    print('##################### SPLASH SCREEN ${result["multitenant"]} ######################');
+    print('##################### SPLASH SCREEN ${result} ######################');
     SharedPreferences sess = await SharedPreferences.getInstance();
     sess.setBool("isTenant", true);
-    if(result["multitenant"]){
+    if(!result["multitenant"]){
       sess.setString("namaTenant",result["tenant"][["nama"]]);
       sess.setString("idTenant",result["tenant"][["id"]]);
       sess.setBool("isTenant", false);

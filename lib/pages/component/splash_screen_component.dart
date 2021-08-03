@@ -29,11 +29,12 @@ class _SplashScreenComponentState extends State<SplashScreenComponent> {
       print('##################### USER BARU INSTALL APLIKASI ######################');
     }
     else{
-      print('##################### TENANT ${result["multitenant"]} ######################');
+
       sess.setBool(StringConfig.isTenant, true);
-      if(result["multitenant"]){
-        sess.setString(StringConfig.namaTenant,result["tenant"][["nama"]]);
-        sess.setString(StringConfig.idTenant,result["tenant"][["id"]]);
+      if(!result["multitenant"]){
+        print('##################### TENANT ${result} ######################');
+        sess.setString(StringConfig.namaTenant,result["tenant"]["nama"]);
+        sess.setString(StringConfig.idTenant,result["tenant"]["id"]);
         sess.setBool(StringConfig.isTenant, false);
       }
       final onBoarding= await userHelper.getDataUser(StringConfig.onBoarding);

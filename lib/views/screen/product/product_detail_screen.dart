@@ -38,9 +38,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   ReviewModel reviewModel;
   DetailProductTenantModel detailProductTenantModel;
   String image = 'https://onlinewhiskeystore.com/images/default.png';
+  bool isFavorite=false,isShowDesc=false,isLoading=true,isLoadingReview=true;
   List thumbnailList=[];
   List hargaBertingkat=[], varian=[], subVarian=[], review=[];
-  bool isFavorite=false,isShowDesc=false,isLoading=true,isLoadingReview=true;
   int perpageReview=10,_current=0,totalReview=0,totalCart=0,total=0,stock=0,qty=0,hargaFinish=0,hargaWarna=0,hargaUkuran=0,diskon1=0,diskon2=0;
   int selectedVarian=0,selectedSubVarian=0;
   String stockSales='',title,kode,harga,hargaMaster,hargaCoret,rating,deskripsi,idTenant,tenant,warna,ukuran,gambar,idKelompok,kelompok,idVarian,idSubVarian;
@@ -451,7 +451,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           },
         )
       ],param: "default"),
-
       body: SafeArea(
         child: Container(
           decoration: BoxDecoration(

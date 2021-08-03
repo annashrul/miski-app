@@ -6,6 +6,8 @@ class StringConfig{
   static const String signUp = "SignUp";
   static const String main = "Main";
   static const String home = "Home";
+  static const String detailProduct = "DetailProduct";
+  static const String cart = "Cart";
   // ************************ SESSION  ************************ //
   static const String loginType = "loginType";
   static const String isTenant = "isTenant";

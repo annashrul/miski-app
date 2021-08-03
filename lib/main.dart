@@ -1,17 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/site_config.dart';
-import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/route_generator.dart';
 import 'package:netindo_shop/views/screen/splash_screen.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 
-void main(){
+void  main()  {
   runApp( MyApp());
 }
 
@@ -38,8 +35,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp,DeviceOrientation.portraitDown]);
-    TextStyle style = GoogleFonts.robotoCondensed();
-    // ScreenScaler scaler = ScreenScaler()..init(context);
+    TextStyle style = config.MyFont.textStyle;
 
     return MaterialApp(
       title: 'n-shop',
@@ -53,6 +49,8 @@ class _MyAppState extends State<MyApp> {
         accentColor: config.Colors().mainDarkColor(1),
         hintColor: config.Colors().secondDarkColor(1),
         focusColor: config.Colors().accentDarkColor(1),
+        textSelectionColor: Colors.black12,
+        unselectedWidgetColor: Colors.black26,
         textTheme: TextTheme(
           button: style.copyWith(color: Color(0xFF252525)),
           headline1: style.copyWith(fontSize: 10.0, fontWeight: FontWeight.w500,color: config.Colors().secondDarkColor(1)),
@@ -60,7 +58,7 @@ class _MyAppState extends State<MyApp> {
           headline3: style.copyWith(fontSize: 9.0, fontWeight: FontWeight.w400, color: config.Colors().secondDarkColor(1)),
           headline4: style.copyWith(fontSize: 9.0, fontWeight: FontWeight.w300, color: config.Colors().mainDarkColor(1)),
           headline5: style.copyWith(fontSize: 9.0, fontWeight: FontWeight.w200, color: config.Colors().secondDarkColor(1)),
-          subtitle1: style.copyWith(fontSize: 10.0, fontWeight: FontWeight.w600, color: config.Colors().secondDarkColor(1)),
+          subtitle1: style.copyWith(fontSize: 9.0, fontWeight: FontWeight.w600, color: config.Colors().secondDarkColor(1)),
           subtitle2: style.copyWith(fontSize: 9.0, fontWeight: FontWeight.w500, color: config.Colors().mainDarkColor(1)),
           bodyText1: style.copyWith(fontSize: 9.0, color: config.Colors().secondDarkColor(1)),
           bodyText2: style.copyWith(fontSize: 9.0, fontWeight: FontWeight.w600, color: config.Colors().secondDarkColor(1)),
@@ -73,6 +71,8 @@ class _MyAppState extends State<MyApp> {
         accentColor: config.Colors().mainColor(1),
         focusColor: config.Colors().accentColor(1),
         hintColor: config.Colors().secondColor(1),
+        textSelectionColor: Colors.grey[200],
+        unselectedWidgetColor: Colors.grey[300],
         textTheme: TextTheme(
           button: style.copyWith(color: Colors.white),
           headline1: style.copyWith(fontSize: 10.0, fontWeight: FontWeight.w400,color: config.Colors().secondColor(1)),
@@ -80,30 +80,20 @@ class _MyAppState extends State<MyApp> {
           headline3: style.copyWith(fontSize: 9.0, fontWeight: FontWeight.w400, color: config.Colors().secondColor(1)),
           headline4: style.copyWith(fontSize: 9.0, fontWeight: FontWeight.w300, color: config.Colors().mainColor(1)),
           headline5: style.copyWith(fontSize: 9.0, fontWeight: FontWeight.w200, color: config.Colors().secondColor(1)),
-          subtitle1: style.copyWith(fontSize: 10.0, fontWeight: FontWeight.w600, color: config.Colors().secondColor(1)),
+          subtitle1: style.copyWith(fontSize: 9.0, fontWeight: FontWeight.w600, color: config.Colors().secondColor(1)),
           subtitle2: style.copyWith(fontSize: 9.0, fontWeight: FontWeight.w500, color: config.Colors().mainColor(1)),
           bodyText1: style.copyWith(fontSize: 9.0, color: config.Colors().secondColor(1)),
           bodyText2: style.copyWith(fontSize: 9.0, fontWeight: FontWeight.w600, color: config.Colors().secondColor(1)),
           caption: style.copyWith(fontSize: 9.0, color: config.Colors().secondColor(0.7)),
         ),
       ),
-    );
-    return MaterialApp(
-      title:"NSHOP",
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        dialogBackgroundColor: Colors.white,
-        scaffoldBackgroundColor: Colors.white,
-        backgroundColor: Colors.white,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-        fontFamily: SiteConfig().fontStyle,
-        primaryColor: Colors.white,
-        brightness:Brightness.light,
-        accentColor: config.Colors().mainColor(1),
-        focusColor: config.Colors().accentColor(1),
-        hintColor: config.Colors().secondColor(1),
-      ),
-      home:  SplashScreen(),
+      builder: (BuildContext context, Widget child) {
+        final MediaQueryData data = MediaQuery.of(context);
+        return MediaQuery(
+          data: data.copyWith(textScaleFactor: 0.8),
+          child: child,
+        );
+      },
     );
   }
 }

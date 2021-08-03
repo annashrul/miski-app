@@ -242,12 +242,29 @@ class WidgetHelper{
   }
   baseLoading(BuildContext context,Widget widget){
     return Shimmer.fromColors(
-      baseColor: Colors.grey[300],
+      baseColor: Theme.of(context).unselectedWidgetColor,
       highlightColor: Colors.grey[100],
       enabled: true,
       child: widget,
     );
   }
+  shimmer({BuildContext context,double width}){
+    final scaler = config.ScreenScale(context).scaler;
+    return Shimmer.fromColors(
+      baseColor: Theme.of(context).unselectedWidgetColor,
+      highlightColor: Colors.grey[100],
+      enabled: true,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Theme.of(context).textSelectionColor,
+        ),
+        height: scaler.getHeight(1),
+        width: scaler.getWidth(width),
+      ),
+    );
+  }
+
   textQ(String txt,double size,Color color,FontWeight fontWeight,{double letterSpacing=0,TextDecoration textDecoration,TextAlign textAlign = TextAlign.left,int maxLines=2}){
     TextStyle myText = GoogleFonts.robotoCondensed();
     return RichText(
@@ -352,7 +369,6 @@ class WidgetHelper{
       automaticallyImplyLeading: false,
       toolbarHeight: scaler.getHeight(4),
       elevation: 0.0,
-      backgroundColor: brightness.index==1?Colors.white:Color(0xFF2C2C2C), // status bar color
       brightness: brightness,
       title:Row(
         children: [
@@ -361,19 +377,20 @@ class WidgetHelper{
               isRadius: true,
               radius: 100,
               child:Container(
-                padding: scaler.getPadding(0.5, 1),
+                padding: scaler.getPadding(0.5, 2),
                 child: Stack(
                   alignment: AlignmentDirectional.center,
                   children: <Widget>[
                     Container(
                         alignment: Alignment.center,
-                        child: Icon(Entypo.arrow_bold_left,color: LightColor.black)
+                        child: Icon(AntDesign.back,color: Theme.of(context).hintColor)
                     ),
                   ],
                 ),
               )
           ),
-          textQ(title.toUpperCase(),scaler.getTextSize(10),LightColor.black,FontWeight.bold)
+          SizedBox(width: scaler.getWidth(1)),
+          config.MyFont.title(context: context,text:title)
         ],
       ),
       actions:widget,// status bar brightness
@@ -429,7 +446,6 @@ class WidgetHelper{
   }
   myRipple({Widget child,Function callback,bool isRadius=true,double radius=10}){
     return TouchRippleEffect(
-
       backgroundColor: Colors.transparent,
       borderRadius: BorderRadius.circular(isRadius?radius:0),
       rippleColor: Color(0xFFD3D3D3),

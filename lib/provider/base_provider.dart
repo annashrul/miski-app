@@ -115,6 +115,7 @@ class BaseProvider{
     final url ="${SiteConfig().baseUrl}cart/$idTenant";
     final response = await client.get(url, headers: {'Authorization':token,'username': SiteConfig().username, 'password': SiteConfig().password,'myconnection':SiteConfig().connection},).timeout(Duration(seconds: SiteConfig().timeout));
     if (response.statusCode == 200) {
+      print(url);
       return cartModelFromJson(response.body);
     } else {
       throw Exception('Failed to load cart');

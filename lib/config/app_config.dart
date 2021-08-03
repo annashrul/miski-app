@@ -85,15 +85,15 @@ class ColorsLightMode{
 
 
 class MyFont{
-  static style({BuildContext context,TextStyle style,Color color,double fontSize,FontWeight fontWeight}){
+  static TextStyle textStyle = GoogleFonts.poppins();
+  static style({BuildContext context,TextDecoration textDecoration,TextStyle style,Color color,double fontSize,FontWeight fontWeight}){
     ScreenScaler scaler = ScreenScaler()..init(context);
-    return GoogleFonts.robotoCondensed(
-        fontWeight:fontWeight!=null?fontWeight:style.fontWeight,
-        fontSize: scaler.getTextSize(fontSize!=null?fontSize:style.fontSize),
-        color: color!=null?color:style.color,
-
+    return textStyle.copyWith(
+      decoration: textDecoration,
+      fontWeight:fontWeight!=null?fontWeight:style.fontWeight,
+      fontSize: scaler.getTextSize(fontSize!=null?fontSize:style.fontSize),
+      color: color!=null?color:style.color,
     );
-    return style.copyWith(fontWeight:style.fontWeight,fontSize: scaler.getTextSize(fontSize),color: color!=null?color:style.color);
   }
   static core({
     BuildContext context,
@@ -103,6 +103,7 @@ class MyFont{
     TextAlign textAlign = TextAlign.left,
     int maxLines=2,
     Color color,
+    TextDecoration textDecoration,
     FontWeight fontWeight
   }){
     return RichText(
@@ -112,20 +113,28 @@ class MyFont{
         softWrap: true,
         text: TextSpan(
           text:text,
-          style: style(context: context,style: Theme.of(context).textTheme.headline1,color: color,fontSize: fontSize,fontWeight: fontWeight)
+          style: style(
+            context: context,
+            style: Theme.of(context).textTheme.headline1,
+            color: color,
+            fontSize: fontSize,
+            fontWeight: fontWeight,
+            textDecoration: textDecoration
+          )
         )
     );
   }
 
-  static title({BuildContext context,TextAlign textAlign = TextAlign.left,String text,int maxLines=10,Color color,double fontSize,FontWeight fontWeight}){
+  static title({BuildContext context,TextDecoration textDecoration,TextAlign textAlign = TextAlign.left,String text,int maxLines=10,Color color,double fontSize,FontWeight fontWeight}){
     return core(
-        context: context,
-        themeStyle:  Theme.of(context).textTheme.headline1,
-        fontSize:fontSize,
-        textAlign: textAlign,
-        maxLines: maxLines,
-        color: color,
-        text: text,
+      textDecoration: textDecoration,
+      context: context,
+      themeStyle:  Theme.of(context).textTheme.headline1,
+      fontSize:fontSize,
+      textAlign: textAlign,
+      maxLines: maxLines,
+      color: color,
+      text: text,
       fontWeight: fontWeight
     );
   }
@@ -145,11 +154,12 @@ class MyFont{
 
   static fieldStyle({BuildContext context,Color color,FontWeight fontWeight = FontWeight.w500}){
     ScreenScaler scaler = ScreenScaler()..init(context);
-    return GoogleFonts.robotoCondensed(
+    return textStyle.copyWith(
         fontWeight:fontWeight,
         fontSize: scaler.getTextSize(11),
         color: color!=null?color:Theme.of(context).accentColor
     );
+
   }
 }
 
