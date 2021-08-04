@@ -49,8 +49,9 @@ class _MyAppState extends State<MyApp> {
         accentColor: config.Colors().mainDarkColor(1),
         hintColor: config.Colors().secondDarkColor(1),
         focusColor: config.Colors().accentDarkColor(1),
-        textSelectionColor: Colors.black12,
+        textSelectionColor: Color(0xFF252525),
         unselectedWidgetColor: Colors.black26,
+        dialogBackgroundColor: Colors.white,
         textTheme: TextTheme(
           button: style.copyWith(color: Color(0xFF252525)),
           headline1: style.copyWith(fontSize: 10.0, fontWeight: FontWeight.w500,color: config.Colors().secondDarkColor(1)),

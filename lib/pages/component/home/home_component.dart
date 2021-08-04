@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/helper/widget_helper.dart';
+import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/model/slider/ListSliderModel.dart';
 import 'package:netindo_shop/model/tenant/listGroupProductModel.dart';
 import 'package:netindo_shop/model/tenant/list_product_tenant_model.dart';
@@ -10,7 +9,7 @@ import 'package:netindo_shop/pages/widget/product/filter_product_slider_widget.d
 import 'package:netindo_shop/pages/widget/product/product_grid_widget.dart';
 import 'package:netindo_shop/pages/widget/searchbar_widget.dart';
 import 'package:netindo_shop/pages/widget/slider_widget.dart';
-import 'package:netindo_shop/provider/handle_http.dart';
+import 'package:netindo_shop/views/widget/empty_widget.dart';
 import 'package:sticky_headers/sticky_headers/widget.dart';
 
 // ignore: must_be_immutable
@@ -62,7 +61,7 @@ class _HomeComponentState extends State<HomeComponent>{
             dense: true,
             contentPadding: EdgeInsets.all(0),
             leading: Icon(
-              FlutterIcons.heart_outline_mco,
+              UiIcons.heart,
               color: Theme.of(context).hintColor,
             ),
             title:config.MyFont.title(context: context,text: "Recomended for you"),
@@ -77,7 +76,7 @@ class _HomeComponentState extends State<HomeComponent>{
               }),
           content:Container(
             padding: scaler.getPadding(1,2),
-            child:  new StaggeredGridView.countBuilder(
+            child:  widget.product.result.data.length<1?Container(height:scaler.getHeight(30),child:EmptyTenant()):new StaggeredGridView.countBuilder(
               primary: false,
               shrinkWrap: true,
               crossAxisCount: 4,
@@ -91,7 +90,7 @@ class _HomeComponentState extends State<HomeComponent>{
                   productPrice: res.harga,
                   productSales: res.stockSales,
                   productRate: res.rating,
-                  heroTag: 'categorized_products_grid',
+                  heroTag: 'categorized_products_grid_${res.id}',
                   callback: (){
                     widget.callback("norefresh");
                   },

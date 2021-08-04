@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:netindo_shop/config/string_config.dart';
 
 class AppConfig {
   BuildContext _context;
@@ -138,8 +137,9 @@ class MyFont{
       fontWeight: fontWeight
     );
   }
-  static subtitle({BuildContext context,TextAlign textAlign = TextAlign.left,String text,int maxLines=10,Color color,double fontSize,FontWeight fontWeight=FontWeight.normal}){
+  static subtitle({BuildContext context,TextDecoration textDecoration,TextAlign textAlign = TextAlign.left,String text,int maxLines=10,Color color,double fontSize,FontWeight fontWeight=FontWeight.normal}){
     return core(
+        textDecoration: textDecoration,
         context: context,
         themeStyle:  Theme.of(context).textTheme.subtitle1,
         fontSize:fontSize,

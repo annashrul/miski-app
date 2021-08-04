@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
+import 'package:netindo_shop/config/ui_icons.dart';
 
 class BottomBarDetailProductWidget extends StatelessWidget {
-  final Function() callback;
-  BottomBarDetailProductWidget({this.callback});
+  final Function(String type) callback;
+  final bool isFavorite;
+  BottomBarDetailProductWidget({this.callback,this.isFavorite});
   @override
   Widget build(BuildContext context) {
     final scaler = config.ScreenScale(context).scaler;
@@ -20,20 +22,35 @@ class BottomBarDetailProductWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           FlatButton(
-              onPressed: () {},
-              padding:scaler.getPadding(0.5,0),
-              color: Theme.of(context).accentColor,
-              shape: StadiumBorder(),
-              child: Icon(
-                FlutterIcons.heart_circle_outline_mco,
-                color: Theme.of(context).primaryColor,
-                size: scaler.getTextSize(14)
-              )),
+            padding:scaler.getPadding(0.5,0),
+            onPressed: () {
+              callback("favorite");
+            },
+            color: Theme.of(context).accentColor,
+            shape: StadiumBorder(),
+            child: Container(
+              width: scaler.getWidth(10),
+              padding:scaler.getPaddingLTRB(2,0,2,0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Expanded(
+                    child: Icon(
+                      UiIcons.heart,
+                      color: isFavorite?Colors.red:Theme.of(context).primaryColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
           SizedBox(width: 10),
           FlatButton(
             padding:scaler.getPadding(0.5,0),
             onPressed: () {
-              callback();
+              callback("cart");
             },
             color: Theme.of(context).accentColor,
             shape: StadiumBorder(),
@@ -47,7 +64,7 @@ class BottomBarDetailProductWidget extends StatelessWidget {
                   Expanded(
                     child: config.MyFont.title(context: context,text:"Add to cart",color: Theme.of(context).primaryColor),
                   ),
-                  Icon(FlutterIcons.plus_circle_outline_mco,color: Theme.of(context).primaryColor,size: scaler.getTextSize(14),),
+                  Icon(FlutterIcons.plus_circle_outline_mco,color: Theme.of(context).primaryColor,size: scaler.getTextSize(13),),
                 ],
               ),
             ),

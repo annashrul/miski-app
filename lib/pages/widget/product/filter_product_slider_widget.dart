@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
+import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 
 // ignore: must_be_immutable
@@ -10,7 +10,7 @@ class FilterProductSliderWidget extends StatefulWidget {
   String heroTag;
   ValueChanged<String> onChanged;
 
-  FilterProductSliderWidget({Key key, this.data, this.heroTag, this.onChanged}) : super(key: key);
+  FilterProductSliderWidget({this.data, this.heroTag, this.onChanged});
   @override
   _FilterProductSliderWidgetState createState() => _FilterProductSliderWidgetState();
 }
@@ -34,7 +34,7 @@ class _FilterProductSliderWidgetState extends State<FilterProductSliderWidget> {
                 Navigator.of(context).pushNamed('/Categories');
               },
               icon: Icon(
-                FlutterIcons.format_list_bulleted_mco,
+                UiIcons.settings_2,
                 size: 28,
                 color: Theme.of(context).primaryColor,
               ),
@@ -86,7 +86,7 @@ class CategoryIconWidget extends StatefulWidget {
   String heroTag;
   double marginLeft;
   ValueChanged<String> onPressed;
-  CategoryIconWidget({Key key, this.data, this.heroTag, this.marginLeft, this.onPressed}) : super(key: key);
+  CategoryIconWidget({Key key, this.data, this.heroTag, this.marginLeft, this.onPressed}) ;
   @override
   _CategoryIconWidgetState createState() => _CategoryIconWidgetState();
 }

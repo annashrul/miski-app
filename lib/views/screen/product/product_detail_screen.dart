@@ -194,9 +194,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         isFavorite=true;
       });
       print("insert");
-    }else{
+    }
+    else{
       await _helper.delete(ProductQuery.TABLE_NAME, "id_product", widget.id);
-      // await _helper.updateData(ProductQuery.TABLE_NAME,"is_favorite","false", idTenant, widget.id);
       setState(() {
         isFavorite=false;
       });

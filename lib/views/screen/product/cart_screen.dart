@@ -187,7 +187,7 @@ class _CartScreenState extends State<CartScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
-                  isLoading?LoadingCart(total: 2):cartModel.result.length>0?Padding(
+                  isLoading?LoadingCart(total: 6):cartModel.result.length>0?Padding(
                     padding: scaler.getPadding(0.5,2),
                     child: ListView.separated(
                       padding: EdgeInsets.all(0),
@@ -277,7 +277,6 @@ class _CartScreenState extends State<CartScreen> {
     ScreenScaler scaler = ScreenScaler()..init(context);
     int anying=int.parse(qty);
     return Container(
-
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [

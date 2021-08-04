@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/string_config.dart';
-import 'package:netindo_shop/helper/function_helper.dart';
+import 'package:netindo_shop/config/ui_icons.dart';
+import 'package:netindo_shop/helper/detail/function_detail.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/model/cart/detail_cart_model.dart';
 import 'package:netindo_shop/model/tenant/detail_product_tenant_model.dart';
 import 'package:netindo_shop/pages/widget/product/detail/bottom_bar_detail_product_widget.dart';
 import 'package:netindo_shop/pages/widget/product/detail/tab_detail_product_widget.dart';
-import 'package:netindo_shop/provider/base_provider.dart';
-import 'package:netindo_shop/provider/handle_http.dart';
 
 class DetailProductWidget extends StatefulWidget {
   final dynamic data;
@@ -23,86 +19,46 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
   TabController _tabController;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   DetailProductTenantModel detail;
-  int _tabIndex = 0,qty=0,hargaFinish=0,hargaUkuran=0,hargaWarna=0,totalCart=0,total=0;
+  int _tabIndex = 0,qty=0,hargaFinish=0,hargaUkuran=0,hargaWarna=0,totalCart=0,total=0,harga=0;
   String idVarian="",idSubVarian="",hargaMaster="0";
-  bool isLoadingDetail=true;
+  bool isLoadingDetail=true,isFavorite=false;
+  dynamic dataDetail;
   Future loadDetail()async{
-    final res = await HandleHttp().getProvider("barang/${widget.data["id"]}", detailProductTenantModelFromJson,context: context);
-    if(res!=null){
-      DetailProductTenantModel result=DetailProductTenantModel.fromJson(res.toJson());
-      if(int.parse(result.result.disc1)>0){
-        setState(() {
-          result.result.harga = FunctionHelper().double_diskon(result.result.harga, ['${result.result.disc1.toString()}','${result.result.disc2.toString()}']).toString();
-          hargaFinish = FunctionHelper().double_diskon(result.result.harga, ['${result.result.disc1.toString()}','${result.result.disc2.toString()}']);
-          hargaMaster = FunctionHelper().double_diskon(result.result.harga, ['${result.result.disc1.toString()}','${result.result.disc2.toString()}']).toString();
-        });
-      }
-      hargaMaster = result.result.harga;
-      hargaFinish = int.parse(result.result.harga);
-      isLoadingDetail=false;
-      detail = result;
-      getCountCart();
-      if(this.mounted) setState(() {});
-    }
+    final funcData = await FunctionDetail().loadDetail(context: context,idProduct: "aa97f829-4301-4639-a253-4e241da2f5e2");
+    dataDetail = funcData["data"];
+    qty = funcData["data"]["qty"];
+    harga = int.parse(funcData["data"]["harga"]);
+    hargaMaster=funcData["data"]["harga_master"];
+    hargaFinish=funcData["data"]["harga_finish"];
+    totalCart = funcData["data"]["total_cart"];
+    isFavorite = await FunctionDetail().handleFavorite(context: context,data: dataDetail,method: "get");
+    isLoadingDetail=false;
+    if(this.mounted) setState(() {});
+
   }
   Future handleCart()async{
-    final res = detail.result;
-    if(int.parse(res.stock)<1){
-      WidgetHelper().showFloatingFlushbar(context,"failed","maaf stock barang kosong");
-      return;
-    }
-    else{
-      if(this.mounted) setState(() {qty+=1;});
-      checkingPrice(
-        res.idTenant,
-        widget.data["id"],
-        res.kode,
-        idVarian,
-        idSubVarian,
-        qty,
-        res.harga,
-        res.disc1,
-        res.disc2,
-        res.hargaBertingkat.length>0?true:false,
-        hargaMaster,
-        hargaWarna,
-        hargaUkuran
-      );
-    }
+    if(this.mounted) setState(() {qty+=1;});
+    dynamic data = dataDetail;
+    data["qty"] = qty;
+    data["harga_finish"] =hargaFinish;
+    data["harga_master"] =hargaMaster;
+    data["harga_warna"] =hargaWarna;
+    data["harga_ukuran"] =hargaUkuran;
+    final res = await FunctionDetail().addToCart(context: context,data: data);
+    totalCart = res["totalCart"];
+    print("total cart $totalCart");
+    if(this.mounted) setState(() {});
   }
-  Future checkingPrice(idTenant,id,kode,idVarian,idSubVarian,qty,price,disc1,disc2,bool isTrue,hargaMaster, hargaVarian, hargaSubVarian)async{
-    WidgetHelper().loadingDialog(context,title: 'pengecekan harga bertingkat');
-    var res = await FunctionHelper().checkingPriceComplex(idTenant, id, kode, idVarian, idSubVarian, qty.toString(), price.toString(), disc1.toString(), disc2.toString(), isTrue, hargaMaster.toString(), hargaVarian.toString(), hargaSubVarian.toString());
-    Navigator.pop(context);
-    int hrg = 0;
-    res.forEach((element) {hrg = int.parse(element['harga']);});
-    getSubTotal();
-    final resCart = await BaseProvider().getCart(idTenant);
+
+  Future handleFavorite()async{
+    final res = await FunctionDetail().handleFavorite(context: context,data: dataDetail);
     if(this.mounted){
       setState(() {
-        detail.result.harga = hrg.toString();
-        hargaFinish = hrg;
-        totalCart = resCart.result.length;
+        isFavorite=res;
       });
     }
   }
-  Future getSubTotal()async{
-    await getQty();
-    if(this.mounted) setState(() {total = qty>1?qty*(hargaFinish+hargaWarna+hargaUkuran):hargaFinish+hargaWarna+hargaUkuran;});
-  }
-  Future getQty()async{
-    var res = await HandleHttp().getProvider('cart/detail/${detail.result.idTenant}/${widget.data["id"]}', detailCartModelFromJson,context: context);
-    if(res is DetailCartModel){
-      DetailCartModel result = res;
-      if(this.mounted) setState(() {qty = int.parse(result.result.qty);});
-    }
-  }
-  Future getCountCart() async{
-    final res = await BaseProvider().getCart(detail.result.idTenant);
-    print(res.result.length);
-    if(this.mounted) setState(() {totalCart = res.result.length;});
-    getSubTotal();
-  }
+
   @override
   void initState() {
     _tabController = TabController(length: 3, initialIndex: _tabIndex, vsync: this);
@@ -110,7 +66,6 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
     loadDetail();
     super.initState();
   }
-
   void dispose() {
     _tabController.dispose();
     super.dispose();
@@ -123,33 +78,40 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     final scaler = config.ScreenScale(context).scaler;
     return Scaffold(
       key: _scaffoldKey,
-      bottomNavigationBar: BottomBarDetailProductWidget(callback: (){
-        handleCart();
-      }),
+      bottomNavigationBar: BottomBarDetailProductWidget(callback: (res){
+        if(res=="cart"){
+          handleCart();
+        }else{
+          handleFavorite();
+        }
+      },isFavorite: isFavorite,),
       body: CustomScrollView(slivers: <Widget>[
         SliverAppBar(
           floating: true,
           automaticallyImplyLeading: false,
           leading: new IconButton(
-            icon: new Icon(AntDesign.back, color: Theme.of(context).hintColor),
-            onPressed: () => Navigator.of(context).pop()
+              icon: new Icon(UiIcons.return_icon, color: Theme.of(context).hintColor),
+              onPressed: () => Navigator.of(context).pop()
           ),
           actions: <Widget>[
-            WidgetHelper().iconAppBarBadges(context: context,icon:FlutterIcons.cart_outline_mco,isActive:true,callback: (){
-              Navigator.of(context).pushNamed('/${StringConfig.cart}').whenComplete((){
-                getCountCart();
-              });
+            WidgetHelper().iconAppBarBadges(context: context,icon:UiIcons.shopping_cart,isActive:totalCart>0,callback: (){
+              if(totalCart>0){
+                Navigator.of(context).pushNamed('/${StringConfig.cart}').whenComplete(()async{
+                  print("BACK TO DATA DETAIL $dataDetail");
+                  final getCountCart = await FunctionDetail().getCountCart(dataDetail);
+                  totalCart = getCountCart["totalCart"];
+                  if(this.mounted)setState(() {});
+                });
+              }
             }),
             Container(
-              padding: scaler.getPaddingLTRB(0,0,2,0),
-              alignment: Alignment.center,
+                padding: scaler.getPaddingLTRB(0,0,2,0),
+                alignment: Alignment.center,
                 child: WidgetHelper().myRipple(
                   isRadius: true,
                   radius: 300,
@@ -171,7 +133,7 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
           flexibleSpace: FlexibleSpaceBar(
             collapseMode: CollapseMode.parallax,
             background: Hero(
-              tag:widget.data["heroTag"] + widget.data["id"],
+              tag:"cart",
               child: Stack(
                 fit: StackFit.expand,
                 children: <Widget>[
@@ -181,7 +143,7 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         fit: BoxFit.cover,
-                        image:NetworkImage(widget.data["image"]),
+                        image:NetworkImage(StringConfig.noImage),
                       ),
                     ),
                   ),
@@ -223,7 +185,7 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
               offstage: 0 != _tabIndex,
               child: Column(
                 children: <Widget>[
-                  TabProductWidget(detailProductTenantModel: detail,isLoading: isLoadingDetail)
+                  TabProductWidget(data: dataDetail,isLoading: isLoadingDetail)
                 ],
               ),
             ),
@@ -231,9 +193,7 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
               offstage: 1 != _tabIndex,
               child: Column(
                 children: <Widget>[
-                  // ProductDetailsTabWidget(
-                  //   product: widget._product,
-                  // )
+                  TabDescProductWidget(data: dataDetail,isLoading: isLoadingDetail)
                 ],
               ),
             ),
@@ -242,17 +202,18 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
               child: Column(
                 children: <Widget>[
                   Padding(
-                    padding: scaler.getPadding(1,2),
+                    padding: scaler.getPadding(0,2),
                     child: ListTile(
-                      dense: true,
-                      contentPadding: EdgeInsets.all(0),
-                      leading: Icon(
-                        FlutterIcons.star_box_outline_mco,
-                        color: Theme.of(context).hintColor,
-                      ),
-                      title:config.MyFont.title(context: context,text:"Product reviews")
+                        dense: true,
+                        contentPadding: EdgeInsets.all(0),
+                        leading: Icon(
+                          UiIcons.chat_1,
+                          color: Theme.of(context).hintColor,
+                        ),
+                        title:config.MyFont.title(context: context,text:"Product reviews")
                     ),
                   ),
+                  TabReviewProductWidget(data:dataDetail,isLoading: isLoadingDetail,)
                   // ReviewsListWidget()
                 ],
               ),
@@ -264,6 +225,7 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
   }
 
 
+
   Widget buttonTabs({BuildContext context,String title}){
     final scaler = config.ScreenScale(context).scaler;
     return Container(
@@ -272,15 +234,14 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
           borderRadius: BorderRadius.circular(50),
           border: Border.all(color: Theme.of(context).accentColor.withOpacity(0.2), width: 1)),
       child: Align(
-        alignment: Alignment.center,
-        child:Text(
-          title,
-          style: config.MyFont.textStyle.copyWith(fontSize: scaler.getTextSize(11))
-        )
+          alignment: Alignment.center,
+          child:Text(
+              title,
+              style: config.MyFont.textStyle.copyWith(fontSize: scaler.getTextSize(11))
+          )
       ),
     );
   }
-
 
 
 }

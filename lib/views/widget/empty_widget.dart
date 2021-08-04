@@ -147,10 +147,16 @@ class _EmptyDataWidgetState extends State<EmptyDataWidget> {
           SizedBox(height: 15),
           Opacity(
             opacity: 0.4,
-            child:WidgetHelper().textQ(widget.title,14,SiteConfig().darkMode,FontWeight.normal,textAlign: TextAlign.center),
+            child:config.MyFont.title(context:context, text:widget.title,),
           ),
           widget.isFunction?SizedBox(height: 50):Container(),
-          widget.isFunction?WidgetHelper().buttonQ(context,widget.callback,"Mulai Belanja"):Container(),
+          if(widget.isFunction)FlatButton(
+            onPressed: widget.callback,
+            padding: EdgeInsets.symmetric(vertical: 12, horizontal: 30),
+            color: Theme.of(context).focusColor.withOpacity(0.15),
+            shape: StadiumBorder(),
+            child: config.MyFont.title(context:context, text:widget.txtFunction),
+          ),
         ],
       ),
     );

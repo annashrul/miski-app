@@ -7,6 +7,13 @@ class StringConfig{
   static const String main = "Main";
   static const String home = "Home";
   static const String detailProduct = "DetailProduct";
+  static const String checkout = "Checkout";
+  static const String successCheckout = "SuccessCheckout";
+  static const String historyOrder = "HistoryOrder";
+  static const String detailHistoryOrder = "DetailHistoryOrder";
+  static const String trackingOrder = "TrackingOrder";
+  static const String address = "Address";
+
   static const String cart = "Cart";
   // ************************ SESSION  ************************ //
   static const String loginType = "loginType";
@@ -32,6 +39,10 @@ class StringConfig{
   static const String onesignal_id = "onesignal_id";
 
   // ************************ GENERAL  ************************ //
+  static final userImage = localAssets+"user2.jpg";
+  static const version = "0.0.1";
+  static const String noImage        = 'https://upload.wikimedia.org/wikipedia/commons/0/0a/No-image-available.png';
+  static const String localAssets    = 'assets/img/';
   static const  String lihatSemuaPromo = 'lihat semua promo >>';
   static const  String selesaikanPesananAnda = 'Selesaikan Pesanan Anda';
   static const String lorem = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.";

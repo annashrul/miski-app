@@ -80,6 +80,9 @@ flutter:
     - assets/
     - img/
   fonts:
+    - family:  EcommerceAppUI
+      fonts:
+        - asset: fonts/EcommerceAppUI.ttf
     - family: Roboto-Light
       fonts:
         - asset: fonts/Roboto-Light.ttf

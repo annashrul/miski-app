@@ -38,20 +38,17 @@ class HandleHttp{
         }
       }
       else if(response.statusCode == 400){
-        print(jsonResponse['msg']);
         if(jsonResponse['msg']=='Invalid Token.'){
-          if(context==null){
-            return SiteConfig().errExpToken;
-          }else{
-            return WidgetHelper().notifOneBtnDialog(context,SiteConfig().titleErrToken,SiteConfig().descErrToken,()async{
-              Navigator.pop(context);
-              await FunctionHelper().logout(context);
-            });
-          }
+          return WidgetHelper().notifOneBtnDialog(context,SiteConfig().titleErrToken,SiteConfig().descErrToken,()async{
+            Navigator.pop(context);
+            await FunctionHelper().logout(context);
+          });
         }
-        return WidgetHelper().notifOneBtnDialog(context,"Informasi",jsonResponse['msg'],()async{
-          Navigator.pop(context);
-        });
+        if(context!=null){
+          return WidgetHelper().notifOneBtnDialog(context,"Informasi",jsonResponse['msg'],()async{
+            Navigator.pop(context);
+          });
+        }
       }
       else if(response.statusCode==404){
         Navigator.pop(context);
@@ -168,6 +165,9 @@ class HandleHttp{
         headers: head,
       ).timeout(Duration(seconds: SiteConfig().timeout));
       if(request.statusCode==200){
+        Navigator.pop(context);
+        final jsonResponse = json.decode(request.body);
+        WidgetHelper().showFloatingFlushbar(context, "success","data berhasil dihapus");
         return param(request.body);
       }
       else if(request.statusCode==400){

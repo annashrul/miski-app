@@ -1,10 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/string_config.dart';
+import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/home/function_home.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
@@ -15,8 +14,8 @@ import 'package:netindo_shop/pages/component/favorite/favorite_component.dart';
 import 'package:netindo_shop/pages/component/home/home_component.dart';
 import 'package:netindo_shop/pages/component/notification/notification_component.dart';
 import 'package:netindo_shop/pages/component/profile/profile_component.dart';
+import 'package:netindo_shop/pages/widget/drawer_widget.dart';
 import 'package:netindo_shop/provider/base_provider.dart';
-import 'package:netindo_shop/provider/handle_http.dart';
 
 // ignore: must_be_immutable
 class MainComponent extends StatefulWidget {
@@ -41,19 +40,21 @@ class _MainComponentState extends State<MainComponent> {
   List resKelompok=[];
   bool isLoadingProduct=true,isLoadingGroup=true,isLoadingSlider=true;
   callHome(product,kelompok,slider){
-    widget.currentPage = HomeComponent(
-        callback: (id){
-          if(id=="norefresh"){
-            loadCart();
-            return;
-          }
-          loadDataHome(id);
-          setState(() {});
-        },
-        product: product,
-        kelompok:kelompok,
-        slider:slider
-    );
+    if(widget.currentTab==2){
+      widget.currentPage = HomeComponent(
+          callback: (id){
+            if(id=="norefresh"){
+              loadCart();
+              return;
+            }
+            loadDataHome(id);
+            setState(() {});
+          },
+          product: product,
+          kelompok:kelompok,
+          slider:slider
+      );
+    }
   }
   Future loadDataHome(kelompok)async{
     if(kelompok!=""){
@@ -84,14 +85,20 @@ class _MainComponentState extends State<MainComponent> {
   initState() {
     _selectTab(widget.currentTab);
     super.initState();
-    loadDataHome('');
+    if(widget.currentTab==2){
+      loadDataHome('');
+    }
+    else{
+      isLoadingProduct=false;
+      isLoadingGroup=false;
+      isLoadingSlider=false;
+    }
   }
 
   @override
   void didUpdateWidget(MainComponent oldWidget) {
     _selectTab(oldWidget.currentTab);
     super.didUpdateWidget(oldWidget);
-
   }
 
   Future loadCart()async{
@@ -105,7 +112,6 @@ class _MainComponentState extends State<MainComponent> {
   }
 
   void _selectTab(int tabItem) {
-    loadCart();
     setState(() {
       widget.currentTab = tabItem;
       widget.selectedTab = tabItem;
@@ -119,6 +125,7 @@ class _MainComponentState extends State<MainComponent> {
           widget.currentPage = ProfileComponent();
           break;
         case 2:
+          loadCart();
           widget.currentTitle = 'Home';
           callHome(listProductTenantModel,resKelompok,listSliderModel);
           break;
@@ -127,7 +134,7 @@ class _MainComponentState extends State<MainComponent> {
           widget.currentPage = ChatComponent();
           break;
         case 4:
-          widget.currentTitle = 'Favorites';
+          widget.currentTitle = 'Wish list';
           widget.currentPage = FavoriteComponent();
           break;
       }
@@ -139,20 +146,24 @@ class _MainComponentState extends State<MainComponent> {
     final scaler = config.ScreenScale(context).scaler;
     return Scaffold(
       key: _scaffoldKey,
+      drawer: DrawerWidget(),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         leading: new IconButton(
-          icon: new Icon(FlutterIcons.ios_menu_ion, color: Theme.of(context).hintColor),
+          icon: new Icon(Icons.sort, color: Theme.of(context).hintColor),
           onPressed: () => _scaffoldKey.currentState.openDrawer(),
         ),
+
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: config.MyFont.title(context: context,text: widget.currentTitle),
         actions: [
-          WidgetHelper().iconAppBarBadges(context: context,icon:FlutterIcons.cart_outline_mco,isActive: totalCart>0,callback: (){
-            Navigator.of(context).pushNamed("/${StringConfig.cart}").whenComplete((){
-              loadCart();
-            });
+          WidgetHelper().iconAppBarBadges(context: context,icon:UiIcons.shopping_cart,isActive: totalCart>0,callback: (){
+            if(totalCart>0){
+              Navigator.of(context).pushNamed("/${StringConfig.cart}").whenComplete((){
+                loadCart();
+              });
+            }
           }),
         ],
       ),
@@ -174,11 +185,11 @@ class _MainComponentState extends State<MainComponent> {
         // this will be set when a new tab is tapped
         items: [
           BottomNavigationBarItem(
-            icon: Icon(FlutterIcons.bell_circle_outline_mco),
+            icon: Icon(UiIcons.bell),
             title: new Container(height: 0.0),
           ),
           BottomNavigationBarItem(
-            icon: Icon(FlutterIcons.account_circle_outline_mco),
+            icon: Icon(UiIcons.user_1),
             title: new Container(height: 0.0),
           ),
           BottomNavigationBarItem(
@@ -196,14 +207,14 @@ class _MainComponentState extends State<MainComponent> {
                         color: Theme.of(context).accentColor.withOpacity(0.4), blurRadius: 13, offset: Offset(0, 3))
                   ],
                 ),
-                child: new Icon(FlutterIcons.home_outline_mco, color:config.Colors.secondDarkColors),
+                child: new Icon(UiIcons.home, color:config.Colors.secondDarkColors),
               )),
           BottomNavigationBarItem(
-            icon: new Icon(FlutterIcons.message_circle_fea),
+            icon: new Icon(UiIcons.chat),
             title: new Container(height: 0.0),
           ),
           BottomNavigationBarItem(
-            icon: new Icon(FlutterIcons.heart_circle_outline_mco),
+            icon: new Icon(UiIcons.heart),
             title: new Container(height: 0.0),
           ),
         ],

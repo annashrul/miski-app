@@ -1,13 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/helper/database_helper.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/user_helper.dart';
-import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/pages/component/on_boarding_component.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreenComponent extends StatefulWidget {

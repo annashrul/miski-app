@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:animated_widgets/widgets/rotation_animated.dart';
 import 'package:animated_widgets/widgets/scale_animated.dart';
 import 'package:animated_widgets/widgets/shake_animated_widget.dart';
@@ -16,6 +15,7 @@ import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/light_color.dart';
 import 'package:netindo_shop/config/site_config.dart';
+import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/screen_util_helper.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:touch_ripple_effect/touch_ripple_effect.dart';
@@ -154,7 +154,7 @@ class WidgetHelper{
       duration: Duration(seconds: 3),
       leftBarIndicatorColor: param=='success'?Colors.blue[300]:Colors.red[300],
       dismissDirection: FlushbarDismissDirection.HORIZONTAL,
-      messageText: config.MyFont.title(context: context,text:desc,color: config.Colors.secondDarkColors),
+      messageText: config.MyFont.title(context: context,text:desc,color: config.Colors.secondDarkColors,fontSize: 8),
 
     )..show(context);
   }
@@ -248,7 +248,7 @@ class WidgetHelper{
       child: widget,
     );
   }
-  shimmer({BuildContext context,double width}){
+  shimmer({BuildContext context,double width,double height=1}){
     final scaler = config.ScreenScale(context).scaler;
     return Shimmer.fromColors(
       baseColor: Theme.of(context).unselectedWidgetColor,
@@ -259,7 +259,7 @@ class WidgetHelper{
           borderRadius: BorderRadius.circular(10),
           color: Theme.of(context).textSelectionColor,
         ),
-        height: scaler.getHeight(1),
+        height: scaler.getHeight(height),
         width: scaler.getWidth(width),
       ),
     );
@@ -313,17 +313,17 @@ class WidgetHelper{
         builder: (BuildContext context) {
           return Center(
             child: AlertDialog(
-              title:textQ(title,14,Colors.black,FontWeight.bold),
-              content:textQ(desc,12,Colors.black,FontWeight.bold),
-              // content:RichText(overflow: TextOverflow.ellipsis, text: TextSpan(style: Theme.of(context).textTheme.caption, children: [TextSpan(text:widget.wrongPassContent),],),),
+              title:config.MyFont.title(context: context,text:title,color:config.Colors.mainColors),
+              content:config.MyFont.title(context: context,text:desc,color:Colors.black,fontSize: 9),
               actions: <Widget>[
                 FlatButton(
                   onPressed:callback1,
-                  child:textQ(titleBtn1,12,Colors.black,FontWeight.bold),
+                  child:config.MyFont.title(context: context,text:titleBtn1,color:config.Colors.mainColors)
+                  // child:textQ(titleBtn1,12,Colors.black,FontWeight.bold),
                 ),
                 FlatButton(
                   onPressed:callback2,
-                  child:textQ(titleBtn2,12,Colors.black,FontWeight.bold),
+                    child:config.MyFont.title(context: context,text:titleBtn2,color:config.Colors.mainColors)
                 )
               ],
             ),
@@ -383,7 +383,7 @@ class WidgetHelper{
                   children: <Widget>[
                     Container(
                         alignment: Alignment.center,
-                        child: Icon(AntDesign.back,color: Theme.of(context).hintColor)
+                        child: Icon(UiIcons.return_icon,color: Theme.of(context).hintColor)
                     ),
                   ],
                 ),
@@ -500,7 +500,7 @@ class WidgetHelper{
   iconAppbar({BuildContext context,Function callback,IconData icon,String title=''}){
     ScreenScaler scaler = ScreenScaler()..init(context);
     return Container(
-      margin: scaler.getMarginLTRB(0, 0, 1, 0),
+      margin: scaler.getMarginLTRB(0, 0, 0, 0),
       child: WidgetHelper().myRipple(
           isRadius: true,
           radius: 100,
