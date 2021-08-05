@@ -254,10 +254,10 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
                           padding: EdgeInsets.only(left:scaler.getHeight(1),right:scaler.getHeight(1),top:0),
                           child: isLoading?LoadingTenant():tenantServer(),
                         ),
-                        Padding(
-                          padding: scaler.getPadding(1,2),
-                          child: WidgetHelper().titleQ(context,"${StringConfig.selesaikanPesananAnda}",color:SiteConfig().secondColor,param: '',callback: (){},icon:AntDesign.shoppingcart),
-                        ),
+                        // Padding(
+                        //   padding: scaler.getPadding(1,2),
+                        //   child: WidgetHelper().titleQ(context,"${StringConfig.selesaikanPesananAnda}",color:SiteConfig().secondColor,param: '',callback: (){},icon:AntDesign.shoppingcart),
+                        // ),
                         Container(
                           padding: EdgeInsets.only(left:scaler.getHeight(1),right:scaler.getHeight(1),top:0),
                           child: isLoading?Container():StaggeredGridView.countBuilder(

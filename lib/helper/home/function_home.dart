@@ -11,7 +11,7 @@ class FunctionHome{
     ListProductTenantModel listProductTenantModel;
     String idTenant = await FunctionHelper().getSession(StringConfig.idTenant);
     String url = "barang?page=1&id_tenant=$idTenant";
-    if(idKelompok!="")url+="&kelompok=$idKelompok";
+    if(idKelompok!="") url+="&kelompok=$idKelompok";
     final res = await HandleHttp().getProvider(url, listProductTenantModelFromJson,context: context);
     if(res!=null){
       if(res is ListProductTenantModel){

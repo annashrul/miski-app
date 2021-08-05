@@ -81,6 +81,7 @@ class _FavoriteComponentState extends State<FavoriteComponent>{
 
   @override
   Widget build(BuildContext context) {
+    print(layout);
     final scaler=config.ScreenScale(context).scaler;
     return SingleChildScrollView(
       padding: EdgeInsets.all(0),

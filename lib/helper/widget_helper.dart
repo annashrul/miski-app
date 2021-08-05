@@ -15,6 +15,7 @@ import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/light_color.dart';
 import 'package:netindo_shop/config/site_config.dart';
+import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/screen_util_helper.dart';
 import 'package:shimmer/shimmer.dart';
@@ -130,7 +131,7 @@ class WidgetHelper{
   }
 
 
-  void showFloatingFlushbar(BuildContext context,String param, String desc) {
+   showFloatingFlushbar(BuildContext context,String param, String desc) {
     Flushbar(
       flushbarPosition: FlushbarPosition.TOP,
       flushbarStyle: FlushbarStyle.FLOATING,
@@ -159,9 +160,10 @@ class WidgetHelper{
     )..show(context);
   }
   myModal(BuildContext context,Widget child){
+    final scaler = config.ScreenScale(context).scaler;
     return showModalBottomSheet(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(10.0))),
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).primaryColor,
         context: context,
         isScrollControlled: true,
         builder: (context) => Padding(
@@ -255,6 +257,7 @@ class WidgetHelper{
       highlightColor: Colors.grey[100],
       enabled: true,
       child: Container(
+        margin: scaler.getMarginLTRB(0, 0, 0, 0.1),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: Theme.of(context).textSelectionColor,
@@ -264,7 +267,6 @@ class WidgetHelper{
       ),
     );
   }
-
   textQ(String txt,double size,Color color,FontWeight fontWeight,{double letterSpacing=0,TextDecoration textDecoration,TextAlign textAlign = TextAlign.left,int maxLines=2}){
     TextStyle myText = GoogleFonts.robotoCondensed();
     return RichText(
@@ -331,7 +333,7 @@ class WidgetHelper{
         }
     );
   }
-  titleQ(BuildContext context,String txt,{FontWeight fontWeight = FontWeight.normal,EdgeInsetsGeometry padding=const EdgeInsets.symmetric(horizontal: 10, vertical: 0),Color color=Colors.white,String param, Function callback,IconData icon, TextAlign textAlign=TextAlign.left}){
+  titleQ(BuildContext context,String txt,{String param="", Function callback,IconData icon,double fontSize,String image="",IconData iconAct=UiIcons.play_button}){
     ScreenScaler scaler = ScreenScaler()..init(context);
     return InkWell(
       onTap:callback,
@@ -341,25 +343,30 @@ class WidgetHelper{
           Container(
             child: Row(
               children: [
-                Icon(
-                  icon,
-                  color: LightColor.black,
-                  size: scaler.getTextSize(12),
-                ),
-                SizedBox(width: scaler.getWidth(1)),
-                WidgetHelper().textQ(txt, scaler.getTextSize(10), LightColor.black,fontWeight,textAlign: textAlign)
+                if(image!=""||icon!=null)image!=""?Hero(
+                    tag: image,
+                    child: Container(
+                      height: scaler.getHeight(3),
+                      width: scaler.getWidth(7.5),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(100)),
+                        image: DecorationImage(image: NetworkImage(image), fit: BoxFit.contain),
+                      ),
+                    )
+                ):icons(ctx: context,icon: icon),
+                if(image!=""||icon!=null)SizedBox(width: scaler.getWidth(1)),
+                config.MyFont.title(context: context,text:txt,fontSize: fontSize)
               ],
             ),
           ),
           param==''?Text(''):Align(
             alignment: Alignment.centerRight,
-            child: Icon(Octicons.triangle_right,color:LightColor.black,size: scaler.getTextSize(12)),
+            child:icons(ctx: context,icon:iconAct==null?UiIcons.play_button:iconAct),
           )
         ],
       ),
     );
   }
-
   appBarWithButton(BuildContext context, title,Function callback,List<Widget> widget,{String param="",Brightness brightness=Brightness.light}){
     ScreenUtilHelper.instance = ScreenUtilHelper.getInstance()..init(context);
     ScreenUtilHelper.instance = ScreenUtilHelper(allowFontScaling: false)..init(context);
@@ -410,9 +417,9 @@ class WidgetHelper{
   pembatas(BuildContext context){
     return Container(
       width: MediaQuery.of(context).size.width,
-      height: 5.0,
+      height: 1.0,
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        color: Theme.of(context).textTheme.caption.color,
         borderRadius:  BorderRadius.circular(10.0),
       ),
     );
@@ -492,8 +499,9 @@ class WidgetHelper{
     return Row(
       mainAxisAlignment:mainAxisAlignment,
       children: [
-        WidgetHelper().textQ(title,scaler.getTextSize(9),titleColor, fontWeightTitle),
-        WidgetHelper().textQ(desc,scaler.getTextSize(9),descColor, fontWeightDesc),
+        config.MyFont.subtitle(context: context,text:title),
+        config.MyFont.subtitle(context: context,text:desc,color: descColor==null?Theme.of(context).textTheme.caption.color:descColor),
+
       ],
     );
   }
@@ -523,7 +531,6 @@ class WidgetHelper{
       ),
     );
   }
-
   iconAppBarBadges({BuildContext context,Function callback,IconData icon,bool isActive=true}){
     ScreenScaler scaler = ScreenScaler()..init(context);
     return Container(
@@ -558,4 +565,22 @@ class WidgetHelper{
       ),
     );
   }
+  chip({BuildContext ctx,Widget child,EdgeInsetsGeometry padding}){
+    final scaler = config.ScreenScale(ctx).scaler;
+    return Container(
+      padding: padding==null?scaler.getPaddingLTRB(2,0.5,2,0.5):padding,
+      decoration: BoxDecoration(
+        color: Theme.of(ctx).primaryColor.withOpacity(0.9),
+        boxShadow: [BoxShadow(color: Theme.of(ctx).focusColor.withOpacity(0.1), blurRadius: 5, offset: Offset(0, 2))],
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+      ),
+      child: child,
+    );
+  }
+
+  icons({BuildContext ctx,IconData icon}){
+    final scaler = config.ScreenScale(ctx).scaler;
+    return Icon(icon,size: scaler.getTextSize(StringConfig.iconSize),color: Theme.of(ctx).hintColor);
+  }
+
 }

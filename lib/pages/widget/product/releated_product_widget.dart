@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/ui_icons.dart';
@@ -11,6 +13,7 @@ class ReleatedProductWidget extends StatelessWidget {
   ListProductTenantModel data;
   final String heroTag;
   ReleatedProductWidget({this.data,this.heroTag});
+  Random random = new Random();
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +29,7 @@ class ReleatedProductWidget extends StatelessWidget {
               UiIcons.box,
               color: Theme.of(context).hintColor,
             ),
-            title:config.MyFont.subtitle(context: context,text:"Releated product",fontSize: 9),
+            title:config.MyFont.title(context: context,text:"Releated product"),
           ),
         ),
         Container(
@@ -39,14 +42,14 @@ class ReleatedProductWidget extends StatelessWidget {
                 (index == 0) ? _marginLeft = 20 : _marginLeft = 0;
                 final res = data.result.data[index];
                 return ProductListCarouselWidget(
-                  productId: res.id,
-                  productName: res.title,
-                  productImage:res.gambar,
-                  productPrice:res.harga,
-                  productSales: res.stockSales,
-                  productRate:res.rating,
-                  productStock: res.stock,
-                  heroTag:heroTag
+                    productId: res.id,
+                    productName: res.title,
+                    productImage:res.gambar,
+                    productPrice:res.harga,
+                    productSales: res.stockSales,
+                    productRate:res.rating,
+                    productStock: res.stock,
+                    heroTag:heroTag+"${random.nextInt(100)}"
                 );
               },
               scrollDirection: Axis.horizontal,

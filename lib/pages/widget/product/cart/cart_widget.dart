@@ -185,7 +185,7 @@ class _CartWidgetState extends State<CartWidget> {
                           width: MediaQuery.of(context).size.width - 40,
                           child: FlatButton(
                             onPressed: () {
-                              Navigator.of(context).pushNamed('/Checkout');
+                              Navigator.of(context).pushNamed('/${StringConfig.checkout}');
                             },
                             padding: EdgeInsets.symmetric(vertical: 14),
                             color: Theme.of(context).accentColor,
@@ -261,7 +261,7 @@ class _CartWidgetState extends State<CartWidget> {
                           config.MyFont.subtitle(context: context,text:res.barang,fontSize: 9),
                           Row(
                             children: [
-                              config.MyFont.subtitle(context: context,text:"${FunctionHelper().formatter.format(int.parse(res.hargaJual))}",fontSize: 9),
+                              config.MyFont.subtitle(context: context,text:"${FunctionHelper().formatter.format(int.parse(res.hargaJual))}", color:config.Colors.mainColors),
                               SizedBox(width: scaler.getWidth(1)),
                               int.parse(res.hargaCoret)<1?SizedBox():config.MyFont.subtitle(context: context,text:"${FunctionHelper().formatter.format(int.parse(res.hargaCoret))}",textDecoration: TextDecoration.lineThrough,fontSize: 8),
                             ],

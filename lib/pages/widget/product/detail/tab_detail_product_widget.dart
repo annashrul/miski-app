@@ -13,7 +13,8 @@ import 'package:netindo_shop/views/widget/loading_widget.dart';
 class TabProductWidget extends StatelessWidget {
   dynamic  data;
   final bool isLoading;
-  TabProductWidget({this.data,this.isLoading});
+  final String id;
+  TabProductWidget({this.id,this.data,this.isLoading});
   @override
   Widget build(BuildContext context) {
     final scaler = config.ScreenScale(context).scaler;
@@ -167,12 +168,12 @@ class TabDescProductWidget extends StatelessWidget {
                 UiIcons.file_2,
                 color: Theme.of(context).hintColor,
               ),
-              title:config.MyFont.subtitle(context: context,text:"Description"),
+              title:config.MyFont.title(context: context,text:"Description"),
             ),
           ),
           Padding(
             padding: scaler.getPadding(0,2),
-            child:config.MyFont.subtitle(context: context,text:StringConfig.lorem,fontSize: 9),
+            child:config.MyFont.subtitle(context: context,text:data["deskripsi"],fontSize: 9),
             // child: Text('We’re all going somewhere. And whether it’s the podcast blaring from your headphones as you walk down the street or the essay that encourages you to take on that big project, there’s a real joy in getting lost in the kind of story that feels like a destination unto itself.'),
           ),
           isLoading?Container(

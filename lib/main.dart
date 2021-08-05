@@ -54,7 +54,7 @@ class _MyAppState extends State<MyApp> {
         dialogBackgroundColor: Colors.white,
         textTheme: TextTheme(
           button: style.copyWith(color: Color(0xFF252525)),
-          headline1: style.copyWith(fontSize: 10.0, fontWeight: FontWeight.w500,color: config.Colors().secondDarkColor(1)),
+          headline1: style.copyWith(fontSize: 10.0, fontWeight: FontWeight.bold,color: config.Colors().secondDarkColor(1)),
           headline2: style.copyWith(fontSize: 9.0, fontWeight: FontWeight.w400, color: config.Colors().secondDarkColor(1)),
           headline3: style.copyWith(fontSize: 9.0, fontWeight: FontWeight.w400, color: config.Colors().secondDarkColor(1)),
           headline4: style.copyWith(fontSize: 9.0, fontWeight: FontWeight.w300, color: config.Colors().mainDarkColor(1)),
@@ -85,7 +85,7 @@ class _MyAppState extends State<MyApp> {
           subtitle2: style.copyWith(fontSize: 9.0, fontWeight: FontWeight.w500, color: config.Colors().mainColor(1)),
           bodyText1: style.copyWith(fontSize: 9.0, color: config.Colors().secondColor(1)),
           bodyText2: style.copyWith(fontSize: 9.0, fontWeight: FontWeight.w600, color: config.Colors().secondColor(1)),
-          caption: style.copyWith(fontSize: 9.0, color: config.Colors().secondColor(0.7)),
+          caption: style.copyWith(fontSize: 9.0, color:Colors.grey),
         ),
       ),
       builder: (BuildContext context, Widget child) {

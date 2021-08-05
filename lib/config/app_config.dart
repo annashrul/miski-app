@@ -114,7 +114,7 @@ class MyFont{
           text:text,
           style: style(
             context: context,
-            style: Theme.of(context).textTheme.headline1,
+            style: themeStyle,
             color: color,
             fontSize: fontSize,
             fontWeight: fontWeight,

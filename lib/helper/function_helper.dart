@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/site_config.dart';
+import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/helper/database_helper.dart';
 import 'package:netindo_shop/helper/user_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
@@ -39,6 +40,14 @@ class FunctionHelper{
   ];
 
 
+
+  Future<Map<String,Object>> getTenant()async{
+    String idTenant = await getSession(StringConfig.idTenant);
+    String namaTenant = await getSession(StringConfig.namaTenant);
+    return {
+      "id":idTenant,"nama":namaTenant
+    };
+  }
   Future checkTenant()async{
     ListTenantModel listTenantModel;
     final tenant = await BaseProvider().getProvider("tenant?page=1",listTenantModelFromJson);

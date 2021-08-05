@@ -5,6 +5,8 @@ import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/pages/component/auth/signin_component.dart';
 import 'package:netindo_shop/pages/component/auth/signup_component.dart';
+import 'package:netindo_shop/pages/component/brand/brand_component.dart';
+import 'package:netindo_shop/pages/component/checkout/checkout_component.dart';
 import 'package:netindo_shop/pages/component/home/home_component.dart';
 import 'package:netindo_shop/pages/component/main_component.dart';
 import 'package:netindo_shop/pages/component/on_boarding_component.dart';
@@ -33,6 +35,8 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => DetailProductWidget(data: args));
       case '/${StringConfig.cart}':
         return MaterialPageRoute(builder: (_) => CartWidget());
+      case '/${StringConfig.checkout}':
+        return MaterialPageRoute(builder: (_) => CheckoutComponent());
       // case '/Categories':
       //   return MaterialPageRoute(builder: (_) => CategoriesWidget());
       // case '/Orders':

@@ -128,7 +128,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     getKurir();
   }
   Future selectedKurir(idx,param)async{
-    print("KURIR ${kurirModel.result[idx].toJson()}");
     setState(() {
       isSelectedKurir = true;
       kurirDeskripsi = kurirModel.result[idx].deskripsi;
@@ -188,9 +187,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
   getSubtotal(){
     int st = 0;
-    int hrg = 0;
     for(var i=0;i<cartModel.result.length;i++){
-      // hrg = hrg+
       st = st+int.parse(cartModel.result[i].hargaJual)*int.parse(cartModel.result[i].qty);
     }
 
@@ -329,7 +326,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                WidgetHelper().titleQ(context,'Jasa Pengiriman',icon:FontAwesome.truck,param: '',color: LightColor.black,fontWeight: FontWeight.bold),
+                // WidgetHelper().titleQ(context,'Jasa Pengiriman',icon:FontAwesome.truck,param: '',color: LightColor.black),
                 SizedBox(height: scaler.getHeight(0.5)),
                 jasaPengiriman(context,"Pilih kurir", "$kurirDeskripsi ( $kurirTitle )", (){modalKurir(context);}),
                 SizedBox(height: scaler.getHeight(0.5)),
@@ -351,7 +348,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    WidgetHelper().titleQ(context,"Ringkasan belanja",icon: AntDesign.shoppingcart,param: '',color: LightColor.black,fontWeight: FontWeight.bold),
+                    // WidgetHelper().titleQ(context,"Ringkasan belanja",icon: AntDesign.shoppingcart,param: '',color: LightColor.black),
                     new Container(
                       padding: EdgeInsets.all(10.0),
                       decoration: new BoxDecoration(
@@ -365,7 +362,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 SizedBox(height:scaler.getHeight(0.5)),
                 Container(
                   child: ListView.builder(
-                    padding: EdgeInsets.all(0),
+                      padding: EdgeInsets.all(0),
                       addRepaintBoundaries: true,
                       primary: false,
                       shrinkWrap: true,
@@ -879,7 +876,6 @@ class _ModalKurirState extends State<ModalKurir> {
   @override
   Widget build(BuildContext context) {
     ScreenScaler scaler = ScreenScaler()..init(context);
-
     return Container(
       height: MediaQuery.of(context).size.height/2,
       decoration: BoxDecoration(
@@ -989,7 +985,6 @@ class _ModalLayananState extends State<ModalLayanan> {
   @override
   Widget build(BuildContext context) {
     ScreenScaler scaler = ScreenScaler()..init(context);
-
     return Container(
       decoration: BoxDecoration(
           color: site?SiteConfig().darkMode:Colors.transparent,

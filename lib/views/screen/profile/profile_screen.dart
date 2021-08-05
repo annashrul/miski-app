@@ -166,10 +166,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
   Widget wrapperTitle(BuildContext context,Function callback, IconData icon,String title){
     ScreenScaler scaler = ScreenScaler()..init(context);
-    return Padding(
-      padding: scaler.getPadding(1,2),
-      child: WidgetHelper().titleQ(context,title,icon: icon,callback: callback,param: '',color: SiteConfig().secondColor),
-    );
+    // return Padding(
+    //   padding: scaler.getPadding(1,2),
+    //   child: WidgetHelper().titleQ(context,title,icon: icon,callback: callback,param: '',color: SiteConfig().secondColor),
+    // );
     return FlatButton(
       padding:scaler.getPadding(0,2),
       onPressed:callback!=null?callback:(){},

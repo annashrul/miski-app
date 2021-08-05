@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/string_config.dart';
@@ -24,7 +26,7 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
   bool isLoadingDetail=true,isFavorite=false;
   dynamic dataDetail;
   Future loadDetail()async{
-    final funcData = await FunctionDetail().loadDetail(context: context,idProduct: "aa97f829-4301-4639-a253-4e241da2f5e2");
+    final funcData = await FunctionDetail().loadDetail(context: context,idProduct:widget.data["id"]);
     dataDetail = funcData["data"];
     qty = funcData["data"]["qty"];
     harga = int.parse(funcData["data"]["harga"]);
@@ -65,6 +67,7 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
     _tabController.addListener(_handleTabSelection);
     loadDetail();
     super.initState();
+
   }
   void dispose() {
     _tabController.dispose();
@@ -128,12 +131,12 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
                 )),
           ],
           backgroundColor: Theme.of(context).primaryColor,
-          expandedHeight: 350,
+          expandedHeight: scaler.getHeight(35),
           elevation: 0,
           flexibleSpace: FlexibleSpaceBar(
             collapseMode: CollapseMode.parallax,
             background: Hero(
-              tag:"cart",
+              tag: widget.data["heroTag"] + widget.data["id"] ,
               child: Stack(
                 fit: StackFit.expand,
                 children: <Widget>[
@@ -143,7 +146,7 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         fit: BoxFit.cover,
-                        image:NetworkImage(StringConfig.noImage),
+                        image:NetworkImage(widget.data["image"]),
                       ),
                     ),
                   ),
@@ -185,7 +188,7 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
               offstage: 0 != _tabIndex,
               child: Column(
                 children: <Widget>[
-                  TabProductWidget(data: dataDetail,isLoading: isLoadingDetail)
+                  TabProductWidget(id:widget.data["id"],data: dataDetail,isLoading: isLoadingDetail)
                 ],
               ),
             ),
@@ -193,7 +196,7 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
               offstage: 1 != _tabIndex,
               child: Column(
                 children: <Widget>[
-                  TabDescProductWidget(data: dataDetail,isLoading: isLoadingDetail)
+                  if(!isLoadingDetail)TabDescProductWidget(data: dataDetail,isLoading: isLoadingDetail)
                 ],
               ),
             ),
@@ -242,6 +245,5 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
       ),
     );
   }
-
 
 }

@@ -39,6 +39,7 @@ class StringConfig{
   static const String onesignal_id = "onesignal_id";
 
   // ************************ GENERAL  ************************ //
+  static final double iconSize = 12;
   static final userImage = localAssets+"user2.jpg";
   static const version = "0.0.1";
   static const String noImage        = 'https://upload.wikimedia.org/wikipedia/commons/0/0a/No-image-available.png';
