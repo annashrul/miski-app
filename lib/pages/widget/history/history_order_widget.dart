@@ -56,14 +56,13 @@ class _HistoryOrderWidgetState extends State<HistoryOrderWidget> {
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
-
-          isLoading?Padding(child: LoadingHistory(tot: 10),padding: scaler.getPadding(0,2)):Offstage(
-            offstage: widget.layout != 'list' ||  !isError,
-            child: ListView.separated(
+         Offstage(
+            offstage: widget.layout != 'list',
+            child:  isLoading?Padding(child: LoadingHistory(tot: 10),padding: scaler.getPadding(1,2)):historyTransactionModel.result.data.length<1?EmptyTenant():ListView.separated(
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
               primary: false,
-              itemCount: 10,
+              itemCount: historyTransactionModel.result.data.length,
               separatorBuilder: (context, index) {
                 return SizedBox(height: 10);
               },
@@ -76,14 +75,14 @@ class _HistoryOrderWidgetState extends State<HistoryOrderWidget> {
             ),
           ),
           Offstage(
-            offstage: widget.layout != 'grid' ||  !isError,
-            child: Container(
+            offstage: widget.layout != 'grid',
+            child: isLoading?LoadingProductTenant(tot: 10): historyTransactionModel.result.data.length<1?EmptyTenant():Container(
               padding:scaler.getPadding(1,2),
-              child: isLoading?LoadingProductTenant(tot: 10): new StaggeredGridView.countBuilder(
+              child: new StaggeredGridView.countBuilder(
                 primary: false,
                 shrinkWrap: true,
                 crossAxisCount: 4,
-                itemCount:10,
+                itemCount:historyTransactionModel.result.data.length,
                 itemBuilder: (BuildContext context, int index) {
                   return HistoryGridItemWidget(
                     data: historyTransactionModel,
@@ -96,10 +95,7 @@ class _HistoryOrderWidgetState extends State<HistoryOrderWidget> {
               ),
             ),
           ),
-          // Offstage(
-          //   offstage:isError,
-          //   child: EmptyTenant(),
-          // )
+
         ],
       ),
     );

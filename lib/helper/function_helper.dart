@@ -51,7 +51,7 @@ class FunctionHelper{
       StringConfig.alamatTenant:tenant[4],
       StringConfig.logoTenant:tenant[5],
     };
-    print("ID TENANT $setTenant");
+
     return setTenant;
   }
   Future checkTenant()async{

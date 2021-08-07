@@ -50,6 +50,7 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
     else{
       cost=cost;
     }
+    print("detail barang $detail");
 
     subtotal = resDetail["subTotal"];
     grandTotal = resDetail["grandTotal"];
@@ -93,7 +94,7 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
         "tax":"${element["tax"]}"
       });
     });
-    Map<String, Object> data ={
+   var data ={
       "id_tenant":detail["idTenant"],
       "id_member":detail["idUser"],
       "subtotal":"$subtotal",

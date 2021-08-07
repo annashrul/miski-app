@@ -27,7 +27,7 @@ class _RoomChatComponentState extends State<RoomChatComponent> {
   String txtLoading="tulis pesan disini ..";
   List chat=[];
   DetailTicketModel detailTicketModel;
-  bool isLoading=true,isShow=false;
+  bool isLoading=true,isShow=true;
   String idMember="";
   Future loadData()async{
 
@@ -82,6 +82,7 @@ class _RoomChatComponentState extends State<RoomChatComponent> {
   @override
   Widget build(BuildContext context) {
     final scaler=config.ScreenScale(context).scaler;
+    print(widget.data);
     if(WidgetsBinding.instance.window.viewInsets.bottom > 0.0)
     {
       //Keyboard is visible.
@@ -99,7 +100,7 @@ class _RoomChatComponentState extends State<RoomChatComponent> {
     }
     return Scaffold(
       appBar: WidgetHelper().appBarWithButton(context, isLoading?"loading ..":resTenant[StringConfig.namaTenant], (){},<Widget>[
-        WidgetHelper().iconAppbar(context: context,icon: !isShow?Icons.arrow_drop_down:Icons.arrow_drop_up,callback: (){
+        WidgetHelper().iconAppbar(context: context,icon: !isShow?Icons.arrow_drop_down:Icons.close,callback: (){
           this.setState(() {
             isShow=!isShow;
           });
@@ -126,8 +127,32 @@ class _RoomChatComponentState extends State<RoomChatComponent> {
                     Expanded(child: config.MyFont.subtitle(context: context,text:widget.data["title"],color:Colors.white,fontWeight: FontWeight.bold),),
                   ],
                 ),
-                config.MyFont.subtitle(context: context,text:widget.data["deskripsi"],fontSize:8,color:Colors.grey[300])
-
+                config.MyFont.subtitle(context: context,text:widget.data["deskripsi"],fontSize:8,color:Colors.grey[300]),
+                if(widget.data["lampiran"]!="") WidgetHelper().myRipple(
+                  callback: (){
+                    WidgetHelper().myModal(context, Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Padding(
+                            padding: scaler.getPadding(1, 2),
+                          child: Column(
+                            children: [
+                              WidgetHelper().titleQ(
+                                context,
+                                "Lampiran anda",
+                                icon: UiIcons.information,fontSize: 9,
+                              ),
+                              Divider(),
+                              WidgetHelper().baseImage(widget.data["lampiran"],width: double.infinity)
+                            ],
+                          ),
+                        )
+                      ],
+                    ));
+                  },
+                  child: config.MyFont.title(context: context,text:"lihat lampiran",fontSize: 9,color: config.Colors.mainDarkColors,textDecoration: TextDecoration.underline)
+                )
               ],
             ),
           ),

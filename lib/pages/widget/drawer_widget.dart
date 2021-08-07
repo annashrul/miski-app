@@ -80,7 +80,8 @@ class DrawerWidget extends StatelessWidget {
           ),
           ListTile(
             onTap: () {
-              Navigator.of(context).pushNamed('/Categories');
+              Navigator.of(context).pushNamed('/${StringConfig.category}');
+
             },
             leading: Icon(
               UiIcons.folder_1,
@@ -91,7 +92,7 @@ class DrawerWidget extends StatelessWidget {
           ),
           ListTile(
             onTap: () {
-              Navigator.of(context).pushNamed('/Brands');
+              Navigator.of(context).pushNamed('/${StringConfig.brand}');
             },
             leading: Icon(
               UiIcons.folder_1,

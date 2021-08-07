@@ -63,7 +63,7 @@ class FunctionCheckout{
         final ongkir = await loadOngkir(context: context,kodeKecamatan: address.result.data[0].kdKec,kurir: kurir.result[0].kurir);
         int grandTotal = await loadGrandTotal(cartModel: product,cost: ongkir["cost"]);
         resData = {
-          "idTenant":tenant["id"],
+          "idTenant":tenant[StringConfig.idTenant],
           "idUser":idUser,
           "product":product,
           "productDetail":productDetail,

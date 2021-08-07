@@ -6,6 +6,7 @@ import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/pages/component/auth/signin_component.dart';
 import 'package:netindo_shop/pages/component/auth/signup_component.dart';
 import 'package:netindo_shop/pages/component/brand/brand_component.dart';
+import 'package:netindo_shop/pages/component/category/category_component.dart';
 import 'package:netindo_shop/pages/component/chat/room_chat_component.dart';
 import 'package:netindo_shop/pages/component/checkout/checkout_component.dart';
 import 'package:netindo_shop/pages/component/checkout/success_checkout_component.dart';
@@ -14,6 +15,8 @@ import 'package:netindo_shop/pages/component/home/home_component.dart';
 import 'package:netindo_shop/pages/component/main_component.dart';
 import 'package:netindo_shop/pages/component/on_boarding_component.dart';
 import 'package:netindo_shop/pages/component/splash_screen_component.dart';
+import 'package:netindo_shop/pages/widget/product/by_brand/product_by_brand.dart';
+import 'package:netindo_shop/pages/widget/product/by_category/product_by_category_widget.dart';
 import 'file:///E:/NETINDO/netindo_shop/lib/pages/widget/product/detail/detail_product_widget.dart';
 import 'package:netindo_shop/pages/widget/product/cart/cart_widget.dart';
 
@@ -23,29 +26,37 @@ class RouteGenerator {
 
     switch (settings.name) {
       case '/':
-        return MaterialPageRoute(builder: (_) => SplashScreenComponent());
+        return CupertinoPageRoute(builder: (_) => SplashScreenComponent());
       case '/${StringConfig.onBoarding}':
-        return MaterialPageRoute(builder: (_) => OnBoardingComponent());
+        return CupertinoPageRoute(builder: (_) => OnBoardingComponent());
       case '/${StringConfig.signUp}':
-        return MaterialPageRoute(builder: (_) => SignUpComponent());
+        return CupertinoPageRoute(builder: (_) => SignUpComponent());
       case '/${StringConfig.signIn}':
-        return MaterialPageRoute(builder: (_) => SignInComponent());
+        return CupertinoPageRoute(builder: (_) => SignInComponent());
       case '/${StringConfig.main}':
-        return MaterialPageRoute(builder: (_) => MainComponent(currentTab: args));
+        return CupertinoPageRoute(builder: (_) => MainComponent(currentTab: args));
       case '/${StringConfig.home}':
-        return MaterialPageRoute(builder: (_) => HomeComponent());
+        return CupertinoPageRoute(builder: (_) => HomeComponent());
       case '/${StringConfig.detailProduct}':
-        return MaterialPageRoute(builder: (_) => DetailProductWidget(data: args));
+        return CupertinoPageRoute(builder: (_) => DetailProductWidget(data: args));
       case '/${StringConfig.cart}':
-        return MaterialPageRoute(builder: (_) => CartWidget());
+        return CupertinoPageRoute(builder: (_) => CartWidget());
       case '/${StringConfig.checkout}':
-        return MaterialPageRoute(builder: (_) => CheckoutComponent());
+        return CupertinoPageRoute(builder: (_) => CheckoutComponent());
       case '/${StringConfig.successCheckout}':
-        return MaterialPageRoute(builder: (_) => SuccessCheckoutComponent(data: args));
+        return CupertinoPageRoute(builder: (_) => SuccessCheckoutComponent(data: args));
       case '/${StringConfig.roomChat}':
-        return MaterialPageRoute(builder: (_) => RoomChatComponent(data: args));
+        return CupertinoPageRoute(builder: (_) => RoomChatComponent(data: args));
       case '/${StringConfig.historyOrder}':
-        return MaterialPageRoute(builder: (_) => HistoryOrderComponent(currentTab: args));
+        return CupertinoPageRoute(builder: (_) => HistoryOrderComponent(currentTab: args));
+      case '/${StringConfig.category}':
+        return CupertinoPageRoute(builder: (_) => CategoryComponent());
+      case '/${StringConfig.brand}':
+        return CupertinoPageRoute(builder: (_) => BrandComponent());
+      case '/${StringConfig.productByCategory}':
+        return CupertinoPageRoute(builder: (_) => ProductByCategory(data: args));
+      case '/${StringConfig.productByBrand}':
+        return CupertinoPageRoute(builder: (_) => ProductByBrand(data: args));
       // case '/Categories':
       //   return MaterialPageRoute(builder: (_) => CategoriesWidget());
       // case '/Orders':

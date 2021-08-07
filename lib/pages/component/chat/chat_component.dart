@@ -4,6 +4,7 @@ import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/ticket/list_ticket_model.dart';
+import 'package:netindo_shop/pages/widget/chat/modal_form_chat_widget.dart';
 import 'package:netindo_shop/pages/widget/searchbar_widget.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
 import 'package:netindo_shop/views/widget/empty_widget.dart';
@@ -40,45 +41,76 @@ class _ChatComponentState extends State<ChatComponent> {
   Widget build(BuildContext context) {
     final scaler = config.ScreenScale(context).scaler;
     // TODO: implement build
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(0),
-      child: Column(
-        children: <Widget>[
-          Padding(
-            padding: scaler.getPadding(0, 2),
-            child: SearchBarWidget(),
-          ),
-          isLoading?Container(
-            padding: scaler.getPadding(0, 2),
-            child: LoadingTicket(total: 10),
-          ):Offstage(
-            offstage: listTicketModel.result.data.isEmpty,
-            child: ListView.separated(
-              padding: scaler.getPadding(1, 2),
-              shrinkWrap: true,
-              primary: false,
-              itemCount: listTicketModel.result.data.length,
-              separatorBuilder: (context, index) {
-                return Divider();
-              },
-              itemBuilder: (context, index) {
-                return buildItem(
-                  context: context,
-                  index: index
-                );
-              },
+    return Stack(
+      fit: StackFit.passthrough,
+      children: <Widget>[
+        Container(
+          alignment: Alignment.topCenter,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Padding(
+                  padding: scaler.getPadding(0, 2),
+                  child: SearchBarWidget(),
+                ),
+                isLoading?Container(
+                  padding: scaler.getPadding(0, 2),
+                  child: LoadingTicket(total: 10),
+                ):Offstage(
+                  offstage: listTicketModel.result.data.isEmpty,
+                  child: ListView.separated(
+                    padding: scaler.getPadding(1, 2),
+                    shrinkWrap: true,
+                    primary: false,
+                    itemCount: listTicketModel.result.data.length,
+                    separatorBuilder: (context, index) {
+                      return Divider();
+                    },
+                    itemBuilder: (context, index) {
+                      return buildItem(
+                          context: context,
+                          index: index
+                      );
+                    },
+                  ),
+                ),
+                if(!isLoading)Offstage(
+                  offstage:listTicketModel.result.data.isNotEmpty,
+                  child: EmptyDataWidget(
+                    iconData: UiIcons.chat,
+                    title: "D\'ont have any message",
+                    isFunction: false,
+                  ),
+                )
+              ],
             ),
           ),
-          if(!isLoading)Offstage(
-            offstage:listTicketModel.result.data.isNotEmpty,
-            child: EmptyDataWidget(
-              iconData: UiIcons.chat,
-              title: "D\'ont have any message",
-              isFunction: false,
-            ),
-          )
-        ],
-      ),
+        ),
+        new Positioned(
+          bottom: 0,
+          right: scaler.getWidth(5),
+          child: new Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child:WidgetHelper().animShakeWidget(context,InkWell(
+                borderRadius: BorderRadius.circular(50.0),
+                onTap: (){
+                  WidgetHelper().myModal(context, ModalFormChatWidget(callback: (status){
+                    if(status) loadTicket();
+                  },));
+                },
+                child:Container(
+                  padding: EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.0),
+                    color:config.Colors.mainColors,
+                  ),
+
+                  child:Icon(UiIcons.chat,color: Colors.white),
+                ),
+              ))
+          ),
+        )
+      ],
     );
   }
 
@@ -107,7 +139,7 @@ class _ChatComponentState extends State<ChatComponent> {
           Navigator.of(context).pushNamed('/${StringConfig.roomChat}', arguments:res.toJson());
         },
         child: Container(
-          color: Colors.transparent,
+          color:Theme.of(context).primaryColor.withOpacity(0.9),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
@@ -117,7 +149,7 @@ class _ChatComponentState extends State<ChatComponent> {
                     width: scaler.getWidth(10),
                     height: scaler.getHeight(4),
                     child: Hero(
-                      tag: "${res.idTenant}${res.tenant}",
+                      tag: "chat${listTicketModel.result.data[index].id}",
                       child:  CircleAvatar(
                         backgroundImage: AssetImage(StringConfig.userImage),
                       )

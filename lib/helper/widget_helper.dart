@@ -377,7 +377,7 @@ class WidgetHelper{
       ),
     );
   }
-  appBarWithButton(BuildContext context, title,Function callback,List<Widget> widget,{String param="",Brightness brightness=Brightness.light}){
+  appBarWithButton(BuildContext context, title,Function callback,List<Widget> widget,{IconData icon=UiIcons.return_icon,String param="",Brightness brightness=Brightness.light}){
     ScreenUtilHelper.instance = ScreenUtilHelper.getInstance()..init(context);
     ScreenUtilHelper.instance = ScreenUtilHelper(allowFontScaling: false)..init(context);
     ScreenScaler scaler = ScreenScaler()..init(context);
@@ -400,7 +400,7 @@ class WidgetHelper{
                   children: <Widget>[
                     Container(
                         alignment: Alignment.center,
-                        child: Icon(UiIcons.return_icon,color: Theme.of(context).hintColor)
+                        child: Icon(icon,color: Theme.of(context).hintColor)
                     ),
                   ],
                 ),

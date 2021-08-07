@@ -20,27 +20,24 @@ class _SplashScreenComponentState extends State<SplashScreenComponent> {
     final countTable = await _db.queryRowCount(UserQuery.TABLE_NAME);
     final result= await FunctionHelper().getConfig();
     sess.setString(StringConfig.loginType, result["type"]);
+    sess.setBool(StringConfig.isTenant, true);
+    if(!result["multitenant"]){
+      print('##################### TENANT $result ######################');
+      sess.setStringList("tenant", [
+        result["tenant"]["id"],
+        result["tenant"]["nama"],
+        result["tenant"]["email"],
+        result["tenant"]["telp"],
+        result["tenant"]["alamat"],
+        result["tenant"]["logo"]
+      ]);
+      sess.setBool(StringConfig.isTenant, false);
+    }
     if(countTable==0){
       Navigator.pushNamedAndRemoveUntil(context, "/${StringConfig.onBoarding}", (route) => false);
       print('##################### USER BARU INSTALL APLIKASI ######################');
     }
     else{
-
-      sess.setBool(StringConfig.isTenant, true);
-      if(!result["multitenant"]){
-        print('##################### TENANT ${result} ######################');
-
-        sess.setStringList("tenant", [
-          result["tenant"]["id"],
-          result["tenant"]["nama"],
-          result["tenant"]["email"],
-          result["tenant"]["telp"],
-          result["tenant"]["alamat"],
-          result["tenant"]["logo"]
-        ]);
-
-        sess.setBool(StringConfig.isTenant, false);
-      }
       final onBoarding= await userHelper.getDataUser(StringConfig.onBoarding);
       final isLogin= await userHelper.getDataUser(StringConfig.is_login);
       if(onBoarding==null&&isLogin==null){

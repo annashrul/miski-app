@@ -99,7 +99,7 @@ class _MainComponentState extends State<MainComponent> {
 
   @override
   void didUpdateWidget(MainComponent oldWidget) {
-    // _selectTab(oldWidget.currentTab);
+    _selectTab(oldWidget.currentTab);
     super.didUpdateWidget(oldWidget);
   }
 
