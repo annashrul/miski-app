@@ -59,7 +59,7 @@ class _ChatComponentState extends State<ChatComponent> {
               primary: false,
               itemCount: listTicketModel.result.data.length,
               separatorBuilder: (context, index) {
-                return SizedBox(height: 7);
+                return Divider();
               },
               itemBuilder: (context, index) {
                 return buildItem(
@@ -104,7 +104,7 @@ class _ChatComponentState extends State<ChatComponent> {
       },
       child: WidgetHelper().myRipple(
         callback: () {
-          Navigator.of(context).pushNamed('/Tabs', arguments: 5);
+          Navigator.of(context).pushNamed('/${StringConfig.roomChat}', arguments:res.toJson());
         },
         child: Container(
           color: Colors.transparent,
@@ -116,8 +116,11 @@ class _ChatComponentState extends State<ChatComponent> {
                   SizedBox(
                     width: scaler.getWidth(10),
                     height: scaler.getHeight(4),
-                    child: CircleAvatar(
-                      backgroundImage: AssetImage(StringConfig.userImage),
+                    child: Hero(
+                      tag: "${res.idTenant}${res.tenant}",
+                      child:  CircleAvatar(
+                        backgroundImage: AssetImage(StringConfig.userImage),
+                      )
                     ),
                   ),
                   Positioned(

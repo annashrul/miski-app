@@ -36,17 +36,23 @@ class FunctionHelper{
     "Barang sedang dikemas",
     "Dikirim",
     "Selesai",
-    "Semua status",
   ];
 
 
 
   Future<Map<String,Object>> getTenant()async{
-    String idTenant = await getSession(StringConfig.idTenant);
-    String namaTenant = await getSession(StringConfig.namaTenant);
-    return {
-      "id":idTenant,"nama":namaTenant
+    SharedPreferences sess = await SharedPreferences.getInstance();
+    List<String> tenant = sess.getStringList("tenant");
+    Map<String,Object> setTenant = {
+      StringConfig.idTenant:tenant[0],
+      StringConfig.namaTenant:tenant[1],
+      StringConfig.emailTenant:tenant[2],
+      StringConfig.telpTenant:tenant[3],
+      StringConfig.alamatTenant:tenant[4],
+      StringConfig.logoTenant:tenant[5],
     };
+    print("ID TENANT $setTenant");
+    return setTenant;
   }
   Future checkTenant()async{
     ListTenantModel listTenantModel;

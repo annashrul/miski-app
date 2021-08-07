@@ -7,10 +7,15 @@ import 'package:netindo_shop/helper/detail/function_detail.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/address/list_address_model.dart';
+import 'package:netindo_shop/model/bank/bank_model.dart';
+import 'package:netindo_shop/pages/widget/checkout/modal_bank_widget.dart';
 import 'package:netindo_shop/pages/widget/checkout/section_address_widget.dart';
 import 'package:netindo_shop/pages/widget/checkout/section_product_widget.dart';
 import 'package:netindo_shop/pages/widget/checkout/section_shipping_widget.dart';
+import 'package:netindo_shop/provider/base_provider.dart';
+import 'package:netindo_shop/provider/handle_http.dart';
 import 'package:netindo_shop/views/screen/address/address_screen.dart';
+import 'package:provider/provider.dart';
 
 class CheckoutComponent extends StatefulWidget {
   @override
@@ -18,17 +23,21 @@ class CheckoutComponent extends StatefulWidget {
 }
 
 class _CheckoutComponentState extends State<CheckoutComponent> {
+  
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   List product = [];
+  BankModel bankModel;
+  Map<String,Object> detail = {};
   Map<String,Object> address = {};
   dynamic shippingKurir = {};
   dynamic shippingLayanan = {};
   dynamic loadingShipping = {"kurir":true,"layanan":true};
   Map<String,Object> indexShipping = {"kurir":0,"layanan":0};
   bool isLoading=true;
-  int indexAddress=0,cost=0,subtotal=0;
+  int indexAddress=0,indexBank=0,cost=0,subtotal=0,grandTotal=0;
   Future loadData(String type)async{
     final resDetail = await FunctionCheckout().loadData(context: context,type: type,ongkos: cost);
+    detail.addAll(resDetail);
     if(type=="all"){
       address = resDetail["address"]["data"][indexAddress];
       shippingKurir.addAll({"arr":resDetail["shipping"]["kurir"]["result"],"obj":resDetail["shipping"]["kurir"]["result"][0]});
@@ -36,13 +45,16 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
       loadingShipping.addAll({"kurir":false,"layanan":false});
       isLoading=false;
       cost=resDetail["shipping"]["layanan"]["ongkir"]["ongkir"][0]["cost"];
-    }else{
+      bankModel = resDetail["bank"];
+    }
+    else{
       cost=cost;
     }
+
     subtotal = resDetail["subTotal"];
+    grandTotal = resDetail["grandTotal"];
     product = resDetail["productDetail"];
     if(this.mounted)setState(() {});
-    // print("RESPONSE DETAIL $product");
   }
 
   Future handleShipping(i,type)async{
@@ -62,9 +74,47 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
       indexShipping["layanan"] = i;
       cost = shippingLayanan["arr"][i]["cost"];
     }
+    grandTotal = grandTotal+cost;
     if(this.mounted)setState(() {});
 
   }
+
+  Future checkout(int indexBank)async{
+    var detailBarang=[];
+    product.forEach((element){
+      detailBarang.add({
+        "kode_barang":element["kode_barang"],
+        "id_varian":element["id_varian"],
+        "id_subvarian":element["id_subvarian"],
+        "qty":element["qty"],
+        "harga_jual":"${element["harga_jual"]}",
+        "disc":"${element["disc"]}",
+        "subtotal":"${element["subtotal"]}",
+        "tax":"${element["tax"]}"
+      });
+    });
+    Map<String, Object> data ={
+      "id_tenant":detail["idTenant"],
+      "id_member":detail["idUser"],
+      "subtotal":"$subtotal",
+      "ongkir":"$cost",
+      "disc":"0",
+      "tax":"0",
+      "grandtotal":"$grandTotal",
+      "kurir":shippingKurir["obj"]["kurir"],
+      "service":shippingLayanan["obj"]["service"],
+      "metode_pembayaran":"transfer",
+      "id_promo":"-",
+      "kode_voucher":"-",
+      "id_alamat_member":address["id"],
+      "id_bank_tujuan":bankModel.result.data[indexBank].id,
+      "atas_nama":bankModel.result.data[indexBank].atasNama,
+      "no_rek":bankModel.result.data[indexBank].noRekening,
+      "detail":"$detailBarang"
+    };
+    FunctionCheckout().storeCheckout(context: context,data: data);
+  }
+
 
   @override
   void initState() {
@@ -77,74 +127,10 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
 
   @override
   Widget build(BuildContext context) {
-    final scaler = config.ScreenScale(context).scaler;
-    print("onglos $cost");
-
     return Scaffold(
       key: _scaffoldKey,
       appBar: WidgetHelper().appBarWithButton(context,"Checkout", (){}, <Widget>[],param: "default"),
-      bottomNavigationBar: Container(
-        padding: scaler.getPadding(1,2),
-        decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor,
-            borderRadius: BorderRadius.only(topRight: Radius.circular(20), topLeft: Radius.circular(20)),
-            boxShadow: [
-              BoxShadow(
-                  color: Theme.of(context).focusColor.withOpacity(0.15), offset: Offset(0, -2), blurRadius: 5.0)
-            ]),
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width - scaler.getWidth(4),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Expanded(child:config.MyFont.title(context: context,text:'Subtotal')),
-                  config.MyFont.title(context: context,text:'${FunctionHelper().formatter.format(subtotal)}',color: config.Colors.mainColors),
-                ],
-              ),
-              SizedBox(height: scaler.getHeight(0.5)),
-              Row(
-                children: <Widget>[
-                  Expanded(child:config.MyFont.title(context: context,text:'Ongkos kirim')),
-                  config.MyFont.title(context: context,text:'${FunctionHelper().formatter.format(cost)}',color: config.Colors.mainColors),
-                ],
-              ),
-              SizedBox(height: scaler.getHeight(0.5)),
-              Row(
-                children: <Widget>[
-                  Expanded(child:config.MyFont.title(context: context,text:'Diskon voucher')),
-                  config.MyFont.title(context: context,text:'${FunctionHelper().formatter.format(0)}',color: config.Colors.mainColors),
-                ],
-              ),
-              SizedBox(height: scaler.getHeight(0.5)),
-              Stack(
-                fit: StackFit.loose,
-                alignment: AlignmentDirectional.centerEnd,
-                children: <Widget>[
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width - 30,
-                    child: FlatButton(
-                        onPressed: () {},
-                        padding: EdgeInsets.symmetric(vertical: 14),
-                        color: Theme.of(context).accentColor,
-                        shape: StadiumBorder(),
-                        child:config.MyFont.title(context: context,text:'Checkout',fontWeight: FontWeight.bold,color:  Theme.of(context).primaryColor)
-                    ),
-                  ),
-                  Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child:config.MyFont.title(context: context,text:'${FunctionHelper().formatter.format(subtotal)}',fontWeight: FontWeight.bold,color:  Theme.of(context).primaryColor)
-
-                  )
-                ],
-              ),
-              SizedBox(height: 10),
-            ],
-          ),
-        ),
-      ),
+      bottomNavigationBar: buildBottomNavigationBar(context),
       body: ListView(
         physics:AlwaysScrollableScrollPhysics(),
         children: [
@@ -155,13 +141,13 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
           ),
           Divider(),
           SectionShippingWidget(
-              index:indexShipping,
-              isLoading: loadingShipping,
-              kurir:shippingKurir,
-              layanan:shippingLayanan,
-              callback:(i,type)async{
-                handleShipping(i,type);
-              }
+            index:indexShipping,
+            isLoading: loadingShipping,
+            kurir:shippingKurir,
+            layanan:shippingLayanan,
+            callback:(i,type)async{
+              handleShipping(i,type);
+            }
           ),
           Divider(),
           SectionProductWidget(data: product,callback: (){
@@ -171,4 +157,71 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
       ),
     );
   }
+  
+  
+  Widget buildBottomNavigationBar(BuildContext context){
+    final scaler = config.ScreenScale(context).scaler;
+    return WidgetHelper().chip(
+      ctx: context,
+      colors: Theme.of(context).primaryColor,
+      padding: scaler.getPadding(1,2),
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width - scaler.getWidth(4),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            buildRowBottomBar(context: context,title: "Subtotal",desc: "$subtotal"),
+            SizedBox(height: scaler.getHeight(0.5)),
+            buildRowBottomBar(context: context,title: "Ongkos kirim",desc: "$cost"),
+            SizedBox(height: scaler.getHeight(0.5)),
+            buildRowBottomBar(context: context,title: "Diskon voucher",desc: "0"),
+            SizedBox(height: scaler.getHeight(0.5)),
+            WidgetHelper().myRipple(
+              isRadius: true,
+              radius: 100,
+              callback: (){
+                WidgetHelper().myModal(context,ModalBankWidget(bankModel: bankModel,callback: (i){
+                 WidgetHelper().notifDialog(context, "Perhatian","pastikan data yang anda isi sudah benar", (){}, ()async{
+                   await checkout(i);
+                 });
+                }));
+              },
+              child: Stack(
+                fit: StackFit.loose,
+                alignment: AlignmentDirectional.centerEnd,
+                children: <Widget>[
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width - 30,
+                    child: Container(
+                      alignment: Alignment.center,
+                      padding: EdgeInsets.symmetric(vertical: 14),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).accentColor,
+                      ),
+                      child:config.MyFont.title(context: context,text:'Checkout',fontWeight: FontWeight.bold,color:  Theme.of(context).primaryColor)
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child:config.MyFont.title(context: context,text:'${FunctionHelper().formatter.format(grandTotal)}',color: config.Colors.moneyColors)
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
+      )
+    );
+  }
+
+  Widget buildRowBottomBar({BuildContext context,String title, var desc}){
+    return Row(
+      children: <Widget>[
+        Expanded(child:config.MyFont.title(context: context,text:title)),
+        config.MyFont.title(context: context,text:'${FunctionHelper().formatter.format(int.parse(desc))}',color: config.Colors.moneyColors),
+      ],
+    );
+  }
+
 }

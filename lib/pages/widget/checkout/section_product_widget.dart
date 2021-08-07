@@ -62,7 +62,7 @@ class _SectionProductWidgetState extends State<SectionProductWidget> {
                              ),
                            ),
                          ),
-                         SizedBox(width: 15),
+                         SizedBox(width:scaler.getWidth(1.5)),
                          Flexible(
                            child: Row(
                              crossAxisAlignment: CrossAxisAlignment.center,
@@ -74,12 +74,11 @@ class _SectionProductWidgetState extends State<SectionProductWidget> {
                                      config.MyFont.title(context: context,text:res["title"],fontSize: 9),
                                      Row(
                                        children: <Widget>[
-                                         config.MyFont.subtitle(context: context,text:FunctionHelper().formatter.format(int.parse(res["qty"])),color: Theme.of(context).textTheme.caption.color),
-                                         SizedBox(width:2),
+                                         config.MyFont.subtitle(context: context,text:config.MyFont.toMoney(res["qty"]),color:Theme.of(context).textTheme.caption.color),
+                                         SizedBox(width:scaler.getWidth(0.2)),
                                          config.MyFont.subtitle(context: context,text:'*',fontSize: 8,color: Theme.of(context).textTheme.caption.color),
-                                         SizedBox(width:2),
-                                         config.MyFont.subtitle(context: context,text:FunctionHelper().formatter.format(int.parse(res["harga"])),color: Theme.of(context).textTheme.caption.color),
-
+                                         SizedBox(width:scaler.getWidth(0.2)),
+                                         config.MyFont.subtitle(context: context,text:config.MyFont.toMoney(res["harga_jual"]),color: config.Colors.moneyColors),
                                        ],
                                        crossAxisAlignment: CrossAxisAlignment.center,
                                      ),
@@ -87,7 +86,7 @@ class _SectionProductWidgetState extends State<SectionProductWidget> {
                                  ),
                                ),
                                SizedBox(width: 8),
-                               config.MyFont.title(context: context,text:'${FunctionHelper().formatter.format(int.parse(res["subtotal"]))}',fontSize: 9,color:  Theme.of(context).textTheme.display1.color),
+                               config.MyFont.title(context: context,text:config.MyFont.toMoney(res["subtotal"]),fontSize: 9,color:config.Colors.moneyColors),
                              ],
                            ),
                          )

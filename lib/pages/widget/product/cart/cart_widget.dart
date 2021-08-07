@@ -19,21 +19,27 @@ class CartWidget extends StatefulWidget {
 
 class _CartWidgetState extends State<CartWidget> {
   CartModel cartModel;
-  bool isLoading=true;
+  bool isLoading=true,isError=false;
   int subtotal=0,qty=0;
   String idTenant="";
   Future loadCart()async{
-    String tenant=await FunctionHelper().getSession(StringConfig.idTenant);
-    final res = await BaseProvider().getCart(tenant,context: context);
-    if(res is CartModel){
-      idTenant=tenant;
+    final tenant=await FunctionHelper().getTenant();
+    final res = await HandleHttp().getProvider("cart/${tenant[StringConfig.idTenant]}", cartModelFromJson,context: context);
+
+    if(res!=null){
+      if(res==StringConfig.errNoData){
+        isError=true;
+        if(this.mounted) setState(() {});
+        return;
+      }
+      idTenant=tenant["id"];
       CartModel result=res;
       cartModel = result;
-      print(cartModel.result.length);
       isLoading=false;
       getSubtotal();
       if(this.mounted) setState(() {});
     }
+
   }
   getSubtotal(){
     int st = 0;
@@ -98,13 +104,21 @@ class _CartWidgetState extends State<CartWidget> {
     final scaler = config.ScreenScale(context).scaler;
     return Scaffold(
       appBar: WidgetHelper().appBarWithButton(context, "Shopping Cart",(){}, <Widget>[
-        if(!isLoading && cartModel.result.length>0)
+        if(!isLoading && !isError)
           WidgetHelper().iconAppbar(context: context,icon: UiIcons.trash,callback: (){
             deleted(idTenant,'all');
           })
 
       ],param: "default"),
-      body: Stack(
+      body: isError?EmptyDataWidget(
+        iconData: UiIcons.shopping_cart,
+        title: "Empty cart",
+        callback: (){
+          Navigator.of(context).pushNamedAndRemoveUntil("/${StringConfig.main}", (route) => false,arguments: StringConfig.defaultTab);
+        },
+        isFunction: true,
+        txtFunction: "Start Exploring",
+      ):Stack(
         fit: StackFit.expand,
         children: <Widget>[
           Container(
@@ -126,7 +140,7 @@ class _CartWidgetState extends State<CartWidget> {
                     ),
                     title: config.MyFont.title(context: context,text:'Verify your quantity and click checkout',fontWeight: FontWeight.normal,fontSize: 9),
                   ),
-                  isLoading?LoadingCart(total: 6): cartModel.result.length>0?ListView.separated(
+                  isLoading?LoadingCart(total: 6):ListView.separated(
                     padding: EdgeInsets.all(0),
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
@@ -138,14 +152,6 @@ class _CartWidgetState extends State<CartWidget> {
                     itemBuilder: (context, index) {
                       return buildItem(context: context,index: index);
                     },
-                  ):EmptyDataWidget(
-                    iconData: UiIcons.shopping_cart,
-                    title: "Empty cart",
-                    callback: (){
-                      Navigator.of(context).pushNamedAndRemoveUntil("/${StringConfig.main}", (route) => false,arguments: StringConfig.defaultTab);
-                    },
-                    isFunction: true,
-                    txtFunction: "Start Exploring",
                   ),
                 ],
               ),

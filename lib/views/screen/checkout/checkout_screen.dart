@@ -243,7 +243,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       else{
         var resposneCheckout = CheckoutModel.fromJson(res);
         WidgetHelper().myPush(context,DetailCheckoutScreen(
-          param: "teibisa",
+          param: "teubisa",
           invoice_no:"${resposneCheckout.result.invoiceNo}",
           grandtotal:"${resposneCheckout.result.grandtotal}",
           kode_unik:"${resposneCheckout.result.kodeUnik}",

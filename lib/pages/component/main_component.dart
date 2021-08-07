@@ -99,17 +99,16 @@ class _MainComponentState extends State<MainComponent> {
 
   @override
   void didUpdateWidget(MainComponent oldWidget) {
-    _selectTab(oldWidget.currentTab);
+    // _selectTab(oldWidget.currentTab);
     super.didUpdateWidget(oldWidget);
   }
 
   Future loadCart()async{
-    String idTenant = await FunctionHelper().getSession(StringConfig.idTenant);
-    final res = await BaseProvider().countCart(idTenant);
+    final tenant = await FunctionHelper().getTenant();
+    final res = await BaseProvider().countCart(tenant[StringConfig.idTenant]);
     print("LOAD CART = $res");
     if(this.mounted) setState(() {
       totalCart = res;
-      idTenant=id;
     });
   }
 

@@ -39,12 +39,14 @@ class _ModalLayananWidgetState extends State<ModalLayananWidget> {
                   itemCount: widget.data.length,
                   itemBuilder: (context,index){
                     final res = widget.data[index];
-                    return WidgetHelper().myRipple(
-                        callback: ()=>widget.callback(index),
-                        child: Container(
-                          padding: scaler.getPadding(0.5,0),
-                          child: WidgetHelper().titleQ(context,"${res["service"]} | ${res["cost"]} | ${res["estimasi"]}",fontSize: 9,param: widget.index==index?"-":"",iconAct: widget.index==index?UiIcons.checked:null),
-                        )
+                    return WidgetHelper().titleQ(
+                        context,
+                        "${res["service"]} | ${res["cost"]} | ${res["estimasi"]}",
+                        padding: scaler.getPadding(0.5,0),
+                        fontSize: 9,
+                        param: widget.index==index?"-":"",
+                        iconAct: widget.index==index?UiIcons.checked:null,
+                        callback: ()=>widget.callback(index)
                     );
                   },
                   separatorBuilder: (context, index) {return Divider(height:scaler.getHeight(1));},

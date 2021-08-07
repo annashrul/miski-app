@@ -33,7 +33,7 @@ class _SectionShippingWidgetState extends State<SectionShippingWidget> {
   }
   @override
   Widget build(BuildContext context) {
-    print(widget.index);
+
     dynamic resKurir=widget.kurir["obj"];
     dynamic resLayanan=widget.layanan["obj"];
     final scaler = config.ScreenScale(context).scaler;

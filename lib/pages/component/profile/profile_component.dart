@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
+import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/pages/widget/searchbar_widget.dart';
 
@@ -13,16 +14,35 @@ class ProfileComponent extends StatefulWidget {
 class _ProfileComponentState extends State<ProfileComponent> {
   @override
   Widget build(BuildContext context) {
+
+    List<Widget> historyWidget = [];
+    List historArray =FunctionHelper.arrOptDate;
+    for(int i=0;i<historArray.length;i++){
+      historyWidget.add(
+        WidgetHelper().myRipple(
+          radius: 0,
+          callback: (){
+            Navigator.of(context).pushNamed("/${StringConfig.historyOrder}",arguments: i);
+          },
+          child:  ListTile(
+            dense: true,
+            title:config.MyFont.subtitle(context: context,text:historArray[i],fontSize: 9,color: Theme.of(context).textTheme.caption.color),
+          )
+        ),
+      );
+    }
+    final scaler=config.ScreenScale(context).scaler;
+
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(vertical: 7),
       child: Column(
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: scaler.getPadding(0,2),
             child: SearchBarWidget(),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            padding: scaler.getPadding(1,2),
             child: Row(
               children: <Widget>[
                 Expanded(
@@ -35,8 +55,8 @@ class _ProfileComponentState extends State<ProfileComponent> {
                   ),
                 ),
                 SizedBox(
-                    width: 55,
-                    height: 55,
+                    width: scaler.getWidth(10),
+                    height: scaler.getHeight(4),
                     child: InkWell(
                       borderRadius: BorderRadius.circular(300),
                       onTap: () {
@@ -50,7 +70,7 @@ class _ProfileComponentState extends State<ProfileComponent> {
             ),
           ),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 20),
+            margin: scaler.getMargin(0,2),
             decoration: BoxDecoration(
               color: Theme.of(context).primaryColor,
               borderRadius: BorderRadius.circular(6),
@@ -62,9 +82,9 @@ class _ProfileComponentState extends State<ProfileComponent> {
               children: <Widget>[
                 Expanded(
                   child: FlatButton(
-                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                    padding: scaler.getPadding(1,1),
                     onPressed: () {
-                      Navigator.of(context).pushNamed('/Tabs', arguments: 4);
+                      Navigator.of(context).pushNamed('/${StringConfig.main}', arguments: 4);
                     },
                     child: Column(
                       children: <Widget>[
@@ -76,7 +96,7 @@ class _ProfileComponentState extends State<ProfileComponent> {
                 ),
                 Expanded(
                   child: FlatButton(
-                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                    padding: scaler.getPadding(1,1),
                     onPressed: () {
                       Navigator.of(context).pushNamed('/Tabs', arguments: 0);
                     },
@@ -91,9 +111,9 @@ class _ProfileComponentState extends State<ProfileComponent> {
                 ),
                 Expanded(
                   child: FlatButton(
-                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                    padding: scaler.getPadding(1,1),
                     onPressed: () {
-                      Navigator.of(context).pushNamed('/Tabs', arguments: 3);
+                      Navigator.of(context).pushNamed('/${StringConfig.main}', arguments: 3);
                     },
                     child: Column(
                       children: <Widget>[
@@ -107,7 +127,7 @@ class _ProfileComponentState extends State<ProfileComponent> {
             ),
           ),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+            margin: scaler.getMargin(1,2),
             decoration: BoxDecoration(
               color: Theme.of(context).primaryColor,
               borderRadius: BorderRadius.circular(6),
@@ -118,74 +138,24 @@ class _ProfileComponentState extends State<ProfileComponent> {
             child: ListView(
               shrinkWrap: true,
               primary: false,
-              children: <Widget>[
+              children: [
                 ListTile(
                   leading: Icon(UiIcons.inbox),
-                  title:config.MyFont.title(context: context,text:'My orders' ),
-                  trailing: ButtonTheme(
-                    padding: EdgeInsets.all(0),
-                    minWidth: 50.0,
-                    height: 25.0,
-                    child: FlatButton(
-                      onPressed: () {
-                        Navigator.of(context).pushNamed('/Orders');
-                      },
-                      child:config.MyFont.title(context: context,text:"View all"),
-
-                    ),
-                  ),
+                  title:config.MyFont.title(context: context,text:'Riwayat belanja' ),
+                  trailing: WidgetHelper().myRipple(
+                    radius: 0,
+                    callback: () {
+                      Navigator.of(context).pushNamed('/${StringConfig.historyOrder}',arguments: 0);
+                    },
+                    child:config.MyFont.title(context: context,text:"semua",fontSize: 9,color: config.Colors.mainColors),
+                  )
                 ),
-               WidgetHelper().myRipple(
-                 callback: (){},
-                 child:  ListTile(
-                   dense: true,
-                   title:config.MyFont.subtitle(context: context,text:'Unpaid',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
-                   trailing: Chip(
-                     padding: EdgeInsets.symmetric(horizontal: 10),
-                     backgroundColor: Colors.transparent,
-                     shape: StadiumBorder(side: BorderSide(color: Theme.of(context).focusColor)),
-                     label: config.MyFont.subtitle(context: context,text:"1",fontSize: 8,color:Theme.of(context).focusColor),
-                   ),
-                 )
-               ),
-                WidgetHelper().myRipple(
-                    callback: (){},
-                    child:  ListTile(
-                      dense: true,
-                      title:config.MyFont.subtitle(context: context,text:'To be shipped',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
-                      trailing: Chip(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        backgroundColor: Colors.transparent,
-                        shape: StadiumBorder(side: BorderSide(color: Theme.of(context).focusColor)),
-                        label: config.MyFont.subtitle(context: context,text:"1",fontSize: 8,color:Theme.of(context).focusColor),
-                      ),
-                    )
-                ),
-                WidgetHelper().myRipple(
-                    callback: (){},
-                    child:  ListTile(
-                      dense: true,
-                      title:config.MyFont.subtitle(context: context,text:'shipped',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
-                      trailing: Chip(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        backgroundColor: Colors.transparent,
-                        shape: StadiumBorder(side: BorderSide(color: Theme.of(context).focusColor)),
-                        label: config.MyFont.subtitle(context: context,text:"1",fontSize: 8,color:Theme.of(context).focusColor),
-                      ),
-                    )
-                ),
-                WidgetHelper().myRipple(
-                    callback: (){},
-                    child:  ListTile(
-                      dense: true,
-                      title:config.MyFont.subtitle(context: context,text:'Success',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
-                    )
-                ),
+                Column(children: historyWidget),
               ],
             ),
           ),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+            margin: scaler.getMargin(1,2),
             decoration: BoxDecoration(
               color: Theme.of(context).primaryColor,
               borderRadius: BorderRadius.circular(6),
@@ -199,34 +169,19 @@ class _ProfileComponentState extends State<ProfileComponent> {
               children: <Widget>[
                 ListTile(
                   leading: Icon(UiIcons.user_1),
-                  title: config.MyFont.title(context: context,text:'Profile settings'),
-                  trailing: ButtonTheme(
-                    padding: EdgeInsets.all(0),
-                    minWidth: 50.0,
-                    height: 25.0,
-                    child: FlatButton(
-                      onPressed: () {
-                        Navigator.of(context).pushNamed('/Orders');
-                      },
-                      child:config.MyFont.title(context: context,text:"Edit"),
-                    ),
-                  ),
-                  // trailing: ButtonTheme(
-                  //   padding: EdgeInsets.all(0),
-                  //   minWidth: 50.0,
-                  //   height: 25.0,
-                  //   child: ProfileSettingsDialog(
-                  //     user: this._user,
-                  //     onChanged: () {
-                  //       setState(() {});
-                  //     },
-                  //   ),
-                  // ),
+                  title: config.MyFont.title(context: context,text:'Data diri'),
+                  trailing: WidgetHelper().myRipple(
+                    radius: 0,
+                    callback: () {
+                      Navigator.of(context).pushNamed('/${StringConfig.historyOrder}',arguments: 0);
+                    },
+                    child:config.MyFont.title(context: context,text:"edit",fontSize: 9,color: config.Colors.mainColors),
+                  )
                 ),
                 ListTile(
                   onTap: () {},
                   dense: true,
-                  title: config.MyFont.subtitle(context: context,text:'Fullname',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
+                  title: config.MyFont.subtitle(context: context,text:'Nama lengkap',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
                   trailing: config.MyFont.subtitle(context: context,text:'Annashrul yusuf',fontSize: 9,color: Theme.of(context).focusColor),
                 ),
                 ListTile(
@@ -238,20 +193,20 @@ class _ProfileComponentState extends State<ProfileComponent> {
                 ListTile(
                   onTap: () {},
                   dense: true,
-                  title: config.MyFont.subtitle(context: context,text:'Gender',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
+                  title: config.MyFont.subtitle(context: context,text:'Jenis kelamain',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
                   trailing: config.MyFont.subtitle(context: context,text:'My orders',fontSize: 9,color:Theme.of(context).focusColor),
                 ),
                 ListTile(
                   onTap: () {},
                   dense: true,
-                  title: config.MyFont.subtitle(context: context,text:'Birth date',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
+                  title: config.MyFont.subtitle(context: context,text:'tanggal lahir',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
                   trailing: config.MyFont.subtitle(context: context,text:'My orders',fontSize: 9,color:Theme.of(context).focusColor),
                 ),
               ],
             ),
           ),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+            margin: scaler.getMargin(1,2),
             decoration: BoxDecoration(
               color: Theme.of(context).primaryColor,
               borderRadius: BorderRadius.circular(6),
@@ -265,7 +220,7 @@ class _ProfileComponentState extends State<ProfileComponent> {
               children: <Widget>[
                 ListTile(
                   leading: Icon(UiIcons.settings_1),
-                  title: config.MyFont.title(context: context,text:'Account settings'),
+                  title: config.MyFont.title(context: context,text:'Lainnya'),
                 ),
                 WidgetHelper().myRipple(
                   callback: (){},

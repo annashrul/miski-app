@@ -6,7 +6,10 @@ import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/pages/component/auth/signin_component.dart';
 import 'package:netindo_shop/pages/component/auth/signup_component.dart';
 import 'package:netindo_shop/pages/component/brand/brand_component.dart';
+import 'package:netindo_shop/pages/component/chat/room_chat_component.dart';
 import 'package:netindo_shop/pages/component/checkout/checkout_component.dart';
+import 'package:netindo_shop/pages/component/checkout/success_checkout_component.dart';
+import 'package:netindo_shop/pages/component/history/history_order_component.dart';
 import 'package:netindo_shop/pages/component/home/home_component.dart';
 import 'package:netindo_shop/pages/component/main_component.dart';
 import 'package:netindo_shop/pages/component/on_boarding_component.dart';
@@ -37,6 +40,12 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => CartWidget());
       case '/${StringConfig.checkout}':
         return MaterialPageRoute(builder: (_) => CheckoutComponent());
+      case '/${StringConfig.successCheckout}':
+        return MaterialPageRoute(builder: (_) => SuccessCheckoutComponent(data: args));
+      case '/${StringConfig.roomChat}':
+        return MaterialPageRoute(builder: (_) => RoomChatComponent(data: args));
+      case '/${StringConfig.historyOrder}':
+        return MaterialPageRoute(builder: (_) => HistoryOrderComponent(currentTab: args));
       // case '/Categories':
       //   return MaterialPageRoute(builder: (_) => CategoriesWidget());
       // case '/Orders':

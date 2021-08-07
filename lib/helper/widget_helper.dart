@@ -333,14 +333,15 @@ class WidgetHelper{
         }
     );
   }
-  titleQ(BuildContext context,String txt,{String param="", Function callback,IconData icon,double fontSize,String image="",IconData iconAct=UiIcons.play_button}){
+  titleQ(BuildContext context,String txt,{EdgeInsetsGeometry padding,String param="", Function callback,IconData icon,double fontSize,String image="",IconData iconAct=UiIcons.play_button,String subtitle=""}){
     ScreenScaler scaler = ScreenScaler()..init(context);
-    return InkWell(
-      onTap:callback,
+    return myRipple(
+      callback:callback,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
+            padding: padding==null?scaler.getPadding(0,0):padding,
             child: Row(
               children: [
                 if(image!=""||icon!=null)image!=""?Hero(
@@ -348,14 +349,23 @@ class WidgetHelper{
                     child: Container(
                       height: scaler.getHeight(3),
                       width: scaler.getWidth(7.5),
+                      child: baseImage(image,fit: BoxFit.contain),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(100)),
-                        image: DecorationImage(image: NetworkImage(image), fit: BoxFit.contain),
                       ),
                     )
                 ):icons(ctx: context,icon: icon),
                 if(image!=""||icon!=null)SizedBox(width: scaler.getWidth(1)),
-                config.MyFont.title(context: context,text:txt,fontSize: fontSize)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    config.MyFont.title(context: context,text:txt,fontSize: fontSize),
+                    if(subtitle!="") Container(
+
+                      child: config.MyFont.subtitle(context: context,text:subtitle,fontSize: 8,color: Theme.of(context).textTheme.caption.color),
+                    )
+                  ],
+                )
               ],
             ),
           ),
@@ -454,7 +464,7 @@ class WidgetHelper{
   myRipple({Widget child,Function callback,bool isRadius=true,double radius=10}){
     return TouchRippleEffect(
       backgroundColor: Colors.transparent,
-      borderRadius: BorderRadius.circular(isRadius?radius:0),
+      borderRadius: BorderRadius.circular(radius!=null?radius:0),
       rippleColor: Color(0xFFD3D3D3),
       onTap: callback,
       child: child,
@@ -484,14 +494,13 @@ class WidgetHelper{
     );
   }
   baseImage(String img,{double width, double height,BoxFit fit = BoxFit.contain}){
-
     return CachedNetworkImage(
       imageUrl:img,
       width: width,
       height: height,
       fit:fit,
-      placeholder: (context, url) => Image.asset(SiteConfig().localAssets+'logo.jpeg',fit:BoxFit.contain),
-      errorWidget: (context, url, error) => Image.asset(SiteConfig().localAssets+'logo.jpeg',fit:BoxFit.contain),
+      placeholder: (context, url) => Image.asset(StringConfig.userImage,fit:BoxFit.contain),
+      errorWidget: (context, url, error) => Image.asset(StringConfig.userImage,fit:BoxFit.contain),
     );
   }
   textSpaceBetween(BuildContext context,String title,String desc,{FontWeight fontWeightTitle = FontWeight.normal,FontWeight fontWeightDesc = FontWeight.normal,MainAxisAlignment mainAxisAlignment=MainAxisAlignment.spaceBetween,Color titleColor=Colors.black,Color descColor}){
@@ -505,7 +514,7 @@ class WidgetHelper{
       ],
     );
   }
-  iconAppbar({BuildContext context,Function callback,IconData icon,String title=''}){
+  iconAppbar({BuildContext context,Function callback,IconData icon,String title='',Color color}){
     ScreenScaler scaler = ScreenScaler()..init(context);
     return Container(
       margin: scaler.getMarginLTRB(0, 0, 0, 0),
@@ -514,7 +523,7 @@ class WidgetHelper{
           radius: 100,
           callback: callback,
           child: Container(
-            padding: scaler.getPadding(0,2.5),
+            padding: scaler.getPadding(0,2),
             child: Stack(
               alignment: AlignmentDirectional.center,
               children: <Widget>[
@@ -523,7 +532,7 @@ class WidgetHelper{
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                     ),
-                    child: icon!=null?Icon(icon,color:Theme.of(context).hintColor):config.MyFont.title(context: context,text: title)
+                    child: icon!=null?Icon(icon,color:color!=null?color:Theme.of(context).hintColor):config.MyFont.title(context: context,text: title)
                 ),
               ],
             ),
@@ -565,12 +574,12 @@ class WidgetHelper{
       ),
     );
   }
-  chip({BuildContext ctx,Widget child,EdgeInsetsGeometry padding}){
+  chip({BuildContext ctx,Widget child,EdgeInsetsGeometry padding, Color colors}){
     final scaler = config.ScreenScale(ctx).scaler;
     return Container(
       padding: padding==null?scaler.getPaddingLTRB(2,0.5,2,0.5):padding,
       decoration: BoxDecoration(
-        color: Theme.of(ctx).primaryColor.withOpacity(0.9),
+        color: colors==null?Theme.of(ctx).primaryColor.withOpacity(0.9):colors,
         boxShadow: [BoxShadow(color: Theme.of(ctx).focusColor.withOpacity(0.1), blurRadius: 5, offset: Offset(0, 2))],
         borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
@@ -578,9 +587,9 @@ class WidgetHelper{
     );
   }
 
-  icons({BuildContext ctx,IconData icon}){
+  icons({BuildContext ctx,IconData icon,Color color}){
     final scaler = config.ScreenScale(ctx).scaler;
-    return Icon(icon,size: scaler.getTextSize(StringConfig.iconSize),color: Theme.of(ctx).hintColor);
+    return Icon(icon,size: scaler.getTextSize(StringConfig.iconSize),color: color==null?Theme.of(ctx).hintColor:color);
   }
 
 }

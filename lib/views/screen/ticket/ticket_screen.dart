@@ -299,10 +299,7 @@ class _RoomTicketScreenState extends State<RoomTicketScreen> {
     }
   }
   Future storeTicket()async{
-    print(widget.id);
-    // await db.delete(TicketQuery.TABLE_NAME,"id_master", widget.id);
     var res = await BaseProvider().getProvider("chat/${widget.id}", detailTicketModelFromJson);
-
     detailTicketModel.result.detail.forEach((element)async {
       final data =  {
         "id_ticket": widget.id.toString(),

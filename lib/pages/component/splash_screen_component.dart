@@ -29,8 +29,16 @@ class _SplashScreenComponentState extends State<SplashScreenComponent> {
       sess.setBool(StringConfig.isTenant, true);
       if(!result["multitenant"]){
         print('##################### TENANT ${result} ######################');
-        sess.setString(StringConfig.namaTenant,result["tenant"]["nama"]);
-        sess.setString(StringConfig.idTenant,result["tenant"]["id"]);
+
+        sess.setStringList("tenant", [
+          result["tenant"]["id"],
+          result["tenant"]["nama"],
+          result["tenant"]["email"],
+          result["tenant"]["telp"],
+          result["tenant"]["alamat"],
+          result["tenant"]["logo"]
+        ]);
+
         sess.setBool(StringConfig.isTenant, false);
       }
       final onBoarding= await userHelper.getDataUser(StringConfig.onBoarding);

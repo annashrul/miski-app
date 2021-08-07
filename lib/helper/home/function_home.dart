@@ -9,8 +9,8 @@ import 'package:netindo_shop/provider/handle_http.dart';
 class FunctionHome{
   Future loadProduct({BuildContext context,String idKelompok})async{
     ListProductTenantModel listProductTenantModel;
-    String idTenant = await FunctionHelper().getSession(StringConfig.idTenant);
-    String url = "barang?page=1&id_tenant=$idTenant";
+    final tenant = await FunctionHelper().getTenant();
+    String url = "barang?page=1&id_tenant=${tenant[StringConfig.idTenant]}";
     if(idKelompok!="") url+="&kelompok=$idKelompok";
     final res = await HandleHttp().getProvider(url, listProductTenantModelFromJson,context: context);
     if(res!=null){

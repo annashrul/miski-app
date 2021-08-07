@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:netindo_shop/helper/function_helper.dart';
 
 class AppConfig {
   BuildContext _context;
@@ -37,6 +38,7 @@ class AppConfig {
 }
 
 class Colors {
+  static const Color moneyColors = Color(0xFFff5722);
   static const Color mainColors = Color(0xFF009DB5);
   static const Color mainDarkColors = Color(0xFF22B7CE);
   static const Color secondColors = Color(0xFF04526B);
@@ -161,6 +163,11 @@ class MyFont{
     );
 
   }
+
+  static toMoney(res){
+    return FunctionHelper().formatter.format(int.parse(res));
+  }
+
 }
 
 class ScreenScale{

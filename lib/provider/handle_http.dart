@@ -28,7 +28,7 @@ class HandleHttp{
       };
       final response = await client.get("${SiteConfig().baseUrl}$url", headers:head).timeout(Duration(seconds: SiteConfig().timeout));
       final jsonResponse = json.decode(response.body);
-      print("=================== SUCCESS $url = ${response.statusCode} ==========================");
+      print("=================== SUCCESS $url = ${jsonResponse['result']} ==========================");
       if (response.statusCode == 200) {
         if(jsonResponse['result'].length>0){
           return param(response.body);
@@ -69,17 +69,16 @@ class HandleHttp{
   }
   Future postProvider(url,Map<String, Object> data,{BuildContext context,Function callback}) async {
     try {
-      final token= await userRepository.getDataUser('token');
-      Map<String, String> head={
-        'Authorization':token,
-        'username': SiteConfig().username,
-        'password': SiteConfig().password,
-        'myconnection':SiteConfig().connection,
-        // "HttpHeaders.contentTypeHeader": "application/json"
-      };
+      final token= await userRepository.getDataUser(StringConfig.token);
       final request = await client.post(
           "${SiteConfig().baseUrl}$url",
-          headers: head,
+          headers: {
+            'Authorization':token,
+            'username': SiteConfig().username,
+            'password': SiteConfig().password,
+            'myconnection':SiteConfig().connection,
+            "HttpHeaders.contentTypeHeader": "application/json"
+          },
           body:data
       ).timeout(Duration(seconds: SiteConfig().timeout));
       if(request.statusCode==200){
@@ -104,7 +103,8 @@ class HandleHttp{
       print("=================== SocketException $url = $SocketException ============================");
       Navigator.pop(context);
       return WidgetHelper().showFloatingFlushbar(context, "failed", StringConfig.msgConnection);
-    } on Error catch (e) {
+    }
+    on Error catch (e) {
       print("###################################### GET Error $url ");
       Navigator.pop(context);
       return WidgetHelper().showFloatingFlushbar(context, "failed", StringConfig.errSyntax);
