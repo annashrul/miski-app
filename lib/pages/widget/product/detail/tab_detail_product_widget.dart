@@ -32,18 +32,7 @@ class TabProductWidget extends StatelessWidget {
                 Expanded(
                   child: isLoading?WidgetHelper().shimmer(context:context,width: 30):config.MyFont.subtitle(context: context,text:data["title"],fontSize: 9),
                 ),
-                if(!isLoading)Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    config.MyFont.subtitle(context: context,text:data["rating"],fontSize: 8,color:config.Colors.mainColors,),
-                    Icon(
-                      Icons.star_border,
-                      color:  config.Colors.mainColors,
-                      size: scaler.getTextSize(9),
-                    ),
-                  ],
-                )
+                if(!isLoading)WidgetHelper().myRating(context: context,rating: data["rating"])
               ],
             ),
           ),
@@ -52,11 +41,11 @@ class TabProductWidget extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                isLoading?WidgetHelper().shimmer(context:context,width: 20):config.MyFont.title(context: context,text:"${FunctionHelper().formatter.format(int.parse(data["harga"]))}",color: config.Colors.mainColors),
+                isLoading?WidgetHelper().shimmer(context:context,width: 20):config.MyFont.title(context: context,text:"${config.MyFont.toMoney("${data["harga"]}")}",color: config.Colors.moneyColors),
                 SizedBox(width: 10),
-                isLoading?WidgetHelper().shimmer(context:context,width: 10):config.MyFont.title(
+                isLoading?WidgetHelper().shimmer(context:context,width: 10):config.MyFont.subtitle(
                     context: context,
-                    text:int.parse(data["harga_coret"])<1?"":"${FunctionHelper().formatter.format(int.parse(data["harga_coret"]))}",
+                    text:int.parse(data["harga_coret"])<1?"":"${config.MyFont.toMoney("${data["harga_coret"]}")}",
                     textDecoration: TextDecoration.lineThrough,
                     fontSize: 8
                 ),
@@ -155,22 +144,11 @@ class TabDescProductWidget extends StatelessWidget {
     final scaler = config.ScreenScale(context).scaler;
 
     return Container(
-      padding: scaler.getPaddingLTRB(0, 0, 0, 2),
+      padding: scaler.getPaddingLTRB(0, 1, 0, 2),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Padding(
-            padding: scaler.getPadding(0,2),
-            child: ListTile(
-              dense: true,
-              contentPadding: EdgeInsets.all( 0),
-              leading: Icon(
-                UiIcons.file_2,
-                color: Theme.of(context).hintColor,
-              ),
-              title:config.MyFont.title(context: context,text:"Description"),
-            ),
-          ),
+
           Padding(
             padding: scaler.getPadding(0,2),
             child:config.MyFont.subtitle(context: context,text:data["deskripsi"],fontSize: 9),
@@ -195,22 +173,13 @@ class TabReviewProductWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scaler = config.ScreenScale(context).scaler;
-    return isLoading?LoadingHistory(tot: 10):data["review"].length<1?Container( padding: scaler.getPadding(0,2),height: scaler.getHeight(30),child: EmptyTenant()):ListView.separated(
+    return isLoading?Container(
+        padding: scaler.getPadding(0,2),
+      child: LoadingHistory(tot: 10),
+    ):data["review"].length<1?Container( padding: scaler.getPadding(0,2),height: scaler.getHeight(30),child: EmptyTenant()):ListView.separated(
       padding: scaler.getPadding(0,2),
       itemBuilder: (context, index) {
         final res=data["review"][index];
-        // return ReviewWidget(
-        //   id: "Maria R. Garza",
-        //   idMember:"Maria R. Garza",
-        //   kdBrg:"Maria R. Garza",
-        //   nama:"Maria R. Garza",
-        //   caption: "There are a few foods that predate colonization, and the European colonization of the Americas brought about the introduction of a large number of new ingredients",
-        //   rate: "3.5",
-        //   foto: "",
-        //   time: "7 menit yang lalu",
-        //   createdAt: "",
-        //   updatedAt:""
-        // );
         return ReviewWidget(
           id: res["id"],
           idMember: res["idMember"],
@@ -225,9 +194,7 @@ class TabReviewProductWidget extends StatelessWidget {
         );
       },
       separatorBuilder: (context, index) {
-        return Divider(
-          height: 30,
-        );
+        return Divider();
       },
       itemCount: data["review"].length,
       // itemCount:100,

@@ -1,9 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
+import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
+import 'package:netindo_shop/pages/widget/upload_image_widget.dart';
+import 'package:netindo_shop/provider/handle_http.dart';
+import 'package:netindo_shop/views/screen/checkout/detail_checkout_screen.dart';
 
 class SuccessCheckoutComponent extends StatefulWidget {
   final Map<String,Object> data;
@@ -14,11 +20,22 @@ class SuccessCheckoutComponent extends StatefulWidget {
 
 class _SuccessCheckoutComponentState extends State<SuccessCheckoutComponent> {
   var key = GlobalKey<ScaffoldState>();
-  String fileName;
+  String fileName="",url = '',image='';
+
+
   var hari  = DateFormat.d().format( DateTime.now().add(Duration(days: 3)));
   var bulan = DateFormat.M().format( DateTime.now());
   var tahun = DateFormat.y().format( DateTime.now());
-
+  Future upload(encoded,img)async{
+    WidgetHelper().loadingDialog(context);
+    var res = await HandleHttp().putProvider("transaction/deposit/$encoded", {"bukti":img,},context: context);
+    if(res!=null){
+      Navigator.pop(context);
+      WidgetHelper().notifOneBtnDialog(context, StringConfig.titleMsgSuccessTrx,StringConfig.descMsgSuccessTrx,(){
+        Navigator.pushNamedAndRemoveUntil(context,"/${StringConfig.main}", (route) => false,arguments: StringConfig.defaultTab);
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     final scaler = config.ScreenScale(context).scaler;
@@ -85,7 +102,9 @@ class _SuccessCheckoutComponentState extends State<SuccessCheckoutComponent> {
                 ),
               ),
               WidgetHelper().myRipple(
-                callback: (){},
+                callback: (){
+                  Navigator.of(context).pushNamedAndRemoveUntil("/${StringConfig.main}", (route) => false,arguments: StringConfig.defaultTab);
+                },
                 child: Container(
                   alignment: Alignment.bottomRight,
                   child: config.MyFont.subtitle(context: context,text:"Kembali kehalaman utama",color:config.Colors.mainColors,textAlign: TextAlign.right,textDecoration: TextDecoration.underline),
@@ -113,6 +132,15 @@ class _SuccessCheckoutComponentState extends State<SuccessCheckoutComponent> {
                 isRadius: true,
                 radius: 100,
                 callback: (){
+                  WidgetHelper().myModal(context, UploadImageWidget(
+                    callback: (String img)async{
+                      setState(() {
+                        url = base64.encode(utf8.encode(widget.data["invoice_no"]));
+                        image = img;
+                      });
+                      upload(url,image);
+                    },
+                  ));
                 },
                 child: Stack(
                   fit: StackFit.loose,

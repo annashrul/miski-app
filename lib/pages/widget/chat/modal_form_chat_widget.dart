@@ -90,7 +90,7 @@ class _ModalFormChatWidgetState extends State<ModalFormChatWidget> {
                   children: [
                     WidgetHelper().titleQ(
                       context,
-                      "Form tiket",
+                      "Buat pesan",
                       icon: UiIcons.information,fontSize: 9,
                     ),
                     WidgetHelper().myRipple(

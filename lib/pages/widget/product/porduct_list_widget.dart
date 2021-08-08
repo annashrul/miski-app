@@ -14,6 +14,7 @@ class ProductListWidget extends StatelessWidget {
     @required this.productSales,
     @required this.productRate,
     @required this.productStock,
+
     @required this.heroTag,
   }) : super(key: key);
   final String productId;
@@ -23,6 +24,7 @@ class ProductListWidget extends StatelessWidget {
   final String productSales;
   final String productRate;
   final String productStock;
+
   final String heroTag;
   @override
   Widget build(BuildContext context) {
@@ -112,6 +114,8 @@ class ProductListCarouselWidget extends StatelessWidget {
     @required this.productSales,
     @required this.productRate,
     @required this.productStock,
+    @required this.productDisc1,
+    @required this.productDisc2,
     @required this.heroTag,
   }) : super(key: key);
   final String productId;
@@ -121,15 +125,17 @@ class ProductListCarouselWidget extends StatelessWidget {
   final String productSales;
   final String productRate;
   final String productStock;
+  final String productDisc1;
+  final String productDisc2;
   final String heroTag;
   @override
   Widget build(BuildContext context) {
     final scaler = config.ScreenScale(context).scaler;
     return Container(
-      margin:scaler.getMarginLTRB(0.5,0,2,0),
+      margin:scaler.getMarginLTRB(0,0,1,0),
       child: WidgetHelper().myRipple(
           callback: (){
-            Navigator.of(context).pushNamed("/${StringConfig.detailProduct}",arguments: {
+            Navigator.of(context).pushReplacementNamed("/${StringConfig.detailProduct}",arguments: {
               "heroTag":this.heroTag,
               "id":this.productId,
               "image":this.productImage,
@@ -152,7 +158,7 @@ class ProductListCarouselWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              Positioned(
+              if(productDisc1!="0")Positioned(
                 top: 6,
                 right: 10,
                 child: Container(
@@ -160,7 +166,7 @@ class ProductListCarouselWidget extends StatelessWidget {
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(100)), color: Theme.of(context).accentColor),
                     alignment: AlignmentDirectional.topEnd,
-                    child:config.MyFont.title(context: context,text:"50 %",fontSize: 9,color: Theme.of(context).primaryColor)
+                    child:config.MyFont.title(context: context,text:"$productDisc1 ${productDisc2!=""?"+ $productDisc2":""} %",fontSize: 9,color: Theme.of(context).primaryColor)
                 ),
               ),
               Container(
@@ -177,26 +183,18 @@ class ProductListCarouselWidget extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    config.MyFont.title(context: context,text:productName,fontSize: 9,maxLines: 2),
-
+                    config.MyFont.title(context: context,text:productName,fontSize: 8,maxLines: 1),
                     Row(
                       children: <Widget>[
-                        // The title of the product
                         Expanded(
-                          child:config.MyFont.title(context: context,text:'$productSales terjual',fontSize: 8,maxLines: 2),
+                          child:config.MyFont.subtitle(context: context,text:'$productSales terjual',fontSize: 8,maxLines: 1),
                         ),
-                        Icon(
-                          Icons.star,
-                          color: Colors.amber,
-                          size: scaler.getTextSize(10),
-                        ),
-                        config.MyFont.title(context: context,text:'$productRate',fontSize: 8,maxLines: 2),
-
+                        WidgetHelper().myRating(context: context,rating: productRate),
                       ],
                       crossAxisAlignment: CrossAxisAlignment.center,
                     ),
-                    SizedBox(height: scaler.getHeight(0.7)),
-                    config.MyFont.title(context: context,text: '${FunctionHelper().formatter.format(int.parse(productStock))} Available',fontSize: 8,maxLines: 2),
+                    SizedBox(height: scaler.getHeight(0.5)),
+                    config.MyFont.subtitle(context: context,text: int.parse(productStock)<1?"stok habis":'${config.MyFont.toMoney("$productStock")} tersedia',fontSize: 8,maxLines: 2),
                     Stack(
                       children: <Widget>[
                         Container(

@@ -21,29 +21,11 @@ class HistoryOrderComponent extends StatefulWidget {
 
 class _HistoryOrderComponentState extends State<HistoryOrderComponent> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  HistoryTransactionModel historyTransactionModel;
-  bool isLoading=true,isError=false;
-  Future loadHistory()async{
-    String par = "transaction/report?page=1&perpage=10";
-    var res = await HandleHttp().getProvider(par, historyTransactionModelFromJson);
-    if(res!=null){
-      HistoryTransactionModel result = HistoryTransactionModel.fromJson(res.toJson());
-      if(res!=StringConfig.errNoData||result.result.data.length<1) setState(() {
-        isError=true;
-      });
-
-
-      historyTransactionModel = result;
-      isLoading=false;
-      if(this.mounted){setState(() {});}
-    }
-  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    loadHistory();
   }
   String layout="list";
   @override
@@ -51,10 +33,7 @@ class _HistoryOrderComponentState extends State<HistoryOrderComponent> {
     final scaler=config.ScreenScale(context).scaler;
     List<Widget> historyTab = [];
     List<Widget> historyView = [];
-    List historyArray=[];
-    historyArray.add("semua");
-    historyArray.addAll(FunctionHelper.arrOptDate);
-    print(layout);
+    List historyArray=FunctionHelper.arrOptDate;
     for(int i=0;i<historyArray.length;i++){
       historyView.add(HistoryOrderWidget(status:i,layout:layout));
       historyTab.add(

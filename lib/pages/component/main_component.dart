@@ -23,7 +23,7 @@ class MainComponent extends StatefulWidget {
   int currentTab = StringConfig.defaultTab;
   int selectedTab = StringConfig.defaultTab;
   String currentTitle = 'Home';
-  Widget currentPage;
+  Widget currentPage = HomeComponent();
   MainComponent({
     Key key,
     this.currentTab,
@@ -35,72 +35,19 @@ class MainComponent extends StatefulWidget {
 class _MainComponentState extends State<MainComponent> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   int totalCart=0;
-  String id="";
-  ListProductTenantModel listProductTenantModel;
-  ListSliderModel listSliderModel;
-  List resKelompok=[];
-  bool isLoadingProduct=true,isLoadingGroup=true,isLoadingSlider=true;
-  callHome(product,kelompok,slider){
-    if(widget.currentTab==2){
-      widget.currentPage = HomeComponent(
-          callback: (id){
-            if(id=="norefresh"){
-              loadCart();
-              return;
-            }
-            loadDataHome(id);
-            setState(() {});
-          },
-          product: product,
-          kelompok:kelompok,
-          slider:slider
-      );
-    }
-  }
-  Future loadDataHome(kelompok)async{
-    if(kelompok!=""){
-      final resProduct = await FunctionHome().loadProduct(context: context,idKelompok:kelompok);
-      callHome(resProduct, resKelompok,listSliderModel);
-      if(this.mounted){
-        this.setState(() {listProductTenantModel=resProduct;});
-      }
-      return;
-    }
-
-    final resProduct = await FunctionHome().loadProduct(context: context,idKelompok: kelompok);
-    final resGroup = await FunctionHome().loadGroup(context: context);
-    final resSlider = await FunctionHome().loadSlider(context: context);
-    if(this.mounted){
-      callHome(resProduct, resGroup,resSlider);
-      this.setState(() {
-        listProductTenantModel=resProduct;
-        listSliderModel=resSlider;
-        resKelompok=resGroup;
-        isLoadingProduct=false;
-        isLoadingGroup=false;
-        isLoadingSlider=false;
-      });
-    }
-  }
 
   @override
   initState() {
     _selectTab(widget.currentTab);
     super.initState();
-    if(widget.currentTab==2){
-      loadDataHome('');
-    }
-    else{
-      isLoadingProduct=false;
-      isLoadingGroup=false;
-      isLoadingSlider=false;
-    }
+    print("initstate");
   }
 
   @override
   void didUpdateWidget(MainComponent oldWidget) {
     _selectTab(oldWidget.currentTab);
     super.didUpdateWidget(oldWidget);
+    print("didUpdateWidget");
   }
 
   Future loadCart()async{
@@ -118,24 +65,24 @@ class _MainComponentState extends State<MainComponent> {
       widget.selectedTab = tabItem;
       switch (tabItem) {
         case 0:
-          widget.currentTitle = 'Notifications';
+          widget.currentTitle = 'Notifikasi';
           widget.currentPage = NotificationComponent();
           break;
         case 1:
-          widget.currentTitle = 'Profile';
+          widget.currentTitle = 'Profil';
           widget.currentPage = ProfileComponent();
           break;
         case 2:
           loadCart();
-          widget.currentTitle = 'Home';
-          callHome(listProductTenantModel,resKelompok,listSliderModel);
+          widget.currentTitle = 'Beranda';
+          widget.currentPage = HomeComponent();
           break;
         case 3:
-          widget.currentTitle = 'Messages';
+          widget.currentTitle = 'Pesan';
           widget.currentPage = ChatComponent();
           break;
         case 4:
-          widget.currentTitle = 'Wish list';
+          widget.currentTitle = 'Wishlist';
           widget.currentPage = FavoriteComponent();
           break;
       }
@@ -169,7 +116,7 @@ class _MainComponentState extends State<MainComponent> {
               }),
             ],
           ),
-          body: isLoadingSlider||isLoadingGroup||isLoadingProduct?WidgetHelper().loadingWidget(context):widget.currentPage,
+          body:widget.currentPage,
           bottomNavigationBar: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
             selectedFontSize: 0,

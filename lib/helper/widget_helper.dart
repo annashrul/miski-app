@@ -124,14 +124,15 @@ class WidgetHelper{
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(10)),
-        border: Border.all(color: color)
+        border: Border.all(color: Theme.of(context).textTheme.caption.color)
       ),
-      child: WidgetHelper().textQ(txt, scaler.getTextSize(9),color,FontWeight.bold),
+      child:config.MyFont.subtitle(context: context,text:txt,fontSize: 8,fontWeight: FontWeight.normal),
+      // child: WidgetHelper().textQ(txt, scaler.getTextSize(9),color,FontWeight.bold),
     );
   }
 
 
-   showFloatingFlushbar(BuildContext context,String param, String desc) {
+ showFloatingFlushbar(BuildContext context,String param, String desc) {
     Flushbar(
       flushbarPosition: FlushbarPosition.TOP,
       flushbarStyle: FlushbarStyle.FLOATING,
@@ -172,19 +173,19 @@ class WidgetHelper{
         )
     );
   }
-  myRating(int rating){
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0.0,0.0,0.0,0.0),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: List.generate(10, (index) {
-          if(index < rating){
-            return Flexible(child: Icon(Icons.star,color: Colors.amberAccent,size: 20));
-          }else{
-            return Flexible(child: Icon(Icons.star_border));
-          }
-        }),
-      ),
+  myRating({BuildContext context,String rating="0"}){
+    final scaler = config.ScreenScale(context).scaler;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.star,
+          color: Colors.amber,
+          size: scaler.getTextSize(10),
+        ),
+        config.MyFont.subtitle(context: context,text:'$rating',fontSize: 8)
+      ],
     );
 
   }
@@ -333,9 +334,10 @@ class WidgetHelper{
         }
     );
   }
-  titleQ(BuildContext context,String txt,{EdgeInsetsGeometry padding,String param="", Function callback,IconData icon,double fontSize,String image="",IconData iconAct=UiIcons.play_button,String subtitle=""}){
+  titleQ(BuildContext context,String txt,{FontWeight fontWeight=FontWeight.bold,EdgeInsetsGeometry padding,String param="", Function callback,IconData icon,double fontSize,String image="",IconData iconAct=UiIcons.play_button,String subtitle=""}){
     ScreenScaler scaler = ScreenScaler()..init(context);
     return myRipple(
+      radius: 10,
       callback:callback,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -345,7 +347,7 @@ class WidgetHelper{
             child: Row(
               children: [
                 if(image!=""||icon!=null)image!=""?Hero(
-                    tag: image,
+                    tag: image+txt,
                     child: Container(
                       height: scaler.getHeight(3),
                       width: scaler.getWidth(7.5),
@@ -355,13 +357,12 @@ class WidgetHelper{
                       ),
                     )
                 ):icons(ctx: context,icon: icon),
-                if(image!=""||icon!=null)SizedBox(width: scaler.getWidth(1)),
+                if(image!=""||icon!=null)SizedBox(width: scaler.getWidth(1.5)),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    config.MyFont.title(context: context,text:txt,fontSize: fontSize),
+                    config.MyFont.title(context: context,text:txt,fontSize: fontSize,fontWeight:fontWeight),
                     if(subtitle!="") Container(
-
                       child: config.MyFont.subtitle(context: context,text:subtitle,fontSize: 8,color: Theme.of(context).textTheme.caption.color),
                     )
                   ],
@@ -493,14 +494,19 @@ class WidgetHelper{
       errorWidget: (context, url, error) => Icon(Icons.error),
     );
   }
-  baseImage(String img,{double width, double height,BoxFit fit = BoxFit.contain}){
+  baseImage(String img,{double width, double height,BoxFit fit = BoxFit.cover,BoxShape shape=BoxShape.rectangle}){
     return CachedNetworkImage(
       imageUrl:img,
-      width: width,
-      height: height,
-      fit:fit,
-      placeholder: (context, url) => Image.asset(StringConfig.userImage,fit:BoxFit.contain),
-      errorWidget: (context, url, error) => Image.asset(StringConfig.userImage,fit:BoxFit.contain),
+      imageBuilder: (context, imageProvider) => Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          shape: shape,
+          image: DecorationImage(image: imageProvider, fit:fit),
+        ),
+      ),
+      placeholder: (context, url) => CircularProgressIndicator(),
+      errorWidget: (context, url, error) => Icon(Icons.error),
     );
   }
   textSpaceBetween(BuildContext context,String title,String desc,{FontWeight fontWeightTitle = FontWeight.normal,FontWeight fontWeightDesc = FontWeight.normal,MainAxisAlignment mainAxisAlignment=MainAxisAlignment.spaceBetween,Color titleColor=Colors.black,Color descColor}){
@@ -585,6 +591,19 @@ class WidgetHelper{
       ),
       child: child,
     );
+  }
+  imageUser({BuildContext context,String img}){
+    final scaler = config.ScreenScale(context).scaler;
+    return Container(
+        padding: scaler.getPaddingLTRB(0,0,2,0),
+        alignment: Alignment.center,
+        child: WidgetHelper().myRipple(
+          isRadius: true,
+          radius: 300,
+          callback: () {},
+          child:baseImage(img, height: scaler.getHeight(2), width: scaler.getWidth(5),shape: BoxShape.circle)
+
+        ));
   }
 
   icons({BuildContext ctx,IconData icon,Color color}){

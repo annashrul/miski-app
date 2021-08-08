@@ -84,61 +84,94 @@ class LoadingProductTenant extends StatefulWidget {
 }
 
 class _LoadingProductTenantState extends State<LoadingProductTenant> {
-  static bool site=false;
-  Future getSite()async{
-    final res = await FunctionHelper().getSite();
-    if(this.mounted){
-      setState(() {
-        site = res;
-      });
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    getSite();
   }
   @override
   Widget build(BuildContext context) {
+    final scaler=config.ScreenScale(context).scaler;
     return StaggeredGridView.countBuilder(
       primary: false,
       shrinkWrap: true,
       crossAxisCount: 4,
       itemCount: widget.tot,
       itemBuilder: (BuildContext context, int index) {
-        return Container(
+        return WidgetHelper().baseLoading(context, Container(
+
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              WidgetHelper().baseLoading(context,Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(6),
-                    color: Colors.white
-                ),
-                  width: double.infinity,
-                  height: 130.0,
+            children: <Widget>[
+              WidgetHelper().shimmer(context: context,height: index%2==0?double.parse("${index+11}"):13,width:MediaQuery.of(context).size.width/1),
+              SizedBox(height:scaler.getHeight(0.5)),
+              WidgetHelper().shimmer(context: context,height: 1,width:MediaQuery.of(context).size.width/1),
+              SizedBox(height:scaler.getHeight(0.5)),
+              WidgetHelper().shimmer(context: context,height: 1,width:20),
 
-              )),
-              SizedBox(height: 12),
-              WidgetHelper().baseLoading(context,Container(decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(6),
-                  color: Colors.white
-              ),width: MediaQuery.of(context).size.width/2,height: 5.0)),
-              SizedBox(height:5),
-              WidgetHelper().baseLoading(context,Container(decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(6),
-                  color: Colors.white
-              ),width: MediaQuery.of(context).size.width/3,height: 5.0)),
-              SizedBox(height:5),
-              WidgetHelper().baseLoading(context,Container(decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(6),
-                  color: Colors.white
-              ),width: MediaQuery.of(context).size.width/4,height: 5.0)),
+              // Hero(
+              //   tag: this.heroTag + productId,
+              //   child: Image.network(productImage),
+              // ),
+              // SizedBox(height: 12),
+              // Padding(
+              //     padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+              //     child:config.MyFont.subtitle(context: context,text:productName,color: Theme.of(context).textTheme.bodyText2.color,fontSize: 9)
+              // ),
+              // Padding(
+              //     padding: const EdgeInsets.symmetric(horizontal: 15),
+              //     child:config.MyFont.title(context: context,text:"${FunctionHelper().formatter.format(int.parse(productPrice))}",color: Theme.of(context).textTheme.subtitle2.color,fontWeight: FontWeight.bold,fontSize: 9)
+              // ),
+              // Padding(
+              //   padding: const EdgeInsets.symmetric(horizontal: 15),
+              //   child: Row(
+              //     crossAxisAlignment: CrossAxisAlignment.center,
+              //     children: <Widget>[
+              //       Expanded(child: config.MyFont.title(context: context,text:"$productSales terjual",color: Theme.of(context).textTheme.bodyText2.color,fontSize: 8)),
+              //       Icon(
+              //         Icons.star,
+              //         color: Colors.amber,
+              //         size: scaler.getTextSize(9),
+              //       ),
+              //       config.MyFont.title(context: context,text:productRate,color: Theme.of(context).textTheme.bodyText2.color,fontSize: 8)
+              //     ],
+              //   ),
+              // ),
+              // SizedBox(height: 15),
             ],
           ),
-        );
+        ));
+        // return Container(
+        //   child: Column(
+        //     crossAxisAlignment: CrossAxisAlignment.start,
+        //     mainAxisAlignment: MainAxisAlignment.start,
+        //     children: [
+        //       WidgetHelper().baseLoading(context,Container(
+        //         decoration: BoxDecoration(
+        //           borderRadius: BorderRadius.circular(6),
+        //             color: Colors.white
+        //         ),
+        //           width: double.infinity,
+        //           height: 130.0,
+        //
+        //       )),
+        //       SizedBox(height: 12),
+        //       WidgetHelper().baseLoading(context,Container(decoration: BoxDecoration(
+        //           borderRadius: BorderRadius.circular(6),
+        //           color: Colors.white
+        //       ),width: MediaQuery.of(context).size.width/2,height: 5.0)),
+        //       SizedBox(height:5),
+        //       WidgetHelper().baseLoading(context,Container(decoration: BoxDecoration(
+        //           borderRadius: BorderRadius.circular(6),
+        //           color: Colors.white
+        //       ),width: MediaQuery.of(context).size.width/3,height: 5.0)),
+        //       SizedBox(height:5),
+        //       WidgetHelper().baseLoading(context,Container(decoration: BoxDecoration(
+        //           borderRadius: BorderRadius.circular(6),
+        //           color: Colors.white
+        //       ),width: MediaQuery.of(context).size.width/4,height: 5.0)),
+        //     ],
+        //   ),
+        // );
         return Container(
           decoration: BoxDecoration(
             // color: site?Colors.transparent:Theme.of(context).primaryColor,
@@ -187,6 +220,10 @@ class _LoadingProductTenantState extends State<LoadingProductTenant> {
   }
 }
 
+
+
+
+
 class LoadingReleatedProduct extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -195,10 +232,8 @@ class LoadingReleatedProduct extends StatelessWidget {
       padding: scaler.getPadding(0, 2),
       itemCount: 4,
       itemBuilder: (context, index) {
-        double _marginLeft = 0;
-        (index == 0) ? _marginLeft = 20 : _marginLeft = 0;
         return WidgetHelper().baseLoading(context, Container(
-          margin: EdgeInsets.only(left:7, right: 20),
+          margin: EdgeInsets.only(left:0, right: 20),
           child: Stack(
             alignment: AlignmentDirectional.topCenter,
             children: <Widget>[

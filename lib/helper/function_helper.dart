@@ -36,6 +36,7 @@ class FunctionHelper{
     "Barang sedang dikemas",
     "Dikirim",
     "Selesai",
+    "Semua"
   ];
 
 
@@ -103,6 +104,7 @@ class FunctionHelper{
     }
     final picker = ImagePicker();
     final pickedFile = await picker.getImage(source: imageSource);
+    print(pickedFile.path);
     return File(pickedFile.path);
   }
   bool isEmail(String em) {

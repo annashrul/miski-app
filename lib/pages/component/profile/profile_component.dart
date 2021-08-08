@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
+import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
+import 'package:netindo_shop/helper/database_helper.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
+import 'package:netindo_shop/helper/user_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
+import 'package:netindo_shop/pages/component/address/address_component.dart';
 import 'package:netindo_shop/pages/widget/searchbar_widget.dart';
+import 'package:netindo_shop/pages/widget/user/image_user_widget.dart';
 
 class ProfileComponent extends StatefulWidget {
   @override
@@ -12,9 +18,32 @@ class ProfileComponent extends StatefulWidget {
 }
 
 class _ProfileComponentState extends State<ProfileComponent> {
+  dynamic dataUser;
+  Future loadData()async{
+    final name= await UserHelper().getDataUser(StringConfig.nama);
+    final email= await UserHelper().getDataUser(StringConfig.email);
+    final gender= await UserHelper().getDataUser(StringConfig.jenis_kelamin);
+    final birthDate = await UserHelper().getDataUser(StringConfig.tgl_ultah);
+    DateTime tempDate = new DateFormat("yyyy-MM-dd").parse(birthDate);
+
+    dataUser = {
+      StringConfig.nama:name,
+      StringConfig.email:email,
+      StringConfig.jenis_kelamin:gender,
+      StringConfig.tgl_ultah:"$tempDate".substring(0,10),
+    };
+    this.setState(() {});
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    loadData();
+
+  }
+
   @override
   Widget build(BuildContext context) {
-
     List<Widget> historyWidget = [];
     List historArray =FunctionHelper.arrOptDate;
     for(int i=0;i<historArray.length;i++){
@@ -48,24 +77,24 @@ class _ProfileComponentState extends State<ProfileComponent> {
                 Expanded(
                   child: Column(
                     children: <Widget>[
-                      config.MyFont.title(context: context,text:"Annashrul yusuf"),
-                      config.MyFont.subtitle(context: context,text:"Annashrulyusuf@gmail.com",fontSize: 9,color:Theme.of(context).textTheme.caption.color ),
+                      config.MyFont.title(context: context,text:dataUser==null?"":dataUser[StringConfig.nama]),
+                      config.MyFont.subtitle(context: context,text:dataUser==null?"":dataUser[StringConfig.email],fontSize: 9,color:Theme.of(context).textTheme.caption.color ),
                     ],
                     crossAxisAlignment: CrossAxisAlignment.start,
                   ),
                 ),
-                SizedBox(
-                    width: scaler.getWidth(10),
-                    height: scaler.getHeight(4),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(300),
-                      onTap: () {
-                        Navigator.of(context).pushNamed('/Tabs', arguments: 1);
-                      },
-                      child: CircleAvatar(
-                        backgroundImage: AssetImage(StringConfig.userImage),
-                      ),
-                    )),
+                ImageUserWidget()
+                // SizedBox(
+                //     width: scaler.getWidth(10),
+                //     height: scaler.getHeight(4),
+                //     child: InkWell(
+                //       borderRadius: BorderRadius.circular(300),
+                //       onTap: () {
+                //       },
+                //       child: CircleAvatar(
+                //         backgroundImage: AssetImage(StringConfig.userImage),
+                //       ),
+                //     )),
               ],
             ),
           ),
@@ -89,7 +118,7 @@ class _ProfileComponentState extends State<ProfileComponent> {
                     child: Column(
                       children: <Widget>[
                         Icon(UiIcons.heart),
-                        config.MyFont.subtitle(context: context,text:'Wish List',fontSize: 9 ),
+                        config.MyFont.subtitle(context: context,text:'Wishlist',fontSize: 9 ),
                       ],
                     ),
                   ),
@@ -103,7 +132,7 @@ class _ProfileComponentState extends State<ProfileComponent> {
                     child: Column(
                       children: <Widget>[
                         Icon(UiIcons.favorites),
-                        config.MyFont.subtitle(context: context,text:'Brands',fontSize: 9 ),
+                        config.MyFont.subtitle(context: context,text:'Brand',fontSize: 9 ),
 
                       ],
                     ),
@@ -118,7 +147,7 @@ class _ProfileComponentState extends State<ProfileComponent> {
                     child: Column(
                       children: <Widget>[
                         Icon(UiIcons.chat_1),
-                        config.MyFont.subtitle(context: context,text:'Messages',fontSize: 9 ),
+                        config.MyFont.subtitle(context: context,text:'Pesan',fontSize: 9 ),
                       ],
                     ),
                   ),
@@ -139,17 +168,7 @@ class _ProfileComponentState extends State<ProfileComponent> {
               shrinkWrap: true,
               primary: false,
               children: [
-                ListTile(
-                  leading: Icon(UiIcons.inbox),
-                  title:config.MyFont.title(context: context,text:'Riwayat belanja' ),
-                  trailing: WidgetHelper().myRipple(
-                    radius: 0,
-                    callback: () {
-                      Navigator.of(context).pushNamed('/${StringConfig.historyOrder}',arguments: 0);
-                    },
-                    child:config.MyFont.title(context: context,text:"semua",fontSize: 9,color: config.Colors.mainColors),
-                  )
-                ),
+                WidgetHelper().titleQ(context, "Riwayat belanja",icon: UiIcons.shopping_cart,padding: scaler.getPaddingLTRB(2,1,2,0),callback:(){} ),
                 Column(children: historyWidget),
               ],
             ),
@@ -167,40 +186,40 @@ class _ProfileComponentState extends State<ProfileComponent> {
               shrinkWrap: true,
               primary: false,
               children: <Widget>[
-                ListTile(
-                  leading: Icon(UiIcons.user_1),
-                  title: config.MyFont.title(context: context,text:'Data diri'),
-                  trailing: WidgetHelper().myRipple(
-                    radius: 0,
-                    callback: () {
-                      Navigator.of(context).pushNamed('/${StringConfig.historyOrder}',arguments: 0);
-                    },
-                    child:config.MyFont.title(context: context,text:"edit",fontSize: 9,color: config.Colors.mainColors),
-                  )
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    WidgetHelper().titleQ(context, "Data diri",icon: UiIcons.user_1,padding: scaler.getPaddingLTRB(2,1,2,0),callback:(){} ),
+                    Padding(
+                      padding: scaler.getPaddingLTRB(0,0,2,0),
+                      child: config.MyFont.subtitle(context: context,text:"Ubah",fontSize: 9,color: config.Colors.mainColors),
+                    )
+                  ],
                 ),
+
                 ListTile(
                   onTap: () {},
                   dense: true,
                   title: config.MyFont.subtitle(context: context,text:'Nama lengkap',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
-                  trailing: config.MyFont.subtitle(context: context,text:'Annashrul yusuf',fontSize: 9,color: Theme.of(context).focusColor),
+                  trailing: config.MyFont.subtitle(context: context,text:dataUser==null?"":dataUser[StringConfig.nama],fontSize: 9,color: Theme.of(context).focusColor),
                 ),
                 ListTile(
                   onTap: () {},
                   dense: true,
                   title: config.MyFont.subtitle(context: context,text:'Email',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
-                  trailing: config.MyFont.subtitle(context: context,text:'My orders',fontSize: 9,color:Theme.of(context).focusColor),
+                  trailing: config.MyFont.subtitle(context: context,text:dataUser==null?"":dataUser[StringConfig.email],fontSize: 9,color:Theme.of(context).focusColor),
                 ),
                 ListTile(
                   onTap: () {},
                   dense: true,
                   title: config.MyFont.subtitle(context: context,text:'Jenis kelamain',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
-                  trailing: config.MyFont.subtitle(context: context,text:'My orders',fontSize: 9,color:Theme.of(context).focusColor),
+                  trailing: config.MyFont.subtitle(context: context,text:dataUser==null?"":dataUser[StringConfig.jenis_kelamin],fontSize: 9,color:Theme.of(context).focusColor),
                 ),
                 ListTile(
                   onTap: () {},
                   dense: true,
                   title: config.MyFont.subtitle(context: context,text:'tanggal lahir',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
-                  trailing: config.MyFont.subtitle(context: context,text:'My orders',fontSize: 9,color:Theme.of(context).focusColor),
+                  trailing: config.MyFont.subtitle(context: context,text:dataUser==null?"":dataUser[StringConfig.tgl_ultah],fontSize: 9,color:Theme.of(context).focusColor),
                 ),
               ],
             ),
@@ -215,74 +234,50 @@ class _ProfileComponentState extends State<ProfileComponent> {
               ],
             ),
             child: ListView(
+              padding: scaler.getPaddingLTRB(2, 1,2,1),
               shrinkWrap: true,
               primary: false,
               children: <Widget>[
-                ListTile(
-                  leading: Icon(UiIcons.settings_1),
-                  title: config.MyFont.title(context: context,text:'Lainnya'),
-                ),
+                WidgetHelper().titleQ(context, "Lainnya",icon: UiIcons.settings_1,callback:(){} ),
                 WidgetHelper().myRipple(
-                  callback: (){},
-                  child: ListTile(
-                    onTap: () {},
-                    dense: true,
-                    title: Row(
-                      children: <Widget>[
-                        Icon(
-                          UiIcons.placeholder,
-                          size: 22,
-                          color: Theme.of(context).focusColor,
-                        ),
-                        SizedBox(width: 10),
-                        config.MyFont.subtitle(context: context,text:'Shipping address',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
-                      ],
-                    ),
-                  ),
-                ),
+                    callback: (){},
+                    child: ListTile(
+                      contentPadding: EdgeInsets.all(0),
+                      onTap: () {
+                        WidgetHelper().myPush(context,AddressComponent());
+                        // Navigator.of(context).pushNamed('/${StringConfig.address}',arguments: {"callback":null,"indexArr":0});
+                      },
+                      dense: true,
+                      title:config.MyFont.subtitle(context: context,text:'Pusat bantuan',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
 
+                    )
+                ),
                 WidgetHelper().myRipple(
                   callback: (){},
                   child: ListTile(
+                    contentPadding: EdgeInsets.all(0),
                     onTap: () {
                       Navigator.of(context).pushNamed('/Help');
                     },
                     dense: true,
-                    title: Row(
-                      children: <Widget>[
-                        Icon(
-                          UiIcons.information,
-                          size: 22,
-                          color: Theme.of(context).focusColor,
-                        ),
-                        SizedBox(width: 10),
-                        config.MyFont.subtitle(context: context,text:'Help & support',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
-
-                      ],
-                    ),
+                    title:config.MyFont.subtitle(context: context,text:'Pusat bantuan',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
 
                   )
                 ),
                 WidgetHelper().myRipple(
                   callback: (){},
                   child: ListTile(
+                    contentPadding: EdgeInsets.all(0),
                     onTap: () {
-                      Navigator.of(context).pushNamed('/Help');
+                      WidgetHelper().notifDialog(context,"Perhatian !!","Anda yakin akan keluar dari aplikasi ??", (){Navigator.pop(context);}, ()async{
+                        DatabaseConfig db = DatabaseConfig();
+                        final id = await UserHelper().getDataUser('id');
+                        await db.update(UserQuery.TABLE_NAME, {'id':"${id.toString()}","is_login":"0"});
+                        Navigator.of(context).pushNamedAndRemoveUntil("/${StringConfig.signIn}", (route) => false);
+                      });
                     },
                     dense: true,
-                    title: Row(
-                      children: <Widget>[
-                        Icon(
-                          UiIcons.information,
-                          size: 22,
-                          color: Theme.of(context).focusColor,
-                        ),
-                        SizedBox(width: 10),
-                        config.MyFont.subtitle(context: context,text:'Log out',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
-
-                      ],
-                    ),
-
+                    title:config.MyFont.subtitle(context: context,text:'Keluar',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
                   ),
                 )
               ],

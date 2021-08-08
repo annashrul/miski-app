@@ -29,10 +29,11 @@ class _RoomChatComponentState extends State<RoomChatComponent> {
   DetailTicketModel detailTicketModel;
   bool isLoading=true,isShow=true;
   String idMember="";
+  String namaMember="";
   Future loadData()async{
-
     final tenant=await FunctionHelper().getTenant();
     final member = await UserHelper().getDataUser(StringConfig.id_user);
+    namaMember = await UserHelper().getDataUser(StringConfig.nama);
     resTenant = tenant;
     final res=await HandleHttp().getProvider("chat/${widget.data["id"]}", detailTicketModelFromJson,context: context);
     if(res!=null){
@@ -241,7 +242,7 @@ class _RoomChatComponentState extends State<RoomChatComponent> {
               child: new Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
-                  config.MyFont.subtitle(context: context,text:"acuy",color: Theme.of(context).textTheme.bodyText2.color,fontSize: 8,fontWeight: FontWeight.bold),
+                  config.MyFont.subtitle(context: context,text:"Admin",color: Theme.of(context).textTheme.bodyText2.color,fontSize: 8,fontWeight: FontWeight.bold),
                   new Container(
                     // child: new Text(widget.data["msg"]),
                     child: config.MyFont.subtitle(context: context,text:data["msg"],fontSize: 8,color: Theme.of(context).textTheme.bodyText2.color),
@@ -293,7 +294,7 @@ class _RoomChatComponentState extends State<RoomChatComponent> {
               child: new Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  config.MyFont.subtitle(context: context,text:"acuy",color: Theme.of(context).primaryColor,fontSize: 8,fontWeight: FontWeight.bold),
+                  config.MyFont.subtitle(context: context,text:namaMember,color: Theme.of(context).primaryColor,fontSize: 8,fontWeight: FontWeight.bold),
                   new Container(
                     child:config.MyFont.subtitle(context: context,text:data["msg"],color: Theme.of(context).primaryColor,fontSize: 8),
                   ),

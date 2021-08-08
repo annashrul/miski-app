@@ -103,7 +103,7 @@ class _CartWidgetState extends State<CartWidget> {
     // TODO: implement build
     final scaler = config.ScreenScale(context).scaler;
     return Scaffold(
-      appBar: WidgetHelper().appBarWithButton(context, "Shopping Cart",(){}, <Widget>[
+      appBar: WidgetHelper().appBarWithButton(context, "Keranjang belanja anda",(){}, <Widget>[
         if(!isLoading && !isError)
           WidgetHelper().iconAppbar(context: context,icon: UiIcons.trash,callback: (){
             deleted(idTenant,'all');
@@ -112,17 +112,17 @@ class _CartWidgetState extends State<CartWidget> {
       ],param: "default"),
       body: isError?EmptyDataWidget(
         iconData: UiIcons.shopping_cart,
-        title: "Empty cart",
+        title: "Keranjang kosong",
         callback: (){
           Navigator.of(context).pushNamedAndRemoveUntil("/${StringConfig.main}", (route) => false,arguments: StringConfig.defaultTab);
         },
         isFunction: true,
-        txtFunction: "Start Exploring",
+        txtFunction: "Belanja sekarang",
       ):Stack(
         fit: StackFit.expand,
         children: <Widget>[
           Container(
-            padding:scaler.getPadding(0,2),
+            padding:scaler.getPadding(1,2),
             child: SingleChildScrollView(
               padding: EdgeInsets.all(0),
               child: Column(
@@ -130,16 +130,6 @@ class _CartWidgetState extends State<CartWidget> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
-                  ListTile(
-                    contentPadding: EdgeInsets.all(0),
-                    leading: Container(
-                      child: Icon(
-                        UiIcons.shopping_cart,
-                        color: Theme.of(context).hintColor,
-                      ),
-                    ),
-                    title: config.MyFont.title(context: context,text:'Verify your quantity and click checkout',fontWeight: FontWeight.normal,fontSize: 9),
-                  ),
                   isLoading?LoadingCart(total: 6):ListView.separated(
                     padding: EdgeInsets.all(0),
                     scrollDirection: Axis.vertical,
@@ -196,7 +186,7 @@ class _CartWidgetState extends State<CartWidget> {
                             padding: EdgeInsets.symmetric(vertical: 14),
                             color: Theme.of(context).accentColor,
                             shape: StadiumBorder(),
-                            child:config.MyFont.title(context: context,text:'Checkout',fontWeight: FontWeight.bold,color:  Theme.of(context).primaryColor)
+                            child:config.MyFont.title(context: context,text:'Bayar',fontWeight: FontWeight.bold,color:  Theme.of(context).primaryColor)
                           ),
                         ),
                         Padding(
@@ -222,6 +212,7 @@ class _CartWidgetState extends State<CartWidget> {
     int anying=int.parse(res.qty);
     final scaler=config.ScreenScale(context).scaler;
     return Container(
+
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColor.withOpacity(0.9),
         boxShadow: [

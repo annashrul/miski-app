@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/ui_icons.dart';
+import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/tenant/list_product_tenant_model.dart';
 import 'package:netindo_shop/pages/widget/product/porduct_list_widget.dart';
 import 'package:netindo_shop/views/widget/empty_widget.dart';
@@ -21,16 +22,8 @@ class ReleatedProductWidget extends StatelessWidget {
     return Column(
       children: [
         Padding(
-          padding: scaler.getPadding(0,2),
-          child: ListTile(
-            dense: true,
-            contentPadding: EdgeInsets.all(0),
-            leading: Icon(
-              UiIcons.box,
-              color: Theme.of(context).hintColor,
-            ),
-            title:config.MyFont.title(context: context,text:"Releated product"),
-          ),
+          padding: scaler.getPadding(1,2),
+          child:WidgetHelper().titleQ(context,"Produk terkait",icon: UiIcons.box),
         ),
         Container(
             height: scaler.getHeight(30),
@@ -38,8 +31,6 @@ class ReleatedProductWidget extends StatelessWidget {
               padding: scaler.getPadding(0,2),
               itemCount:data.result.data.length ,
               itemBuilder: (context, index) {
-                double _marginLeft = 0;
-                (index == 0) ? _marginLeft = 20 : _marginLeft = 0;
                 final res = data.result.data[index];
                 return ProductListCarouselWidget(
                     productId: res.id,
@@ -49,7 +40,9 @@ class ReleatedProductWidget extends StatelessWidget {
                     productSales: res.stockSales,
                     productRate:res.rating,
                     productStock: res.stock,
-                    heroTag:heroTag+"${random.nextInt(100)}"
+                    productDisc1: res.disc1,
+                    productDisc2: res.disc2,
+                    heroTag:heroTag+"${random.nextInt(999)}",
                 );
               },
               scrollDirection: Axis.horizontal,

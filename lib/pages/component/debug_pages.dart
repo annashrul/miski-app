@@ -3,20 +3,20 @@ import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/detail/function_detail.dart';
+import 'package:netindo_shop/helper/user_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/tenant/detail_product_tenant_model.dart';
 import 'package:netindo_shop/pages/widget/product/detail/bottom_bar_detail_product_widget.dart';
 import 'package:netindo_shop/pages/widget/product/detail/tab_detail_product_widget.dart';
 import 'package:netindo_shop/pages/widget/user/image_user_widget.dart';
-
-class DetailProductWidget extends StatefulWidget {
+class DebugPages extends StatefulWidget {
   final dynamic data;
-  DetailProductWidget({@required this.data,Key key}) : super(key: key);
+  DebugPages({@required this.data,Key key}) : super(key: key);
   @override
-  _DetailProductWidgetState createState() => _DetailProductWidgetState();
+  _DebugPagesState createState() => _DebugPagesState();
 }
 
-class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTickerProviderStateMixin {
+class _DebugPagesState extends State<DebugPages> with SingleTickerProviderStateMixin {
   TabController _tabController;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   DetailProductTenantModel detail;

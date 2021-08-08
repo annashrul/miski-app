@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/string_config.dart';
@@ -5,6 +6,7 @@ import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/review/review_model.dart';
 
+// ignore: must_be_immutable
 class ReviewWidget extends StatefulWidget {
   ReviewWidget({
     this.id,
@@ -37,6 +39,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
   Widget build(BuildContext context) {
     final scaler=config.ScreenScale(context).scaler;
     return WidgetHelper().myRipple(
+      radius: 0,
       callback: (){},
       child: Wrap(
         direction: Axis.horizontal,
@@ -46,13 +49,9 @@ class _ReviewWidgetState extends State<ReviewWidget> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               Container(
-                height: scaler.getHeight(5),
-                width: scaler.getWidth(12),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(100)),
-                  image: DecorationImage(image: AssetImage(StringConfig.localAssets+"user0.jpg"), fit: BoxFit.cover),
-                ),
+                child: WidgetHelper().baseImage(widget.foto,shape: BoxShape.circle,height: scaler.getHeight(4),width: scaler.getWidth(10)),
               ),
+
               SizedBox(width: scaler.getWidth(1.5)),
               Flexible(
                 child: Column(
@@ -68,35 +67,17 @@ class _ReviewWidgetState extends State<ReviewWidget> {
                               config.MyFont.title(context: context,text:widget.nama,fontSize: 9),
                               Row(
                                 children: <Widget>[
-                                  Icon(
-                                    UiIcons.calendar,
-                                    color: Theme.of(context).focusColor,
-                                    size: scaler.getTextSize(12),
-                                  ),
+                                  WidgetHelper().icons(ctx:context,icon: UiIcons.calendar,color: Theme.of(context).focusColor),
                                   SizedBox(width: scaler.getWidth(1)),
-                                  config.MyFont.title(context: context,text:widget.time,fontSize: 8,color: Theme.of(context).textTheme.caption.color),
+                                  config.MyFont.subtitle(context: context,text:widget.time,fontSize: 8,color: Theme.of(context).textTheme.caption.color),
                                 ],
                               ),
                             ],
                             crossAxisAlignment: CrossAxisAlignment.start,
                           ),
                         ),
-                        Chip(
-                          padding: EdgeInsets.all(0),
-                          label: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              config.MyFont.title(context: context,text:"${widget.rate}",fontSize: 9,color: Theme.of(context).primaryColor),
-                              Icon(
-                                Icons.star_border,
-                                color: Theme.of(context).primaryColor,
-                                size: scaler.getTextSize(10),
-                              ),
-                            ],
-                          ),
-                          backgroundColor: Theme.of(context).accentColor.withOpacity(0.9),
-                          shape: StadiumBorder(),
-                        ),
+                        WidgetHelper().myRating(context: context,rating: widget.rate)
+
                       ],
                     ),
                   ],
@@ -104,7 +85,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
               )
             ],
           ),
-          config.MyFont.title(context: context,text:"${widget.caption}",fontSize: 9),
+          config.MyFont.subtitle(context: context,text:"${widget.caption}",fontSize: 9),
         ],
       )
     );

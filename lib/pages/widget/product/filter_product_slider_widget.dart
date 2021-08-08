@@ -18,31 +18,29 @@ class FilterProductSliderWidget extends StatefulWidget {
 class _FilterProductSliderWidgetState extends State<FilterProductSliderWidget> {
   @override
   Widget build(BuildContext context) {
+    final scaler = config.ScreenScale(context).scaler;
     return SizedBox(
-      height: 65,
+      height: scaler.getHeight(4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          Container(
-            width: 70,
-            decoration: BoxDecoration(
-              color: Theme.of(context).accentColor.withOpacity(1),
-              borderRadius: BorderRadius.only(bottomRight: Radius.circular(60), topRight: Radius.circular(60)),
-            ),
-            child: IconButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed('/Categories');
-              },
-              icon: Icon(
-                UiIcons.settings_2,
-                size: 28,
-                color: Theme.of(context).primaryColor,
-              ),
-            ),
+          WidgetHelper().myRipple(
+            radius: 0,
+            callback: (){},
+            child: Container(
+                padding: scaler.getPadding(1,2),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).accentColor.withOpacity(1),
+                  borderRadius: BorderRadius.only(bottomRight: Radius.circular(60), topRight: Radius.circular(60)),
+                ),
+                child: Icon(
+                  UiIcons.settings_2,
+                  color: Theme.of(context).primaryColor,
+                )
+            )
           ),
           Expanded(
             child: Container(
-                margin: EdgeInsets.only(left: 0),
                 decoration: BoxDecoration(
                   color: Theme.of(context).accentColor.withOpacity(1),
                   borderRadius: BorderRadius.only(bottomLeft: Radius.circular(60), topLeft: Radius.circular(60)),

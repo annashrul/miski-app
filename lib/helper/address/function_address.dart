@@ -10,17 +10,9 @@ class FunctionAddress{
     final res = await HandleHttp().getProvider("member_alamat?page=1&id_member=$idUser", listAddressModelFromJson,context: context);
     if(res is ListAddressModel){
       ListAddressModel result=ListAddressModel.fromJson(res.toJson());
-      if(isChecking){
-        if(result.result.data.length<1){
-          return WidgetHelper().notifOneBtnDialog(context, "Perhatian", "Silahkan isi alamat lengkap anda terlebih dahulu", (){
-            Navigator.pop(context);
-            // WidgetHelper().myPushAndLoad(context, AddressScreen(),(){
-            //   getAlamat();
-            // });
-          });
-        }
-      }
       return result;
+
+
     }
   }
 }

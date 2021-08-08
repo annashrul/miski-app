@@ -285,6 +285,7 @@ class _UploadImageState extends State<UploadImage> {
   @override
   Widget build(BuildContext context) {
     ScreenScaler scaler = ScreenScaler()..init(context);
+
     return Container(
       padding:scaler.getPadding(0,2),
       decoration: BoxDecoration(
@@ -356,7 +357,6 @@ class _UploadImageState extends State<UploadImage> {
             SizedBox(height:scaler.getHeight(1)),
             Container(
               width: double.infinity,
-
               child: FlatButton(
                   onPressed: () {
                     if(_image!=null){

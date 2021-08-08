@@ -60,23 +60,27 @@ class FunctionCheckout{
         BankModel bank = await FunctionBank().loadData(context: context);
         KurirModel kurir = await loadKurir(context: context);
         ListAddressModel  address = await FunctionAddress().loadData(context: context,isChecking: true);
-        final ongkir = await loadOngkir(context: context,kodeKecamatan: address.result.data[0].kdKec,kurir: kurir.result[0].kurir);
-        int grandTotal = await loadGrandTotal(cartModel: product,cost: ongkir["cost"]);
-        resData = {
-          "idTenant":tenant[StringConfig.idTenant],
-          "idUser":idUser,
-          "product":product,
-          "productDetail":productDetail,
-          "grandTotal":grandTotal,
-          "subTotal":subTotal,
-          "bank":bank,
-          "address":address.result.toJson(),
-          "shipping":{
-            "kurir":kurir.toJson(),
-            "layanan":ongkir
-          }
+        if(address.result.data.length>0){
+          final ongkir = await loadOngkir(context: context,kodeKecamatan: address.result.data[0].kdKec,kurir: kurir.result[0].kurir);
+          int grandTotal = await loadGrandTotal(cartModel: product,cost: ongkir["cost"]);
+          resData = {
+            "idTenant":tenant[StringConfig.idTenant],
+            "idUser":idUser,
+            "product":product,
+            "productDetail":productDetail,
+            "grandTotal":grandTotal,
+            "subTotal":subTotal,
+            "bank":bank,
+            "address":address.result.toJson(),
+            "shipping":{
+              "kurir":kurir.toJson(),
+              "layanan":ongkir
+            }
 
-        };
+          };
+        }else{
+          return StringConfig.errNoData;
+        }
       }
       else{
         int grandTotal = await loadGrandTotal(cartModel: product,cost: ongkos);

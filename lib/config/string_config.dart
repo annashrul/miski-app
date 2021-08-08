@@ -13,6 +13,7 @@ class StringConfig{
   static const String successCheckout = "SuccessCheckout";
   static const String historyOrder = "HistoryOrder";
   static const String detailHistoryOrder = "DetailHistoryOrder";
+  static const String resi = "Resi";
   static const String trackingOrder = "TrackingOrder";
   static const String address = "Address";
   static const String roomChat = "RoomChat";

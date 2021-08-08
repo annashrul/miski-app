@@ -155,9 +155,9 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
               child: isLoading?LoadingHistory(tot: 10):historyTransactionModel.result.data.length>0?Column(
                 children: [
                   Expanded(
-                      flex:16,
-                      child: ListView.separated(
-                        padding: scaler.getPadding(1,2),
+                    flex:16,
+                    child: ListView.separated(
+                      padding: scaler.getPadding(1,2),
                       key: PageStorageKey<String>('HistoryPembelianScreen'),
                       primary: false,
                       physics: ScrollPhysics(),
@@ -333,10 +333,10 @@ class _HistoryTransactionScreenState extends State<HistoryTransactionScreen> wit
                           ),
                         );
                       },
-                    separatorBuilder: (context,index){
-                        return SizedBox(height: 10.0);
-                    },
-                  )
+                      separatorBuilder: (context,index){
+                         return SizedBox(height: 10.0);
+                      },
+                    )
                   ),
                   isLoadmore?Expanded(flex:4,child: LoadingHistory(tot: 1)):Container()
                 ],

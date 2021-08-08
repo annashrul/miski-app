@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
+import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/ticket/list_ticket_model.dart';
 import 'package:netindo_shop/pages/widget/chat/modal_form_chat_widget.dart';
@@ -19,6 +22,7 @@ class _ChatComponentState extends State<ChatComponent> {
   ListTicketModel listTicketModel;
   bool isLoading=true;
   int perpage=10;
+  dynamic dataTenant;
   Future loadTicket()async{
     print("########################## load tiket chat?page=1&limit=$perpage #########################");
     var res = await HandleHttp().getProvider("chat?page=1&perpage=$perpage", listTicketModelFromJson,context: context);
@@ -35,6 +39,12 @@ class _ChatComponentState extends State<ChatComponent> {
     // TODO: implement initState
     super.initState();
     loadTicket();
+    initializeDateFormatting('id');
+    FunctionHelper().getTenant().then((value){
+      dataTenant = value;
+      this.setState(() {});
+    });
+
   }
 
   @override
@@ -115,6 +125,7 @@ class _ChatComponentState extends State<ChatComponent> {
   }
 
   Widget buildItem({BuildContext context,int index}) {
+    print(dataTenant);
     final scaler = config.ScreenScale(context).scaler;
     final res=listTicketModel.result.data[index];
     return Dismissible(
@@ -135,6 +146,7 @@ class _ChatComponentState extends State<ChatComponent> {
       onDismissed: (direction) {
       },
       child: WidgetHelper().myRipple(
+        radius: 10,
         callback: () {
           Navigator.of(context).pushNamed('/${StringConfig.roomChat}', arguments:res.toJson());
         },
@@ -145,15 +157,9 @@ class _ChatComponentState extends State<ChatComponent> {
             children: <Widget>[
               Stack(
                 children: <Widget>[
-                  SizedBox(
-                    width: scaler.getWidth(10),
-                    height: scaler.getHeight(4),
-                    child: Hero(
+                  Hero(
                       tag: "chat${listTicketModel.result.data[index].id}",
-                      child:  CircleAvatar(
-                        backgroundImage: AssetImage(StringConfig.userImage),
-                      )
-                    ),
+                      child:  WidgetHelper().baseImage(dataTenant[StringConfig.logoTenant],height: scaler.getHeight(4),width: scaler.getWidth(10),shape: BoxShape.circle)
                   ),
                   Positioned(
                     bottom: scaler.getHeight(0.3),
@@ -187,7 +193,7 @@ class _ChatComponentState extends State<ChatComponent> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: <Widget>[
                         Expanded(
-                          child:config.MyFont.subtitle(context: context,text:"7 menit yang lalu",color: Theme.of(context).textTheme.caption.color,fontSize: 8),
+                          child:config.MyFont.subtitle(context: context,text:"${DateFormat.yMMMMEEEEd('id').format(res.createdAt)} ${DateFormat.Hms().format(res.createdAt)}",color: Theme.of(context).textTheme.caption.color,fontSize: 8),
                         ),
                       ],
                     )

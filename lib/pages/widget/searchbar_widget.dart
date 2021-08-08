@@ -18,7 +18,7 @@ class SearchBarWidget extends StatelessWidget {
         style: config.MyFont.fieldStyle(context: context,color: Theme.of(context).textTheme.headline1.color,fontWeight: FontWeight.normal),
         decoration: InputDecoration(
           contentPadding: scaler.getPadding(1,2),
-          hintText: "search",
+          hintText: "cari produk disini",
           hintStyle: config.MyFont.fieldStyle(context: context,color: Theme.of(context).textTheme.headline1.color,fontWeight: FontWeight.normal),
           prefixIcon: Icon(UiIcons.loupe,color:  Theme.of(context).textTheme.headline1.color,size: scaler.getTextSize(11),),
           border: UnderlineInputBorder(borderSide: BorderSide.none),

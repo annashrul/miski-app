@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
+import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/address/function_address.dart';
 import 'package:netindo_shop/helper/checkout/function_checkout.dart';
@@ -8,6 +9,7 @@ import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/address/list_address_model.dart';
 import 'package:netindo_shop/model/bank/bank_model.dart';
+import 'package:netindo_shop/pages/component/address/address_component.dart';
 import 'package:netindo_shop/pages/widget/checkout/modal_bank_widget.dart';
 import 'package:netindo_shop/pages/widget/checkout/section_address_widget.dart';
 import 'package:netindo_shop/pages/widget/checkout/section_product_widget.dart';
@@ -37,6 +39,16 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
   int indexAddress=0,indexBank=0,cost=0,subtotal=0,grandTotal=0;
   Future loadData(String type)async{
     final resDetail = await FunctionCheckout().loadData(context: context,type: type,ongkos: cost);
+    if(resDetail==StringConfig.errNoData){
+      WidgetHelper().notifOneBtnDialog(context,"Informasi","Silahkan buat alamat terlebih dahulu",(){
+        Navigator.of(context).pop();
+        WidgetHelper().myPushAndLoad(context,AddressComponent(),(){
+          loadData("all");
+        });
+      });
+      return;
+    }
+
     detail.addAll(resDetail);
     if(type=="all"){
       address = resDetail["address"]["data"][indexAddress];
@@ -50,11 +62,11 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
     else{
       cost=cost;
     }
-    print("detail barang $detail");
-
     subtotal = resDetail["subTotal"];
     grandTotal = resDetail["grandTotal"];
     product = resDetail["productDetail"];
+
+
     if(this.mounted)setState(() {});
   }
 

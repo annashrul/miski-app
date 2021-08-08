@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:netindo_shop/config/app_config.dart';
 import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
+import 'package:netindo_shop/pages/component/address/address_component.dart';
 import 'package:netindo_shop/pages/component/auth/signin_component.dart';
 import 'package:netindo_shop/pages/component/auth/signup_component.dart';
 import 'package:netindo_shop/pages/component/brand/brand_component.dart';
@@ -10,6 +11,8 @@ import 'package:netindo_shop/pages/component/category/category_component.dart';
 import 'package:netindo_shop/pages/component/chat/room_chat_component.dart';
 import 'package:netindo_shop/pages/component/checkout/checkout_component.dart';
 import 'package:netindo_shop/pages/component/checkout/success_checkout_component.dart';
+import 'package:netindo_shop/pages/component/debug_pages.dart';
+import 'package:netindo_shop/pages/component/history/detail_history_order_component.dart';
 import 'package:netindo_shop/pages/component/history/history_order_component.dart';
 import 'package:netindo_shop/pages/component/home/home_component.dart';
 import 'package:netindo_shop/pages/component/main_component.dart';
@@ -23,7 +26,7 @@ import 'package:netindo_shop/pages/widget/product/cart/cart_widget.dart';
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final args = settings.arguments;
-
+    print(args);
     switch (settings.name) {
       case '/':
         return CupertinoPageRoute(builder: (_) => SplashScreenComponent());
@@ -39,6 +42,7 @@ class RouteGenerator {
         return CupertinoPageRoute(builder: (_) => HomeComponent());
       case '/${StringConfig.detailProduct}':
         return CupertinoPageRoute(builder: (_) => DetailProductWidget(data: args));
+        // return CupertinoPageRoute(builder: (_) => DebugPages(data: args));
       case '/${StringConfig.cart}':
         return CupertinoPageRoute(builder: (_) => CartWidget());
       case '/${StringConfig.checkout}':
@@ -49,6 +53,8 @@ class RouteGenerator {
         return CupertinoPageRoute(builder: (_) => RoomChatComponent(data: args));
       case '/${StringConfig.historyOrder}':
         return CupertinoPageRoute(builder: (_) => HistoryOrderComponent(currentTab: args));
+      case '/${StringConfig.detailHistoryOrder}':
+        return CupertinoPageRoute(builder: (_) => DetailHistoryOrderComponent(data: args));
       case '/${StringConfig.category}':
         return CupertinoPageRoute(builder: (_) => CategoryComponent());
       case '/${StringConfig.brand}':
@@ -57,6 +63,8 @@ class RouteGenerator {
         return CupertinoPageRoute(builder: (_) => ProductByCategory(data: args));
       case '/${StringConfig.productByBrand}':
         return CupertinoPageRoute(builder: (_) => ProductByBrand(data: args));
+      case '/${StringConfig.address}':
+        return CupertinoPageRoute(builder: (_) => AddressComponent(callback:args,indexArr: 0,));
       // case '/Categories':
       //   return MaterialPageRoute(builder: (_) => CategoriesWidget());
       // case '/Orders':

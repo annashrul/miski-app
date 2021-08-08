@@ -51,31 +51,24 @@ class ProductGridWidget extends StatelessWidget {
               tag: this.heroTag + productId,
               child: Image.network(productImage),
             ),
-            SizedBox(height: 12),
             Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                child:config.MyFont.subtitle(context: context,text:productName,color: Theme.of(context).textTheme.bodyText2.color,fontSize: 9)
-            ),
-            Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                child:config.MyFont.title(context: context,text:"${FunctionHelper().formatter.format(int.parse(productPrice))}",color: Theme.of(context).textTheme.subtitle2.color,fontWeight: FontWeight.bold,fontSize: 9)
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Expanded(child: config.MyFont.title(context: context,text:"$productSales terjual",color: Theme.of(context).textTheme.bodyText2.color,fontSize: 8)),
-                  Icon(
-                    Icons.star,
-                    color: Colors.amber,
-                    size: scaler.getTextSize(9),
-                  ),
-                  config.MyFont.title(context: context,text:productRate,color: Theme.of(context).textTheme.bodyText2.color,fontSize: 8)
+              padding:scaler.getPadding(1,2),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  config.MyFont.subtitle(context: context,text:productName,color: Theme.of(context).textTheme.bodyText2.color,fontSize: 9),
+                  config.MyFont.title(context: context,text:"${config.MyFont.toMoney("$productPrice")}",color: config.Colors.moneyColors,fontWeight: FontWeight.bold,fontSize: 9),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Expanded(child: config.MyFont.title(context: context,text:"$productSales terjual",color: Theme.of(context).textTheme.bodyText2.color,fontSize: 8)),
+                      WidgetHelper().myRating(context: context,rating: productRate)
+
+                    ],
+                  )
                 ],
               ),
             ),
-            SizedBox(height: 15),
           ],
         ),
       )

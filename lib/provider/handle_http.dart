@@ -18,13 +18,12 @@ class HandleHttp{
 
   Future getProvider(url,param,{BuildContext context,Function callback})async{
     try{
-      final token= await userRepository.getDataUser('token');
+      final token= await userRepository.getDataUser(StringConfig.token);
       Map<String, String> head={
         'Authorization':token,
         'username': SiteConfig().username,
         'password': SiteConfig().password,
         'myconnection':SiteConfig().connection,
-        "HttpHeaders.contentTypeHeader": "application/json"
       };
       final response = await client.get("${SiteConfig().baseUrl}$url", headers:head).timeout(Duration(seconds: SiteConfig().timeout));
       final jsonResponse = json.decode(response.body);
@@ -166,7 +165,6 @@ class HandleHttp{
       ).timeout(Duration(seconds: SiteConfig().timeout));
       if(request.statusCode==200){
         Navigator.pop(context);
-        final jsonResponse = json.decode(request.body);
         WidgetHelper().showFloatingFlushbar(context, "success","data berhasil dihapus");
         return param(request.body);
       }
