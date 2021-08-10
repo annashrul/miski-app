@@ -1,10 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
+import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
+import 'package:netindo_shop/helper/database_helper.dart';
+import 'package:netindo_shop/helper/user_helper.dart';
+import 'package:netindo_shop/helper/widget_helper.dart';
+import 'package:netindo_shop/pages/component/help_support/help_support_component.dart';
 
-class DrawerWidget extends StatelessWidget {
-  // User _user = new User.init().getCurrentUser();
+class DrawerWidget extends StatefulWidget {
+  @override
+  _DrawerWidgetState createState() => _DrawerWidgetState();
+}
+
+class _DrawerWidgetState extends State<DrawerWidget> {
+  String image="",name="",email="";
+
+  Future loadDataUser()async{
+    final resImage=await UserHelper().getDataUser(StringConfig.foto);
+    final resName=await UserHelper().getDataUser(StringConfig.nama);
+    final resEmail=await UserHelper().getDataUser(StringConfig.email);
+    if(this.mounted){
+      this.setState(() {
+        image=resImage;
+        name=resName;
+        email=resEmail;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    loadDataUser();
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -19,11 +50,11 @@ class DrawerWidget extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Theme.of(context).hintColor.withOpacity(0.1),
               ),
-              accountName: config.MyFont.title(context:context,text: "annashrul" ),
-              accountEmail: config.MyFont.subtitle(context:context,text: "annashrul@gmail.com",color: Theme.of(context).textTheme.caption.color,fontSize: 9 ),
+              accountName: config.MyFont.title(context:context,text: name ),
+              accountEmail: config.MyFont.subtitle(context:context,text:email,color: Theme.of(context).textTheme.caption.color,fontSize: 9 ),
               currentAccountPicture: CircleAvatar(
                 backgroundColor: Theme.of(context).accentColor,
-                backgroundImage: AssetImage(StringConfig.userImage),
+                backgroundImage: NetworkImage(image),
               ),
             ),
           ),
@@ -35,7 +66,7 @@ class DrawerWidget extends StatelessWidget {
               UiIcons.home,
               color: Theme.of(context).focusColor.withOpacity(1),
             ),
-            title: config.MyFont.subtitle(context:context,text: "Home",color: Theme.of(context).textTheme.caption.color),
+            title: config.MyFont.subtitle(context:context,text: "Beranda",color: Theme.of(context).textTheme.caption.color),
           ),
           ListTile(
             onTap: () {
@@ -45,7 +76,7 @@ class DrawerWidget extends StatelessWidget {
               UiIcons.bell,
               color: Theme.of(context).focusColor.withOpacity(1),
             ),
-            title: config.MyFont.subtitle(context:context,text: "Notification",color: Theme.of(context).textTheme.caption.color),
+            title: config.MyFont.subtitle(context:context,text: "Notifikasi",color: Theme.of(context).textTheme.caption.color),
 
           ),
           ListTile(
@@ -56,7 +87,7 @@ class DrawerWidget extends StatelessWidget {
               UiIcons.inbox,
               color: Theme.of(context).focusColor.withOpacity(1),
             ),
-            title: config.MyFont.subtitle(context:context,text: "My orders",color: Theme.of(context).textTheme.caption.color),
+            title: config.MyFont.subtitle(context:context,text: "Riwayat belanja",color: Theme.of(context).textTheme.caption.color),
           ),
           ListTile(
             onTap: () {
@@ -66,12 +97,12 @@ class DrawerWidget extends StatelessWidget {
               UiIcons.heart,
               color: Theme.of(context).focusColor.withOpacity(1),
             ),
-            title: config.MyFont.subtitle(context:context,text: "Wish list",color: Theme.of(context).textTheme.caption.color),
+            title: config.MyFont.subtitle(context:context,text: "Wishlist",color: Theme.of(context).textTheme.caption.color),
 
           ),
           ListTile(
             dense: true,
-            title: config.MyFont.title(context:context,text: "Product",fontSize: 8),
+            title: config.MyFont.title(context:context,text: "Produk",fontSize: 8),
 
             trailing: Icon(
               Icons.remove,
@@ -87,7 +118,7 @@ class DrawerWidget extends StatelessWidget {
               UiIcons.folder_1,
               color: Theme.of(context).focusColor.withOpacity(1),
             ),
-            title: config.MyFont.subtitle(context:context,text: "Categories",color: Theme.of(context).textTheme.caption.color),
+            title: config.MyFont.subtitle(context:context,text: "Kategori",color: Theme.of(context).textTheme.caption.color),
 
           ),
           ListTile(
@@ -98,12 +129,12 @@ class DrawerWidget extends StatelessWidget {
               UiIcons.folder_1,
               color: Theme.of(context).focusColor.withOpacity(1),
             ),
-            title: config.MyFont.subtitle(context:context,text: "Brands",color: Theme.of(context).textTheme.caption.color),
+            title: config.MyFont.subtitle(context:context,text: "Brand",color: Theme.of(context).textTheme.caption.color),
 
           ),
           ListTile(
             dense: true,
-            title: config.MyFont.title(context:context,text: "Application Preferences",fontSize: 8),
+            title: config.MyFont.title(context:context,text: "Lainnya",fontSize: 8),
             trailing: Icon(
               Icons.remove,
               color: Theme.of(context).focusColor.withOpacity(0.3),
@@ -111,18 +142,18 @@ class DrawerWidget extends StatelessWidget {
           ),
           ListTile(
             onTap: () {
-              Navigator.of(context).pushNamed('/Help');
+              WidgetHelper().myPush(context, HelpSupportComponent());
             },
             leading: Icon(
               UiIcons.information,
               color: Theme.of(context).focusColor.withOpacity(1),
             ),
-            title: config.MyFont.subtitle(context:context,text: "Help & support",color: Theme.of(context).textTheme.caption.color),
+            title: config.MyFont.subtitle(context:context,text: "Pusat bantuan",color: Theme.of(context).textTheme.caption.color),
 
           ),
           ListTile(
             onTap: () {
-              Navigator.of(context).pushNamed('/Tabs', arguments: 1);
+              Navigator.of(context).pushNamed('/${StringConfig.main}', arguments: 1);
             },
             leading: Icon(
               UiIcons.settings_1,
@@ -134,18 +165,23 @@ class DrawerWidget extends StatelessWidget {
 
           ListTile(
             onTap: () {
-              Navigator.of(context).pushNamed('/Login');
+              WidgetHelper().notifDialog(context,"Perhatian !!","Anda yakin akan keluar dari aplikasi ??", (){Navigator.pop(context);}, ()async{
+                DatabaseConfig db = DatabaseConfig();
+                final id = await UserHelper().getDataUser('id');
+                await db.update(UserQuery.TABLE_NAME, {'id':"${id.toString()}","is_login":"0"});
+                Navigator.of(context).pushNamedAndRemoveUntil("/${StringConfig.signIn}", (route) => false);
+              });
             },
             leading: Icon(
               UiIcons.upload,
               color: Theme.of(context).focusColor.withOpacity(1),
             ),
-            title: config.MyFont.subtitle(context:context,text: "Log out",color: Theme.of(context).textTheme.caption.color),
+            title: config.MyFont.subtitle(context:context,text: "Keluar",color: Theme.of(context).textTheme.caption.color),
 
           ),
           ListTile(
             dense: true,
-            title: config.MyFont.title(context:context,text:"Version ${StringConfig.version}",fontSize: 8),
+            title: config.MyFont.title(context:context,text:"Versi ${StringConfig.version}",fontSize: 8),
 
             // title: Text(
             //   "Version 0.0.1",
@@ -161,3 +197,4 @@ class DrawerWidget extends StatelessWidget {
     );
   }
 }
+

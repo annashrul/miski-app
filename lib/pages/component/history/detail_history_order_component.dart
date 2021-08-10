@@ -68,6 +68,7 @@ class _DetailHistoryOrderComponentState extends State<DetailHistoryOrderComponen
           final val=detailHistoryOrderModel.result;
           WidgetHelper().myModal(context, HistoryModalOptionWIdget(
             val: val,
+            barang: val.barang,
           ));
         })
       ]),
@@ -271,7 +272,7 @@ class _DetailHistoryOrderComponentState extends State<DetailHistoryOrderComponen
             callback: (){
               Navigator.of(context).pushNamed("/${StringConfig.detailProduct}",arguments: {
                 "heroTag":val.gambar,
-                "id":val.id,
+                "id":val.idBarang,
                 "image":val.gambar,
               });
             }

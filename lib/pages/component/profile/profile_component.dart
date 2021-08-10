@@ -9,8 +9,12 @@ import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/user_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/pages/component/address/address_component.dart';
+import 'package:netindo_shop/pages/component/help_support/help_support_component.dart';
+import 'package:netindo_shop/pages/widget/profile/form_profile_widget.dart';
 import 'package:netindo_shop/pages/widget/searchbar_widget.dart';
+import 'package:netindo_shop/pages/widget/upload_image_widget.dart';
 import 'package:netindo_shop/pages/widget/user/image_user_widget.dart';
+import 'package:netindo_shop/provider/handle_http.dart';
 
 class ProfileComponent extends StatefulWidget {
   @override
@@ -19,14 +23,17 @@ class ProfileComponent extends StatefulWidget {
 
 class _ProfileComponentState extends State<ProfileComponent> {
   dynamic dataUser;
+  String foto="";
   Future loadData()async{
+    final img= await UserHelper().getDataUser(StringConfig.foto);
     final name= await UserHelper().getDataUser(StringConfig.nama);
     final email= await UserHelper().getDataUser(StringConfig.email);
     final gender= await UserHelper().getDataUser(StringConfig.jenis_kelamin);
     final birthDate = await UserHelper().getDataUser(StringConfig.tgl_ultah);
     DateTime tempDate = new DateFormat("yyyy-MM-dd").parse(birthDate);
-
+    foto = img;
     dataUser = {
+
       StringConfig.nama:name,
       StringConfig.email:email,
       StringConfig.jenis_kelamin:gender,
@@ -34,6 +41,28 @@ class _ProfileComponentState extends State<ProfileComponent> {
     };
     this.setState(() {});
   }
+  
+  Future update(data,{bool isImage=false})async{
+    DatabaseConfig db = DatabaseConfig();
+    final id= await UserHelper().getDataUser(StringConfig.id_user);
+    final idLocal= await UserHelper().getDataUser(StringConfig.id);
+    Navigator.of(context).pop();
+    WidgetHelper().loadingDialog(context);
+    if(!isImage){
+      data.addAll({"id":idLocal.toString()});
+      data[StringConfig.jenis_kelamin] = data[StringConfig.jenis_kelamin]=="Wanita"?"0":"1";
+      await db.update(UserQuery.TABLE_NAME, data);
+    }
+
+    final res=await HandleHttp().putProvider("member/$id", data,context: context);
+    data.remove("id");
+    if(res!=null){
+      loadData();
+      Navigator.of(context).pop();
+      WidgetHelper().showFloatingFlushbar(context, "success", "data berhasil diubah");
+    }
+  }
+  
   @override
   void initState() {
     // TODO: implement initState
@@ -61,15 +90,12 @@ class _ProfileComponentState extends State<ProfileComponent> {
       );
     }
     final scaler=config.ScreenScale(context).scaler;
-
+    print(dataUser);
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(vertical: 7),
       child: Column(
         children: <Widget>[
-          Padding(
-            padding: scaler.getPadding(0,2),
-            child: SearchBarWidget(),
-          ),
+
           Padding(
             padding: scaler.getPadding(1,2),
             child: Row(
@@ -83,7 +109,14 @@ class _ProfileComponentState extends State<ProfileComponent> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                   ),
                 ),
-                ImageUserWidget()
+                WidgetHelper().myRipple(
+                  callback: (){
+                    WidgetHelper().myModal(context, UploadImageWidget(callback: (e){
+                      update({"foto":e},isImage: true);
+                    }));
+                  },
+                  child: WidgetHelper().imageUser(context: context,img: foto,isUpdate: true)
+                )
                 // SizedBox(
                 //     width: scaler.getWidth(10),
                 //     height: scaler.getHeight(4),
@@ -127,7 +160,7 @@ class _ProfileComponentState extends State<ProfileComponent> {
                   child: FlatButton(
                     padding: scaler.getPadding(1,1),
                     onPressed: () {
-                      Navigator.of(context).pushNamed('/Tabs', arguments: 0);
+                      Navigator.of(context).pushNamed('/${StringConfig.brand}', arguments: 0);
                     },
                     child: Column(
                       children: <Widget>[
@@ -188,11 +221,19 @@ class _ProfileComponentState extends State<ProfileComponent> {
               children: <Widget>[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     WidgetHelper().titleQ(context, "Data diri",icon: UiIcons.user_1,padding: scaler.getPaddingLTRB(2,1,2,0),callback:(){} ),
                     Padding(
-                      padding: scaler.getPaddingLTRB(0,0,2,0),
-                      child: config.MyFont.subtitle(context: context,text:"Ubah",fontSize: 9,color: config.Colors.mainColors),
+                        padding: scaler.getPaddingLTRB(0,1,2,0),
+                        // child: config.MyFont.subtitle(context: context,text:"Ubah",fontSize: 9,color: config.Colors.mainColors)
+                        child:FormProfileWidget(
+                          user: dataUser,
+                          onChanged: (){this.setState(() {});},
+                          onSubmited: (data){
+                            update(data);
+                          },
+                        )
                     )
                   ],
                 ),
@@ -213,7 +254,7 @@ class _ProfileComponentState extends State<ProfileComponent> {
                   onTap: () {},
                   dense: true,
                   title: config.MyFont.subtitle(context: context,text:'Jenis kelamain',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
-                  trailing: config.MyFont.subtitle(context: context,text:dataUser==null?"":dataUser[StringConfig.jenis_kelamin],fontSize: 9,color:Theme.of(context).focusColor),
+                  trailing: config.MyFont.subtitle(context: context,text:dataUser==null?"":dataUser[StringConfig.jenis_kelamin]=="0"?"Wanita":"Pria",fontSize: 9,color:Theme.of(context).focusColor),
                 ),
                 ListTile(
                   onTap: () {},
@@ -245,10 +286,9 @@ class _ProfileComponentState extends State<ProfileComponent> {
                       contentPadding: EdgeInsets.all(0),
                       onTap: () {
                         WidgetHelper().myPush(context,AddressComponent());
-                        // Navigator.of(context).pushNamed('/${StringConfig.address}',arguments: {"callback":null,"indexArr":0});
                       },
                       dense: true,
-                      title:config.MyFont.subtitle(context: context,text:'Pusat bantuan',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
+                      title:config.MyFont.subtitle(context: context,text:'Alamat',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
 
                     )
                 ),
@@ -257,7 +297,7 @@ class _ProfileComponentState extends State<ProfileComponent> {
                   child: ListTile(
                     contentPadding: EdgeInsets.all(0),
                     onTap: () {
-                      Navigator.of(context).pushNamed('/Help');
+                      WidgetHelper().myPush(context,HelpSupportComponent());
                     },
                     dense: true,
                     title:config.MyFont.subtitle(context: context,text:'Pusat bantuan',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
@@ -269,12 +309,7 @@ class _ProfileComponentState extends State<ProfileComponent> {
                   child: ListTile(
                     contentPadding: EdgeInsets.all(0),
                     onTap: () {
-                      WidgetHelper().notifDialog(context,"Perhatian !!","Anda yakin akan keluar dari aplikasi ??", (){Navigator.pop(context);}, ()async{
-                        DatabaseConfig db = DatabaseConfig();
-                        final id = await UserHelper().getDataUser('id');
-                        await db.update(UserQuery.TABLE_NAME, {'id':"${id.toString()}","is_login":"0"});
-                        Navigator.of(context).pushNamedAndRemoveUntil("/${StringConfig.signIn}", (route) => false);
-                      });
+                      FunctionHelper().logout(context);
                     },
                     dense: true,
                     title:config.MyFont.subtitle(context: context,text:'Keluar',fontSize: 9,color: Theme.of(context).textTheme.caption.color),

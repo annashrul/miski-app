@@ -235,6 +235,7 @@ class Datum {
 class Detail {
   Detail({
     this.id,
+    this.idBarang,
     this.kdTrx,
     this.kodeBarang,
     this.barang,
@@ -252,6 +253,7 @@ class Detail {
   });
 
   String id;
+  String idBarang;
   String kdTrx;
   String kodeBarang;
   String barang;
@@ -269,6 +271,7 @@ class Detail {
 
   factory Detail.fromJson(Map<String, dynamic> json) => Detail(
     id: json["id"],
+    idBarang: json["id_barang"],
     kdTrx: json["kd_trx"],
     kodeBarang: json["kode_barang"],
     barang: json["barang"],
@@ -287,6 +290,7 @@ class Detail {
 
   Map<String, dynamic> toJson() => {
     "id": id,
+    "id_barang": idBarang,
     "kd_trx": kdTrx,
     "kode_barang": kodeBarang,
     "barang": barang,

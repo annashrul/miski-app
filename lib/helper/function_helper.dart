@@ -21,6 +21,7 @@ import 'package:netindo_shop/model/tenant/list_brand_product_model.dart';
 import 'package:netindo_shop/model/tenant/list_category_product_model.dart';
 import 'package:netindo_shop/model/tenant/list_product_tenant_model.dart';
 import 'package:netindo_shop/model/tenant/list_tenant_model.dart';
+import 'package:netindo_shop/pages/component/auth/signin_component.dart';
 import 'package:netindo_shop/provider/base_provider.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
 import 'package:netindo_shop/views/screen/auth/login_screen.dart';
@@ -492,9 +493,13 @@ class FunctionHelper{
     await _helper.updateData(ProductQuery.TABLE_NAME,"is_click", "true", idTenant, idProduct.toString());
   }
   Future logout(BuildContext context)async{
-    final id = await UserHelper().getDataUser('id');
-    await _helper.update(UserQuery.TABLE_NAME, {'id':"${id.toString()}","is_login":"0"});
-    WidgetHelper().myPushRemove(context,LoginScreen());
+    WidgetHelper().notifDialog(context,"Perhatian !!","Anda yakin akan keluar dari aplikasi ??", (){Navigator.pop(context);}, ()async{
+      DatabaseConfig db = DatabaseConfig();
+      final id = await UserHelper().getDataUser('id');
+      await db.update(UserQuery.TABLE_NAME, {'id':"${id.toString()}",StringConfig.is_login:"0",StringConfig.onboarding:"1"});
+      WidgetHelper().myPushRemove(context,SignInComponent());
+    });
+
   }
 
 

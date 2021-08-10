@@ -174,7 +174,7 @@ class TabReviewProductWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final scaler = config.ScreenScale(context).scaler;
     return isLoading?Container(
-        padding: scaler.getPadding(0,2),
+      padding: scaler.getPadding(0,2),
       child: LoadingHistory(tot: 10),
     ):data["review"].length<1?Container( padding: scaler.getPadding(0,2),height: scaler.getHeight(30),child: EmptyTenant()):ListView.separated(
       padding: scaler.getPadding(0,2),

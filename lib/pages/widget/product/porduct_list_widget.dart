@@ -39,6 +39,11 @@ class ProductListWidget extends StatelessWidget {
       focusColor: Theme.of(context).accentColor,
       highlightColor: Theme.of(context).primaryColor,
       onTap: () {
+        Navigator.of(context).pushNamed("/${StringConfig.detailProduct}",arguments: {
+          "heroTag":this.heroTag,
+          "id":this.productId,
+          "image":this.productImage,
+        });
       },
       child: Container(
         padding: scaler.getPaddingLTRB(0,0,2,0),

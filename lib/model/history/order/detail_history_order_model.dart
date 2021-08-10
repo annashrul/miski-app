@@ -34,7 +34,6 @@ class DetailHistoryOrderModel {
 
 class Result {
   Result({
-    this.totalrecords,
     this.kdTrx,
     this.idTenant,
     this.tenant,
@@ -72,7 +71,6 @@ class Result {
     this.barang,
   });
 
-  String totalrecords;
   String kdTrx;
   String idTenant;
   String tenant;
@@ -110,7 +108,6 @@ class Result {
   List<Barang> barang;
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
-    totalrecords: json["totalrecords"],
     kdTrx: json["kd_trx"],
     idTenant: json["id_tenant"],
     tenant: json["tenant"],
@@ -149,7 +146,6 @@ class Result {
   );
 
   Map<String, dynamic> toJson() => {
-    "totalrecords": totalrecords,
     "kd_trx": kdTrx,
     "id_tenant": idTenant,
     "tenant": tenant,
@@ -191,6 +187,7 @@ class Result {
 class Barang {
   Barang({
     this.id,
+    this.idBarang,
     this.kdTrx,
     this.kodeBarang,
     this.barang,
@@ -208,6 +205,7 @@ class Barang {
   });
 
   String id;
+  String idBarang;
   String kdTrx;
   String kodeBarang;
   String barang;
@@ -225,6 +223,7 @@ class Barang {
 
   factory Barang.fromJson(Map<String, dynamic> json) => Barang(
     id: json["id"],
+    idBarang: json["id_barang"],
     kdTrx: json["kd_trx"],
     kodeBarang: json["kode_barang"],
     barang: json["barang"],
@@ -243,6 +242,7 @@ class Barang {
 
   Map<String, dynamic> toJson() => {
     "id": id,
+    "id_barang": idBarang,
     "kd_trx": kdTrx,
     "kode_barang": kodeBarang,
     "barang": barang,

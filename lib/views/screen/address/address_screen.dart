@@ -838,7 +838,7 @@ class _ModalFormState extends State<ModalForm> {
 class ModalProvinsi extends StatefulWidget {
   ModalProvinsi({
     Key key,
-    @required this.mode,
+    this.mode,
     @required this.callback,
     @required this.id,
     @required this.idx,
@@ -977,7 +977,7 @@ class _ModalProvinsiState extends State<ModalProvinsi> {
 class ModalCity extends StatefulWidget {
   ModalCity({
     Key key,
-    @required this.mode,
+    this.mode,
     @required this.callback,
     @required this.id,
     @required this.idProv,
@@ -1108,7 +1108,7 @@ class _ModalCityState extends State<ModalCity> {
 class ModalDisctrict extends StatefulWidget {
   ModalDisctrict({
     Key key,
-    @required this.mode,
+   this.mode,
     @required this.callback,
     @required this.id,
     @required this.idCity,

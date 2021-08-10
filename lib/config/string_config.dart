@@ -49,6 +49,7 @@ class StringConfig{
   static const String onesignal_id = "onesignal_id";
 
   // ************************ GENERAL  ************************ //
+  static final int perpage = 9;
   static final double iconSize = 12;
   static final userImage = localAssets+"user2.jpg";
   static const version = "0.0.1";

@@ -57,10 +57,10 @@ class FunctionCheckout{
       }
       int subTotal = await loadSubTotal(cartModel: product);
       if(type=="all"){
-        BankModel bank = await FunctionBank().loadData(context: context);
-        KurirModel kurir = await loadKurir(context: context);
         ListAddressModel  address = await FunctionAddress().loadData(context: context,isChecking: true);
         if(address.result.data.length>0){
+          BankModel bank = await FunctionBank().loadData(context: context);
+          KurirModel kurir = await loadKurir(context: context);
           final ongkir = await loadOngkir(context: context,kodeKecamatan: address.result.data[0].kdKec,kurir: kurir.result[0].kurir);
           int grandTotal = await loadGrandTotal(cartModel: product,cost: ongkir["cost"]);
           resData = {

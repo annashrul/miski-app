@@ -59,10 +59,7 @@ class _ChatComponentState extends State<ChatComponent> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                Padding(
-                  padding: scaler.getPadding(0, 2),
-                  child: SearchBarWidget(),
-                ),
+
                 isLoading?Container(
                   padding: scaler.getPadding(0, 2),
                   child: LoadingTicket(total: 10),

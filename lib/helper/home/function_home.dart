@@ -1,17 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
+import 'package:netindo_shop/model/promo/global_promo_model.dart';
 import 'package:netindo_shop/model/slider/ListSliderModel.dart';
 import 'package:netindo_shop/model/tenant/listGroupProductModel.dart';
 import 'package:netindo_shop/model/tenant/list_product_tenant_model.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
 
 class FunctionHome{
-  Future loadProduct({BuildContext context,String idKelompok})async{
+  Future loadProduct({BuildContext context,String where})async{
     ListProductTenantModel listProductTenantModel;
     final tenant = await FunctionHelper().getTenant();
     String url = "barang?page=1&id_tenant=${tenant[StringConfig.idTenant]}";
-    if(idKelompok!="") url+="&kelompok=$idKelompok";
+    if(where!="") url+="$where";
+    print(where);
     final res = await HandleHttp().getProvider(url, listProductTenantModelFromJson,context: context);
     if(res!=null){
       if(res is ListProductTenantModel){
@@ -36,6 +38,14 @@ class FunctionHome{
     final res = await HandleHttp().getProvider("slider?page=1",listSliderModelFromJson,context: context);
     if(res is ListSliderModel){
       ListSliderModel result=ListSliderModel.fromJson(res.toJson());
+      return result;
+    }
+  }
+  Future loadPromo({BuildContext context})async{
+    final tenant = await FunctionHelper().getTenant();
+    final res = await HandleHttp().getProvider("promo?page=1&id_tenant=${tenant[StringConfig.idTenant]}",globalPromoModelFromJson,context: context);
+    if(res is GlobalPromoModel){
+      GlobalPromoModel result=GlobalPromoModel.fromJson(res.toJson());
       return result;
     }
   }

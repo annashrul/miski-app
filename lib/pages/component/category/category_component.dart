@@ -20,54 +20,36 @@ class CategoryComponent extends StatefulWidget {
 
 class _CategoryComponentState extends State<CategoryComponent> {
   ListCategoryProductModel listCategoryProductModel;
-
   List data=[];
 
   bool isLoading=true;
   Future loadData()async{
-    final resCategory=await HandleHttp().getProvider("kategori?page=1",listCategoryProductModelFromJson,context: context);
+    final resCategory=await HandleHttp().getProvider("kategori?page=1&status=1",listCategoryProductModelFromJson,context: context);
+    // final resGroup=await HandleHttp().getProvider("kelomok?page=1&status=1",listGroupProductModelFromJson,context: context);
     if(resCategory!=null){
       if(resCategory==StringConfig.errNoData) return;
       ListCategoryProductModel resultCategory=ListCategoryProductModel.fromJson(resCategory.toJson());
-
-      List arrCategory=resultCategory.result.data;
-      for(int i=0;i<arrCategory.length;i++){
-        print("alur = eksekusi kategori");
-        data.add({"id":arrCategory[i].id,"kelompok":[{
-          "id":i
-        }]});
-        // for(int x=0;x<data.length;x++){
-
-          // data[i].contains({"kelompok":x});
-          // print(data[i]);
-          // print("alur = eksekusi kelompok");
-          // print(data[i]["kelompok"][x]["id"]);
-          // data[i]["kelompok"][x]["id"]=x;
-        // }
-      }
-      for(int i=0;i<data.length;i++){
-        for(int x=0;x<data[i]["kelompok"].length;x++){
-          // Map<String, Object> kel = data[i]["kelompok"].toJson();
-          // print(kel);
-          // data[i]["kelompok"].addAll({"gambar":"img"});
+      for(int iCategory=0;iCategory<resultCategory.result.data.length;iCategory++){
+        var rowCategory=resultCategory.result.data[iCategory];
+        data.add({"id":rowCategory.id,"title":rowCategory.title,"image":rowCategory.image,"kelompok":[]});
+        final resGroup = await HandleHttp().getProvider("kelompok?page=1&kategori=${rowCategory.id}",listGroupProductModelFromJson,context: context);
+        if(resGroup!=null){
+          ListGroupProductModel resultGroup=ListGroupProductModel.fromJson(resGroup.toJson());
+          resultGroup.result.data.forEach((rowGroup) {
+            data[iCategory]["kelompok"].add({
+              "id":rowGroup.id,
+              "title":rowGroup.title,
+              "kategori":rowGroup.kategori,
+              "image":rowGroup.image
+            });
+          });
+          if(this.mounted){
+            this.setState(() {
+              isLoading=false;
+            });
+          }
         }
       }
-      // resultCategory.result.data.forEach((rowCategory)async {
-      //   data.add({"id":rowCategory.id,"title":rowCategory.title,"image":rowCategory.image,"kelompok":[]});
-      //   final resGroup=await HandleHttp().getProvider("kelomok?page=1&kategori=${rowCategory.id}",listGroupProductModelFromJson,context: context);
-      //   if(resGroup!=null){
-      //     if(resGroup==StringConfig.errNoData) return;
-      //     ListGroupProductModel resultGroup=ListGroupProductModel.fromJson(resGroup.toJson());
-      //     print("alur = eksekusi kelompok");
-      //     resultGroup.result.data.forEach((rowGroup) {
-      //       data.add({"kelompok":rowGroup.toJson()});
-      //     });
-      //   }
-      // });
-
-      print("### data = $data");
-      isLoading=false;
-      if(this.mounted)this.setState(() {});
     }
   }
 
@@ -84,16 +66,15 @@ class _CategoryComponentState extends State<CategoryComponent> {
     return Scaffold(
       drawer: DrawerWidget(),
       appBar: WidgetHelper().appBarWithButton(context, "Kategori", (){},<Widget>[],param: "default"),
-      body: SingleChildScrollView(
+      body: isLoading?WidgetHelper().loadingWidget(context):SingleChildScrollView(
         padding:scaler.getPadding(1,2),
         child: Wrap(
           runSpacing: 20,
           children: <Widget>[
-            SearchBarWidget(),
             Wrap(
               runSpacing: 30,
-              children: List.generate(10, (index) {
-                return index.isEven ? buildEvenCategory(context) : buildOddCategory(context);
+              children: List.generate(data.length, (index) {
+                return index.isEven ? data[index]["kelompok"].length>0?buildEvenCategory(context,index):Text("") : data[index]["kelompok"].length>0?buildOddCategory(context,index):Text("");
               }),
             ),
           ],
@@ -102,9 +83,8 @@ class _CategoryComponentState extends State<CategoryComponent> {
     );
   }
 
-  Widget buildEvenCategory(BuildContext context) {
+  Widget buildEvenCategory(BuildContext context,int idxCategory) {
     final scaler = config.ScreenScale(context).scaler;
-
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -127,12 +107,11 @@ class _CategoryComponentState extends State<CategoryComponent> {
                 child: Column(
                   children: <Widget>[
                     Hero(
-                      tag: "${random.nextInt(10000)}",
-                      child: SvgPicture.asset(StringConfig.imageProduct,height: scaler.getHeight(2.5),),
+                      tag: "categoryImage${data[idxCategory]["id"]}",
+                      child: SvgPicture.network(data[idxCategory]["image"],height: scaler.getHeight(2.5),),
                     ),
                     SizedBox(height: 5),
-                    config.MyFont.title(context: context,text:"Sepatu",color:Theme.of(context).primaryColor )
-
+                    config.MyFont.title(context: context,text:data[idxCategory]["title"],color:Theme.of(context).primaryColor,fontSize: 8 )
                   ],
                 ),
               ),
@@ -180,11 +159,12 @@ class _CategoryComponentState extends State<CategoryComponent> {
               runAlignment: WrapAlignment.start,
               spacing: 10,
               runSpacing: 10,
-              children: List.generate(10, (index) {
+              children: List.generate(data[idxCategory]["kelompok"].length, (index) {
                 return Material(
                   borderRadius: BorderRadius.circular(30),
                   child: InkWell(
                     onTap: () {
+                      Navigator.of(context).pushNamed("/${StringConfig.productByCategory}",arguments:data[idxCategory]..addAll({"index":index}));
                     },
                     borderRadius: BorderRadius.circular(20),
                     child: Container(
@@ -193,7 +173,7 @@ class _CategoryComponentState extends State<CategoryComponent> {
                         borderRadius: BorderRadius.circular(30),
                         border: Border.all(color: Theme.of(context).hintColor.withOpacity(0.2)),
                       ),
-                      child: config.MyFont.subtitle(context: context,text:"Women",color: Theme.of(context).textTheme.bodyText2.color,fontSize: 7),
+                      child: config.MyFont.subtitle(context: context,text:data[idxCategory]["kelompok"][index]["title"],color: Theme.of(context).textTheme.bodyText2.color,fontSize: 7),
                     ),
                   ),
                 );
@@ -205,9 +185,9 @@ class _CategoryComponentState extends State<CategoryComponent> {
     );
   }
   Random random =  new Random();
-  Widget buildOddCategory(BuildContext context) {
+  Widget buildOddCategory(BuildContext context,int idxCategory) {
     final scaler = config.ScreenScale(context).scaler;
-    return Row(
+     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Expanded(
@@ -227,11 +207,12 @@ class _CategoryComponentState extends State<CategoryComponent> {
               runAlignment: WrapAlignment.start,
               spacing: 10,
               runSpacing: 10,
-              children: List.generate(10, (index) {
+              children: List.generate(data[idxCategory]["kelompok"].length, (index) {
                 return Material(
                   borderRadius: BorderRadius.circular(30),
                   child: InkWell(
                     onTap: () {
+                      Navigator.of(context).pushNamed("/${StringConfig.productByCategory}",arguments:data[idxCategory]..addAll({"index":index}));
                     },
                     borderRadius: BorderRadius.circular(20),
                     child: Container(
@@ -240,7 +221,7 @@ class _CategoryComponentState extends State<CategoryComponent> {
                         borderRadius: BorderRadius.circular(30),
                         border: Border.all(color: Theme.of(context).hintColor.withOpacity(0.2)),
                       ),
-                      child: config.MyFont.subtitle(context: context,text:"Furniture",color: Theme.of(context).textTheme.bodyText2.color,fontSize: 7),
+                      child: config.MyFont.subtitle(context: context,text:data[idxCategory]["kelompok"][index]["title"],color: Theme.of(context).textTheme.bodyText2.color,fontSize: 7),
                     ),
                   ),
                 );
@@ -269,11 +250,10 @@ class _CategoryComponentState extends State<CategoryComponent> {
                   children: <Widget>[
                     Hero(
                       tag: "${random.nextInt(10000)}",
-                      child: SvgPicture.asset(StringConfig.imageProduct,height: scaler.getHeight(2.5),),
+                      child: SvgPicture.network(data[idxCategory]["image"],height: scaler.getHeight(2.5),),
                     ),
                     SizedBox(height: 5),
-                    config.MyFont.title(context: context,text:"Sepatu",color:Theme.of(context).primaryColor )
-
+                    config.MyFont.title(context: context,text:data[idxCategory]["title"],color:Theme.of(context).primaryColor,fontSize: 8 )
                   ],
                 ),
               ),
@@ -307,5 +287,4 @@ class _CategoryComponentState extends State<CategoryComponent> {
       ],
     );
   }
-
 }

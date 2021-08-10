@@ -21,11 +21,12 @@ class HistoryOrderComponent extends StatefulWidget {
 
 class _HistoryOrderComponentState extends State<HistoryOrderComponent> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-
+  int status=5;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    status=widget.currentTab;
   }
   String layout="list";
   @override
@@ -34,8 +35,10 @@ class _HistoryOrderComponentState extends State<HistoryOrderComponent> {
     List<Widget> historyTab = [];
     List<Widget> historyView = [];
     List historyArray=FunctionHelper.arrOptDate;
+
     for(int i=0;i<historyArray.length;i++){
-      historyView.add(HistoryOrderWidget(status:i,layout:layout));
+      status=i;
+      historyView.add(HistoryOrderWidget(status:status,layout:layout));
       historyTab.add(
         Tab(
           child: Container(
@@ -43,7 +46,7 @@ class _HistoryOrderComponentState extends State<HistoryOrderComponent> {
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(50),border: Border.all(color: Theme.of(context).accentColor, width: 1)),
             child: Align(
               alignment: Alignment.center,
-              child: Text(historyArray[i],style: config.MyFont.textStyle.copyWith(fontSize: 14)),
+              child: Text(historyArray[i],style: config.MyFont.style(context:context,style: Theme.of(context).textTheme.subtitle1)),
             ),
           ),
         ),
@@ -54,23 +57,14 @@ class _HistoryOrderComponentState extends State<HistoryOrderComponent> {
         length: historyArray.length,
         child: Scaffold(
           key: _scaffoldKey,
-          drawer: DrawerWidget(),
           appBar: AppBar(
             automaticallyImplyLeading: false,
             leading: new IconButton(
-              icon: new Icon(Icons.sort, color: Theme.of(context).hintColor),
-              onPressed: () => _scaffoldKey.currentState.openDrawer(),
+              icon: new Icon(UiIcons.return_icon, color: Theme.of(context).hintColor),
+              onPressed: () => Navigator.of(context).pop(),
             ),
             backgroundColor: Colors.transparent,
             elevation: 0,
-            actions: [
-              WidgetHelper().iconAppbar(color:this.layout == 'list' ? Theme.of(context).accentColor : Theme.of(context).focusColor,context: context,icon:Icons.format_list_bulleted,callback: ()=>this.setState(() {
-                layout="list";
-              })),
-              WidgetHelper().iconAppbar(color:this.layout == 'grid' ? Theme.of(context).accentColor : Theme.of(context).focusColor,context: context,icon:Icons.apps,callback: ()=>this.setState(() {
-                layout="grid";
-              })),
-            ],
             title: config.MyFont.title(context: context,text:"Riwayat belanja"),
             bottom: TabBar(
               labelPadding: scaler.getPadding(0,0.5),
@@ -79,7 +73,12 @@ class _HistoryOrderComponentState extends State<HistoryOrderComponent> {
               isScrollable: true,
               physics: NeverScrollableScrollPhysics(),
               indicator: BoxDecoration(borderRadius: BorderRadius.circular(50), color: Theme.of(context).accentColor),
-              tabs: historyTab
+              tabs: historyTab,
+              onTap: (e){
+                this.setState(() {
+                  status=e;
+                });
+              },
             ),
           ),
           body: TabBarView(children:historyView),

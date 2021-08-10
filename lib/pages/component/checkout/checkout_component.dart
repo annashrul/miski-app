@@ -50,14 +50,15 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
     }
 
     detail.addAll(resDetail);
+
     if(type=="all"){
       address = resDetail["address"]["data"][indexAddress];
       shippingKurir.addAll({"arr":resDetail["shipping"]["kurir"]["result"],"obj":resDetail["shipping"]["kurir"]["result"][0]});
       shippingLayanan.addAll({"arr":resDetail["shipping"]["layanan"]["ongkir"]["ongkir"],"obj":resDetail["shipping"]["layanan"]["ongkir"]["ongkir"][0]});
       loadingShipping.addAll({"kurir":false,"layanan":false});
-      isLoading=false;
       cost=resDetail["shipping"]["layanan"]["ongkir"]["ongkir"][0]["cost"];
       bankModel = resDetail["bank"];
+      isLoading=false;
     }
     else{
       cost=cost;
@@ -70,17 +71,20 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
     if(this.mounted)setState(() {});
   }
 
-  Future handleShipping(i,type)async{
-    Navigator.of(context).pop();
+  Future handleShipping(i,type,{isUpdate=false})async{
     if(type=="kurir"){
       indexShipping["kurir"] = i;
       indexShipping["layanan"] = 0;
       loadingShipping["layanan"]=true;
       final ongkir = await FunctionCheckout().loadOngkir(context: context,kodeKecamatan: address["kd_kec"],kurir: shippingKurir["arr"][i]["kurir"]);
+      print(ongkir);
       loadingShipping["layanan"]=false;
       shippingLayanan["arr"] = ongkir["ongkir"]["ongkir"];
       shippingLayanan["obj"] = ongkir["ongkir"]["ongkir"][0];
       cost = shippingLayanan["obj"]["cost"];
+
+
+      // print("ongkir $cost");
     }
     else{
       print("ongkir ${shippingLayanan["arr"][i]}");
@@ -129,6 +133,11 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
   }
 
 
+  // Future grandTotal(cost){
+  //
+  // }
+
+
   @override
   void initState() {
     // TODO: implement initState
@@ -142,7 +151,7 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: WidgetHelper().appBarWithButton(context,"Checkout", (){}, <Widget>[],param: "default"),
+      appBar: WidgetHelper().appBarWithButton(context,"Pembayaran", (){}, <Widget>[],param: "default"),
       bottomNavigationBar: buildBottomNavigationBar(context),
       body: ListView(
         physics:AlwaysScrollableScrollPhysics(),
@@ -150,7 +159,22 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
           SectionAddressWidget(
             isLoading: isLoading,
             address: address,
-            callback: (data){if(this.mounted)this.setState(()=>address=data);},
+            callback: (data)async{
+              setState(() {
+                loadingShipping["layanan"]=true;
+                address=data;
+              });
+              print(data);
+
+              // handleShipping(0,"kurir",isUpdate: true);
+              final ongkir = await FunctionCheckout().loadOngkir(context: context,kodeKecamatan: data["kd_kec"],kurir: shippingKurir["arr"][indexShipping["kurir"]]["kurir"]);
+              shippingLayanan["obj"] = ongkir["ongkir"]["ongkir"][0];
+              cost = shippingLayanan["obj"]["cost"];
+              // print(grandTotal);
+              grandTotal = subtotal+cost;
+              loadingShipping["layanan"]=false;
+              if(this.mounted)this.setState((){});
+            },
           ),
           Divider(),
           SectionShippingWidget(
@@ -159,6 +183,7 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
             kurir:shippingKurir,
             layanan:shippingLayanan,
             callback:(i,type)async{
+              Navigator.of(context).pop();
               handleShipping(i,type);
             }
           ),

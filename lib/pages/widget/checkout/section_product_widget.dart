@@ -29,7 +29,7 @@ class _SectionProductWidgetState extends State<SectionProductWidget> {
         children: [
           WidgetHelper().titleQ(context, "Keranjang",icon: UiIcons.checked),
           SizedBox(height: scaler.getHeight(0.5)),
-         Container(
+          Container(
            child:  widget.data.length>0?ListView.separated(
              padding: scaler.getPadding(0,0),
              addRepaintBoundaries: true,

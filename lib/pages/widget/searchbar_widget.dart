@@ -3,6 +3,8 @@ import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/ui_icons.dart';
 
 class SearchBarWidget extends StatelessWidget {
+  final Function(String any) callback;
+  SearchBarWidget({this.callback});
   @override
   Widget build(BuildContext context) {
     final scaler = config.ScreenScale(context).scaler;
@@ -24,7 +26,12 @@ class SearchBarWidget extends StatelessWidget {
           border: UnderlineInputBorder(borderSide: BorderSide.none),
           enabledBorder: UnderlineInputBorder(borderSide: BorderSide.none),
           focusedBorder: UnderlineInputBorder(borderSide: BorderSide.none),
+
         ),
+       
+        onSubmitted: (e){
+          callback(e);
+        },
       ),
     );
   }

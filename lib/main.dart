@@ -57,7 +57,7 @@ class _MyAppState extends State<MyApp> {
           focusColor: config.Colors().accentDarkColor(1),
           textSelectionColor: Color(0xFF252525),
           unselectedWidgetColor: Colors.black26,
-          dialogBackgroundColor: Colors.white,
+          dialogBackgroundColor: Color(0xFF2C2C2C),
           textTheme: TextTheme(
             button: style.copyWith(color: Color(0xFF252525)),
             headline1: style.copyWith(fontSize: 10.0, fontWeight: FontWeight.bold,color: config.Colors().secondDarkColor(1)),
@@ -69,7 +69,7 @@ class _MyAppState extends State<MyApp> {
             subtitle2: style.copyWith(fontSize: 9.0, fontWeight: FontWeight.w500, color: config.Colors().mainDarkColor(1)),
             bodyText1: style.copyWith(fontSize: 9.0, color: config.Colors().secondDarkColor(1)),
             bodyText2: style.copyWith(fontSize: 9.0, fontWeight: FontWeight.w600, color: config.Colors().secondDarkColor(1)),
-            caption: style.copyWith(fontSize: 9.0, color: config.Colors().secondDarkColor(0.7)),
+            caption: style.copyWith(fontSize: 14.0, color: config.Colors().secondDarkColor(0.7)),
           ),
         ),
         theme: ThemeData(

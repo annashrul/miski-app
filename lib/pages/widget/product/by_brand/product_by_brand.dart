@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:netindo_shop/config/app_config.dart' as config;
+import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
+import 'package:netindo_shop/model/review/review_model.dart';
+import 'package:netindo_shop/pages/widget/brand/brand_home_tab_widget.dart';
+import 'package:netindo_shop/pages/widget/brand/brand_product_tab_widget.dart';
 import 'package:netindo_shop/pages/widget/drawer_widget.dart';
+import 'package:netindo_shop/pages/widget/review/review_widget.dart';
+import 'package:netindo_shop/provider/handle_http.dart';
+import 'package:netindo_shop/views/widget/empty_widget.dart';
+import 'package:netindo_shop/views/widget/loading_widget.dart';
 
 class ProductByBrand extends StatefulWidget {
   final dynamic data;
@@ -15,12 +24,30 @@ class _ProductByBrandState extends State<ProductByBrand> with SingleTickerProvid
   TabController _tabController;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   int _tabIndex = 0;
+  ReviewModel reviewModel;
+  bool isLoading=true;
+  Future loadReview()async{
+    final res=await HandleHttp().getProvider("review?brand=${widget.data["data"]["id"]}", reviewModelFromJson,context: context);
+    // final res=await HandleHttp().getProvider("review?page=1", reviewModelFromJson,context: context);
+    if(res!=null){
+      ReviewModel result=ReviewModel.fromJson(res.toJson());
+      reviewModel=result;
+      isLoading=false;
+      if(this.mounted){
+        this.setState(() {
+
+        });
+      }
+      print("review ${result.result.toJson()}");
+    }
+  }
 
   @override
   void initState() {
     _tabController = TabController(length: 3, initialIndex: _tabIndex, vsync: this);
     _tabController.addListener(_handleTabSelection);
     super.initState();
+    loadReview();
   }
 
   void dispose() {
@@ -38,6 +65,7 @@ class _ProductByBrandState extends State<ProductByBrand> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
+    final scaler=config.ScreenScale(context).scaler;
     return Scaffold(
       key: _scaffoldKey,
       drawer: DrawerWidget(),
@@ -50,9 +78,7 @@ class _ProductByBrandState extends State<ProductByBrand> with SingleTickerProvid
             icon: new Icon(UiIcons.return_icon, color: Theme.of(context).primaryColor),
             onPressed: () => Navigator.of(context).pop(),
           ),
-          actions: <Widget>[
-            WidgetHelper().iconAppBarBadges(context: context,icon: UiIcons.shopping_cart,isActive: true),
-          ],
+
           backgroundColor: widget.data["color"],
           expandedHeight: 250,
           elevation: 0,
@@ -71,8 +97,9 @@ class _ProductByBrandState extends State<ProductByBrand> with SingleTickerProvid
                   child: Center(
                     child: Hero(
                       tag: widget.data["hero"],
-                      child: SvgPicture.asset(
+                      child: SvgPicture.network(
                         widget.data["image"],
+                        // StringConfig.imageProduct,
                         color: Theme.of(context).primaryColor,
                         width: 130,
                       ),
@@ -110,10 +137,11 @@ class _ProductByBrandState extends State<ProductByBrand> with SingleTickerProvid
             controller: _tabController,
             indicatorWeight: 5,
             indicatorSize: TabBarIndicatorSize.label,
-            unselectedLabelColor: Theme.of(context).primaryColor.withOpacity(0.8),
-            labelColor: Theme.of(context).primaryColor,
-            unselectedLabelStyle: TextStyle(fontWeight: FontWeight.w300),
-            indicatorColor: Theme.of(context).primaryColor,
+            unselectedLabelColor: config.Colors.mainColors,
+            labelColor: config.Colors.mainColors,
+            unselectedLabelStyle: config.MyFont.textStyle.copyWith(fontWeight: FontWeight.bold),
+            labelStyle:  config.MyFont.textStyle.copyWith(fontWeight: FontWeight.bold),
+            indicatorColor: config.Colors.mainColors,
             tabs: [
               Tab(text: 'Home'),
               Tab(text: 'Products'),
@@ -121,49 +149,66 @@ class _ProductByBrandState extends State<ProductByBrand> with SingleTickerProvid
             ],
           ),
         ),
-        // SliverList(
-        //   delegate: SliverChildListDelegate([
-        //     Offstage(
-        //       offstage: 0 != _tabIndex,
-        //       child: Column(
-        //         children: <Widget>[
-        //           BrandHomeTabWidget(brand: widget._brand),
-        //         ],
-        //       ),
-        //     ),
-        //     Offstage(
-        //       offstage: 1 != _tabIndex,
-        //       child: Column(
-        //         children: <Widget>[ProductsByBrandWidget(brand: widget._brand)],
-        //       ),
-        //     ),
-        //     Offstage(
-        //       offstage: 2 != _tabIndex,
-        //       child: Column(
-        //         children: <Widget>[
-        //           Padding(
-        //             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-        //             child: ListTile(
-        //               dense: true,
-        //               contentPadding: EdgeInsets.symmetric(vertical: 0),
-        //               leading: Icon(
-        //                 UiIcons.chat_1,
-        //                 color: Theme.of(context).hintColor,
-        //               ),
-        //               title: Text(
-        //                 'Users Reviews',
-        //                 overflow: TextOverflow.fade,
-        //                 softWrap: false,
-        //                 style: Theme.of(context).textTheme.display1,
-        //               ),
-        //             ),
-        //           ),
-        //           ReviewsListWidget()
-        //         ],
-        //       ),
-        //     )
-        //   ]),
-        // )
+        SliverList(
+          delegate: SliverChildListDelegate([
+            Offstage(
+              offstage: 0 != _tabIndex,
+              child: Column(
+                children: <Widget>[
+                  BrandHomeTabWidget(data: widget.data["data"])
+                ],
+              ),
+            ),
+            Offstage(
+              offstage: 1 != _tabIndex,
+              child: Column(
+                children: <Widget>[
+                  BrandProductTabWidget(data: widget.data["data"])
+                ],
+              ),
+            ),
+            Offstage(
+              offstage: 2 != _tabIndex,
+              child:  isLoading?Container(
+                padding: scaler.getPadding(0,2),
+                child: LoadingHistory(tot: 10),
+              ):reviewModel.result.data.length<1?EmptyTenant():Column(
+                children: <Widget>[
+                  Container(
+                    margin: scaler.getMarginLTRB(2,1,2,1),
+                    child: WidgetHelper().titleQ(context,"Ulasan Produk",icon: UiIcons.chat_1),
+                  ),
+                 ListView.separated(
+                    padding: scaler.getPadding(0,2),
+                    itemBuilder: (context, index) {
+                      final res=reviewModel.result.data[index];
+                      return ReviewWidget(
+                        id: res.id,
+                        idMember: res.idMember,
+                        kdBrg: res.kdBrg,
+                        nama: res.nama,
+                        caption: res.caption,
+                        rate: res.rate.toString(),
+                        foto: res.foto,
+                        time: res.time,
+                        createdAt: res.createdAt.toString(),
+                        updatedAt: res.updatedAt.toString(),
+                      );
+                    },
+                    separatorBuilder: (context, index) {
+                      return Divider();
+                    },
+                    itemCount:reviewModel.result.data.length,
+                    // itemCount:100,
+                    primary: false,
+                    shrinkWrap: true,
+                  )
+                  // ReviewsListWidget()
+                ],
+              ),
+            )
+          ]),
+        )
       ]),
     );
   }

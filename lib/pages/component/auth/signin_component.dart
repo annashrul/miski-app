@@ -6,6 +6,7 @@ import 'package:netindo_shop/helper/database_helper.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/auth/login_model.dart';
+import 'package:netindo_shop/pages/component/auth/signup_component.dart';
 import 'package:netindo_shop/pages/widget/secure_code_widget.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
 import 'package:netindo_shop/views/screen/auth/signin_screen.dart';
@@ -66,6 +67,15 @@ class _SignInComponentState extends State<SignInComponent> {
       'type': type,
       'type_otp': isOtp?'whatsapp':'sms',
     };
+    // final res = await HandleHttp().postProvider("auth", {
+    //   "nomor":"$nohp",
+    //   "type":"$type",
+    //   "isForgot":false,
+    //   "isLogin":true
+    // });
+    // if(res!=null){
+    //
+    // }
     var res = await HandleHttp().postProvider('auth', data,context: context);
     if(res!=null){
       var result = LoginModel.fromJson(res);
@@ -102,7 +112,7 @@ class _SignInComponentState extends State<SignInComponent> {
           ));
         }
         else{
-          // WidgetHelper().myPushRemove(context, WrapperScreen(currentTab: StringConfig.defaultTab));
+          Navigator.of(context).pushNamedAndRemoveUntil("/${StringConfig.main}", (route) => false,arguments: StringConfig.defaultTab);
         }
       }
       else{
@@ -196,7 +206,7 @@ class _SignInComponentState extends State<SignInComponent> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                config.MyFont.subtitle(context: context,text: "Kirim otp via ${isOtp?'whatsapp':'sms'}"),
+                                config.MyFont.title(context: context,text: "Kirim otp via ${isOtp?'whatsapp':'sms'}"),
                                 Container(
                                     padding: scaler.getPaddingLTRB(0, 0, 0, 0),
                                     margin: scaler.getMarginLTRB(0, 0, 0, 0),
@@ -218,14 +228,14 @@ class _SignInComponentState extends State<SignInComponent> {
                       ),
                       SizedBox(height: scaler.getHeight(2)),
                       _submitButton(context),
-                      SizedBox(height: scaler.getHeight(2)),
-                      Container(
+                      if(type!="otp")SizedBox(height: scaler.getHeight(2)),
+                      if(type!="otp")Container(
                         alignment: Alignment.center,
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
-                            config.MyFont.subtitle(context: context,text: "Lupa password ?",color: Theme.of(context).textTheme.headline1.color),
+                            config.MyFont.title(context: context,text: "Lupa password ?",color: Theme.of(context).textTheme.headline1.color),
                             FlatButton(
                                 onPressed: (){},
                                 child:config.MyFont.title(context: context,text: "klik disini",color: config.Colors.mainColors)
@@ -241,18 +251,20 @@ class _SignInComponentState extends State<SignInComponent> {
             ],
           ),
         ),
-      floatingActionButton: Row(
+      bottomNavigationBar: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          config.MyFont.subtitle(context: context,text: "belum punya akun ?"),
+          config.MyFont.title(context: context,text: "belum punya akun ?"),
           FlatButton(
-              onPressed: (){},
+              onPressed: (){
+                WidgetHelper().myPush(context, SignUpComponent());
+              },
               child:config.MyFont.title(context: context,text: "daftar disini",color: config.Colors.mainColors)
           )
         ],
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
   Widget _submitButton(BuildContext context) {

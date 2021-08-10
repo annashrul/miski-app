@@ -4,6 +4,9 @@ import 'package:flutter_svg/svg.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
+import 'package:netindo_shop/model/tenant/list_brand_product_model.dart';
+import 'package:netindo_shop/pages/component/brand/brand_component.dart';
+import 'package:netindo_shop/provider/handle_http.dart';
 
 class BrandWidget extends StatefulWidget {
   @override
@@ -11,25 +14,48 @@ class BrandWidget extends StatefulWidget {
 }
 
 class _BrandWidgetState extends State<BrandWidget> {
+  ListBrandProductModel listBrandProductModel;
+  bool isLoading=true;
+  Future loadData()async{
+    final res=await HandleHttp().getProvider("brand?page=1&status=1",listBrandProductModelFromJson,context: context);
+    if(res!=null){
+      ListBrandProductModel result=ListBrandProductModel.fromJson(res.toJson());
+      listBrandProductModel = result;
+      isLoading=false;
+      if(this.mounted){
+        this.setState(() {});
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    loadData();
+  }
+
   @override
   Widget build(BuildContext context) {
     final scaler = config.ScreenScale(context).scaler;
-    return StaggeredGridView.countBuilder(
+
+    return isLoading?WidgetHelper().loadingWidget(context):StaggeredGridView.countBuilder(
       primary: false,
       shrinkWrap: true,
       padding: scaler.getPaddingLTRB(0, 1, 0, 0),
       crossAxisCount: MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 4,
-      itemCount: 7,
+      itemCount: listBrandProductModel.result.data.length,
       itemBuilder: (BuildContext context, int index) {
-        List<Color> col = [Colors.greenAccent,Colors.greenAccent.withOpacity(double.parse("0.$index"))];
-        String image=StringConfig.localAssets+"logo-0${index+3}.svg";
-        print(image);
+        final res=listBrandProductModel.result.data[index];
+        List<Color> col = [config.hexToColors("${res.color}"),config.hexToColors("${res.color}").withOpacity(double.parse("0.$index"))];
+        String image=res.image;
         return WidgetHelper().myRipple(
           callback: () {
             Navigator.of(context).pushNamed("/${StringConfig.productByBrand}",arguments: {
-              "color":Colors.greenAccent,
+              "color":config.hexToColors("${res.color}"),
               "hero":"brand$index",
-              "image":image
+              "image":image,
+              "data":res.toJson()
             });
           },
           child: Stack(
@@ -49,7 +75,7 @@ class _BrandWidgetState extends State<BrandWidget> {
                     gradient: LinearGradient(begin: Alignment.bottomLeft, end: Alignment.topRight, colors:col)),
                 child: Hero(
                   tag: "brand$index",
-                  child: SvgPicture.asset(
+                  child: SvgPicture.network(
                     image,
                     color: Theme.of(context).primaryColor,
                     width: scaler.getWidth(16),
@@ -95,18 +121,18 @@ class _BrandWidgetState extends State<BrandWidget> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    config.MyFont.title(context: context,text:"Zogaa FlameSweater",color: Theme.of(context).textTheme.bodyText2.color,maxLines: 1,fontSize: 9),
+                    config.MyFont.title(context: context,text:res.title,color: Theme.of(context).textTheme.bodyText2.color,maxLines: 1,fontSize: 9),
                     Row(
                       children: <Widget>[
                         Expanded(
-                          child: config.MyFont.subtitle(context: context,text:"$index Product",color: Theme.of(context).textTheme.bodyText1.color,fontSize: 9),
+                          child: config.MyFont.subtitle(context: context,text:"${res.jumlahBarang} produk",color: Theme.of(context).textTheme.bodyText1.color,fontSize: 9),
                         ),
                         Icon(
                           Icons.star,
                           color: Colors.amber,
                           size: 18,
                         ),
-                        config.MyFont.subtitle(context: context,text:"5",color: Theme.of(context).textTheme.bodyText2.color,fontSize: 8),
+                        config.MyFont.subtitle(context: context,text:"${res.jumlahReview}",color: Theme.of(context).textTheme.bodyText2.color,fontSize: 8),
 
                       ],
                       crossAxisAlignment: CrossAxisAlignment.center,

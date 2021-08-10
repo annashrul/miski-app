@@ -61,7 +61,6 @@ class _AddressComponentState extends State<AddressComponent> {
     final scaler = config.ScreenScale(context).scaler;
     return Scaffold(
       key: scaffoldKey,
-      backgroundColor: Colors.white,
       appBar: WidgetHelper().appBarWithButton(context,"Daftar Alamat",(){Navigator.pop(context);},<Widget>[
         WidgetHelper().iconAppbar(context: context,icon: Ionicons.ios_add,callback: (){
           WidgetHelper().myModal(context, ModalFormAddressWidget(id:"",callback:(String par){
@@ -74,35 +73,9 @@ class _AddressComponentState extends State<AddressComponent> {
             }
           },));
         })
-        // Container(
-        //   color: Colors.transparent,
-        //   padding: EdgeInsets.only(right: 0.0,top:5),
-        //   child: Stack(
-        //     alignment: AlignmentDirectional.topEnd,
-        //     children: <Widget>[
-        //       Padding(
-        //         padding: const EdgeInsets.symmetric(horizontal: 0),
-        //         child: FlatButton(
-        //             onPressed: (){
-        //               // WidgetHelper().myModal(context, ModalForm(id:"",callback:(String par){
-        //               //   if(par=='berhasil'){
-        //               //     loadData();
-        //               //     WidgetHelper().showFloatingFlushbar(context,"success","data berhasil dikirim");
-        //               //   }
-        //               //   else{
-        //               //     WidgetHelper().showFloatingFlushbar(context,"success","terjadi kesalahan koneksi");
-        //               //   }
-        //               // },));
-        //             },
-        //             child: WidgetHelper().textQ("Tambah Alamat",scaler.getTextSize(9),LightColor.mainColor,FontWeight.bold)
-        //         ),
-        //       ),
-        //     ],
-        //   ),
-        // )
       ],brightness: Brightness.light),
       body: Container(
-        padding: scaler.getPadding(0,2),
+        padding: scaler.getPadding(1,2),
         child: isLoading?LoadingHistory(tot: 10):listAddressModel.result.data.length>0?Column(
           children: [
             Expanded(
@@ -116,9 +89,9 @@ class _AddressComponentState extends State<AddressComponent> {
                   itemCount: listAddressModel.result.data.length,
                   itemBuilder: (context,index){
                     final val=listAddressModel.result.data[index];
-                    Widget btn=IconButton(
-                      icon: Icon(Ionicons.ios_close_circle_outline,color: Colors.red),
-                      onPressed: (){
+                    Widget btn=WidgetHelper().myRipple(
+                      child: Icon(Ionicons.ios_close_circle_outline,color: Colors.red),
+                      callback: (){
                         WidgetHelper().notifDialog(context, "Perhatian !!","anda yakin akan menghapus data ini ??", (){Navigator.pop(context);},()async{
                           Navigator.pop(context);
                           await deleteAddress(val.id);
@@ -126,113 +99,93 @@ class _AddressComponentState extends State<AddressComponent> {
                       },
                     );
                     if(widget.callback!=null){
-                      btn=IconButton(
-                        icon: Icon(Ionicons.ios_checkmark_circle_outline,color:idx==index?LightColor.lightblack:Colors.transparent),
-                        onPressed: (){},
+                      btn=WidgetHelper().myRipple(
+                        child: idx==index?WidgetHelper().icons(ctx: context,icon: UiIcons.checked):Text(""),
+
+                        // child: Icon(Ionicons.ios_checkmark_circle_outline,color:idx==index?LightColor.lightblack:Colors.transparent),
+                        callback: (){},
                       );
                     }
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey[200],
-                            spreadRadius: 0,
-                            blurRadius: 5,
-                          ),
-                        ],
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                      child:WidgetHelper().myRipple(
+                    return WidgetHelper().chip(
+                      ctx: context,
+                      child: WidgetHelper().myRipple(
                           callback: (){
                             if(widget.callback!=null){
                               setState(() {idx=index;});
                               widget.callback(val.toJson()..addAll({"index":index}));
                               Navigator.pop(context);
                             }else{
-                              // WidgetHelper().myModal(context, ModalForm(id:"${val.id}",callback:(String par){
-                              //   if(par=='berhasil'){
-                              //     loadData();
-                              //     WidgetHelper().showFloatingFlushbar(context,"success","data berhasil disimpan");
-                              //   }
-                              //   else{
-                              //     WidgetHelper().showFloatingFlushbar(context,"failed","terjadi kesalahan koneksi");
-                              //   }
-                              // },));
+                              WidgetHelper().myModal(context, ModalFormAddressWidget(id:"${val.id}",callback:(String par){
+                                if(par=='berhasil'){
+                                  loadData();
+                                  WidgetHelper().showFloatingFlushbar(context,"success","data berhasil disimpan");
+                                }
+                                else{
+                                  WidgetHelper().showFloatingFlushbar(context,"failed","terjadi kesalahan koneksi");
+                                }
+                              },));
                             }
                           },
                           child:  Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Padding(
-                                padding:scaler.getPadding(0,2),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        WidgetHelper().textQ("${val.title}".toUpperCase(),scaler.getTextSize(9),LightColor.black,FontWeight.bold),
-                                        val.ismain==1?Container(
-                                          margin: scaler.getMarginLTRB(1,0, 0, 0),
-                                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                                          decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                                              border: Border.all(color: LightColor.mainColor,width: 2)
-                                          ),
-                                          child: WidgetHelper().textQ("Alamat Utama", scaler.getTextSize(9),LightColor.mainColor,FontWeight.bold),
-                                        ):Container()
-                                      ],
-                                    ),
-                                    btn
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(left: 10,right:10,top:0,bottom:5),
-                                child: Container(
-                                  color: Colors.grey[200],
-                                  height: 1.0,
-                                  width: double.infinity,
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(left:10,right:10,top:0,bottom:10),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    WidgetHelper().textQ("${val.penerima}",scaler.getTextSize(9),LightColor.lightblack,FontWeight.normal),
-                                    SizedBox(height:5.0),
-                                    WidgetHelper().textQ("${val.noHp}",scaler.getTextSize(9),LightColor.lightblack,FontWeight.normal),
-                                    SizedBox(height:5.0),
-                                    WidgetHelper().textQ("${val.mainAddress}",scaler.getTextSize(9),LightColor.lightblack,FontWeight.normal,maxLines: 3),
-                                    SizedBox(height:5.0),
-                                    InkWell(
-                                      onTap: (){
-                                        // WidgetHelper().myModal(context, ModalForm(id:"${val.id}",callback:(String par){
-                                        //   if(par=='berhasil'){
-                                        //     loadData();
-                                        //     WidgetHelper().showFloatingFlushbar(context,"success","data berhasil disimpan");
-                                        //   }
-                                        //   else{
-                                        //     WidgetHelper().showFloatingFlushbar(context,"success","terjadi kesalahan koneksi");
-                                        //   }
-                                        // },));
-                                      },
-                                      child: Container(
-                                        padding:EdgeInsets.all(10.0),
-                                        width: double.infinity,
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Row(
+                                    children: [
+                                      config.MyFont.subtitle(context: context,text:"${val.title}"),
+                                      val.ismain==1?Container(
+                                        margin: scaler.getMarginLTRB(1, 0, 0, 0),
+                                        padding: scaler.getPadding(0,1),
                                         decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(10.0),
-                                            color: SiteConfig().secondColor
+                                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                                            border: Border.all(color: LightColor.mainColor,width: 2)
                                         ),
-                                        child: WidgetHelper().textQ("Ubah alamat",scaler.getTextSize(9),Colors.white,FontWeight.bold,textAlign: TextAlign.center),
+                                        child: config.MyFont.subtitle(context: context,text:"Utama"),
+                                      ):Container()
+                                    ],
+                                  ),
+                                  btn
+                                ],
+                              ),
+                              Divider(),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  config.MyFont.subtitle(context: context,text:"${val.penerima}",color: Theme.of(context).textTheme.caption.color),
+                                  SizedBox(height:5.0),
+                                  config.MyFont.subtitle(context: context,text:"${val.noHp}",color: Theme.of(context).textTheme.caption.color),
+                                  SizedBox(height:5.0),
+                                  config.MyFont.subtitle(context: context,text:"${val.mainAddress}",color: Theme.of(context).textTheme.caption.color),
+                                  SizedBox(height:5.0),
+                                  WidgetHelper().myRipple(
+                                    callback: (){
+                                      WidgetHelper().myModal(context, ModalFormAddressWidget(id:val.id,callback:(String par){
+                                        if(par=='berhasil'){
+                                          loadData();
+                                          WidgetHelper().showFloatingFlushbar(context,"success","data berhasil dikirim");
+                                        }
+                                        else{
+                                          WidgetHelper().showFloatingFlushbar(context,"success","terjadi kesalahan koneksi");
+                                        }
+                                      },));
+
+                                    },
+                                    child: Container(
+                                      padding:EdgeInsets.all(10.0),
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(10.0),
+                                          color: config.Colors.mainColors
                                       ),
-                                    )
-                                  ],
-                                ),
+                                      child: config.MyFont.title(context: context,text:"Ubah alamat",color: Theme.of(context).primaryColor,textAlign: TextAlign.center),
+                                    ),
+                                  )
+                                ],
                               ),
 
                             ],

@@ -83,13 +83,16 @@ class ColorsLightMode{
   static final titleColor = Color(0xFF009DB5);
   static final contentColor = Color(0xFF04526B);
 }
+Color hexToColors(String hexString, {String alphaChannel = 'FF'}) {
+  return Color(int.parse(hexString.replaceFirst('#', '0x$alphaChannel')));
+}
 
 
 class MyFont{
   static TextStyle textStyle = GoogleFonts.poppins();
   static style({BuildContext context,TextDecoration textDecoration,TextStyle style,Color color,double fontSize,FontWeight fontWeight}){
     ScreenScaler scaler = ScreenScaler()..init(context);
-    return textStyle.copyWith(
+    return style.copyWith(
       decoration: textDecoration,
       fontWeight:fontWeight!=null?fontWeight:style.fontWeight,
       fontSize: scaler.getTextSize(fontSize!=null?fontSize:style.fontSize),

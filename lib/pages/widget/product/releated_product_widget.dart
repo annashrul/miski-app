@@ -32,6 +32,7 @@ class ReleatedProductWidget extends StatelessWidget {
               itemCount:data.result.data.length ,
               itemBuilder: (context, index) {
                 final res = data.result.data[index];
+
                 return ProductListCarouselWidget(
                     productId: res.id,
                     productName: res.title,

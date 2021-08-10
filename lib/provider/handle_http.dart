@@ -17,6 +17,7 @@ class HandleHttp{
 
 
   Future getProvider(url,param,{BuildContext context,Function callback})async{
+    print(url);
     try{
       final token= await userRepository.getDataUser(StringConfig.token);
       Map<String, String> head={

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:animated_widgets/widgets/rotation_animated.dart';
 import 'package:animated_widgets/widgets/scale_animated.dart';
 import 'package:animated_widgets/widgets/shake_animated_widget.dart';
@@ -296,12 +297,12 @@ class WidgetHelper{
         builder: (BuildContext context) {
           return Center(
             child: AlertDialog(
-              title:textQ(title,scaler.getTextSize(9),LightColor.black,FontWeight.bold),
-              content:textQ(desc,scaler.getTextSize(9),LightColor.black,FontWeight.normal,maxLines:100),
+              title:config.MyFont.title(context: context,text:title,color:config.Colors.mainColors),
+              content:config.MyFont.title(context: context,text:desc,fontSize: 9),
               actions: <Widget>[
                 FlatButton(
                   onPressed:callback1,
-                  child:textQ(titleBtn1,scaler.getTextSize(10),LightColor.black,FontWeight.bold),
+                  child:config.MyFont.title(context: context,text:titleBtn1,color:config.Colors.mainColors)
                 ),
               ],
             ),
@@ -334,10 +335,10 @@ class WidgetHelper{
         }
     );
   }
-  titleQ(BuildContext context,String txt,{FontWeight fontWeight=FontWeight.bold,EdgeInsetsGeometry padding,String param="", Function callback,IconData icon,double fontSize,String image="",IconData iconAct=UiIcons.play_button,String subtitle=""}){
+  titleQ(BuildContext context,String txt,{double radius=10,FontWeight fontWeight=FontWeight.bold,EdgeInsetsGeometry padding,String param="", Function callback,IconData icon,double fontSize,String image="",IconData iconAct=UiIcons.play_button,String subtitle=""}){
     ScreenScaler scaler = ScreenScaler()..init(context);
     return myRipple(
-      radius: 10,
+      radius: radius,
       callback:callback,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -346,16 +347,13 @@ class WidgetHelper{
             padding: padding==null?scaler.getPadding(0,0):padding,
             child: Row(
               children: [
-                if(image!=""||icon!=null)image!=""?Hero(
-                    tag: image+txt,
-                    child: Container(
-                      height: scaler.getHeight(3),
-                      width: scaler.getWidth(7.5),
-                      child: baseImage(image,fit: BoxFit.contain),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(100)),
-                      ),
-                    )
+                if(image!=""||icon!=null)image!=""?Container(
+                  height: scaler.getHeight(3),
+                  width: scaler.getWidth(7.5),
+                  child: baseImage(image,fit: BoxFit.contain),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(100)),
+                  ),
                 ):icons(ctx: context,icon: icon),
                 if(image!=""||icon!=null)SizedBox(width: scaler.getWidth(1.5)),
                 Column(
@@ -592,18 +590,20 @@ class WidgetHelper{
       child: child,
     );
   }
-  imageUser({BuildContext context,String img}){
+  imageUser({BuildContext context,String img, isUpdate=false}){
     final scaler = config.ScreenScale(context).scaler;
-    return Container(
-        padding: scaler.getPaddingLTRB(0,0,2,0),
-        alignment: Alignment.center,
-        child: WidgetHelper().myRipple(
-          isRadius: true,
-          radius: 300,
-          callback: () {},
-          child:baseImage(img, height: scaler.getHeight(2), width: scaler.getWidth(5),shape: BoxShape.circle)
-
-        ));
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: [
+        Container(
+            padding: scaler.getPaddingLTRB(0,0,2,0),
+            alignment: Alignment.center,
+            child: baseImage(img, height: scaler.getHeight(2), width: scaler.getWidth(5),shape: BoxShape.circle)
+        ),
+        if(isUpdate)Icon(Icons.camera_alt,size: 10,)
+        // icons(ctx: context,icon: UiIcons.download)
+      ],
+    );
   }
 
   icons({BuildContext ctx,IconData icon,Color color}){

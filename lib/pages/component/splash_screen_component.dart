@@ -38,18 +38,24 @@ class _SplashScreenComponentState extends State<SplashScreenComponent> {
       print('##################### USER BARU INSTALL APLIKASI ######################');
     }
     else{
-      final onBoarding= await userHelper.getDataUser(StringConfig.onBoarding);
+      final onBoarding= await userHelper.getDataUser(StringConfig.onboarding);
       final isLogin= await userHelper.getDataUser(StringConfig.is_login);
+
+      print("onboarding $onBoarding");
+      print("onboarding $isLogin");
+
       if(onBoarding==null&&isLogin==null){
         Navigator.pushNamedAndRemoveUntil(context, "/${StringConfig.onBoarding}", (route) => false);
         print('##################### USER SUDAH INSTALL APLIKASI DAN BELUM LOGIN ######################');
       }
       else{
         if(onBoarding=='0'&&isLogin=='0'){
+        // if(onBoarding!='0'&&isLogin!='0'){
           Navigator.pushNamedAndRemoveUntil(context, "/${StringConfig.onBoarding}", (route) => false);
           print('##################### USER SUDAH INSTALL APLIKASI DAN BELUM LOGIN ######################');
         }
         else if(onBoarding=='1'&&isLogin=='0'){
+        // else if(onBoarding!='1'&&isLogin!='0'){
           Navigator.pushNamedAndRemoveUntil(context, "/${StringConfig.signIn}", (route) => false);
           print('##################### USER MELAKUKAN LOGOUT DAN KEMBALI BUKA APLIKASI ######################');
         }

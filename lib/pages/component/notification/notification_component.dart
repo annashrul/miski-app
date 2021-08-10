@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:intl/intl.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
+import 'package:netindo_shop/model/notification/list_notification_model.dart';
 import 'package:netindo_shop/pages/widget/searchbar_widget.dart';
+import 'package:netindo_shop/provider/handle_http.dart';
 import 'package:netindo_shop/views/widget/loading_widget.dart';
 
 class NotificationComponent extends StatefulWidget {
@@ -13,35 +16,81 @@ class NotificationComponent extends StatefulWidget {
 }
 
 class _NotificationComponentState extends State<NotificationComponent> {
-  List data=[
-    {"title":"Lorem Ipsum is simply dummy text of the printing and typesetting industry Lorem Ipsum is simply dummy text of the printing and typesetting industry"},
-    {"title":"Lorem Ipsum is simply dummy text of the printing and typesetting industry Lorem Ipsum is simply dummy text of the printing and typesetting industry"},
-    {"title":"Lorem Ipsum is simply dummy text of the printing and typesetting industry Lorem Ipsum is simply dummy text of the printing and typesetting industry"},
-    {"title":"Lorem Ipsum is simply dummy text of the printing and typesetting industry Lorem Ipsum is simply dummy text of the printing and typesetting industry"},
-    {"title":"Lorem Ipsum is simply dummy text of the printing and typesetting industry Lorem Ipsum is simply dummy text of the printing and typesetting industry"},
-    {"title":"Lorem Ipsum is simply dummy text of the printing and typesetting industry Lorem Ipsum is simply dummy text of the printing and typesetting industry"},
-    {"title":"Lorem Ipsum is simply dummy text of the printing and typesetting industry Lorem Ipsum is simply dummy text of the printing and typesetting industry"},
-    {"title":"Lorem Ipsum is simply dummy text of the printing and typesetting industry Lorem Ipsum is simply dummy text of the printing and typesetting industry"},
-  ];
-  bool isLoading=true;
+  bool isLoading=true,isLoadmore=false;
+  int perpage=StringConfig.perpage,total=0;
+  ListNotificationModel listNotificationModel;
+  ScrollController controller;
+
+  Future loadData()async{
+    final res=await HandleHttp().getProvider("site/notification?page=1&perpage=$perpage", listNotificationModelFromJson,context: context);
+    if(res!=null){
+      ListNotificationModel result=ListNotificationModel.fromJson(res.toJson());
+      listNotificationModel =result;
+      total=result.result.total;
+      isLoading=false;
+      isLoadmore=false;
+      if(this.mounted){
+        this.setState(() {});
+      }
+    }
+  }
+  
+  Future update(id)async{
+    final res= await HandleHttp().putProvider("site/notification/read/$id", {
+      "status":"1"
+    });
+    if(res!=null){
+      loadData();
+    }
+  }
+  void _scrollListener() {
+    if (!isLoading) {
+      print(total);
+
+      if (controller.position.pixels == controller.position.maxScrollExtent) {
+        if(perpage<total){
+          setState((){
+            perpage+=perpage;
+            isLoadmore=true;
+          });
+          loadData();
+        }else{
+          setState((){
+            isLoadmore=false;
+          });
+        }
+      }
+    }
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    controller = new ScrollController()..addListener(_scrollListener);
+
+    loadData();
+  }
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    controller.removeListener(_scrollListener);
+  }
 
   @override
   Widget build(BuildContext context) {
     final scaler=config.ScreenScale(context).scaler;
     return Scaffold(
       body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(vertical: 7),
+        controller: controller,
+
         child: Column(
           children: <Widget>[
-            Padding(
-              padding: scaler.getPadding(0,2),
-              child: SearchBarWidget(),
-            ),
-            !isLoading?Padding(padding: scaler.getPadding(0,2),child: LoadingCart(total:7)):ListView.separated(
-              padding: EdgeInsets.symmetric(vertical: 15),
+            isLoading?Padding(padding: scaler.getPadding(0,2),child: LoadingCart(total:7)):ListView.separated(
+              padding: scaler.getPadding(1, 2),
               shrinkWrap: true,
               primary: false,
-              itemCount: data.length,
+              itemCount: listNotificationModel.result.data.length,
               separatorBuilder: (context, index) {
                 return SizedBox(height: 7);
               },
@@ -49,7 +98,7 @@ class _NotificationComponentState extends State<NotificationComponent> {
                 return buildItem(context: context,index: index);
               },
             ),
-
+            isLoadmore?Padding(padding: scaler.getPadding(0,2),child: LoadingCart(total:1)):SizedBox()
           ],
         ),
       ),
@@ -57,56 +106,32 @@ class _NotificationComponentState extends State<NotificationComponent> {
   }
   Widget buildItem({BuildContext context,int index}) {
     final scaler=config.ScreenScale(context).scaler;
-
+    final res=listNotificationModel.result.data[index];
     return WidgetHelper().myRipple(
-      callback: (){},
-      child: Dismissible(
-        key: Key(index.toString()),
-        background: Container(
-          color: Colors.red,
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: Padding(
-              padding:scaler.getPadding(0,2),
-              child: Icon(
-                FlutterIcons.remove_circle_outline_mdi,
-                color: Colors.white,
+      callback: (){
+        update(res.id);
+      },
+      child: Container(
+        color: res.status==1 ? Colors.transparent : Theme.of(context).focusColor.withOpacity(0.15),
+        padding: scaler.getPadding(1,2),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  config.MyFont.title(context: context,text:res.title,fontSize: 9,fontWeight: res.status==1 ? FontWeight.w300:FontWeight.w600,maxLines: 2),
+                  config.MyFont.subtitle(context: context,text:res.msg,fontSize: 8,color:  Theme.of(context).textTheme.caption.color),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: config.MyFont.subtitle(context: context,text:DateFormat("yyyy-MM-dd hh:mm:ss").format(res.createdAt),fontSize: 8,color:  Theme.of(context).textTheme.caption.color),
+                  )
+                ],
               ),
-            ),
-          ),
-        ),
-        // onDismissed: (direction) {
-        //   setState(() {});
-          // data.removeAt(index);
-          // Scaffold.of(context).showSnackBar(SnackBar(content: Text(" dismissed")));
-        // },
-        child: Container(
-          color: index%2==0 ? Colors.transparent : Theme.of(context).focusColor.withOpacity(0.15),
-          padding: scaler.getPadding(1,2),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                height:  scaler.getHeight(5),
-                width:  scaler.getHeight(5),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
-                  image: DecorationImage(image: AssetImage(StringConfig.localAssets+"man1.webp"), fit: BoxFit.cover),
-                ),
-              ),
-              SizedBox(width: 15),
-              Flexible(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    config.MyFont.title(context: context,text:data[index]["title"],fontSize: 9,fontWeight:index%2==0 ? FontWeight.w300:FontWeight.w600,maxLines: 2),
-                    config.MyFont.subtitle(context: context,text:"33 menit yang lalu",fontSize: 8,color:  Theme.of(context).textTheme.caption.color),
-                  ],
-                ),
-              )
-            ],
-          ),
+            )
+          ],
         ),
       )
     );

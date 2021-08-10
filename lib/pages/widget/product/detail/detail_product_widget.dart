@@ -28,6 +28,7 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
   Future loadDetail()async{
     final funcData = await FunctionDetail().loadDetail(context: context,idProduct:widget.data["id"]);
     dataDetail = funcData["data"];
+    print("data detail ${dataDetail}");
     qty = funcData["data"]["qty"];
     harga = int.parse(funcData["data"]["harga"]);
     hargaMaster=funcData["data"]["harga_master"];
@@ -187,6 +188,7 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
               offstage: 2 != _tabIndex,
               child: Column(
                 children: <Widget>[
+
                   Container(
                     margin: scaler.getMarginLTRB(2,1,2,1),
                     child: WidgetHelper().titleQ(context,"Ulasan Produk",icon: UiIcons.chat_1),
