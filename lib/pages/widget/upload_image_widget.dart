@@ -9,9 +9,11 @@ import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 
+// ignore: must_be_immutable
 class UploadImageWidget extends StatefulWidget {
   final Function(String bukti) callback;
-  UploadImageWidget({this.callback});
+  String title;
+  UploadImageWidget({this.callback,this.title});
   @override
   _UploadImageWidgetState createState() => _UploadImageWidgetState();
 }
@@ -24,6 +26,9 @@ class _UploadImageWidgetState extends State<UploadImageWidget> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    if(widget.title==null){
+      widget.title="Upload bukti transfer";
+    }
   }
 
   @override
@@ -42,7 +47,7 @@ class _UploadImageWidgetState extends State<UploadImageWidget> {
                   children: [
                     WidgetHelper().titleQ(
                         context,
-                        "upload bukti transfer",
+                        widget.title,
                         icon: UiIcons.information,
                         fontSize: 9
                     ),

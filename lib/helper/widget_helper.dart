@@ -7,6 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
@@ -185,7 +186,7 @@ class WidgetHelper{
           color: Colors.amber,
           size: scaler.getTextSize(10),
         ),
-        config.MyFont.subtitle(context: context,text:'$rating',fontSize: 8)
+        config.MyFont.subtitle(context: context,text:'${double.parse(rating).toStringAsFixed(1)}',fontSize: 8)
       ],
     );
 
@@ -318,11 +319,14 @@ class WidgetHelper{
           return Center(
             child: AlertDialog(
               title:config.MyFont.title(context: context,text:title,color:config.Colors.mainColors),
-              content:config.MyFont.title(context: context,text:desc,color:Colors.black,fontSize: 9),
+              content:config.MyFont.title(context: context,text:desc,fontSize: 9),
+
+              // title:config.MyFont.title(context: context,text:title,color:config.Colors.mainColors),
+              // content:config.MyFont.title(context: context,text:desc,color:Colors.black,fontSize: 9),
               actions: <Widget>[
                 FlatButton(
                   onPressed:callback1,
-                  child:config.MyFont.title(context: context,text:titleBtn1,color:config.Colors.mainColors)
+                  child:config.MyFont.title(context: context,text:titleBtn1)
                   // child:textQ(titleBtn1,12,Colors.black,FontWeight.bold),
                 ),
                 FlatButton(
@@ -591,14 +595,24 @@ class WidgetHelper{
     );
   }
   imageUser({BuildContext context,String img, isUpdate=false}){
+    print("image user $img");
     final scaler = config.ScreenScale(context).scaler;
     return Stack(
-      alignment: Alignment.bottomCenter,
+      alignment: Alignment.bottomRight,
       children: [
         Container(
             padding: scaler.getPaddingLTRB(0,0,2,0),
             alignment: Alignment.center,
-            child: baseImage(img, height: scaler.getHeight(2), width: scaler.getWidth(5),shape: BoxShape.circle)
+            height: scaler.getHeight(2), width: scaler.getWidth(5),
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                image: NetworkImage(img),
+              ),
+                shape: BoxShape.circle
+            ),
+            // child: baseImage(img, height: scaler.getHeight(2), width: scaler.getWidth(5),shape: BoxShape.circle)
+            // child: baseImage(img, height: scaler.getHeight(2), width: scaler.getWidth(5),shape: BoxShape.circle)
         ),
         if(isUpdate)Icon(Icons.camera_alt,size: 10,)
         // icons(ctx: context,icon: UiIcons.download)
@@ -610,5 +624,38 @@ class WidgetHelper{
     final scaler = config.ScreenScale(ctx).scaler;
     return Icon(icon,size: scaler.getTextSize(StringConfig.iconSize),color: color==null?Theme.of(ctx).hintColor:color);
   }
+
+  Widget field({BuildContext context,String title,TextInputType textInputType = TextInputType.text,TextInputAction textInputAction=TextInputAction.done, TextEditingController textEditingController, FocusNode focusNode,bool readOnly=false,int maxLines=1,Function(String) submited,Function() onTap,Function(String e) onChange}) {
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          TextField(
+            readOnly: readOnly,
+            maxLines: maxLines,
+            style:config.MyFont.style(context: context,style: Theme.of(context).textTheme.bodyText2,fontWeight: FontWeight.normal,fontSize: 10),
+            focusNode: focusNode,
+            controller: textEditingController,
+            decoration: InputDecoration(
+              hintText: title,
+              hintStyle: config.MyFont.style(context: context,style: Theme.of(context).textTheme.bodyText2,fontSize: 10,fontWeight: FontWeight.normal,color: Theme.of(context).textTheme.headline1.color.withOpacity(0.5)),
+              enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color:Theme.of(context).textTheme.headline1.color.withOpacity(0.2))),
+              focusedBorder:UnderlineInputBorder(borderSide: BorderSide(color:Theme.of(context).textTheme.headline1.color)),
+            ),
+            keyboardType: textInputType,
+            textInputAction: textInputAction,
+            onTap: ()=>onTap(),
+            onSubmitted: (e)=>submited(e),
+            onChanged: (e)=>onChange(e),
+            inputFormatters: <TextInputFormatter>[
+              if(textInputType == TextInputType.number) LengthLimitingTextInputFormatter(13),
+              if(textInputType == TextInputType.number) WhitelistingTextInputFormatter.digitsOnly
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
 
 }

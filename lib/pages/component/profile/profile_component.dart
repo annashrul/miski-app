@@ -8,6 +8,7 @@ import 'package:netindo_shop/helper/database_helper.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/user_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
+import 'package:netindo_shop/model/member/detail_member_model.dart';
 import 'package:netindo_shop/pages/component/address/address_component.dart';
 import 'package:netindo_shop/pages/component/help_support/help_support_component.dart';
 import 'package:netindo_shop/pages/widget/profile/form_profile_widget.dart';
@@ -24,6 +25,7 @@ class ProfileComponent extends StatefulWidget {
 class _ProfileComponentState extends State<ProfileComponent> {
   dynamic dataUser;
   String foto="";
+  DatabaseConfig db = DatabaseConfig();
   Future loadData()async{
     final img= await UserHelper().getDataUser(StringConfig.foto);
     final name= await UserHelper().getDataUser(StringConfig.nama);
@@ -31,9 +33,9 @@ class _ProfileComponentState extends State<ProfileComponent> {
     final gender= await UserHelper().getDataUser(StringConfig.jenis_kelamin);
     final birthDate = await UserHelper().getDataUser(StringConfig.tgl_ultah);
     DateTime tempDate = new DateFormat("yyyy-MM-dd").parse(birthDate);
+    print(img);
     foto = img;
     dataUser = {
-
       StringConfig.nama:name,
       StringConfig.email:email,
       StringConfig.jenis_kelamin:gender,
@@ -41,19 +43,37 @@ class _ProfileComponentState extends State<ProfileComponent> {
     };
     this.setState(() {});
   }
-  
-  Future update(data,{bool isImage=false})async{
-    DatabaseConfig db = DatabaseConfig();
+
+  updateImage(data)async{
+    WidgetHelper().loadingDialog(context);
+    final id= await UserHelper().getDataUser(StringConfig.id_user);
+    final res=await HandleHttp().putProvider("member/$id", data,context: context);
+    print(res);
+    if(res!=null){
+      final getDetail=await HandleHttp().getProvider("member/$id", detailMemberModelFromJson,context: context);
+      if(getDetail!=null){
+        DetailMemberModel result=DetailMemberModel.fromJson(getDetail.toJson());
+        await db.update(UserQuery.TABLE_NAME, {StringConfig.foto:result.result.foto});
+        if(this.mounted){
+          this.setState(() {
+            foto=result.result.foto;
+          });
+          Navigator.of(context).pop();
+          Navigator.of(context).pop();
+          WidgetHelper().showFloatingFlushbar(context, "success", "data berhasil diubah");
+        }
+
+      }
+    }
+  }
+  Future update(data)async{
     final id= await UserHelper().getDataUser(StringConfig.id_user);
     final idLocal= await UserHelper().getDataUser(StringConfig.id);
     Navigator.of(context).pop();
     WidgetHelper().loadingDialog(context);
-    if(!isImage){
-      data.addAll({"id":idLocal.toString()});
-      data[StringConfig.jenis_kelamin] = data[StringConfig.jenis_kelamin]=="Wanita"?"0":"1";
-      await db.update(UserQuery.TABLE_NAME, data);
-    }
-
+    data.addAll({"id":idLocal.toString()});
+    data[StringConfig.jenis_kelamin] = data[StringConfig.jenis_kelamin]=="Wanita"?"0":"1";
+    await db.update(UserQuery.TABLE_NAME, data);
     final res=await HandleHttp().putProvider("member/$id", data,context: context);
     data.remove("id");
     if(res!=null){
@@ -112,9 +132,10 @@ class _ProfileComponentState extends State<ProfileComponent> {
                 WidgetHelper().myRipple(
                   callback: (){
                     WidgetHelper().myModal(context, UploadImageWidget(callback: (e){
-                      update({"foto":e},isImage: true);
-                    }));
+                      updateImage({"foto":e});
+                    },title: "Ubah foto",));
                   },
+                  // child: Image.network(foto)
                   child: WidgetHelper().imageUser(context: context,img: foto,isUpdate: true)
                 )
                 // SizedBox(

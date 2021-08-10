@@ -112,7 +112,6 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
                 });
               }
             }),
-            ImageUserWidget()
           ],
           backgroundColor: Theme.of(context).primaryColor,
           expandedHeight: scaler.getHeight(35),

@@ -34,6 +34,7 @@ class _DetailPromoWidgetState extends State<DetailPromoWidget>  with SingleTicke
     final res=await HandleHttp().getProvider("promo/${widget.id}",detailGlobalPromoModelFromJson,context: context);
     if(res!=null){
       detailGlobalPromoModel=DetailGlobalPromoModel.fromJson(res.toJson());
+      print(detailGlobalPromoModel.result.toJson());
       isLoading=false;
       if(this.mounted){
         this.setState(() {});
@@ -70,7 +71,6 @@ class _DetailPromoWidgetState extends State<DetailPromoWidget>  with SingleTicke
     // );
 
 
-
     return isLoading?WidgetHelper().loadingWidget(context):Scaffold(
       key: _scaffoldKey,
       drawer: DrawerWidget(),
@@ -89,13 +89,13 @@ class _DetailPromoWidgetState extends State<DetailPromoWidget>  with SingleTicke
             ),
             padding: EdgeInsets.all(10.0),
             // child: config.MyFont.title(context: context,text:detailGlobalPromoModel.result.kode),
-            child: config.MyFont.title(context: context,text:"0909090909"),
+            child: config.MyFont.title(context: context,text:detailGlobalPromoModel.result.kode),
           ),
           SizedBox(width: 10.0),
           InkWell(
             borderRadius: BorderRadius.circular(10.0),
             onTap: (){
-              Clipboard.setData(new ClipboardData(text: "0000"));
+              Clipboard.setData(new ClipboardData(text: detailGlobalPromoModel.result.kode));
               WidgetHelper().showFloatingFlushbar(context,"success","Kode promo berhasil disalin");
             },
             child: Container(
@@ -132,7 +132,7 @@ class _DetailPromoWidgetState extends State<DetailPromoWidget>  with SingleTicke
                     child: Hero(
                       tag: "${detailGlobalPromoModel.result.title}${detailGlobalPromoModel.result.id}",
                       child: WidgetHelper().baseImage(
-                        StringConfig.noImage,
+                        detailGlobalPromoModel.result.gambar,
                         width: double.infinity,
                       ),
                     ),
@@ -178,6 +178,7 @@ class _DetailPromoWidgetState extends State<DetailPromoWidget>  with SingleTicke
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     config.MyFont.title(context: context,text: detailGlobalPromoModel.result.title,fontSize: 11),
+                    SizedBox(height: scaler.getHeight(1)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [

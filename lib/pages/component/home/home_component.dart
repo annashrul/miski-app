@@ -198,18 +198,21 @@ class _HomeComponentState extends State<HomeComponent>{
   Widget buildPromo(BuildContext context) {
     final scaler=config.ScreenScale(context).scaler;
     return Container(
-      padding: scaler.getPaddingLTRB(2,0,2,1),
+      padding: scaler.getPaddingLTRB(0,0,0,1),
       height: 200.0,
       child: Column(
         children: <Widget>[
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              WidgetHelper().icons(ctx: context,icon:Icons.arrow_downward),
-              config.MyFont.title(context: context,text:"Promo spesial untuk kamu"),
-              WidgetHelper().icons(ctx: context,icon:Icons.arrow_downward),
-            ],
+          Padding(
+            padding: scaler.getPaddingLTRB(1,0,1,0),
+            child:  Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                WidgetHelper().icons(ctx: context,icon:Icons.arrow_downward),
+                config.MyFont.title(context: context,text:"Promo spesial untuk kamu"),
+                WidgetHelper().icons(ctx: context,icon:Icons.arrow_downward),
+              ],
+            ),
           ),
           SizedBox(height: scaler.getHeight(0.5)),
           Flexible(
@@ -248,14 +251,14 @@ class _HomeComponentState extends State<HomeComponent>{
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
-                                    config.MyFont.subtitle(context: context,text:globalPromoModel.result.data[index].title,color: Theme.of(context).textTheme.headline6.color,fontWeight: FontWeight.bold),
-                                    config.MyFont.subtitle(context: context,text:globalPromoModel.result.data[index].deskripsi,color: Theme.of(context).textTheme.bodyText1.color,fontSize: 8),
+                                    config.MyFont.subtitle(context: context,text:globalPromoModel.result.data[index].title,color: Theme.of(context).textTheme.headline6.color,fontWeight: FontWeight.bold,maxLines: 2),
+                                    config.MyFont.subtitle(context: context,text:globalPromoModel.result.data[index].deskripsi,color: Theme.of(context).textTheme.bodyText1.color,fontSize: 8,maxLines: 2),
 
                                   ],
                                 ),
                               ),
                               Padding(
-                                padding:scaler.getPadding(1,0),
+                                padding:scaler.getPadding(0,0),
                                 child: WidgetHelper().myRipple(
                                   callback: (){WidgetHelper().myPush(context,DetailPromoWidget(id: globalPromoModel.result.data[index].id));},
                                   child: config.MyFont.subtitle(context: context,text:"lihat promo",color: config.Colors.mainColors),
@@ -268,7 +271,6 @@ class _HomeComponentState extends State<HomeComponent>{
                         Hero(
                           tag: "${globalPromoModel.result.data[index].title}${globalPromoModel.result.data[index].id}",
                           child:WidgetHelper().baseImage(
-                            // StringConfig.noImage,
                               globalPromoModel.result.data[index].gambar,
                               height: scaler.getHeight(9),
                               width: scaler.getWidth(22),

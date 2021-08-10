@@ -6,12 +6,15 @@ import 'package:netindo_shop/helper/database_helper.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/auth/login_model.dart';
+import 'package:netindo_shop/model/auth/otp_model.dart';
 import 'package:netindo_shop/pages/component/auth/signup_component.dart';
 import 'package:netindo_shop/pages/widget/secure_code_widget.dart';
+import 'package:netindo_shop/provider/base_provider.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
 import 'package:netindo_shop/views/screen/auth/signin_screen.dart';
 import "package:netindo_shop/config/app_config.dart" as config;
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 class SignInComponent extends StatefulWidget {
   @override
   _SignInComponentState createState() => _SignInComponentState();
@@ -29,15 +32,17 @@ class _SignInComponentState extends State<SignInComponent> {
   final DatabaseConfig _helper = new DatabaseConfig();
   bool isOtp=true;
   String type = "",name = '', image;
-  _callBack(BuildContext context,bool isTrue,Map<String, Object> data)async{
-    if(isTrue){
-      final countTbl = await _helper.queryRowCount(UserQuery.TABLE_NAME);
-      if(countTbl>0){
-        await _helper.deleteAll(UserQuery.TABLE_NAME);
-      }
-      await _helper.insert(UserQuery.TABLE_NAME,data);
-      Navigator.pushNamedAndRemoveUntil(context,"/${StringConfig.main}", (route) => false,arguments: StringConfig.defaultTab);
-    }
+  _callBack(code,data)async{
+
+    // if(isTrue){
+
+      // final countTbl = await _helper.queryRowCount(UserQuery.TABLE_NAME);
+      // if(countTbl>0){
+      //   await _helper.deleteAll(UserQuery.TABLE_NAME);
+      // }
+      // await _helper.insert(UserQuery.TABLE_NAME,data);
+      // Navigator.pushNamedAndRemoveUntil(context,"/${StringConfig.main}", (route) => false,arguments: StringConfig.defaultTab);
+    // }
   }
 
   Future login(BuildContext context,String type) async{
@@ -59,66 +64,109 @@ class _SignInComponentState extends State<SignInComponent> {
         nohp = _nohpController.text;
       });
     }
-    final data={
-      'email': '$email',
-      'password': '$pass',
-      'deviceid': onesignalUserId,
-      'nohp': nohp,
-      'type': type,
-      'type_otp': isOtp?'whatsapp':'sms',
+
+    final dataOtp={
+      "nomor":"$nohp",
+      "type":"$type",
+      "isForgot":"false",
+      "isLogin":"true"
     };
-    // final res = await HandleHttp().postProvider("auth", {
-    //   "nomor":"$nohp",
-    //   "type":"$type",
-    //   "isForgot":false,
-    //   "isLogin":true
-    // });
-    // if(res!=null){
-    //
-    // }
-    var res = await HandleHttp().postProvider('auth', data,context: context);
+    final res = await HandleHttp().postProvider("auth/otp", dataOtp,context: context);
     if(res!=null){
-      var result = LoginModel.fromJson(res);
-      if(result.status=='success'){
-        final dataUser={
-          "id_user":result.result.id.toString(),
-          "token":result.result.token.toString(),
-          "nama":result.result.nama.toString(),
-          "email":result.result.email.toString(),
-          "status":result.result.status.toString(),
-          "alamat":result.result.alamat.toString(),
-          "jenis_kelamin":result.result.jenisKelamin.toString(),
-          "tgl_ultah":result.result.tglUltah.toString(),
-          "tlp":result.result.tlp.toString(),
-          "foto":result.result.foto.toString().replaceAll(' ',''),
-          "biografi":result.result.biografi.toString(),
-          "last_login":result.result.lastLogin.toString(),
-          "is_login":"1",
-          "onboarding":"1",
-          "exit_app":"0",
-          "onesignal_id":onesignalUserId,
-        };
-        if(type=='otp'){
-          WidgetHelper().myPush(context, SecureCodeWidget(
-            callback:(context,isTrue){_callBack(context, true,dataUser);},
-            code:result.result.otp,
-            param: 'otp',
-            desc: isOtp?'WhatsApp':'SMS',
-            data: {
-              "nomor":"${result.result.tlp}",
-              "type":"${isOtp?'whatsapp':'sms'}",
-              "nama":"${result.result.nama}"
-            },
-          ));
-        }
-        else{
-          Navigator.of(context).pushNamedAndRemoveUntil("/${StringConfig.main}", (route) => false,arguments: StringConfig.defaultTab);
-        }
-      }
-      else{
-        WidgetHelper().showFloatingFlushbar(context, 'failed',result.msg);
-      }
+      Navigator.pop(context);
+      final dataLogin={
+        "email": "$email",
+        "password": "$pass",
+        "type":"$type",
+        "nohp":"$nohp",
+        'deviceid': onesignalUserId,
+      };
+      WidgetHelper().myPush(context, SecureCodeWidget(
+        callback:(code)async{
+          WidgetHelper().loadingDialog(context);
+          dataLogin["kode_otp"]=code;
+          var res = await HandleHttp().postProvider('auth',dataLogin,context: context);
+          if(res!=null){
+            Navigator.pop(context);
+            var result = LoginModel.fromJson(res);
+            final dataUser={
+              "id_user":result.result.id.toString(),
+              "token":result.result.token.toString(),
+              "nama":result.result.nama.toString(),
+              "email":result.result.email.toString(),
+              "status":result.result.status.toString(),
+              "alamat":result.result.alamat.toString(),
+              "jenis_kelamin":result.result.jenisKelamin.toString(),
+              "tgl_ultah":result.result.tglUltah.toString(),
+              "tlp":result.result.tlp.toString(),
+              "foto":result.result.foto.toString().replaceAll(' ',''),
+              "biografi":result.result.biografi.toString(),
+              "last_login":result.result.lastLogin.toString(),
+              "is_login":"1",
+              "onboarding":"1",
+              "exit_app":"0",
+              "onesignal_id":onesignalUserId,
+            };
+            final countTbl = await _helper.queryRowCount(UserQuery.TABLE_NAME);
+            if(countTbl>0){
+              await _helper.deleteAll(UserQuery.TABLE_NAME);
+            }
+            await _helper.insert(UserQuery.TABLE_NAME,dataUser);
+            Navigator.pushNamedAndRemoveUntil(context,"/${StringConfig.main}", (route) => false,arguments: StringConfig.defaultTab);
+          }
+        },
+        code:res["result"]["otp_anying"],
+        param: 'otp',
+        desc: isOtp?'WhatsApp':'SMS',
+        data:dataOtp,
+      ));
     }
+
+    //
+    //
+    // var res = await HandleHttp().postProvider('auth', data,context: context);
+    // if(res!=null){
+    //   var result = LoginModel.fromJson(res);
+    //   if(result.status=='success'){
+    //     final dataUser={
+    //       "id_user":result.result.id.toString(),
+    //       "token":result.result.token.toString(),
+    //       "nama":result.result.nama.toString(),
+    //       "email":result.result.email.toString(),
+    //       "status":result.result.status.toString(),
+    //       "alamat":result.result.alamat.toString(),
+    //       "jenis_kelamin":result.result.jenisKelamin.toString(),
+    //       "tgl_ultah":result.result.tglUltah.toString(),
+    //       "tlp":result.result.tlp.toString(),
+    //       "foto":result.result.foto.toString().replaceAll(' ',''),
+    //       "biografi":result.result.biografi.toString(),
+    //       "last_login":result.result.lastLogin.toString(),
+    //       "is_login":"1",
+    //       "onboarding":"1",
+    //       "exit_app":"0",
+    //       "onesignal_id":onesignalUserId,
+    //     };
+    //     if(type=='otp'){
+    //       WidgetHelper().myPush(context, SecureCodeWidget(
+    //         callback:(context,isTrue){_callBack(context, true,dataUser);},
+    //         code:result.result.otp,
+    //         param: 'otp',
+    //         desc: isOtp?'WhatsApp':'SMS',
+    //         data: {
+    //           "nomor":"${result.result.tlp}",
+    //           "type":"${isOtp?'whatsapp':'sms'}",
+    //           "nama":"${result.result.nama}"
+    //         },
+    //       ));
+    //     }
+    //     else{
+    //       Navigator.of(context).pushNamedAndRemoveUntil("/${StringConfig.main}", (route) => false,arguments: StringConfig.defaultTab);
+    //     }
+    //   }
+    //   else{
+    //     WidgetHelper().showFloatingFlushbar(context, 'failed',result.msg);
+    //   }
+    // }
   }
   Future validasi(BuildContext context,String types) async{
 

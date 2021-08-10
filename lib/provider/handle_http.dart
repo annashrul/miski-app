@@ -31,7 +31,7 @@ class HandleHttp{
       print("=================== SUCCESS $url = ${jsonResponse['result']} ==========================");
       if (response.statusCode == 200) {
         if(jsonResponse['result'].length>0){
-          return param(response.body);
+          return param==null?response.body:param(response.body);
         }else{
           print("=================== GET DATA $url = NODATA ============================");
           return SiteConfig().errNoData;
@@ -67,7 +67,8 @@ class HandleHttp{
       return WidgetHelper().showFloatingFlushbar(context, "failed", StringConfig.errSyntax);
     }
   }
-  Future postProvider(url,Map<String, Object> data,{BuildContext context,Function callback}) async {
+  Future postProvider(url,var data,{BuildContext context,Function callback}) async {
+    print(data);
     try {
       final token= await userRepository.getDataUser(StringConfig.token);
       final request = await client.post(
@@ -134,6 +135,11 @@ class HandleHttp{
         print("=================== request.statusCode==404  $url = $TimeoutException ============================");
         Navigator.pop(context);
         return WidgetHelper().showFloatingFlushbar(context, "failed", "terjadi kesalahan url");
+      }
+      else if(request.statusCode==413){
+        Navigator.pop(context);
+        print("jsonResponse");
+        return WidgetHelper().showFloatingFlushbar(context, "failed", "File terlalu besar");
       }
     } on TimeoutException catch (_) {
       print("=================== TimeoutException $url = $TimeoutException ============================");

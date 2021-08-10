@@ -82,12 +82,13 @@ class ProductListWidget extends StatelessWidget {
                           children: <Widget>[
                             config.MyFont.title(context: context,text:'$productSales terjual',fontSize: 8),
                             SizedBox(width: 10),
-                            Icon(
-                              Icons.star,
-                              color: Colors.amber,
-                              size: scaler.getTextSize(10),
-                            ),
-                            config.MyFont.title(context: context,text:'$productRate',fontSize: 8),
+                            WidgetHelper().myRating(context: context,rating: productRate)
+                            // Icon(
+                            //   Icons.star,
+                            //   color: Colors.amber,
+                            //   size: scaler.getTextSize(10),
+                            // ),
+                            // config.MyFont.title(context: context,text:'${double.parse(productRate).toStringAsFixed(2)}',fontSize: 8),
 
                           ],
                           crossAxisAlignment: CrossAxisAlignment.center,

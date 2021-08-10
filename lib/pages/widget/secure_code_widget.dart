@@ -8,11 +8,12 @@ import 'package:netindo_shop/helper/secure_code_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/provider/base_provider.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // ignore: must_be_immutable
 class SecureCodeWidget extends StatefulWidget {
-  final Function(BuildContext context, bool isTrue) callback;
-   String code;
+  Function(dynamic code) callback;
+ String code;
   final String param;
   final String desc;
   final Map<String, Object> data;
@@ -23,16 +24,8 @@ class SecureCodeWidget extends StatefulWidget {
 
 class _SecureCodeWidgetState extends State<SecureCodeWidget> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  var cek;
-  Future cekOtp() async{
-    setState(() {
-      cek = widget.code.split('');
-    });
-    print("############## OTP ABI = $cek #######################");
-  }
   int timeCounter = 0;
   bool timeUpFlag = false;
-
   _timerUpdate() {
     Timer(const Duration(seconds: 1), () async {
       if(this.mounted){
@@ -68,19 +61,22 @@ class _SecureCodeWidgetState extends State<SecureCodeWidget> {
       key: _scaffoldKey,
       floatingActionButton: FlatButton(
           onPressed: ()async{
-            WidgetHelper().loadingDialog(context);
-            var res = await HandleHttp().postProvider("auth/otp",widget.data,context: context);
-            if(res!=null){
-              Navigator.pop(context);
-              WidgetHelper().showFloatingFlushbar(context,"success", "kode otp berhasil dikirim");
-              if(timeUpFlag){
-                timeUpFlag=!timeUpFlag;
-                timeCounter=10;
-                widget.code = "${res['result']['otp']}";
-                setState(() {});
-                _timerUpdate();
+            if(timeUpFlag){
+              WidgetHelper().loadingDialog(context);
+              var res = await HandleHttp().postProvider("auth/otp",widget.data,context: context);
+              if(res!=null){
+                Navigator.pop(context);
+                WidgetHelper().showFloatingFlushbar(context,"success", "kode otp berhasil dikirim");
+                if(timeUpFlag){
+                  timeUpFlag=!timeUpFlag;
+                  timeCounter=10;
+                  widget.code = "${res['result']['otp_anying']}";
+                  setState(() {});
+                  _timerUpdate();
+                }
               }
             }
+
           },
           child:config.MyFont.title(context: context,text:"${!timeUpFlag ?'$timeCounter detik':'kirim ulang otp'}",color: config.Colors.mainColors)
       ),
@@ -90,16 +86,15 @@ class _SecureCodeWidgetState extends State<SecureCodeWidget> {
           borderColor:  config.Colors.secondDarkColors,
           deskripsi:desc,
           passCodeVerify: (passcode) async {
-            var code = widget.code.split('');
-            for (int i = 0; i < code.length; i++) {
-              if (passcode[i] != int.parse(code[i])) {
-                return false;
-              }
+            String code='';
+            for (int i = 0; i < passcode.length; i++) {
+              code+= passcode[i].toString();
             }
-            return true;
+            widget.callback(code);
+            return false;
           },
           onSuccess: () async{
-            widget.callback(context,true);
+            // widget.callback(context,true);
           }
       ),
     );

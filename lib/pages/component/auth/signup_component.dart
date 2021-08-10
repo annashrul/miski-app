@@ -9,6 +9,7 @@ import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/auth/otp_model.dart';
 import 'package:netindo_shop/model/general_model.dart';
 import 'package:netindo_shop/pages/component/auth/signin_component.dart';
+import 'package:netindo_shop/pages/widget/secure_code_widget.dart';
 import 'package:netindo_shop/provider/base_provider.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
 import 'package:netindo_shop/views/screen/auth/secure_code_screen.dart';
@@ -128,18 +129,25 @@ class _SignUpComponentState extends State<SignUpComponent> {
     }
     else{
       WidgetHelper().loadingDialog(context);
-      final data= {
-        'nomor': _noHpController.text,
+      final dataOtp={
+        "nomor":_noHpController.text,
         'type': type!='otp'?'email':_switchValue?'whatsapp':'sms',
-        'nama': _nameController.text,
+        "isForgot":"false",
+        "isLogin":"false",
+        "isRegist":"true"
       };
-      var res = await HandleHttp().postProvider('auth/otp', data,context: context);
-
+      var res = await HandleHttp().postProvider('auth/otp', dataOtp,context: context);
       if(res!=null){
         var result =OtpModel.fromJson(res);
         Navigator.of(context).pop();
         if(type=='otp'){
-          WidgetHelper().myPush(context, SecureCodeScreen(callback:_callBack,code:result.result.otp,param: 'otp',desc: _switchValue?'WhatsApp':'SMS'));
+          WidgetHelper().myPush(context, SecureCodeWidget(
+            callback:(code){_callBack(code);},
+            code:res["result"]["otp_anying"],
+            param: 'otp',
+            desc: _switchValue?'WhatsApp':'SMS',
+          ));
+          // WidgetHelper().myPush(context, SecureCodeScreen(callback:_callBack,code:result.result.otp,param: 'otp',desc: _switchValue?'WhatsApp':'SMS'));
         }
         else{
           WidgetHelper().loadingDialog(context);
@@ -148,11 +156,9 @@ class _SignUpComponentState extends State<SignUpComponent> {
       }
     }
   }
-  _callBack(BuildContext context,bool isTrue)async{
-    if(isTrue){
-      WidgetHelper().loadingDialog(context);
-      create();
-    }
+  _callBack(code)async{
+    WidgetHelper().loadingDialog(context);
+    create();
   }
   bool isLoading=false;
   bool isError=false;

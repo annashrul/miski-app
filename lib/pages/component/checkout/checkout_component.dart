@@ -1,23 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/string_config.dart';
-import 'package:netindo_shop/config/ui_icons.dart';
-import 'package:netindo_shop/helper/address/function_address.dart';
 import 'package:netindo_shop/helper/checkout/function_checkout.dart';
-import 'package:netindo_shop/helper/detail/function_detail.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/model/address/list_address_model.dart';
 import 'package:netindo_shop/model/bank/bank_model.dart';
 import 'package:netindo_shop/pages/component/address/address_component.dart';
 import 'package:netindo_shop/pages/widget/checkout/modal_bank_widget.dart';
 import 'package:netindo_shop/pages/widget/checkout/section_address_widget.dart';
 import 'package:netindo_shop/pages/widget/checkout/section_product_widget.dart';
 import 'package:netindo_shop/pages/widget/checkout/section_shipping_widget.dart';
-import 'package:netindo_shop/provider/base_provider.dart';
-import 'package:netindo_shop/provider/handle_http.dart';
-import 'package:netindo_shop/views/screen/address/address_screen.dart';
-import 'package:provider/provider.dart';
+
 
 class CheckoutComponent extends StatefulWidget {
   @override
@@ -28,6 +21,7 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
   
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   List product = [];
+  String codePromo="-";
   BankModel bankModel;
   Map<String,Object> detail = {};
   Map<String,Object> address = {};
@@ -82,14 +76,14 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
       shippingLayanan["arr"] = ongkir["ongkir"]["ongkir"];
       shippingLayanan["obj"] = ongkir["ongkir"]["ongkir"][0];
       cost = shippingLayanan["obj"]["cost"];
-
-
-      // print("ongkir $cost");
     }
-    else{
+    else if(type=="layanan"){
       print("ongkir ${shippingLayanan["arr"][i]}");
       indexShipping["layanan"] = i;
       cost = shippingLayanan["arr"][i]["cost"];
+    }
+    else{
+      codePromo = type;
     }
     grandTotal = grandTotal+cost;
     if(this.mounted)setState(() {});
@@ -121,8 +115,7 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
       "kurir":shippingKurir["obj"]["kurir"],
       "service":shippingLayanan["obj"]["service"],
       "metode_pembayaran":"transfer",
-      "id_promo":"-",
-      "kode_voucher":"-",
+      "kode_voucher":"$codePromo",
       "id_alamat_member":address["id"],
       "id_bank_tujuan":bankModel.result.data[indexBank].id,
       "atas_nama":bankModel.result.data[indexBank].atasNama,
@@ -132,10 +125,6 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
     FunctionCheckout().storeCheckout(context: context,data: data);
   }
 
-
-  // Future grandTotal(cost){
-  //
-  // }
 
 
   @override
@@ -220,7 +209,9 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
               radius: 100,
               callback: (){
                 WidgetHelper().myModal(context,ModalBankWidget(bankModel: bankModel,callback: (i){
-                 WidgetHelper().notifDialog(context, "Perhatian","pastikan data yang anda isi sudah benar", (){}, ()async{
+                 WidgetHelper().notifDialog(context, "Perhatian","pastikan data yang anda isi sudah benar", (){
+                   Navigator.pop(context);
+                 }, ()async{
                    await checkout(i);
                  });
                 }));

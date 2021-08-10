@@ -82,11 +82,13 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
           } else {
             _currentState = 2;
             new Timer(new Duration(milliseconds: 1000), () {
-              setState(() {
-                _currentState = 0;
-                _currentCodeLength = 0;
-                _inputCodes.clear();
-              });
+              if(this.mounted){
+                setState(() {
+                  _currentState = 0;
+                  _currentCodeLength = 0;
+                  _inputCodes.clear();
+                });
+              }
             });
             if (widget.showWrongPassDialog) {
               WidgetHelper().showFloatingFlushbar(context, "failed", widget.wrongPassContent);
@@ -471,7 +473,7 @@ class CodePanel extends StatelessWidget {
         color = Colors.green.shade500;
       }
       if (status == 2) {
-        color = Colors.red.shade500;
+        color = Colors.green.shade500;
       }
       for (int i = 1; i <= codeLength; i++) {
         if (i > currentLength) {
