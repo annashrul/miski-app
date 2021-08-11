@@ -51,6 +51,7 @@ class _FilterProductSliderWidgetState extends State<FilterProductSliderWidget> {
                   itemBuilder: (context, index) {
                     double _marginLeft = 0;
                     (index == 0) ? _marginLeft = 1 : _marginLeft = 0;
+                    print("image ${widget.data}");
                     return CategoryIconWidget(
                         heroTag: widget.heroTag,
                         marginLeft: _marginLeft,
@@ -121,16 +122,18 @@ class _CategoryIconWidgetState extends State<CategoryIconWidget> with SingleTick
         ),
         child: Row(
           children: <Widget>[
+            // WidgetHelper().baseImage(img)
             AnimatedSize(
               duration: Duration(milliseconds: 350),
               curve: Curves.easeInOut,
               vsync: this,
               child:Hero(
                 tag: widget.heroTag + widget.data["id"],
-                child: SvgPicture.asset(
+                child: SvgPicture.network(
                   widget.data["image"],
                   color: widget.data["selected"] ? Theme.of(context).accentColor : Theme.of(context).primaryColor,
                   width: scaler.getWidth(12),
+                  placeholderBuilder: (context) => Icon(Icons.error),
                 ),
               ),
             )

@@ -92,6 +92,7 @@ class _BrandWidgetState extends State<BrandWidget> {
                     image,
                     color: Theme.of(context).primaryColor,
                     width: scaler.getWidth(16),
+                    placeholderBuilder: (context) => Icon(Icons.error),
                   ),
                 ),
               ),

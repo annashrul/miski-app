@@ -108,7 +108,7 @@ class _CategoryComponentState extends State<CategoryComponent> {
                   children: <Widget>[
                     Hero(
                       tag: "categoryImage${data[idxCategory]["id"]}",
-                      child: SvgPicture.network(data[idxCategory]["image"],height: scaler.getHeight(2.5),),
+                      child: SvgPicture.network(data[idxCategory]["image"],height: scaler.getHeight(2.5), placeholderBuilder: (context) => Icon(Icons.error),),
                     ),
                     SizedBox(height: 5),
                     config.MyFont.title(context: context,text:data[idxCategory]["title"],color:Theme.of(context).primaryColor,fontSize: 8 )
@@ -250,7 +250,7 @@ class _CategoryComponentState extends State<CategoryComponent> {
                   children: <Widget>[
                     Hero(
                       tag: "${random.nextInt(10000)}",
-                      child: SvgPicture.network(data[idxCategory]["image"],height: scaler.getHeight(2.5),),
+                      child: SvgPicture.network(data[idxCategory]["image"],height: scaler.getHeight(2.5), placeholderBuilder: (context) => Icon(Icons.error),),
                     ),
                     SizedBox(height: 5),
                     config.MyFont.title(context: context,text:data[idxCategory]["title"],color:Theme.of(context).primaryColor,fontSize: 8 )

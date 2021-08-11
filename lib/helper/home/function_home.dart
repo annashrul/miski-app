@@ -29,7 +29,7 @@ class FunctionHome{
     if(res is ListGroupProductModel){
       ListGroupProductModel result=ListGroupProductModel.fromJson(res.toJson());
       result.result.data.forEach((element) {
-        resFilter.add({"id":element.id,"image":"assets/img/logo-0${3}.svg","title":element.title,"selected":false});
+        resFilter.add({"id":element.id,"image":element.image,"title":element.title,"selected":false});
       });
       return resFilter;
     }
