@@ -250,6 +250,7 @@ class Detail {
     this.createdAt,
     this.updatedAt,
     this.totalrecords,
+    this.rating,
   });
 
   String id;
@@ -268,6 +269,7 @@ class Detail {
   DateTime createdAt;
   DateTime updatedAt;
   String totalrecords;
+  double rating;
 
   factory Detail.fromJson(Map<String, dynamic> json) => Detail(
     id: json["id"],
@@ -286,6 +288,7 @@ class Detail {
     createdAt: DateTime.parse(json["created_at"]),
     updatedAt: DateTime.parse(json["updated_at"]),
     totalrecords: json["totalrecords"],
+    rating: json["rating"].toDouble(),
   );
 
   Map<String, dynamic> toJson() => {
@@ -305,5 +308,6 @@ class Detail {
     "created_at": createdAt.toIso8601String(),
     "updated_at": updatedAt.toIso8601String(),
     "totalrecords": totalrecords,
+    "rating": rating,
   };
 }

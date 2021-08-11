@@ -26,17 +26,20 @@ class FunctionDetail{
       hargaFinish = int.parse(result.result.harga);
       dynamic data = result.result.toJson();
 
+
       data["id_varian"] ="";
       data["id_sub_varian"] ="";
       data["harga_finish"] =hargaFinish;
       data["harga_master"] =hargaMaster;
-      data["harga_warna"]  =0;
-      data["harga_ukuran"] =0;
+      data["harga_varian"]  =0;
+      data["harga_sub_varian"] =0;
       final dataCart = await getCountCart(data);
       data["qty"] = dataCart["qty"];
       data["total_cart"] = dataCart["totalCart"];
       data["product_by_group"] = await loadProductByGroup(data["kelompok"]);
-      data["is_varian"] = data["varian"].length>0?true:false;
+      data["varian"] = data["varian"];
+      data["harga_bertingkat"] = data["harga_bertingkat"];
+      // data["is_varian"] = false;
       return {
         "data":data
       };
@@ -64,17 +67,18 @@ class FunctionDetail{
         data["kode"],
         data["id_varian"],
         data["id_sub_varian"],
-        data["qty"],
+        data["qty"].toString(),
         data["harga"],
         data["disc1"],
         data["disc2"],
         data["harga_bertingkat"].length>0?true:false,
         data["harga_master"],
-        data["harga_warna"],
-        data["harga_ukuran"],
+        data["harga_varian"],
+        data["harga_sub_varian"],
       );
       Navigator.pop(context);
       int hrg = 0;
+      print(res);
       res.forEach((element) {hrg = int.parse(element['harga']);});
       final subtotal = await getSubTotal(data: data);
       final resCart = await BaseProvider().getCart(data["id_tenant"]);
@@ -91,7 +95,7 @@ class FunctionDetail{
     int qty = await getQty(data: data);
     return {
       "qty":qty,
-      "total":qty>1?qty*(data["harga_finish"]+data["harga_warna"]+data["harga_ukuran"]):data["harga_finish"]+data["harga_warna"]+data["harga_ukuran"]
+      "total":qty>1?qty*(data["harga_finish"]+data["harga_varian"]+data["harga_sub_varian"]):data["harga_finish"]+data["harga_varian"]+data["harga_sub_varian"]
     };
   }
   Future getQty({dynamic data})async{

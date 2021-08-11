@@ -38,7 +38,7 @@ class _SignUpComponentState extends State<SignUpComponent> {
   String isErrorName='',isErrorPhone='',isErrorEmail='',isErrorPassword='',isErrorConfPassword='';
   String type='',jenisKelamin='pria';
   bool _switchValue=true;
-  Future create() async{
+  Future create(code) async{
     print("############################## ANYING ############################");
     var status = await OneSignal.shared.getPermissionSubscriptionState();
     String onesignalUserId = status.subscriptionStatus.userId;
@@ -53,36 +53,16 @@ class _SignUpComponentState extends State<SignUpComponent> {
       'deviceid'      : onesignalUserId,
       'type'          : type,
       'type_otp'      : _switchValue?'whatsapp':'sms',
+      'kode_otp':code
     };
-    var res = await BaseProvider().postProvider("auth/register", data);
-    setState(() {
-      Navigator.pop(context);
-    });
-
-    if(res == 'TimeoutException' || res == 'SocketException'){
-      WidgetHelper().notifDialog(context,'Oops','Terjadi kesalahan server',(){
+    var res = await HandleHttp().postProvider("auth/register", data,context: context);
+    if(res!=null){
+      WidgetHelper().notifDialog(context,'Berhasil','Pendaftaran berhasil dilakukan',(){
         Navigator.pop(context);
-      },(){Navigator.pop(context);});
-    }
-    else if(res=='Email telah terdaftar'){
-      WidgetHelper().showFloatingFlushbar(context, 'failed','Email telah terdaftar');
-    }
-    else{
-      print("############################## ${res is General} ############################");
-      if(res is General){
-        General result = res;
-        WidgetHelper().showFloatingFlushbar(context, 'failed','${result.msg} telah terdaftar');
-        print("############################## ${result.status} ############################");
-
-      }
-      else{
-        WidgetHelper().notifDialog(context,'Berhasil','Pendaftaran berhasil dilakukan',(){
-          Navigator.pop(context);
-        },(){
-          Navigator.pop(context);
-          WidgetHelper().myPushRemove(context,SignInComponent());
-        });
-      }
+      },(){
+        Navigator.pop(context);
+        WidgetHelper().myPushRemove(context,SignInComponent());
+      });
     }
   }
   Future save() async{
@@ -130,19 +110,20 @@ class _SignUpComponentState extends State<SignUpComponent> {
     else{
       WidgetHelper().loadingDialog(context);
       final dataOtp={
-        "nomor":_noHpController.text,
+        "nomor":nohp,
         'type': type!='otp'?'email':_switchValue?'whatsapp':'sms',
-        "isForgot":"false",
-        "isLogin":"false",
-        "isRegist":"true"
+        "isForgot":"0",
+        "isLogin":"0",
+        "isRegister":"1"
       };
       var res = await HandleHttp().postProvider('auth/otp', dataOtp,context: context);
       if(res!=null){
-        var result =OtpModel.fromJson(res);
         Navigator.of(context).pop();
         if(type=='otp'){
           WidgetHelper().myPush(context, SecureCodeWidget(
-            callback:(code){_callBack(code);},
+            callback:(code){
+              _callBack(code);
+            },
             code:res["result"]["otp_anying"],
             param: 'otp',
             desc: _switchValue?'WhatsApp':'SMS',
@@ -151,14 +132,14 @@ class _SignUpComponentState extends State<SignUpComponent> {
         }
         else{
           WidgetHelper().loadingDialog(context);
-          create();
+          create('');
         }
       }
     }
   }
   _callBack(code)async{
     WidgetHelper().loadingDialog(context);
-    create();
+    create(code);
   }
   bool isLoading=false;
   bool isError=false;

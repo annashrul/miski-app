@@ -22,6 +22,7 @@ import 'package:netindo_shop/pages/widget/searchbar_widget.dart';
 import 'package:netindo_shop/provider/base_provider.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
 import 'package:netindo_shop/views/widget/empty_widget.dart';
+import 'package:netindo_shop/views/widget/loading_widget.dart';
 
 class FavoriteComponent extends StatefulWidget {
   @override
@@ -34,32 +35,38 @@ class _FavoriteComponentState extends State<FavoriteComponent>{
   ScrollController controller;
   List resFavoriteProduct=[];
   bool isLoading=false,isLoadmore=false;
-  int perpage=15;
+  int perpage=StringConfig.perpage;
+  // int perpage=5;
   int total=0;
+  String q="";
   Future deleteFavorite(res)async{
     await _helper.delete(ProductQuery.TABLE_NAME, "id", res["id"]);
-    await getFavorite();
+    await getFavorite(q);
     WidgetHelper().showFloatingFlushbar(context,"success","${res["title"]} berhasil dihapus dari wish list anda");
   }
 
-  Future getFavorite()async{
-    final countFav = await _helper.getWhere(ProductQuery.TABLE_NAME, "is_favorite","true","");
-    final res = await _helper.getWhere(ProductQuery.TABLE_NAME,"is_favorite","true","$perpage");
+  Future getFavorite(any)async{
+    final tenant=await FunctionHelper().getTenant();
+    String where = "is_favorite=? and id_tenant=?";
+    if(any!=""){
+      where+=" and title LIKE '%$any%' or deskripsi LIKE '%$any%'";
+    }
+    var resLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE $where LIMIT $perpage",["true",tenant[StringConfig.idTenant]]);
     setState(() {
-      total = countFav.length;
-      resFavoriteProduct = res;
+      total = resLocal.length;
+      resFavoriteProduct = resLocal;
       isLoading=false;
       isLoadmore=false;
     });
   }
   void _scrollListener() {
     if (controller.position.pixels == controller.position.maxScrollExtent) {
-      if(perpage<total){
+      if(perpage<=total){
         setState((){
-          perpage+=7;
+          perpage+=perpage;
           isLoadmore=true;
         });
-        getFavorite();
+        getFavorite(q);
       }
     }
 
@@ -75,15 +82,18 @@ class _FavoriteComponentState extends State<FavoriteComponent>{
     super.initState();
     controller = new ScrollController()..addListener(_scrollListener);
     isLoading=true;
-    getFavorite();
+    getFavorite(q);
   }
 
 
   @override
   Widget build(BuildContext context) {
-    print(layout);
     final scaler=config.ScreenScale(context).scaler;
-    return SingleChildScrollView(
+    return isLoading?Padding(
+      padding: scaler.getPadding(0, 2),
+      child: LoadingProductTenant(tot: 10),
+    ):SingleChildScrollView(
+      controller: controller,
       padding: EdgeInsets.all(0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,7 +102,12 @@ class _FavoriteComponentState extends State<FavoriteComponent>{
         children: <Widget>[
           Padding(
             padding: scaler.getPadding(0,2),
-            child: SearchBarWidget(),
+            child: SearchBarWidget(callback: (e){
+              setState(() {
+                q=e;
+              });
+              getFavorite(e);
+            }),
           ),
           SizedBox(height: 10),
           Offstage(
@@ -213,10 +228,8 @@ class _FavoriteComponentState extends State<FavoriteComponent>{
             offstage: resFavoriteProduct.isNotEmpty,
             child: EmptyDataWidget(
               iconData: UiIcons.heart,
-              title: 'D\'ont have any item in the wish list',
-              callback: (){},
-              isFunction: true,
-              txtFunction: "Start Exploring",
+              title: StringConfig.noData,
+              isFunction: false,
             ),
           )
         ],

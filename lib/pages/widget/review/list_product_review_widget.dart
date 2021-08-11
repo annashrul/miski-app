@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/helper/user_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/pages/widget/product/porduct_list_widget.dart';
 import 'package:netindo_shop/pages/widget/review/form_review_widget.dart';
 
 class ListProductReviewWidget extends StatefulWidget {
@@ -20,7 +18,7 @@ class _ListProductReviewWidgetState extends State<ListProductReviewWidget> {
     return Container(
       padding: scaler.getPadding(1,2),
       child: ListView.separated(
-        padding: scaler.getPadding(1,2),
+        padding: scaler.getPadding(0,0),
         scrollDirection: Axis.vertical,
         shrinkWrap: true,
         primary: false,
@@ -30,13 +28,20 @@ class _ListProductReviewWidgetState extends State<ListProductReviewWidget> {
         },
         itemBuilder: (context, index) {
           final res =  widget.data[index];
-          print(res);
-          return WidgetHelper().titleQ(context, res["barang"],
-            image: res["gambar"],
-            callback: (){
+          print("list product review");
+          return ListTile(
+            onTap: (){
               WidgetHelper().myModal(context, FormReviewWidget(data: res));
-            }
+            },
+            contentPadding: EdgeInsets.all(0),
+            leading: WidgetHelper().baseImage(res["gambar"],height: scaler.getHeight(4),width: scaler.getWidth(10),shape: BoxShape.circle),
+            title: config.MyFont.title(context: context,text: res["barang"]),
+            subtitle: Align(
+              alignment: Alignment.centerLeft,
+              child: WidgetHelper().myRating(context:context,rating:res["rating"].toString()),
+            ),
           );
+
         },
       ),
     );

@@ -5,6 +5,7 @@ import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/checkout/resi_model.dart';
+import 'package:netindo_shop/pages/component/debug_pages.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
 import 'package:netindo_shop/views/screen/checkout/resi_screen.dart';
 import 'file:///E:/NETINDO/netindo_shop/lib/pages/widget/review/list_product_review_widget.dart';
@@ -34,7 +35,7 @@ class _HistoryModalOptionWIdgetState extends State<HistoryModalOptionWIdget> {
   @override
   Widget build(BuildContext context) {
     final val = widget.val;
-    print(val.toJson()["detail"]);
+    print(val.toJson());
     final scaler=config.ScreenScale(context).scaler;
     return Padding(
       padding: scaler.getPadding(1, 2),
@@ -54,10 +55,10 @@ class _HistoryModalOptionWIdgetState extends State<HistoryModalOptionWIdget> {
             });
           }),
           if(widget.barang.length==1)Divider(),
-          if(val.status!=4)buildOption(context: context,title: "Beri ulasan",callback: (){
+          if(val.status==4)buildOption(context: context,title: "Beri ulasan",callback: (){
             WidgetHelper().myModal(context, ListProductReviewWidget(data: val.toJson()["detail"]));
           }),
-          if(val.status!=4)Divider(),
+          if(val.status==4)Divider(),
           if(val.resi!="-")buildOption(context: context,title: "Lacak resi",callback: (){checkResi();}),
           if(val.resi!="-")Divider(),
           buildOption(context: context,title: "Tanya penjual",callback: (){
@@ -70,7 +71,7 @@ class _HistoryModalOptionWIdgetState extends State<HistoryModalOptionWIdget> {
               "grandtotal":"${val.grandtotal}",
               "kode_unik":"${val.kodeUnik}",
               "total_transfer":"${int.parse(val.jumlahTf)}",
-              "bank_logo":"${StringConfig.noImage}",
+              "bank_logo":"${val.logo}",
               "bank_name":"${val.bankTujuan}",
               "bank_atas_nama":"${val.atasNama}",
               "bank_acc":"${val.rekeningTujuan}",

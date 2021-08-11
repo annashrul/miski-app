@@ -28,35 +28,35 @@ class _FormReviewWidgetState extends State<FormReviewWidget> {
   void rateWithCaption(rating)async{
     final nama=await userRepository.getDataUser("nama");
     setState(() {rate=rating;});
-    if(rating==1.0){
+    if(rating<=1.0){
       setState(() {
         color = Colors.red;
         titleRating = "Kecewa";
         captionRating = "Hi $nama, tolong bantu kami untuk mengerti masalah dengan pembelianmu.";
       });
     }
-    if(rating==2.0){
+    if(rating>1.0&&rating<=2.0){
       setState(() {
         color = Colors.redAccent;
         titleRating = "Kurang";
         captionRating = "Hi $nama, tolong bantu kami untuk mengerti masalah dengan pembelianmu.";
       });
     }
-    if(rating==3.0){
+    if(rating>2.0&&rating<=3.0){
       setState(() {
         color = Colors.amber;
         titleRating = "Lumayan";
         captionRating = "Hi $nama, sepertinya kamu nggak suka dengan pembelian ini. Boleh tahu kenapa ?";
       });
     }
-    if(rating==4.0){
+    if(rating>3.0&&rating<=4.0){
       setState(() {
         color = Colors.lightGreen;
         titleRating = "Suka";
         captionRating = "Hi $nama, yuk bantu calon pembeli lain dengan membagikan pemgalamanmu !";
       });
     }
-    if(rating==5.0){
+    if(rating>4.0&&rating<=5.0){
       setState(() {
         color = Colors.green;
         titleRating = "Puas Banget";
@@ -94,7 +94,7 @@ class _FormReviewWidgetState extends State<FormReviewWidget> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    rateWithCaption(1.0);
+    rateWithCaption(widget.data["rating"]);
 
   }
 
@@ -121,7 +121,7 @@ class _FormReviewWidgetState extends State<FormReviewWidget> {
             ],
           ),
           SizedBox(height: scaler.getHeight(1)),
-          WidgetHelper().titleQ(context, "barang bagus",image: StringConfig.noImage,param: ""),
+          WidgetHelper().titleQ(context, widget.data["barang"],image: widget.data["gambar"],param: ""),
           ListView(
             addRepaintBoundaries: true,
             primary: false,
@@ -136,7 +136,7 @@ class _FormReviewWidgetState extends State<FormReviewWidget> {
                       unratedColor:Colors.black,
                       glowColor: Colors.white,
                       itemSize: 40.0,
-                      initialRating: 5,
+                      initialRating: rate,
                       direction: Axis.horizontal,
                       itemCount: 5,
                       itemPadding: EdgeInsets.only(right: 4.0),

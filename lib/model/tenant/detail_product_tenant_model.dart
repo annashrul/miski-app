@@ -71,7 +71,7 @@ class Result {
   String idKelompok;
   String kelompok;
   String idBrand;
-  String brand;
+  dynamic brand;
   String deskripsi;
   String harga;
   String hargaCoret;
@@ -310,7 +310,7 @@ class Varian {
     harga: json["harga"],
     stock: json["stock"],
     createdAt: DateTime.parse(json["created_at"]),
-    updatedAt: DateTime.parse(json["updated_at"]),
+    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
     subVarian: json["sub_varian"] == null ? null : List<Varian>.from(json["sub_varian"].map((x) => Varian.fromJson(x))),
     idVarian: json["id_varian"] == null ? null : json["id_varian"],
   );
@@ -322,7 +322,7 @@ class Varian {
     "harga": harga,
     "stock": stock,
     "created_at": createdAt.toIso8601String(),
-    "updated_at": updatedAt.toIso8601String(),
+    "updated_at": updatedAt == null ? null : updatedAt.toIso8601String(),
     "sub_varian": subVarian == null ? null : List<dynamic>.from(subVarian.map((x) => x.toJson())),
     "id_varian": idVarian == null ? null : idVarian,
   };

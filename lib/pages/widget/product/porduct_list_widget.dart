@@ -34,11 +34,8 @@ class ProductListWidget extends StatelessWidget {
 
   Widget buildListCarouse(BuildContext context) {
     final scaler = config.ScreenScale(context).scaler;
-    return  InkWell(
-      splashColor: Theme.of(context).accentColor,
-      focusColor: Theme.of(context).accentColor,
-      highlightColor: Theme.of(context).primaryColor,
-      onTap: () {
+    return  WidgetHelper().myRipple(
+      callback: () {
         Navigator.of(context).pushNamed("/${StringConfig.detailProduct}",arguments: {
           "heroTag":this.heroTag,
           "id":this.productId,
@@ -97,7 +94,7 @@ class ProductListWidget extends StatelessWidget {
                     ),
                   ),
                   SizedBox(width: 8),
-                  config.MyFont.title(context: context,text:'${FunctionHelper().formatter.format(int.parse(productPrice))}',fontSize: 9,color:  Theme.of(context).textTheme.display1.color),
+                  config.MyFont.title(context: context,text:'${config.MyFont.toMoney("$productPrice")}',fontSize: 9,color:config.Colors.moneyColors),
                 ],
               ),
             )
@@ -190,6 +187,7 @@ class ProductListCarouselWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     config.MyFont.title(context: context,text:productName,fontSize: 8,maxLines: 1),
+                    SizedBox(height: scaler.getHeight(0.5),),
                     Row(
                       children: <Widget>[
                         Expanded(

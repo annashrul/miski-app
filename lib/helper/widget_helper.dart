@@ -178,7 +178,7 @@ class WidgetHelper{
   myRating({BuildContext context,String rating="0"}){
     final scaler = config.ScreenScale(context).scaler;
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Icon(

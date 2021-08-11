@@ -65,30 +65,22 @@ class _DetailPromoWidgetState extends State<DetailPromoWidget>  with SingleTicke
   @override
   Widget build(BuildContext context) {
     final scaler=config.ScreenScale(context).scaler;
-    // return Scaffold(
-    //   appBar: WidgetHelper().appBarWithButton(context, "Detail promo", (){},<Widget>[],param: "default"),
-    //   body:
-    // );
 
-
-    return isLoading?WidgetHelper().loadingWidget(context):Scaffold(
+    return Scaffold(
       key: _scaffoldKey,
       drawer: DrawerWidget(),
-      bottomNavigationBar:  detailGlobalPromoModel.result.isVoucher==1?Padding(
+      bottomNavigationBar:  !isLoading&&detailGlobalPromoModel.result.isVoucher==1?Padding(
       padding: EdgeInsets.all(10),
       child:  Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            // child:
-            // child: WidgetHelper().textQ(detailGlobalPromoModel.result.kode,14,Colors.white,FontWeight.bold),
             decoration: BoxDecoration(
                 color:Colors.grey,
                 borderRadius: BorderRadius.circular(10.0)
             ),
             padding: EdgeInsets.all(10.0),
-            // child: config.MyFont.title(context: context,text:detailGlobalPromoModel.result.kode),
             child: config.MyFont.title(context: context,text:detailGlobalPromoModel.result.kode),
           ),
           SizedBox(width: 10.0),
@@ -100,7 +92,7 @@ class _DetailPromoWidgetState extends State<DetailPromoWidget>  with SingleTicke
             },
             child: Container(
               decoration: BoxDecoration(
-                color:SiteConfig().secondColor,
+                color:Theme.of(context).accentColor,
                 borderRadius: BorderRadius.circular(10.0),
               ),
               padding: EdgeInsets.all(10.0),
@@ -126,7 +118,7 @@ class _DetailPromoWidgetState extends State<DetailPromoWidget>  with SingleTicke
             collapseMode: CollapseMode.parallax,
             background: Stack(
               children: <Widget>[
-                Container(
+                isLoading?WidgetHelper().baseLoading(context, WidgetHelper().shimmer(context: context,height: 30,width: 100)):Container(
                   width: double.infinity,
                   child: Center(
                     child: Hero(
@@ -177,22 +169,28 @@ class _DetailPromoWidgetState extends State<DetailPromoWidget>  with SingleTicke
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    config.MyFont.title(context: context,text: detailGlobalPromoModel.result.title,fontSize: 11),
+                    isLoading?WidgetHelper().baseLoading(context, WidgetHelper().shimmer(context: context,height: 1,width: 80)):config.MyFont.title(context: context,text: detailGlobalPromoModel.result.title,fontSize: 11),
                     SizedBox(height: scaler.getHeight(1)),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        WidgetHelper().titleQ(context, detailGlobalPromoModel.result.title,icon: UiIcons.alarm_clock,fontSize: 9,fontWeight: FontWeight.normal),
-                        config.MyFont.subtitle(context: context,text: DateFormat("yyyy-MM-dd hh:mm:ss").format(detailGlobalPromoModel.result.periodeEnd),fontWeight: FontWeight.normal),
-                      ],
-                    ),
+                    isLoading?WidgetHelper().baseLoading(context, WidgetHelper().shimmer(context: context,height: 1,width: 50)):WidgetHelper().titleQ(context, "Berlaku sampai ${DateFormat("yyyy-MM-dd hh:mm:ss").format(detailGlobalPromoModel.result.periodeEnd)}",icon: UiIcons.alarm_clock,fontSize: 9,fontWeight: FontWeight.normal),
                     Divider(),
-                    config.MyFont.subtitle(context: context,text: detailGlobalPromoModel.result.deskripsi,fontWeight: FontWeight.normal,maxLines: 1000),
+                    isLoading?WidgetHelper().baseLoading(context, ListView.builder(
+                        padding: scaler.getPadding(0, 0),
+                        cacheExtent: 1.0,
+                        itemCount: 15,
+                        shrinkWrap: true,
+                        primary: true,
+                        itemBuilder: (context,i){
+                          return Container(
+                            width: MediaQuery.of(context).size.width/2,
+                            child: WidgetHelper().shimmer(context: context,width: MediaQuery.of(context).size.width/1)
+                          );
+                        }
+                    )):config.MyFont.subtitle(context: context,text: detailGlobalPromoModel.result.deskripsi,fontWeight: FontWeight.normal,maxLines: 1000),
                   ],
                 ),
               ),
             ),
-            Offstage(
+            if( !isLoading)Offstage(
               offstage: 1 != _tabIndex,
               child: Container(
                   child: Column(
@@ -200,7 +198,7 @@ class _DetailPromoWidgetState extends State<DetailPromoWidget>  with SingleTicke
                     mainAxisAlignment: MainAxisAlignment.start,
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      detailGlobalPromoModel.result.detail.length<1?EmptyTenant():ListView.separated(
+                     detailGlobalPromoModel.result.detail.length<1?EmptyTenant():ListView.separated(
                         padding: scaler.getPadding(1,2),
                         addRepaintBoundaries: true,
                         primary: false,

@@ -32,18 +32,7 @@ class _SignInComponentState extends State<SignInComponent> {
   final DatabaseConfig _helper = new DatabaseConfig();
   bool isOtp=true;
   String type = "",name = '', image;
-  _callBack(code,data)async{
 
-    // if(isTrue){
-
-      // final countTbl = await _helper.queryRowCount(UserQuery.TABLE_NAME);
-      // if(countTbl>0){
-      //   await _helper.deleteAll(UserQuery.TABLE_NAME);
-      // }
-      // await _helper.insert(UserQuery.TABLE_NAME,data);
-      // Navigator.pushNamedAndRemoveUntil(context,"/${StringConfig.main}", (route) => false,arguments: StringConfig.defaultTab);
-    // }
-  }
 
   Future login(BuildContext context,String type) async{
     WidgetHelper().loadingDialog(context);
@@ -68,8 +57,8 @@ class _SignInComponentState extends State<SignInComponent> {
     final dataOtp={
       "nomor":"$nohp",
       "type":"$type",
-      "isForgot":"false",
-      "isLogin":"true"
+      "isForgot":"0",
+      "isLogin":"1"
     };
     final res = await HandleHttp().postProvider("auth/otp", dataOtp,context: context);
     if(res!=null){
@@ -96,7 +85,7 @@ class _SignInComponentState extends State<SignInComponent> {
               "email":result.result.email.toString(),
               "status":result.result.status.toString(),
               "alamat":result.result.alamat.toString(),
-              "jenis_kelamin":result.result.jenisKelamin.toString(),
+              "jenis_kelamin":result.result.jenisKelamin=="Wanita"?"0":"1",
               "tgl_ultah":result.result.tglUltah.toString(),
               "tlp":result.result.tlp.toString(),
               "foto":result.result.foto.toString().replaceAll(' ',''),
@@ -107,6 +96,7 @@ class _SignInComponentState extends State<SignInComponent> {
               "exit_app":"0",
               "onesignal_id":onesignalUserId,
             };
+            print(dataUser);
             final countTbl = await _helper.queryRowCount(UserQuery.TABLE_NAME);
             if(countTbl>0){
               await _helper.deleteAll(UserQuery.TABLE_NAME);

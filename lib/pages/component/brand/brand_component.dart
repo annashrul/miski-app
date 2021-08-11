@@ -23,18 +23,8 @@ class _BrandComponentState extends State<BrandComponent>{
     final scaler = config.ScreenScale(context).scaler;
     return Scaffold(
       key: _scaffoldKey,
-     appBar: WidgetHelper().appBarWithButton(context,"Brand",(){
-       _scaffoldKey.currentState.openDrawer();
-     },<Widget>[],param: "default"),
-
-      body: SingleChildScrollView(
-        padding: scaler.getPadding(1,2),
-        child: Wrap(
-          children: <Widget>[
-            BrandWidget(),
-          ],
-        ),
-      ),
+     appBar: WidgetHelper().appBarWithButton(context,"Brand",(){},<Widget>[],param: "default"),
+      body:  BrandWidget(),
     );
   }
 

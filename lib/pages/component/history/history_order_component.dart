@@ -71,7 +71,6 @@ class _HistoryOrderComponentState extends State<HistoryOrderComponent> {
               unselectedLabelColor: Theme.of(context).accentColor,
               labelColor: Theme.of(context).primaryColor,
               isScrollable: true,
-              physics: NeverScrollableScrollPhysics(),
               indicator: BoxDecoration(borderRadius: BorderRadius.circular(50), color: Theme.of(context).accentColor),
               tabs: historyTab,
               onTap: (e){

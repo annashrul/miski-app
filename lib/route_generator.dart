@@ -18,6 +18,7 @@ import 'package:netindo_shop/pages/component/home/home_component.dart';
 import 'package:netindo_shop/pages/component/main_component.dart';
 import 'package:netindo_shop/pages/component/on_boarding_component.dart';
 import 'package:netindo_shop/pages/component/splash_screen_component.dart';
+import 'package:netindo_shop/pages/component/tenant/tenant_component.dart';
 import 'package:netindo_shop/pages/widget/product/by_brand/product_by_brand.dart';
 import 'package:netindo_shop/pages/widget/product/by_category/product_by_category_widget.dart';
 import 'file:///E:/NETINDO/netindo_shop/lib/pages/widget/product/detail/detail_product_widget.dart';
@@ -38,6 +39,8 @@ class RouteGenerator {
         return CupertinoPageRoute(builder: (_) => SignInComponent());
       case '/${StringConfig.main}':
         return CupertinoPageRoute(builder: (_) => MainComponent(currentTab: args));
+      case '/${StringConfig.tenantPage}':
+        return CupertinoPageRoute(builder: (_) => TenantComponent());
       case '/${StringConfig.home}':
         return CupertinoPageRoute(builder: (_) => HomeComponent());
       case '/${StringConfig.detailProduct}':
@@ -105,6 +108,9 @@ class RouteGenerator {
               MyFont.title(context:context,text: "harap periksa koneksi internet anda",fontSize: 12,textAlign: TextAlign.center),
               SizedBox(height:ScreenScale(context).scaler.getHeight(2)),
               WidgetHelper().myRipple(
+                callback: (){
+                  Navigator.pop(context);
+                },
                 child: Container(
                   padding: ScreenScale(context).scaler.getPadding(1,3),
                   decoration: BoxDecoration(

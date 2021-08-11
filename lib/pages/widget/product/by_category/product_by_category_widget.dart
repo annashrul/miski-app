@@ -167,7 +167,10 @@ class _ProductByCategoryState extends State<ProductByCategory> with SingleTicker
                   loadProduct(widget.data["kelompok"][widget.data["index"]]["title"]);
                 }),
               ),
-              isLoadingProduct?LoadingProductTenant(tot: 10,):listProductTenantModel.result.data.length<1?EmptyTenant():CategoryProductTabWidget(
+              isLoadingProduct?Padding(
+                padding: scaler.getPadding(0,2),
+                child: LoadingProductTenant(tot: 10,),
+              ):listProductTenantModel.result.data.length<1?EmptyTenant():CategoryProductTabWidget(
                   listProductTenantModel: listProductTenantModel,
                   category:widget.data["kelompok"][widget.data["index"]]
               )

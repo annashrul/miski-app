@@ -68,7 +68,7 @@ class _DetailHistoryOrderComponentState extends State<DetailHistoryOrderComponen
           final val=detailHistoryOrderModel.result;
           WidgetHelper().myModal(context, HistoryModalOptionWIdget(
             val: val,
-            barang: val.barang,
+            barang: val.toJson()["barang"],
           ));
         })
       ]),
@@ -152,7 +152,8 @@ class _DetailHistoryOrderComponentState extends State<DetailHistoryOrderComponen
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              WidgetHelper().baseImage(detailHistoryOrderModel.result.logoKurir,height: scaler.getHeight(1)),
+                              Image.network(detailHistoryOrderModel.result.logoKurir,fit: BoxFit.contain,height: scaler.getHeight(2),),
+                              // WidgetHelper().baseImage(detailHistoryOrderModel.result.logoKurir,height: scaler.getHeight(2),width: scaler.getWidth(5)),
                               SizedBox(width: scaler.getWidth(1)),
                               config.MyFont.subtitle(context: context,text:"${detailHistoryOrderModel.result.kurir}"),
                             ],
@@ -286,7 +287,7 @@ class _DetailHistoryOrderComponentState extends State<DetailHistoryOrderComponen
   }
 
   Widget _loading(BuildContext context){
-    return  SingleChildScrollView(
+    return WidgetHelper().baseLoading(context,  SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -512,6 +513,6 @@ class _DetailHistoryOrderComponentState extends State<DetailHistoryOrderComponen
           // Container(color:Colors.white,height: 20.0,child: Container())
         ],
       ),
-    );
+    ));
   }
 }

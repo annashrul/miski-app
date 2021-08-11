@@ -19,8 +19,8 @@ class _HelpSupportComponentState extends State<HelpSupportComponent> {
   ListHelpSupportCatergoryModel listHelpSupportCatergoryModel;
   bool isLoadingList=true,isLoadingCategory=true;
   List<Widget> tabWidget;
-  Future loadData()async{
-    final res=await HandleHttp().getProvider("faq?page=1", listHelpSupportModelFromJson,context: context);
+  Future loadData(i)async{
+    final res=await HandleHttp().getProvider("faq?page=1&kategori=${listHelpSupportCatergoryModel.result.data[i].id}", listHelpSupportModelFromJson,context: context);
     if(res!=null){
       ListHelpSupportModel result=ListHelpSupportModel.fromJson(res.toJson());
       listHelpSupportModel = result;
@@ -33,7 +33,7 @@ class _HelpSupportComponentState extends State<HelpSupportComponent> {
     if(res!=null){
       ListHelpSupportCatergoryModel result=ListHelpSupportCatergoryModel.fromJson(res.toJson());
       listHelpSupportCatergoryModel = result;
-
+      loadData(0);
       isLoadingCategory=false;
       if(this.mounted){this.setState(() {});}
     }
@@ -43,7 +43,7 @@ class _HelpSupportComponentState extends State<HelpSupportComponent> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    loadData();
+
     loadDataCategory();
   }
   
@@ -51,7 +51,9 @@ class _HelpSupportComponentState extends State<HelpSupportComponent> {
   @override
   Widget build(BuildContext context) {
     final scaler=config.ScreenScale(context).scaler;
-    return isLoadingCategory||isLoadingList?WidgetHelper().loadingWidget(context):DefaultTabController(
+    return isLoadingCategory||isLoadingList?Scaffold(
+      body: WidgetHelper().loadingWidget(context),
+    ):DefaultTabController(
       length: listHelpSupportCatergoryModel.result.data.length,
       child: Scaffold(
         key: _scaffoldKey,
@@ -65,8 +67,13 @@ class _HelpSupportComponentState extends State<HelpSupportComponent> {
           elevation: 0,
           iconTheme: IconThemeData(color: Theme.of(context).primaryColor),
           bottom: TabBar(
-            tabs: listHelpSupportCatergoryModel.result.data.map((e) => Tab(child: config.MyFont.title(context: context,text: e.title,color: Theme.of(context).primaryColor),)).toList(),
-            labelColor: Theme.of(context).primaryColor,
+            onTap: (i){
+              print(i);
+              loadData(i);
+            },
+            isScrollable: true,
+            tabs: listHelpSupportCatergoryModel.result.data.map((e) => Tab(child: config.MyFont.subtitle(context: context,text: e.title,color:config.Colors.secondColors),)).toList(),
+            labelColor: Theme.of(context).textTheme.caption.color,
           ),
           title: config.MyFont.title(context: context,text:"Pusat bantuan",color: Theme.of(context).primaryColor),
         ),

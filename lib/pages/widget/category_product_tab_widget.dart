@@ -127,7 +127,7 @@ class _CategoryProductTabWidgetState extends State<CategoryProductTabWidget> {
          Offstage(
             offstage: widget.listProductTenantModel.result.data.isNotEmpty,
             child: EmptyDataWidget(
-              iconData: UiIcons.heart,
+              iconData: UiIcons.box,
               title: 'D\'ont have any item in the wish list',
               callback: (){},
               isFunction: true,

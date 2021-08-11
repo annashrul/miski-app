@@ -202,6 +202,7 @@ class Barang {
     this.createdAt,
     this.updatedAt,
     this.totalrecords,
+    this.rating,
   });
 
   String id;
@@ -220,6 +221,7 @@ class Barang {
   DateTime createdAt;
   DateTime updatedAt;
   String totalrecords;
+  double rating;
 
   factory Barang.fromJson(Map<String, dynamic> json) => Barang(
     id: json["id"],
@@ -238,6 +240,7 @@ class Barang {
     createdAt: DateTime.parse(json["created_at"]),
     updatedAt: DateTime.parse(json["updated_at"]),
     totalrecords: json["totalrecords"],
+    rating: json["rating"].toDouble(),
   );
 
   Map<String, dynamic> toJson() => {
@@ -257,5 +260,6 @@ class Barang {
     "created_at": createdAt.toIso8601String(),
     "updated_at": updatedAt.toIso8601String(),
     "totalrecords": totalrecords,
+    "rating": rating,
   };
 }

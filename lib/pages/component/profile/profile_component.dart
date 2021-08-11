@@ -138,17 +138,7 @@ class _ProfileComponentState extends State<ProfileComponent> {
                   // child: Image.network(foto)
                   child: WidgetHelper().imageUser(context: context,img: foto,isUpdate: true)
                 )
-                // SizedBox(
-                //     width: scaler.getWidth(10),
-                //     height: scaler.getHeight(4),
-                //     child: InkWell(
-                //       borderRadius: BorderRadius.circular(300),
-                //       onTap: () {
-                //       },
-                //       child: CircleAvatar(
-                //         backgroundImage: AssetImage(StringConfig.userImage),
-                //       ),
-                //     )),
+
               ],
             ),
           ),
@@ -247,7 +237,6 @@ class _ProfileComponentState extends State<ProfileComponent> {
                     WidgetHelper().titleQ(context, "Data diri",icon: UiIcons.user_1,padding: scaler.getPaddingLTRB(2,1,2,0),callback:(){} ),
                     Padding(
                         padding: scaler.getPaddingLTRB(0,1,2,0),
-                        // child: config.MyFont.subtitle(context: context,text:"Ubah",fontSize: 9,color: config.Colors.mainColors)
                         child:FormProfileWidget(
                           user: dataUser,
                           onChanged: (){this.setState(() {});},

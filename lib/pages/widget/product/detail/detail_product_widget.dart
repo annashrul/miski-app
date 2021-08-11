@@ -21,14 +21,13 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   DetailProductTenantModel detail;
 
-  int _tabIndex = 0,qty=0,hargaFinish=0,hargaUkuran=0,hargaWarna=0,totalCart=0,total=0,harga=0;
+  int _tabIndex = 0,qty=0,hargaFinish=0,hargaVarian=0,hargaSubVarian=0,totalCart=0,total=0,harga=0;
   String imageUser="",idVarian="",idSubVarian="",hargaMaster="0";
   bool isLoadingDetail=true,isFavorite=false;
   dynamic dataDetail;
   Future loadDetail()async{
     final funcData = await FunctionDetail().loadDetail(context: context,idProduct:widget.data["id"]);
     dataDetail = funcData["data"];
-    print("data detail ${dataDetail}");
     qty = funcData["data"]["qty"];
     harga = int.parse(funcData["data"]["harga"]);
     hargaMaster=funcData["data"]["harga_master"];
@@ -43,13 +42,15 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
     if(this.mounted) setState(() {qty+=1;});
     dynamic data = dataDetail;
     data["qty"] = qty;
+    data["id_varian"] = idVarian;
+    data["id_sub_varian"] = idSubVarian;
     data["harga_finish"] =hargaFinish;
     data["harga_master"] =hargaMaster;
-    data["harga_warna"] =hargaWarna;
-    data["harga_ukuran"] =hargaUkuran;
+    data["harga_varian"] =hargaVarian;
+    data["harga_sub_varian"] =hargaSubVarian;
     final res = await FunctionDetail().addToCart(context: context,data: data);
     totalCart = res["totalCart"];
-    print("total cart $totalCart");
+    print("total cart $res");
     if(this.mounted) setState(() {});
   }
 
@@ -84,6 +85,7 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
 
   @override
   Widget build(BuildContext context) {
+    print("##################### DEBUG PAGES #######################");
     final scaler = config.ScreenScale(context).scaler;
     return Scaffold(
       key: _scaffoldKey,
@@ -171,7 +173,17 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
               offstage: 0 != _tabIndex,
               child: Column(
                 children: <Widget>[
-                  TabProductWidget(id:widget.data["id"],data: dataDetail,isLoading: isLoadingDetail)
+                  TabProductWidget(id:widget.data["id"],data: dataDetail,isLoading: isLoadingDetail,callbackVarian: (data){
+                    hargaVarian=int.parse(data["VARIAN"]["harga"]);
+                    idVarian=data["VARIAN"]["id"];
+                    if(data["SUBVARIAN"]!=null){
+                      hargaSubVarian=int.parse(data["SUBVARIAN"]["harga"]);
+                      idSubVarian=data["SUBVARIAN"]["id"];
+                    }
+                    this.setState(() {});
+                    // print("data VARIAN ${data["VARIAN"]}");
+                    // print("data SUBVARIAN ${data["SUBVARIAN"]}");
+                  }),
                 ],
               ),
             ),
@@ -187,7 +199,6 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
               offstage: 2 != _tabIndex,
               child: Column(
                 children: <Widget>[
-
                   Container(
                     margin: scaler.getMarginLTRB(2,1,2,1),
                     child: WidgetHelper().titleQ(context,"Ulasan Produk",icon: UiIcons.chat_1),

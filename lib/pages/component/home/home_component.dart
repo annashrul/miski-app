@@ -197,7 +197,12 @@ class _HomeComponentState extends State<HomeComponent>{
 
   Widget buildPromo(BuildContext context) {
     final scaler=config.ScreenScale(context).scaler;
-    return Container(
+    return isLoadingPromo?WidgetHelper().baseLoading(context,Padding(
+      padding: scaler.getPadding(1, 2),
+      child:  WidgetHelper().shimmer(
+          context: context,height: 10,width: 30
+      ),
+    )): globalPromoModel.result.data.length<1?SizedBox():Container(
       padding: scaler.getPaddingLTRB(0,0,0,1),
       height: 200.0,
       child: Column(
@@ -220,11 +225,9 @@ class _HomeComponentState extends State<HomeComponent>{
               padding: EdgeInsets.all(10),
               shrinkWrap: true,
               scrollDirection: Axis.horizontal,
-              itemCount: isLoadingPromo?3:globalPromoModel.result.data.length ,
+              itemCount: globalPromoModel.result.data.length ,
               itemBuilder: (context, index){
-                return isLoadingPromo?WidgetHelper().baseLoading(context, WidgetHelper().shimmer(
-                    context: context,height: 10,width: 30
-                )): WidgetHelper().myRipple(
+                return WidgetHelper().myRipple(
                   callback: (){
                     WidgetHelper().myPush(context,DetailPromoWidget(id: globalPromoModel.result.data[index].id));
                   },

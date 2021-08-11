@@ -4,6 +4,7 @@ import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/site_config.dart';
+import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 
 
@@ -69,7 +70,7 @@ class _EmptyTenantState extends State<EmptyTenant> {
           SizedBox(height: 15),
           Opacity(
             opacity: 0.4,
-            child: WidgetHelper().textQ(SiteConfig().noData, 16, Colors.grey, FontWeight.w300),
+            child:config.MyFont.title(context:context, text:StringConfig.noData),
           ),
         ],
       ),

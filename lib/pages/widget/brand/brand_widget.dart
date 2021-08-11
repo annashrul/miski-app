@@ -39,13 +39,26 @@ class _BrandWidgetState extends State<BrandWidget> {
   Widget build(BuildContext context) {
     final scaler = config.ScreenScale(context).scaler;
 
-    return isLoading?WidgetHelper().loadingWidget(context):StaggeredGridView.countBuilder(
+    return StaggeredGridView.countBuilder(
       primary: false,
       shrinkWrap: true,
-      padding: scaler.getPaddingLTRB(0, 1, 0, 0),
+      padding: scaler.getPaddingLTRB(2, 1, 2, 0),
       crossAxisCount: MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 4,
-      itemCount: listBrandProductModel.result.data.length,
+      itemCount: isLoading?10:listBrandProductModel.result.data.length,
       itemBuilder: (BuildContext context, int index) {
+        if(isLoading){
+          return WidgetHelper().baseLoading(context, Stack(
+            alignment: AlignmentDirectional.topCenter,
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.all(0),
+                alignment: AlignmentDirectional.topCenter,
+                child: WidgetHelper().shimmer(context: context,width: 100,height: 20),
+              ),
+
+            ],
+          ));
+        }
         final res=listBrandProductModel.result.data[index];
         List<Color> col = [config.hexToColors("${res.color}"),config.hexToColors("${res.color}").withOpacity(double.parse("0.$index"))];
         String image=res.image;

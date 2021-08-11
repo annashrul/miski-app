@@ -4,10 +4,12 @@ import 'package:intl/intl.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/config/string_config.dart';
+import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/notification/list_notification_model.dart';
 import 'package:netindo_shop/pages/widget/searchbar_widget.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
+import 'package:netindo_shop/views/widget/empty_widget.dart';
 import 'package:netindo_shop/views/widget/loading_widget.dart';
 
 class NotificationComponent extends StatefulWidget {
@@ -86,7 +88,11 @@ class _NotificationComponentState extends State<NotificationComponent> {
 
         child: Column(
           children: <Widget>[
-            isLoading?Padding(padding: scaler.getPadding(0,2),child: LoadingCart(total:7)):ListView.separated(
+            isLoading?Padding(padding: scaler.getPadding(0,2),child: LoadingCart(total:7)):listNotificationModel.result.data.length<1?EmptyDataWidget(
+              iconData: UiIcons.bell,
+              title: StringConfig.noData,
+              isFunction: false,
+            ):ListView.separated(
               padding: scaler.getPadding(1, 2),
               shrinkWrap: true,
               primary: false,

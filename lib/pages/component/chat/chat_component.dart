@@ -6,12 +6,14 @@ import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
+import 'package:netindo_shop/model/general_model.dart';
 import 'package:netindo_shop/model/ticket/list_ticket_model.dart';
 import 'package:netindo_shop/pages/widget/chat/modal_form_chat_widget.dart';
 import 'package:netindo_shop/pages/widget/searchbar_widget.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
 import 'package:netindo_shop/views/widget/empty_widget.dart';
 import 'package:netindo_shop/views/widget/loading_widget.dart';
+import 'package:netindo_shop/views/widget/refresh_widget.dart';
 
 class ChatComponent extends StatefulWidget {
   @override
@@ -33,7 +35,16 @@ class _ChatComponentState extends State<ChatComponent> {
       if(this.mounted) this.setState(() {});
     }
   }
+  Future deleteChat(index)async{
+    WidgetHelper().loadingDialog(context);
+    final res = await HandleHttp().deleteProvider("chat/${listTicketModel.result.data[index].id}", generalFromJson,context: context);
+    if(res!=null){
+      Navigator.pop(context);
+      loadTicket();
+      WidgetHelper().showFloatingFlushbar(context, "success", "pesan berhasil dihapus");
 
+    }
+  }
   @override
   void initState() {
     // TODO: implement initState
@@ -51,73 +62,76 @@ class _ChatComponentState extends State<ChatComponent> {
   Widget build(BuildContext context) {
     final scaler = config.ScreenScale(context).scaler;
     // TODO: implement build
-    return Stack(
-      fit: StackFit.passthrough,
-      children: <Widget>[
-        Container(
-          alignment: Alignment.topCenter,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
+    return RefreshWidget(
+      callback: (){},
+      widget: Stack(
+        fit: StackFit.passthrough,
+        children: <Widget>[
+          Container(
+            alignment: Alignment.topCenter,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
 
-                isLoading?Container(
-                  padding: scaler.getPadding(0, 2),
-                  child: LoadingTicket(total: 10),
-                ):Offstage(
-                  offstage: listTicketModel.result.data.isEmpty,
-                  child: ListView.separated(
-                    padding: scaler.getPadding(1, 2),
-                    shrinkWrap: true,
-                    primary: false,
-                    itemCount: listTicketModel.result.data.length,
-                    separatorBuilder: (context, index) {
-                      return Divider();
-                    },
-                    itemBuilder: (context, index) {
-                      return buildItem(
-                          context: context,
-                          index: index
-                      );
-                    },
+                  isLoading?Container(
+                    padding: scaler.getPadding(0, 2),
+                    child: LoadingTicket(total: 10),
+                  ):Offstage(
+                    offstage: listTicketModel.result.data.isEmpty,
+                    child: ListView.separated(
+                      padding: scaler.getPadding(1, 2),
+                      shrinkWrap: true,
+                      primary: false,
+                      itemCount: listTicketModel.result.data.length,
+                      separatorBuilder: (context, index) {
+                        return Divider();
+                      },
+                      itemBuilder: (context, index) {
+                        return buildItem(
+                            context: context,
+                            index: index
+                        );
+                      },
+                    ),
                   ),
-                ),
-                if(!isLoading)Offstage(
-                  offstage:listTicketModel.result.data.isNotEmpty,
-                  child: EmptyDataWidget(
-                    iconData: UiIcons.chat,
-                    title: "D\'ont have any message",
-                    isFunction: false,
-                  ),
-                )
-              ],
+                  if(!isLoading)Offstage(
+                    offstage:listTicketModel.result.data.isNotEmpty,
+                    child: EmptyDataWidget(
+                      iconData: UiIcons.chat,
+                      title: StringConfig.noData,
+                      isFunction: false,
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
-        ),
-        new Positioned(
-          bottom: 0,
-          right: scaler.getWidth(5),
-          child: new Align(
-              alignment: AlignmentDirectional.centerEnd,
-              child:WidgetHelper().animShakeWidget(context,InkWell(
-                borderRadius: BorderRadius.circular(50.0),
-                onTap: (){
-                  WidgetHelper().myModal(context, ModalFormChatWidget(callback: (status){
-                    if(status) loadTicket();
-                  },));
-                },
-                child:Container(
-                  padding: EdgeInsets.all(10.0),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10.0),
-                    color:config.Colors.mainColors,
-                  ),
+          new Positioned(
+            bottom: 0,
+            right: scaler.getWidth(5),
+            child: new Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child:WidgetHelper().animShakeWidget(context,InkWell(
+                  borderRadius: BorderRadius.circular(50.0),
+                  onTap: (){
+                    WidgetHelper().myModal(context, ModalFormChatWidget(callback: (status){
+                      if(status) loadTicket();
+                    },));
+                  },
+                  child:Container(
+                    padding: EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.0),
+                      color:config.Colors.mainColors,
+                    ),
 
-                  child:Icon(UiIcons.chat,color: Colors.white),
-                ),
-              ))
-          ),
-        )
-      ],
+                    child:Icon(UiIcons.chat,color: Colors.white),
+                  ),
+                ))
+            ),
+          )
+        ],
+      ),
     );
   }
 
@@ -140,7 +154,52 @@ class _ChatComponentState extends State<ChatComponent> {
           ),
         ),
       ),
+
       onDismissed: (direction) {
+        // deleteChat(index);
+        print("onDismissed");
+      },
+      confirmDismiss: (direction) async {
+        if(direction==DismissDirection.endToStart){
+          final bool res = await showDialog(
+              barrierDismissible: false,
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title:config.MyFont.title(context: context,text:"Informasi",color:config.Colors.mainColors),
+                  content:config.MyFont.title(context: context,text:"Anda yakin akan mengahpus pesan ini ?",fontSize: 9),
+                  actions: <Widget>[
+                    FlatButton(
+                        onPressed:(){
+                          Navigator.of(context).pop();
+                        },
+                        child:config.MyFont.title(context: context,text:"Batal")
+                      // child:textQ(titleBtn1,12,Colors.black,FontWeight.bold),
+                    ),
+                    FlatButton(
+                        onPressed:()async{
+                          Navigator.of(context).pop();
+                          await deleteChat(index);
+                        },
+                        child:config.MyFont.title(context: context,text:"Oke",color:config.Colors.mainColors)
+                    )
+                  ],
+                );
+              });
+          return res;
+          // return WidgetHelper().notifDialog(context, "Perhatian", "Anda yakin akan mengahapus pesan ini ?", (){
+          //   Navigator.pop(context);
+          //   return false;
+          // }, ()async{
+          //   return false;
+          //   // final res=await HandleHttp().deleteProvider("chat/${listTicketModel.result.data[index].id}", generalFromJson,context: context);
+          //   // if(res!=null){
+          //   //   WidgetHelper().showFloatingFlushbar(context, "success", "pesan berhasil dihapus");
+          //   //   loadTicket();
+          //   // }
+          // });
+        }
+
       },
       child: WidgetHelper().myRipple(
         radius: 10,

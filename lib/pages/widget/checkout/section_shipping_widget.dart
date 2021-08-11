@@ -16,7 +16,7 @@ class SectionShippingWidget extends StatefulWidget {
   final dynamic isLoading;
   final dynamic kurir;
   final dynamic layanan;
-  final Function(int i,String type) callback;
+  final Function(int i,dynamic type) callback;
   SectionShippingWidget({this.index,this.kurir,this.layanan,this.isLoading,this.callback});
   @override
   _SectionShippingWidgetState createState() => _SectionShippingWidgetState();
@@ -74,10 +74,9 @@ class _SectionShippingWidgetState extends State<SectionShippingWidget> {
           },loading: widget.isLoading["layanan"]),
           SizedBox(height: scaler.getHeight(0.5)),
           jasaPengiriman(context,"Gunakan voucher", codePromo, (){
-            WidgetHelper().myModal(context, ModalVoucher(callback: (code){
-
-              this.setState(() {codePromo=code;});
-              widget.callback(0,code);
+            WidgetHelper().myModal(context, ModalVoucher(callback: (data){
+              this.setState(() {codePromo=data["kode"];});
+              widget.callback(0,data);
             }));
           }),
         ],
@@ -112,7 +111,7 @@ class _SectionShippingWidgetState extends State<SectionShippingWidget> {
 
 
 class ModalVoucher extends StatefulWidget {
-  final Function(String code) callback;
+  final Function(dynamic data) callback;
   ModalVoucher({this.callback});
   @override
   _ModalVoucherState createState() => _ModalVoucherState();
@@ -131,12 +130,11 @@ class _ModalVoucherState extends State<ModalVoucher> {
     final tenant=await FunctionHelper().getTenant();
     WidgetHelper().loadingDialog(context);
     final res=await HandleHttp().getProvider("promo/check/${codeController.text}/${tenant[StringConfig.idTenant]}",null,context: context);
+    // final res=await HandleHttp().getProvider("promo/check/W1K2GEUP/${tenant[StringConfig.idTenant]}",null,context: context);
     Navigator.pop(context);
     if(res!=null){
       final result=jsonDecode(res);
-      print(result);
-      print(result["result"]["kode"]);
-      widget.callback(result["result"]["kode"]);
+      widget.callback({"kode":result["result"]["kode"],"disc":result["result"]["disc"],"max_disc":result["result"]["max_disc"]});
     }
   }
 

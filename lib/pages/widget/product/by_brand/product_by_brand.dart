@@ -155,7 +155,8 @@ class _ProductByBrandState extends State<ProductByBrand> with SingleTickerProvid
               offstage: 0 != _tabIndex,
               child: Column(
                 children: <Widget>[
-                  BrandHomeTabWidget(data: widget.data["data"])
+                  BrandHomeTabWidget(data: widget.data["data"]),
+
                 ],
               ),
             ),
@@ -163,7 +164,12 @@ class _ProductByBrandState extends State<ProductByBrand> with SingleTickerProvid
               offstage: 1 != _tabIndex,
               child: Column(
                 children: <Widget>[
-                  BrandProductTabWidget(data: widget.data["data"])
+                  Padding(
+
+                      child: BrandProductTabWidget(data: widget.data["data"]),
+                    padding: scaler.getPadding(0, 2),
+                  )
+
                 ],
               ),
             ),

@@ -192,7 +192,7 @@ class _HistoryOrderWidgetState extends State<HistoryOrderWidget> {
                               callback: (){
                                 WidgetHelper().myModal(context, HistoryModalOptionWIdget(
                                   val: val,
-                                  barang: valDet,
+                                  barang: val.toJson()["detail"],
                                 ));
                               },
                               child: Container(

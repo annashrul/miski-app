@@ -5,6 +5,7 @@ class StringConfig{
   static const String signIn = "SignIn";
   static const String signUp = "SignUp";
   static const String main = "Main";
+  static const String tenantPage = "Tenant";
   static const String home = "Home";
   static const String detailProduct = "DetailProduct";
   static const String productByCategory = "ProductByGroup";
@@ -49,7 +50,8 @@ class StringConfig{
   static const String onesignal_id = "onesignal_id";
 
   // ************************ GENERAL  ************************ //
-  static final int perpage = 9;
+  static final int noDataNumber = 10000;
+  static final int perpage = 15;
   static final double iconSize = 12;
   static final userImage = localAssets+"user2.jpg";
   static const version = "0.0.1";
@@ -60,6 +62,7 @@ class StringConfig{
   static const  String selesaikanPesananAnda = 'Selesaikan Pesanan Anda';
   static const String lorem = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.";
   // ************************ ERROR  ************************ //
+  static const  String noData     = 'Data tidak tersedia';
   static const  String errTimeout     = 'TimeoutException';
   static const  String errSocket      = 'SocketException';
   static const  String errExpToken    = 'TokenExpiredError';

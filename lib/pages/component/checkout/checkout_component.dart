@@ -30,7 +30,7 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
   dynamic loadingShipping = {"kurir":true,"layanan":true};
   Map<String,Object> indexShipping = {"kurir":0,"layanan":0};
   bool isLoading=true;
-  int indexAddress=0,indexBank=0,cost=0,subtotal=0,grandTotal=0;
+  int indexAddress=0,indexBank=0,cost=0,subtotal=0,grandTotal=0,diskonVoucher=0;
   Future loadData(String type)async{
     final resDetail = await FunctionCheckout().loadData(context: context,type: type,ongkos: cost);
     if(resDetail==StringConfig.errNoData){
@@ -60,32 +60,32 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
     subtotal = resDetail["subTotal"];
     grandTotal = resDetail["grandTotal"];
     product = resDetail["productDetail"];
-
-
     if(this.mounted)setState(() {});
   }
 
-  Future handleShipping(i,type,{isUpdate=false})async{
+  Future handleShipping(i,type)async{
     if(type=="kurir"){
       indexShipping["kurir"] = i;
       indexShipping["layanan"] = 0;
       loadingShipping["layanan"]=true;
       final ongkir = await FunctionCheckout().loadOngkir(context: context,kodeKecamatan: address["kd_kec"],kurir: shippingKurir["arr"][i]["kurir"]);
-      print(ongkir);
       loadingShipping["layanan"]=false;
       shippingLayanan["arr"] = ongkir["ongkir"]["ongkir"];
       shippingLayanan["obj"] = ongkir["ongkir"]["ongkir"][0];
       cost = shippingLayanan["obj"]["cost"];
     }
     else if(type=="layanan"){
-      print("ongkir ${shippingLayanan["arr"][i]}");
       indexShipping["layanan"] = i;
       cost = shippingLayanan["arr"][i]["cost"];
     }
     else{
-      codePromo = type;
+      codePromo = type["kode"];
+      int disc = FunctionHelper().percentToRp(type["disc"], grandTotal);
+      int max = int.parse(type["max_disc"]);
+      diskonVoucher = disc > max?max:disc;
+      WidgetHelper().showFloatingFlushbar(context, "success", "selamat, anda mendapat potongan sebesar $diskonVoucher");
     }
-    grandTotal = grandTotal+cost;
+    grandTotal = (subtotal+cost)-diskonVoucher;
     if(this.mounted)setState(() {});
 
   }
@@ -153,13 +153,9 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
                 loadingShipping["layanan"]=true;
                 address=data;
               });
-              print(data);
-
-              // handleShipping(0,"kurir",isUpdate: true);
               final ongkir = await FunctionCheckout().loadOngkir(context: context,kodeKecamatan: data["kd_kec"],kurir: shippingKurir["arr"][indexShipping["kurir"]]["kurir"]);
               shippingLayanan["obj"] = ongkir["ongkir"]["ongkir"][0];
               cost = shippingLayanan["obj"]["cost"];
-              // print(grandTotal);
               grandTotal = subtotal+cost;
               loadingShipping["layanan"]=false;
               if(this.mounted)this.setState((){});
@@ -202,7 +198,7 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
             SizedBox(height: scaler.getHeight(0.5)),
             buildRowBottomBar(context: context,title: "Ongkos kirim",desc: "$cost"),
             SizedBox(height: scaler.getHeight(0.5)),
-            buildRowBottomBar(context: context,title: "Diskon voucher",desc: "0"),
+            buildRowBottomBar(context: context,title: "Diskon voucher",desc: "$diskonVoucher"),
             SizedBox(height: scaler.getHeight(0.5)),
             WidgetHelper().myRipple(
               isRadius: true,
@@ -228,7 +224,7 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
                       decoration: BoxDecoration(
                         color: Theme.of(context).accentColor,
                       ),
-                      child:config.MyFont.title(context: context,text:'Checkout',fontWeight: FontWeight.bold,color:  Theme.of(context).primaryColor)
+                      child:config.MyFont.title(context: context,text:'Bayar',fontWeight: FontWeight.bold,color:  Theme.of(context).primaryColor)
                     ),
                   ),
                   Padding(
