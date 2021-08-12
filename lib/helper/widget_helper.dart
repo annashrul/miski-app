@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 import 'package:animated_widgets/widgets/rotation_animated.dart';
 import 'package:animated_widgets/widgets/scale_animated.dart';
 import 'package:animated_widgets/widgets/shake_animated_widget.dart';
@@ -8,15 +7,10 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_icons/flutter_icons.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/light_color.dart';
-import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/screen_util_helper.dart';
@@ -24,49 +18,6 @@ import 'package:shimmer/shimmer.dart';
 import 'package:touch_ripple_effect/touch_ripple_effect.dart';
 
 class WidgetHelper{
-  rating(String rating){
-    return  RatingBar.builder(
-      itemSize: 15.0,
-      initialRating: double.parse(rating),
-      direction: Axis.horizontal,
-      itemCount: 5,
-      itemPadding: EdgeInsets.only(right: 4.0),
-      itemBuilder: (context, index) {
-        switch (index) {
-          case 0:
-            return Icon(
-              Icons.sentiment_very_dissatisfied,
-              color: Colors.red,
-            );
-          case 1:
-            return Icon(
-              Icons.sentiment_dissatisfied,
-              color: Colors.redAccent,
-            );
-          case 2:
-            return Icon(
-              Icons.sentiment_neutral,
-              color: Colors.amber,
-            );
-          case 3:
-            return Icon(
-              Icons.sentiment_satisfied,
-              color: Colors.lightGreen,
-            );
-          case 4:
-            return Icon(
-              Icons.sentiment_very_satisfied,
-              color: Colors.green,
-            );
-          default:
-            return Container();
-        }
-      },
-      onRatingUpdate:null,
-    );
-  }
-
-
   animShakeWidget(BuildContext context,Widget child,{bool enable=true}){
 
     return ShakeAnimatedWidget(
@@ -87,39 +38,22 @@ class WidgetHelper{
       child: child,
     );
   }
-  void myRefresh(Key key,Widget widget, Function callback){
-    LiquidPullToRefresh(
-      child: widget,
-      backgroundColor:SiteConfig().mainColor,
-      color: Colors.white,
-      key: key,
-      onRefresh: callback,
-      showChildOpacityTransition: false,
-    );
-  }
 
   myStatus(BuildContext context, int param){
-    ScreenScaler scaler = ScreenScaler()..init(context);
-    Color color;
     String txt="";
     if(param==0){
-      color = Colors.red;
       txt = "Belum dibayar";
     }
     if(param==1){
-      color = Color(0xFFF7AD17);
       txt = "Menunggu konfirmasi";
     }
     if(param==2){
-      color = Color(0xFF1cbac8);
       txt = "Barang sedang dikemas";
     }
     if(param==3){
-      color = Colors.greenAccent;
       txt = "Dikirim";
     }
     if(param==4){
-      color = Colors.green;
       txt = "Selesai";
     }
     return Container(
@@ -132,8 +66,6 @@ class WidgetHelper{
       // child: WidgetHelper().textQ(txt, scaler.getTextSize(9),color,FontWeight.bold),
     );
   }
-
-
  showFloatingFlushbar(BuildContext context,String param, String desc) {
     Flushbar(
       flushbarPosition: FlushbarPosition.TOP,
@@ -141,7 +73,7 @@ class WidgetHelper{
       margin:EdgeInsets.only(top: 50),
       borderRadius: 0,
       backgroundGradient: LinearGradient(
-        colors: param=='success'?[SiteConfig().mainColor, SiteConfig().mainColor]:[Colors.red, Colors.red],
+        colors: param=='success'?[config.Colors.mainColors, config.Colors.mainColors]:[Colors.red, Colors.red],
         stops: [0.6, 1],
       ),
       boxShadows: [
@@ -163,7 +95,6 @@ class WidgetHelper{
     )..show(context);
   }
   myModal(BuildContext context,Widget child){
-    final scaler = config.ScreenScale(context).scaler;
     return showModalBottomSheet(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(10.0))),
         backgroundColor: Theme.of(context).primaryColor,
@@ -220,7 +151,7 @@ class WidgetHelper{
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SpinKitFadingGrid(color:SiteConfig().mainColor, shape: BoxShape.circle),
+                  SpinKitFadingGrid(color:config.Colors.mainColors, shape: BoxShape.circle),
                   // SpinKitCubeGrid(size: 80.0, color: Constant().mainColor),
                   // textQ(title,14,Constant().mainColor,FontWeight.bold,letterSpacing: 5.0)
                 ],
@@ -236,11 +167,7 @@ class WidgetHelper{
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          SpinKitFadingGrid(color:  SiteConfig().mainColor, shape: BoxShape.circle),
-          // CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.grey), semanticsLabel: 'tunggu sebentar', backgroundColor: Colors.black),
-          // SizedBox(width:10.0),
-          // textQ("tunggu sebentar ...", 12,Colors.grey,FontWeight.bold)
-          // RichText(text: TextSpan(text:'Tunggu Sebentar ...', style: TextStyle(fontWeight:FontWeight.bold,color:Theme.of(context).primaryColorDark, fontSize: 14)))
+          SpinKitFadingGrid(color: config.Colors.mainColors, shape: BoxShape.circle),
         ],
       ),
     );
@@ -286,12 +213,10 @@ class WidgetHelper{
               color: color,
               fontWeight:fontWeight
           )
-          // style: TextStyle(letterSpacing:letterSpacing,decoration: textDecoration, fontSize:size,color: color,fontFamily:SiteConfig().fontStyle,fontWeight:fontWeight,),
         )
     );
   }
   notifOneBtnDialog(BuildContext context,title,desc,Function callback1,{titleBtn1='Oke'}){
-    ScreenScaler scaler = ScreenScaler()..init(context);
     return showDialog(
         barrierDismissible: false,
         context: context,
@@ -421,48 +346,11 @@ class WidgetHelper{
     return AppBar(
       toolbarHeight: scaler.getHeight(4),
       automaticallyImplyLeading: false,
-      title:textQ(title.toUpperCase(),scaler.getTextSize(10),LightColor.black,FontWeight.bold),
+      title: config.MyFont.title(context: context,text:title),
       elevation: 0,
       actions:widget,
     );
 
-  }
-  pembatas(BuildContext context){
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      height: 1.0,
-      decoration: BoxDecoration(
-        color: Theme.of(context).textTheme.caption.color,
-        borderRadius:  BorderRadius.circular(10.0),
-      ),
-    );
-  }
-  buttonQ(BuildContext context,Function callback,String title,{isColor=false,Color color}){
-    ScreenScaler scaler = ScreenScaler()..init(context);
-    return FlatButton(
-      shape: StadiumBorder(),
-      color:SiteConfig().mainColor,
-      onPressed: callback,
-      child: Center(
-        child: WidgetHelper().textQ(title,scaler.getTextSize(10),Colors.white, FontWeight.bold,letterSpacing: 2),
-      )
-    );
-    return InkWell(
-      onTap: callback,
-      child: Container(
-          width: double.infinity,
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          decoration: BoxDecoration(
-              color: !isColor?SiteConfig().mainColor:color,
-              borderRadius: BorderRadius.circular(10.0),
-              boxShadow: [
-                BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), offset: Offset(0, -2), blurRadius: 5.0)
-              ]),
-          child: Center(
-            child: WidgetHelper().textQ(title,14,Colors.white, FontWeight.bold),
-          )
-      ),
-    );
   }
   myRipple({Widget child,Function callback,bool isRadius=true,double radius=10}){
     return TouchRippleEffect(
@@ -472,28 +360,6 @@ class WidgetHelper{
       onTap: callback,
       child: child,
 
-    );
-  }
-  myPress(Function callback,Widget child,{Color color=Colors.black26}){
-    return InkWell(
-      highlightColor:color,
-      splashColor:color,
-      borderRadius: BorderRadius.circular(10),
-      onTap: ()async{
-        await Future.delayed(Duration(milliseconds: 90));
-        callback();
-      },
-      child: child,
-    );
-  }
-  myImage(String img,double width, double height, BoxFit boxFit){
-    return CachedNetworkImage(
-      width: width,
-      height: height,
-      fit: boxFit,
-      imageUrl: img,
-      progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
-      errorWidget: (context, url, error) => Icon(Icons.error),
     );
   }
   baseImage(String img,{double width, double height,BoxFit fit = BoxFit.cover,BoxShape shape=BoxShape.rectangle}){
@@ -509,17 +375,6 @@ class WidgetHelper{
       ),
       placeholder: (context, url) => CircularProgressIndicator(),
       errorWidget: (context, url, error) => Icon(Icons.error),
-    );
-  }
-  textSpaceBetween(BuildContext context,String title,String desc,{FontWeight fontWeightTitle = FontWeight.normal,FontWeight fontWeightDesc = FontWeight.normal,MainAxisAlignment mainAxisAlignment=MainAxisAlignment.spaceBetween,Color titleColor=Colors.black,Color descColor}){
-    ScreenScaler scaler = ScreenScaler()..init(context);
-    return Row(
-      mainAxisAlignment:mainAxisAlignment,
-      children: [
-        config.MyFont.subtitle(context: context,text:title),
-        config.MyFont.subtitle(context: context,text:desc,color: descColor==null?Theme.of(context).textTheme.caption.color:descColor),
-
-      ],
     );
   }
   iconAppbar({BuildContext context,Function callback,IconData icon,String title='',Color color}){
@@ -619,12 +474,10 @@ class WidgetHelper{
       ],
     );
   }
-
   icons({BuildContext ctx,IconData icon,Color color}){
     final scaler = config.ScreenScale(ctx).scaler;
     return Icon(icon,size: scaler.getTextSize(StringConfig.iconSize),color: color==null?Theme.of(ctx).hintColor:color);
   }
-
   Widget field({BuildContext context,String title,TextInputType textInputType = TextInputType.text,TextInputAction textInputAction=TextInputAction.done, TextEditingController textEditingController, FocusNode focusNode,bool readOnly=false,int maxLines=1,Function(String) submited,Function() onTap,Function(String e) onChange}) {
     return Container(
       child: Column(
@@ -649,7 +502,7 @@ class WidgetHelper{
             onChanged: (e)=>onChange(e),
             inputFormatters: <TextInputFormatter>[
               if(textInputType == TextInputType.number) LengthLimitingTextInputFormatter(13),
-              if(textInputType == TextInputType.number) WhitelistingTextInputFormatter.digitsOnly
+              if(textInputType == TextInputType.number) FilteringTextInputFormatter.digitsOnly
             ],
           )
         ],

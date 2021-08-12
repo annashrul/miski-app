@@ -1,4 +1,15 @@
 class StringConfig{
+  // ************************ CONFIGURATION  ************************ //
+  static const String siteName        = 'Happy Fresh';
+  static const String baseUrl        = 'http://ptnetindo.com:6698/';
+  static const bool showCode         = true;
+  static const String versionCode    = '0.0.1';
+  static const String username       = 'netindo';
+  static const String connection     = 'nshop';
+  static const String password       = "\$2b\$08\$hLMU6rEvNILCMaQbthARK.iCmDRO7jNbUB8CcvyRStqsHD4UQxjDO";
+  static const String oneSignalId    = "b1057dd8-ea51-41d2-be3b-a6778ffbf5e4";
+  static const int timeout           = 60;
+
   // ************************ PAGES  ************************ //
   static const int defaultTab = 2;
   static const String onBoarding = "OnBoarding";
@@ -75,5 +86,8 @@ class StringConfig{
   static const  String descMsgSuccessTrx  = 'Terimakasih Telah Melakukan Transaksi disini';
   static const  String titleErrTimeout    = 'Terjadi Kesalahan !';
   static const  String descErrTimeout = 'silahkan cobalagi untuk melanjutkan proses ini';
+
+
+
 
 }

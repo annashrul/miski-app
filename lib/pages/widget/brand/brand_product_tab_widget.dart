@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/helper/home/function_home.dart';
 import 'package:netindo_shop/model/tenant/list_product_tenant_model.dart';
 import 'package:netindo_shop/pages/widget/product/product_grid_widget.dart';
-import 'package:netindo_shop/views/widget/empty_widget.dart';
-import 'package:netindo_shop/views/widget/loading_widget.dart';
+import '../empty_widget.dart';
+import '../loading_widget.dart';
 
 class BrandProductTabWidget extends StatefulWidget {
   final dynamic data;
@@ -25,14 +24,12 @@ class _BrandProductTabWidgetState extends State<BrandProductTabWidget> {
   }
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     loadProduct();
     print(widget.data);
   }
   @override
   Widget build(BuildContext context) {
-    final scaler=config.ScreenScale(context).scaler;
     return isLoadingProduct?LoadingProductTenant(tot: 10,):listProductTenantModel.result.data.length<1?EmptyTenant():new StaggeredGridView.countBuilder(
       primary: false,
       shrinkWrap: true,

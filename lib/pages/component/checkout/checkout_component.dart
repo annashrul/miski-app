@@ -129,7 +129,6 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     loadData("all");
   }

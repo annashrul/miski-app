@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/user_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
+import 'package:smooth_star_rating/smooth_star_rating.dart';
 
 
 // ignore: must_be_immutable
@@ -92,7 +92,6 @@ class _FormReviewWidgetState extends State<FormReviewWidget> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     rateWithCaption(widget.data["rating"]);
 
@@ -132,45 +131,60 @@ class _FormReviewWidgetState extends State<FormReviewWidget> {
               Container(
                 child: Column(
                   children: [
-                    RatingBar.builder(
-                      unratedColor:Colors.black,
-                      glowColor: Colors.white,
-                      itemSize: 40.0,
-                      initialRating: rate,
-                      direction: Axis.horizontal,
-                      itemCount: 5,
-                      itemPadding: EdgeInsets.only(right: 4.0),
-                      itemBuilder: (context, index) {
-                        switch (index) {
-                          case 0:
-                            return Icon(
-                              Icons.star,
-                              color: Colors.yellowAccent,
-                            );
-                          case 1:
-                            return Icon(
-                              Icons.star,color: Colors.yellowAccent,
-                            );
-                          case 2:
-                            return Icon(
-                              Icons.star,color: Colors.yellowAccent,
-                            );
-                          case 3:
-                            return Icon(
-                              Icons.star,color: Colors.yellowAccent,
-                            );
-                          case 4:
-                            return Icon(
-                              Icons.star,color: Colors.yellowAccent,
-                            );
-                          default:
-                            return Container();
-                        }
-                      },
-                      onRatingUpdate: (rate) {
-                        rateWithCaption(rate);
-                      },
+                    SmoothStarRating(
+                        allowHalfRating: false,
+                        onRated: (v) {
+                          rateWithCaption(v);
+                        },
+                        starCount: 5,
+                        rating: rate,
+                        size: scaler.getTextSize(20),
+                        isReadOnly:false,
+
+                        color: Colors.yellowAccent,
+                        borderColor: Colors.yellowAccent,
+                        spacing:0.0
                     ),
+
+                    // RatingBar.builder(
+                    //   unratedColor:Colors.black,
+                    //   glowColor: Colors.white,
+                    //   itemSize: 40.0,
+                    //   initialRating: rate,
+                    //   direction: Axis.horizontal,
+                    //   itemCount: 5,
+                    //   itemPadding: EdgeInsets.only(right: 4.0),
+                    //   itemBuilder: (context, index) {
+                    //     switch (index) {
+                    //       case 0:
+                    //         return Icon(
+                    //           Icons.star,
+                    //           color: Colors.yellowAccent,
+                    //         );
+                    //       case 1:
+                    //         return Icon(
+                    //           Icons.star,color: Colors.yellowAccent,
+                    //         );
+                    //       case 2:
+                    //         return Icon(
+                    //           Icons.star,color: Colors.yellowAccent,
+                    //         );
+                    //       case 3:
+                    //         return Icon(
+                    //           Icons.star,color: Colors.yellowAccent,
+                    //         );
+                    //       case 4:
+                    //         return Icon(
+                    //           Icons.star,color: Colors.yellowAccent,
+                    //         );
+                    //       default:
+                    //         return Container();
+                    //     }
+                    //   },
+                    //   onRatingUpdate: (rate) {
+                    //     rateWithCaption(rate);
+                    //   },
+                    // ),
                     SizedBox(height:10.0),
                     config.MyFont.subtitle(context: context,text:titleRating.toUpperCase(),textAlign: TextAlign.center,color: color),
 

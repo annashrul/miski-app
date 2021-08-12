@@ -2,14 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/model/help_support/list_help_support_model.dart';
 
-class HelpSupportWidget extends StatelessWidget {
+// ignore: must_be_immutable
+class HelpSupportWidget extends StatefulWidget {
   HelpSupportWidget({Key key, this.index = 1,this.listHelpSupportModel}) : super(key: key);
   final index;
   ListHelpSupportModel listHelpSupportModel;
 
   @override
+  _HelpSupportWidgetState createState() => _HelpSupportWidgetState();
+}
+
+class _HelpSupportWidgetState extends State<HelpSupportWidget> {
+  @override
   Widget build(BuildContext context) {
-    final res = listHelpSupportModel.result.data[index];
+    final res = widget.listHelpSupportModel.result.data[widget.index];
     return DecoratedBox(
       decoration: BoxDecoration(boxShadow: [
         BoxShadow(

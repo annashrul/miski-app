@@ -24,7 +24,6 @@ class _UploadImageWidgetState extends State<UploadImageWidget> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     if(widget.title==null){
       widget.title="Upload bukti transfer";

@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
-import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/pages/widget/product/porduct_list_widget.dart';
-import 'package:netindo_shop/pages/widget/product/product_grid_widget.dart';
-import 'package:netindo_shop/views/widget/loading_widget.dart';
+import '../loading_widget.dart';
 
 class SectionProductWidget extends StatefulWidget {
   final List data;

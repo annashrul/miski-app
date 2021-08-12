@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/database_config.dart';
-import 'package:netindo_shop/config/site_config.dart';
+import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/route_generator.dart';
-import 'package:netindo_shop/views/screen/splash_screen.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -24,14 +23,13 @@ class _MyAppState extends State<MyApp> {
   final DatabaseConfig _db = new DatabaseConfig();
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     OneSignal.shared.setInFocusDisplayType(OSNotificationDisplayType.notification);
     var settings = {
       OSiOSSettings.autoPrompt: false,
       OSiOSSettings.promptBeforeOpeningPushUrl: true
     };
-    OneSignal.shared.init(SiteConfig().oneSignalId, iOSSettings: settings);
+    OneSignal.shared.init(StringConfig.oneSignalId, iOSSettings: settings);
     _db.openDB();
   }
 

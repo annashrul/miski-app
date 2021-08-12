@@ -2,8 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
-import 'package:netindo_shop/config/site_config.dart';
-import 'package:netindo_shop/helper/function_helper.dart';
+import 'package:netindo_shop/config/app_config.dart' as config;
 
 class RefreshWidget extends StatefulWidget {
   Widget widget;
@@ -35,7 +34,7 @@ class _RefreshWidgetState extends State<RefreshWidget> {
   Widget build(BuildContext context) {
     return LiquidPullToRefresh(
       child: widget.widget,
-      backgroundColor:SiteConfig().mainColor,
+      backgroundColor:config.Colors.mainColors,
       color: Colors.white,
       key: _refreshIndicatorKey,
       onRefresh:handleRefresh,

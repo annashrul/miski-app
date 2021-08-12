@@ -1,6 +1,5 @@
 
 import 'package:netindo_shop/config/database_config.dart';
-import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/helper/database_helper.dart';
 
 class UserHelper{

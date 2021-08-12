@@ -2,19 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/string_config.dart';
+import 'package:netindo_shop/helper/bezier.dart';
 import 'package:netindo_shop/helper/database_helper.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/auth/login_model.dart';
-import 'package:netindo_shop/model/auth/otp_model.dart';
 import 'package:netindo_shop/pages/component/auth/signup_component.dart';
 import 'package:netindo_shop/pages/widget/secure_code_widget.dart';
-import 'package:netindo_shop/provider/base_provider.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
-import 'package:netindo_shop/views/screen/auth/signin_screen.dart';
 import "package:netindo_shop/config/app_config.dart" as config;
 import 'package:onesignal_flutter/onesignal_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 class SignInComponent extends StatefulWidget {
   @override
   _SignInComponentState createState() => _SignInComponentState();
@@ -22,7 +19,6 @@ class SignInComponent extends StatefulWidget {
 
 class _SignInComponentState extends State<SignInComponent> {
 
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   var _emailController = TextEditingController();
   var _passwordController = TextEditingController();
   var _nohpController = TextEditingController();
@@ -358,7 +354,7 @@ class _SignInComponentState extends State<SignInComponent> {
               textInputAction: textInputAction,
               inputFormatters: <TextInputFormatter>[
                 if(textInputType == TextInputType.number) LengthLimitingTextInputFormatter(13),
-                if(textInputType == TextInputType.number) WhitelistingTextInputFormatter.digitsOnly
+                if(textInputType == TextInputType.number) FilteringTextInputFormatter.digitsOnly
               ],
               onSubmitted: (e){
                 validasi(context,type);

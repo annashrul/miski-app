@@ -11,7 +11,6 @@ import 'package:netindo_shop/pages/component/category/category_component.dart';
 import 'package:netindo_shop/pages/component/chat/room_chat_component.dart';
 import 'package:netindo_shop/pages/component/checkout/checkout_component.dart';
 import 'package:netindo_shop/pages/component/checkout/success_checkout_component.dart';
-import 'package:netindo_shop/pages/component/debug_pages.dart';
 import 'package:netindo_shop/pages/component/history/detail_history_order_component.dart';
 import 'package:netindo_shop/pages/component/history/history_order_component.dart';
 import 'package:netindo_shop/pages/component/home/home_component.dart';
@@ -21,8 +20,8 @@ import 'package:netindo_shop/pages/component/splash_screen_component.dart';
 import 'package:netindo_shop/pages/component/tenant/tenant_component.dart';
 import 'package:netindo_shop/pages/widget/product/by_brand/product_by_brand.dart';
 import 'package:netindo_shop/pages/widget/product/by_category/product_by_category_widget.dart';
-import 'file:///E:/NETINDO/netindo_shop/lib/pages/widget/product/detail/detail_product_widget.dart';
 import 'package:netindo_shop/pages/widget/product/cart/cart_widget.dart';
+import 'package:netindo_shop/pages/widget/product/detail/detail_product_widget.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {

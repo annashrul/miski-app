@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/light_color.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/address/provinsi_model.dart';
@@ -47,7 +45,6 @@ class _ModalProvinsiWidgetState extends State<ModalProvinsiWidget> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     print("ID PROVINSI ${widget.id}");
     isLoadingProv=true;

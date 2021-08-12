@@ -7,17 +7,15 @@ import 'package:netindo_shop/helper/home/function_home.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/promo/global_promo_model.dart';
 import 'package:netindo_shop/model/slider/ListSliderModel.dart';
-import 'package:netindo_shop/model/tenant/listGroupProductModel.dart';
 import 'package:netindo_shop/model/tenant/list_product_tenant_model.dart';
-import 'package:netindo_shop/pages/component/main_component.dart';
 import 'package:netindo_shop/pages/widget/product/filter_product_slider_widget.dart';
 import 'package:netindo_shop/pages/widget/product/product_grid_widget.dart';
 import 'package:netindo_shop/pages/widget/promo/detail_promo_widget.dart';
 import 'package:netindo_shop/pages/widget/searchbar_widget.dart';
 import 'package:netindo_shop/pages/widget/slider_widget.dart';
-import 'package:netindo_shop/views/widget/empty_widget.dart';
-import 'package:netindo_shop/views/widget/loading_widget.dart';
-import 'package:netindo_shop/views/widget/refresh_widget.dart';
+import '../../widget/empty_widget.dart';
+import '../../widget/loading_widget.dart';
+import '../../widget/refresh_widget.dart';
 import 'package:sticky_headers/sticky_headers/widget.dart';
 
 // ignore: must_be_immutable
@@ -88,7 +86,6 @@ class _HomeComponentState extends State<HomeComponent>{
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     controller = new ScrollController()..addListener(_scrollListener);
     loadSlider();
@@ -98,7 +95,6 @@ class _HomeComponentState extends State<HomeComponent>{
   }
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     controller.removeListener(_scrollListener);
   }

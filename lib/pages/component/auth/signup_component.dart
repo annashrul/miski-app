@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/config/string_config.dart';
+import 'package:netindo_shop/helper/bezier.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/screen_util_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/model/auth/otp_model.dart';
-import 'package:netindo_shop/model/general_model.dart';
 import 'package:netindo_shop/pages/component/auth/signin_component.dart';
 import 'package:netindo_shop/pages/widget/secure_code_widget.dart';
-import 'package:netindo_shop/provider/base_provider.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
-import 'package:netindo_shop/views/screen/auth/secure_code_screen.dart';
-import 'package:netindo_shop/views/screen/auth/signin_screen.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 class SignUpComponent extends StatefulWidget {
@@ -22,8 +17,6 @@ class SignUpComponent extends StatefulWidget {
 }
 
 class _SignUpComponentState extends State<SignUpComponent> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  bool _showPassword = false,_showConfPassword=false;
   var _noHpController = TextEditingController();
   var _nameController = TextEditingController();
   var _emailController = TextEditingController();
@@ -314,7 +307,7 @@ class _SignUpComponentState extends State<SignUpComponent> {
       textInputAction: textInputAction,
       inputFormatters: <TextInputFormatter>[
         if(textInputType == TextInputType.number) LengthLimitingTextInputFormatter(13),
-        if(textInputType == TextInputType.number) WhitelistingTextInputFormatter.digitsOnly
+        if(textInputType == TextInputType.number) FilteringTextInputFormatter.digitsOnly
       ],
       onSubmitted: (e)=>onSubmitted(e),
 

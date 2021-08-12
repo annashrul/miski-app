@@ -15,17 +15,8 @@ class DatabaseConfig {
   DatabaseConfig._singleton();
   final tables = [
     UserQuery.CREATE_TABLE,
-    SiteQuery.CREATE_TABLE,
-    TenantQuery.CREATE_TABLE,
     ProductQuery.CREATE_TABLE,
-    CategoryQuery.CREATE_TABLE,
-    GroupQuery.CREATE_TABLE,
-    BrandQuery.CREATE_TABLE,
-    TicketQuery.CREATE_TABLE,
-    SearchingQuery.CREATE_TABLE,
-    ProvinceQuery.CREATE_TABLE,
-    CityQuery.CREATE_TABLE,
-    DistrictQuery.CREATE_TABLE,
+
   ];
 
   Future<Database> openDB() async {
@@ -68,19 +59,19 @@ class DatabaseConfig {
     }
     return result.toList();
   }
-  Future<List> getDataWhere(String tableName,String id_tenant,String id_product) async {
+  Future<List> getDataWhere(String tableName,String idTenant,String idProduct) async {
     final db = await openDB();
-    var result = await db.rawQuery('SELECT * FROM $tableName WHERE id_tenant=? and id_product=?',[id_tenant,id_product]);
+    var result = await db.rawQuery('SELECT * FROM $tableName WHERE id_tenant=? and id_product=?',[idProduct,idTenant]);
     return result.toList();
   }
-  Future<List> getDataByTenant(String tableName,String id_tenant) async {
+  Future<List> getDataByTenant(String tableName,String idTenant) async {
     final db = await openDB();
-    var result = await db.rawQuery('SELECT * FROM $tableName WHERE id_tenant=?',[id_tenant]);
+    var result = await db.rawQuery('SELECT * FROM $tableName WHERE id_tenant=?',[idTenant]);
     return result.toList();
   }
-  Future<List> getDataByTenantLimit(String tableName,String id_tenant, String limit) async {
+  Future<List> getDataByTenantLimit(String tableName,String idTenant, String limit) async {
     final db = await openDB();
-    var result=  await db.rawQuery('SELECT * FROM $tableName WHERE id_tenant=? and kelompok LIKE "%Celana Dalam%"  LIMIT $limit',[id_tenant]);
+    var result=  await db.rawQuery('SELECT * FROM $tableName WHERE id_tenant=? and kelompok LIKE "%Celana Dalam%"  LIMIT $limit',[idTenant]);
     return result.toList();
   }
   Future<List<Map<String, dynamic>>> getRow(String sql, [List<dynamic> arguments])async{
@@ -89,9 +80,9 @@ class DatabaseConfig {
     return result.toList();
   }
 
-  Future<List> readData(String table,String id_tenant, {List colWhere,List valWhere,limit='',String param='LIKE'}) async {
+  Future<List> readData(String table,String idTenant, {List colWhere,List valWhere,limit='',String param='LIKE'}) async {
     final db = await openDB();
-    var result=await db.rawQuery("SELECT * FROM $table WHERE id_tenant=?",[id_tenant]);
+    var result=await db.rawQuery("SELECT * FROM $table WHERE id_tenant=?",[idTenant]);
     var buffer = StringBuffer();
     String separator = ""; // Avoid leading comma.
     String sp = 'LIKE ';
@@ -105,7 +96,7 @@ class DatabaseConfig {
           }
           var loc = buffer.toString();
           print(loc);
-          result = await db.rawQuery('SELECT * FROM $table WHERE id_tenant=? and $loc',[id_tenant]);
+          result = await db.rawQuery('SELECT * FROM $table WHERE id_tenant=? and $loc',[idTenant]);
           // print('SELECT * FROM $table WHERE id_tenant=? and $loc LIMIT $limit');
         }
         if(colWhere.length>0){
@@ -115,16 +106,16 @@ class DatabaseConfig {
             separator= " and ";
           }
           var loc = buffer.toString();
-          result = await db.rawQuery('SELECT * FROM $table WHERE id_tenant=? and $loc',[id_tenant]);
+          result = await db.rawQuery('SELECT * FROM $table WHERE id_tenant=? and $loc',[idTenant]);
         }
     }
 
     if(param=='BETWEEN'){
       print('SELECT * FROM $table WHERE id_tenant=? and harga BETWEEN CAST(${colWhere[0]} as INTEGER) and CAST(${colWhere[1]} as INTEGER)');
-      result = await db.rawQuery('SELECT * FROM $table WHERE id_tenant=? and harga BETWEEN CAST(${colWhere[0]} as INTEGER) and CAST(${colWhere[1]} as INTEGER)',[id_tenant]);
+      result = await db.rawQuery('SELECT * FROM $table WHERE id_tenant=? and harga BETWEEN CAST(${colWhere[0]} as INTEGER) and CAST(${colWhere[1]} as INTEGER)',[idTenant]);
     }
     if(limit!=''){
-      result = await db.rawQuery('SELECT * FROM $table WHERE id_tenant=? LIMIT $limit',[id_tenant]);
+      result = await db.rawQuery('SELECT * FROM $table WHERE id_tenant=? LIMIT $limit',[idTenant]);
     }
     return result.toList();
   }
@@ -231,19 +222,19 @@ class DatabaseConfig {
     }
   }
 
-  Future<List> getWhereFavorite(String tableName,String id_tenant,String id_product,String id_user) async {
+  Future<List> getWhereFavorite(String tableName,String idTenant,String idProduct,String idUser) async {
     final db = await openDB();
-    var result = await db.rawQuery('SELECT * FROM $tableName WHERE id_tenant=? and id_product=? and id_user=?',[id_tenant,id_product,id_user]);
+    var result = await db.rawQuery('SELECT * FROM $tableName WHERE id_tenant=? and id_product=? and id_user=?',[idTenant,idProduct,idUser]);
     return result.toList();
   }
-  Future<List> getDataByUser(String tableName,String id_user) async {
+  Future<List> getDataByUser(String tableName,String idUser) async {
     final db = await openDB();
-    var result = await db.rawQuery('SELECT * FROM $tableName WHERE id_user=?',[id_user]);
+    var result = await db.rawQuery('SELECT * FROM $tableName WHERE id_user=?',[idUser]);
     return result.toList();
   }
-  Future<List> getWhereByTenant(String tableName,String id_tenant,String column,String value) async {
+  Future<List> getWhereByTenant(String tableName,String idTenant,String column,String value) async {
     final db = await openDB();
-    var result = await db.rawQuery('SELECT * FROM $tableName WHERE $column=? and id_tenant=?',[value,id_tenant]);
+    var result = await db.rawQuery('SELECT * FROM $tableName WHERE $column=? and id_tenant=?',[value,idTenant]);
     return result.toList();
   }
   Future<List> getWhere(String tableName,String column,String value,String limit,{orderBy=''}) async {

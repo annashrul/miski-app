@@ -1,15 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
-import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/model/history/history_transaction_model.dart';
-import 'package:netindo_shop/pages/widget/drawer_widget.dart';
 import 'package:netindo_shop/pages/widget/history/history_order_widget.dart';
-import 'package:netindo_shop/provider/handle_http.dart';
-import 'package:netindo_shop/views/widget/empty_widget.dart';
-import 'package:netindo_shop/views/widget/loading_widget.dart';
 
 // ignore: must_be_immutable
 class HistoryOrderComponent extends StatefulWidget {
@@ -24,7 +17,6 @@ class _HistoryOrderComponentState extends State<HistoryOrderComponent> {
   int status=5;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     status=widget.currentTab;
   }

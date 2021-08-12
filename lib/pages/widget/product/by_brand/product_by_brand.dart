@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/review/review_model.dart';
@@ -10,8 +9,8 @@ import 'package:netindo_shop/pages/widget/brand/brand_product_tab_widget.dart';
 import 'package:netindo_shop/pages/widget/drawer_widget.dart';
 import 'package:netindo_shop/pages/widget/review/review_widget.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
-import 'package:netindo_shop/views/widget/empty_widget.dart';
-import 'package:netindo_shop/views/widget/loading_widget.dart';
+import '../../empty_widget.dart';
+import '../../loading_widget.dart';
 
 class ProductByBrand extends StatefulWidget {
   final dynamic data;

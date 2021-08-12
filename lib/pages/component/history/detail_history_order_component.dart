@@ -5,15 +5,11 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/light_color.dart';
-import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
-import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/skeleton_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/checkout/resi_model.dart';
-import 'package:netindo_shop/model/history/detail_history_transaction_model.dart';
 import 'package:netindo_shop/model/history/order/detail_history_order_model.dart';
 import 'package:netindo_shop/pages/widget/history/history_modal_option_widget.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
@@ -52,7 +48,6 @@ class _DetailHistoryOrderComponentState extends State<DetailHistoryOrderComponen
   }
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     isLoading=true;
     loadData();
@@ -176,7 +171,7 @@ class _DetailHistoryOrderComponentState extends State<DetailHistoryOrderComponen
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 config.MyFont.subtitle(context: context,text:"${detailHistoryOrderModel.result.resi=="-"?"-":detailHistoryOrderModel.result.resi}"),
-                                if(detailHistoryOrderModel.result.resi!="-")Icon(Ionicons.ios_copy, color:LightColor.lightblack,size: scaler.getTextSize(9),),
+                                if(detailHistoryOrderModel.result.resi!="-")WidgetHelper().icons(ctx: context,icon:Ionicons.ios_copy ),
                               ],
                             ),
                           ],
@@ -250,7 +245,6 @@ class _DetailHistoryOrderComponentState extends State<DetailHistoryOrderComponen
   }
 
   Widget buildItem(BuildContext context){
-    final scaler=config.ScreenScale(context).scaler;
     var width = MediaQuery.of(context).size.width;
     return Container(
       padding: const EdgeInsets.only(left: 0,right:0,top:10,bottom:0),

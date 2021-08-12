@@ -41,7 +41,6 @@ class _HelpSupportComponentState extends State<HelpSupportComponent> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     loadDataCategory();

@@ -9,7 +9,6 @@ import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/pages/widget/upload_image_widget.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
-import 'package:netindo_shop/views/screen/checkout/detail_checkout_screen.dart';
 
 class SuccessCheckoutComponent extends StatefulWidget {
   final Map<String,Object> data;

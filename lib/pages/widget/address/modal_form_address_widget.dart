@@ -5,32 +5,13 @@ import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/model/address/detail_address_model.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_icons/flutter_icons.dart';
-import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:netindo_shop/config/light_color.dart';
-import 'package:netindo_shop/config/site_config.dart';
-import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/user_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/model/address/detail_address_model.dart';
-import 'package:netindo_shop/model/address/kecamatan_model.dart';
-import 'package:netindo_shop/model/address/kota_model.dart';
-import 'package:netindo_shop/model/address/list_address_model.dart';
-import 'package:netindo_shop/model/address/provinsi_model.dart';
-import 'package:netindo_shop/model/general_model.dart';
 import 'package:netindo_shop/pages/widget/address/modal_kecamatan_widget.dart';
 import 'package:netindo_shop/pages/widget/address/modal_kota_widget.dart';
 import 'package:netindo_shop/pages/widget/address/modal_provinsi_widget.dart';
-import 'package:netindo_shop/provider/base_provider.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
-import 'package:netindo_shop/views/screen/address/address_screen.dart';
-import 'package:netindo_shop/views/widget/empty_widget.dart';
-import 'package:netindo_shop/views/widget/loading_widget.dart';
-import 'package:netindo_shop/views/widget/timeout_widget.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 // ignore: must_be_immutable
 class ModalFormAddressWidget extends StatefulWidget {
   String id;
@@ -103,9 +84,9 @@ class _ModalFormAddressWidgetState extends State<ModalFormAddressWidget> {
     var valid = await validate();
     if(valid==true){
       WidgetHelper().loadingDialog(context);
-      final id_member = await UserHelper().getDataUser("id_user");
+      final idMember = await UserHelper().getDataUser("id_user");
       final data={
-        "id_member":"$id_member",
+        "id_member":"$idMember",
         "title":"${titleController.text}",
         "penerima":"${receiverController.text}",
         "main_address":"$namaJalan,$rt,$rw,$keluarahan,$districtName,$cityName,$provName,$kodePos".toUpperCase(),
@@ -114,13 +95,8 @@ class _ModalFormAddressWidgetState extends State<ModalFormAddressWidget> {
         "kd_kec":"$district",
         "no_hp":"${telpController.text}"
       };
-      var res = await BaseProvider().postProvider("member_alamat",data);
-      if(res==SiteConfig().errTimeout||res==SiteConfig().errSocket){
-        Navigator.pop(context);
-        Navigator.pop(context);
-        widget.callback('gagal');
-      }
-      else{
+      var res = await HandleHttp().postProvider("member_alamat",data,context: context);
+      if(res!=null){
         Navigator.pop(context);
         Navigator.pop(context);
         widget.callback('berhasil');
@@ -140,31 +116,20 @@ class _ModalFormAddressWidgetState extends State<ModalFormAddressWidget> {
         "kd_kec":"$district",
         "no_hp":"${telpController.text}"
       };
-      var res = await BaseProvider().putProvider("member_alamat/${widget.id}", data);
-      if(res==SiteConfig().errTimeout||res==SiteConfig().errSocket){
-        Navigator.pop(context);
-        Navigator.pop(context);
-        widget.callback('gagal');
-      }
-      else{
+      var res = await HandleHttp().putProvider("member_alamat/${widget.id}", data,context: context);
+      if(res!=null){
         Navigator.pop(context);
         Navigator.pop(context);
         widget.callback('berhasil');
       }
+
     }
   }
   DetailAddressModel detailAddressModel;
   Future getDetail()async{
-    var res = await BaseProvider().getProvider("member_alamat/${widget.id}", detailAddressModelFromJson);
-    if(res==SiteConfig().errSocket||res==SiteConfig().errTimeout){
-      setState(() {
-        isLoading=false;
-        isError=true;
-      });
-    }
-    else{
+    var res = await HandleHttp().getProvider("member_alamat/${widget.id}", detailAddressModelFromJson,context: context);
+    if(res!=null){
       if(res is DetailAddressModel){
-
         DetailAddressModel result=res;
         String mainAdd=result.result.mainAddress;
         print(mainAdd);
@@ -200,7 +165,6 @@ class _ModalFormAddressWidgetState extends State<ModalFormAddressWidget> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     if(widget.id!=''){
       isLoading=true;
@@ -437,7 +401,7 @@ class _ModalFormAddressWidgetState extends State<ModalFormAddressWidget> {
             onChanged: (e)=>onChange(e),
             inputFormatters: <TextInputFormatter>[
               if(textInputType == TextInputType.number) LengthLimitingTextInputFormatter(13),
-              if(textInputType == TextInputType.number) WhitelistingTextInputFormatter.digitsOnly
+              if(textInputType == TextInputType.number) FilteringTextInputFormatter.digitsOnly
             ],
           )
         ],
@@ -445,24 +409,5 @@ class _ModalFormAddressWidgetState extends State<ModalFormAddressWidget> {
     );
   }
 
-  Widget tempAdd(String title,bool isErr,Function callback){
-    ScreenScaler scaler = ScreenScaler()..init(context);
-    return WidgetHelper().animShakeWidget(
-        context,
-        Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).focusColor.withOpacity(0.1),
-            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-          ),
-          padding: EdgeInsets.only(left:10.0,right:10.0,top:0),
-          child: ListTile(
-            onTap: callback,
-            contentPadding: EdgeInsets.all(0.0),
-            title: WidgetHelper().textQ("$title",scaler.getTextSize(9),LightColor.black,FontWeight.normal),
-            trailing: Icon(Icons.arrow_right,size: scaler.getTextSize(9),color: LightColor.black),
-          ),
-        ),
-        enable: isErr
-    );
-  }
+
 }

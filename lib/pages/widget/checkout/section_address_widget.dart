@@ -3,7 +3,6 @@ import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/pages/component/address/address_component.dart';
-import 'package:netindo_shop/views/screen/address/address_screen.dart';
 
 // ignore: must_be_immutable
 class SectionAddressWidget extends StatefulWidget {

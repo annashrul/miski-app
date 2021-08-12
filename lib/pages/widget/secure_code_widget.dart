@@ -2,13 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import "package:netindo_shop/config/app_config.dart" as config;
-import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/helper/secure_code_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/provider/base_provider.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 // ignore: must_be_immutable
 class SecureCodeWidget extends StatefulWidget {
@@ -51,7 +48,7 @@ class _SecureCodeWidgetState extends State<SecureCodeWidget> {
   bool isLoadingReOtp=false;
   @override
   Widget build(BuildContext context) {
-    String desc = 'Masukan Kode OTP Yang Kami Kirim Melalui Pesan ${widget.desc} Untuk Melanjutkan Ke Halaman Berikutnya ${SiteConfig().showCode?widget.code:''}';
+    String desc = 'Masukan Kode OTP Yang Kami Kirim Melalui Pesan ${widget.desc} Untuk Melanjutkan Ke Halaman Berikutnya ${StringConfig.showCode?widget.code:''}';
     int size = 4;
     if(widget.param!='otp'){
       desc='Masukan PIN Anda Untuk Melanjutkan Ke Halaman Berikutnya';

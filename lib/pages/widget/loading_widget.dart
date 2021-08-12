@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/site_config.dart';
-import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/skeleton_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 
@@ -14,18 +12,11 @@ class LoadingTenant extends StatefulWidget {
 }
 
 class _LoadingTenantState extends State<LoadingTenant> {
-  static bool site=false;
-  Future getSite()async{
-    final res = await FunctionHelper().getSite();
-    setState(() {
-      site = res;
-    });
-  }
+
 
   @override
   void initState() {
     super.initState();
-    getSite();
   }
   @override
   Widget build(BuildContext context) {
@@ -38,7 +29,7 @@ class _LoadingTenantState extends State<LoadingTenant> {
         return WidgetHelper().baseLoading(context,Container(
             padding: EdgeInsets.only(bottom:5.0),
             decoration: BoxDecoration(
-              color:site?Theme.of(context).focusColor.withOpacity(0.1):Colors.white,
+              color:Colors.white,
               // color:Colors.white,
               borderRadius: BorderRadius.circular(4.0),
               // border: Border.all(color: site?Colors.transparent:Colors.grey[200]),
@@ -46,25 +37,6 @@ class _LoadingTenantState extends State<LoadingTenant> {
             width: double.infinity,
             height: 100
         ));
-        return Container(
-          padding: EdgeInsets.only(bottom:5.0),
-          decoration: BoxDecoration(
-            // color: Theme.of(context).focusColor.withOpacity(0.1),
-            // borderRadius: BorderRadius.only(topRight:Radius.circular(10.0),topLeft: Radius.circular(10.0)),
-            // border: Border.all(color: site?Colors.transparent:Colors.grey[200]),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              ClipRRect(
-                borderRadius: BorderRadius.only(topRight:Radius.circular(10.0),topLeft: Radius.circular(10.0)),
-                child: SkeletonFrame(width: double.infinity,height: 100),
-              ),
-
-            ],
-          ),
-        );
       },
       staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
       mainAxisSpacing: 15.0,

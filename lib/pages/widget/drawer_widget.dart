@@ -31,14 +31,12 @@ class _DrawerWidgetState extends State<DrawerWidget> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     loadDataUser();
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Drawer(
       child: ListView(
         children: <Widget>[
@@ -77,11 +75,10 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               color: Theme.of(context).focusColor.withOpacity(1),
             ),
             title: config.MyFont.subtitle(context:context,text: "Notifikasi",color: Theme.of(context).textTheme.caption.color),
-
           ),
           ListTile(
             onTap: () {
-              Navigator.of(context).pushNamed('/${StringConfig.main}', arguments: 0);
+              Navigator.of(context).pushNamed('/${StringConfig.historyOrder}', arguments: 5);
             },
             leading: Icon(
               UiIcons.inbox,

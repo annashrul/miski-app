@@ -27,7 +27,6 @@ class _SectionShippingWidgetState extends State<SectionShippingWidget> {
   String codePromo="-";
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     data = widget.kurir["obj"];
   }
@@ -85,7 +84,6 @@ class _SectionShippingWidgetState extends State<SectionShippingWidget> {
   }
 
   Widget jasaPengiriman(BuildContext context,String title,String desc,Function callback,{bool loading=false}){
-    final scaler = config.ScreenScale(context).scaler;
     return WidgetHelper().myRipple(
       callback: callback,
       child: WidgetHelper().chip(

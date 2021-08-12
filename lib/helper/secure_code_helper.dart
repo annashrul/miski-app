@@ -3,9 +3,8 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
-import 'package:netindo_shop/config/site_config.dart';
+import 'package:netindo_shop/helper/bezier.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/views/screen/auth/signin_screen.dart';
 import "package:netindo_shop/config/app_config.dart" as config;
 
 typedef void DeleteCode();
@@ -233,17 +232,7 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            RichText(
-                                maxLines: 2,
-                                overflow: TextOverflow.clip,
-                                softWrap: true,
-                                textAlign: TextAlign.center,
-                                text: TextSpan(
-                                  text:widget.deskripsi,
-                                  style: TextStyle(fontSize:12,color:SiteConfig().secondColor,fontFamily:SiteConfig().fontStyle,fontWeight:FontWeight.normal),
-                                )
-                            )
-                            // WidgetHelper().textQ(widget.deskripsi,12,Colors.black,FontWeight.bold)
+                            config.MyFont.subtitle(context: context,color: config.Colors.secondColors,text:widget.deskripsi)
                           ],
                         ),
                       ),
@@ -322,9 +311,7 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
         widget.fingerFunction();
       },
       child: Center(
-        // child:RichText(overflow: TextOverflow.ellipsis, text: TextSpan(style: Theme.of(context).textTheme.button, children: [TextSpan(text:widget.forgotPin)])),
-          child:WidgetHelper().textQ(widget.forgotPin, 12,SiteConfig().mainDarkColor,FontWeight.bold)
-        // child: Text(widget.forgotPin,style: TextStyle(fontSize: ScreenUtilQ.getInstance().setSp(26),color:Colors.green,fontFamily:ThaibahFont().fontQ,fontWeight: FontWeight.bold),),
+        child:config.MyFont.subtitle(context: context,color: config.Colors.mainDarkColors,text:widget.forgotPin)
       ),
     );
   }
@@ -348,9 +335,7 @@ class _SecureCodeHelperState extends State<SecureCodeHelper> {
           shape: BoxShape.circle,
         ),
         child: Center(
-          // child:RichText(overflow: TextOverflow.ellipsis, text: TextSpan(style:TextStyle(fontFamily:'Poppins',fontWeight:FontWeight.bold,color:Colors.black,fontSize: 16), children: [TextSpan(text:number.toString())])),
-          child:WidgetHelper().textQ(number.toString(), 16,SiteConfig().mainColor,FontWeight.bold),
-          // child: Text(number.toString(), style: TextStyle(fontFamily:ThaibahFont().fontQ, fontSize:  ScreenUtilQ.getInstance().setSp(40), fontWeight: FontWeight.bold, color: widget.numColor),),
+            child:config.MyFont.title(context: context,color: config.Colors.mainColors,text:number.toString(),fontSize: 10)
         ),
       ),
     );

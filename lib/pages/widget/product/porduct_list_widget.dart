@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/string_config.dart';
-import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 
 class ProductListWidget extends StatelessWidget {

@@ -1,9 +1,7 @@
 import 'dart:math';
 
-import 'package:flutter/material.dart';
-import 'package:netindo_shop/config/site_config.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
-
 
 class BezierContainer extends StatelessWidget {
   const BezierContainer({Key key}) : super(key: key);
@@ -71,7 +69,6 @@ class ClipPainter extends CustomClipper<Path>{
 
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) {
-    // TODO: implement shouldReclip
     return true;
   }
 

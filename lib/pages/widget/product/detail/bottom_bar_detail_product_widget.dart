@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
@@ -10,7 +9,6 @@ class BottomBarDetailProductWidget extends StatelessWidget {
   BottomBarDetailProductWidget({this.callback,this.isFavorite});
   @override
   Widget build(BuildContext context) {
-    final scaler = config.ScreenScale(context).scaler;
     return buildBottomNavigationBar(context);
     // return Container(
     //   padding: scaler.getPadding(0.8,2),

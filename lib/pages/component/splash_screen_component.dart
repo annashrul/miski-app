@@ -71,7 +71,6 @@ class _SplashScreenComponentState extends State<SplashScreenComponent> {
   AssetImage assetImage;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     loadData();
     assetImage = AssetImage("assets/img/splash.gif");

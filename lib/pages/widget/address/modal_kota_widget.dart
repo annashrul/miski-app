@@ -6,6 +6,7 @@ import 'package:netindo_shop/model/address/kota_model.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
+// ignore: must_be_immutable
 class ModalKotaWIdget extends StatefulWidget {
   ModalKotaWIdget({
     Key key,
@@ -48,7 +49,6 @@ class _ModalKotaWIdgetState extends State<ModalKotaWIdget> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     isLoading=true;
     getData();

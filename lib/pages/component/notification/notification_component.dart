@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/notification/list_notification_model.dart';
-import 'package:netindo_shop/pages/widget/searchbar_widget.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
-import 'package:netindo_shop/views/widget/empty_widget.dart';
-import 'package:netindo_shop/views/widget/loading_widget.dart';
+import '../../widget/empty_widget.dart';
+import '../../widget/loading_widget.dart';
 
 class NotificationComponent extends StatefulWidget {
   @override
@@ -66,7 +63,6 @@ class _NotificationComponentState extends State<NotificationComponent> {
   }
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     controller = new ScrollController()..addListener(_scrollListener);
 
@@ -74,7 +70,6 @@ class _NotificationComponentState extends State<NotificationComponent> {
   }
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     controller.removeListener(_scrollListener);
   }

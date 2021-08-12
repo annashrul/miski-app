@@ -7,7 +7,6 @@ import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/tenant/detail_product_tenant_model.dart';
 import 'package:netindo_shop/pages/widget/product/detail/bottom_bar_detail_product_widget.dart';
 import 'package:netindo_shop/pages/widget/product/detail/tab_detail_product_widget.dart';
-import 'package:netindo_shop/pages/widget/user/image_user_widget.dart';
 
 class DetailProductWidget extends StatefulWidget {
   final dynamic data;

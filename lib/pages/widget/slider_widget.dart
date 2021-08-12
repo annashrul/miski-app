@@ -14,7 +14,6 @@ class _SliderWidgetState extends State<SliderWidget> with SingleTickerProviderSt
   int _current = 0;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 

@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/light_color.dart';
-import 'package:netindo_shop/config/site_config.dart';
+import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/address/function_address.dart';
-import 'package:netindo_shop/helper/user_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/address/list_address_model.dart';
 import 'package:netindo_shop/model/general_model.dart';
 import 'package:netindo_shop/pages/widget/address/modal_form_address_widget.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
-import 'package:netindo_shop/views/widget/empty_widget.dart';
-import 'package:netindo_shop/views/widget/loading_widget.dart';
-import 'package:netindo_shop/views/widget/timeout_widget.dart';
+import '../../widget/empty_widget.dart';
+import '../../widget/loading_widget.dart';
 
 class AddressComponent extends StatefulWidget {
   final Function(dynamic data) callback;
@@ -29,9 +26,8 @@ class _AddressComponentState extends State<AddressComponent> {
   var scaffoldKey = GlobalKey<ScaffoldState>();
   ListAddressModel listAddressModel;
   bool isLoading=false,isLoadmore=false,isError=false;
-  int idx=SiteConfig().noDataCode;
+  int idx=StringConfig.noDataNumber;
   Future loadData()async{
-    final idUser = await UserHelper().getDataUser("id_user");
     var res = await FunctionAddress().loadData(context: context,isChecking: false);
     listAddressModel = res;
     isLoading=false;
@@ -48,7 +44,6 @@ class _AddressComponentState extends State<AddressComponent> {
   }
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     isLoading=true;
     loadData();
@@ -142,7 +137,7 @@ class _AddressComponentState extends State<AddressComponent> {
                                         padding: scaler.getPadding(0,1),
                                         decoration: BoxDecoration(
                                             borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                                            border: Border.all(color: LightColor.mainColor,width: 2)
+                                            border: Border.all(color: config.Colors.mainColors,width: 2)
                                         ),
                                         child: config.MyFont.subtitle(context: context,text:"Utama"),
                                       ):Container()

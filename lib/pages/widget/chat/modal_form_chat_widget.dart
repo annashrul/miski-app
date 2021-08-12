@@ -65,7 +65,6 @@ class _ModalFormChatWidgetState extends State<ModalFormChatWidget> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     loadData();
     titleFocus.requestFocus();
@@ -145,7 +144,6 @@ class _ModalFormChatWidgetState extends State<ModalFormChatWidget> {
                             children: [
                               WidgetHelper().icons(ctx: context,icon: UiIcons.upload),
                               config.MyFont.title(context: context,text:"Lampirkan file"),
-                              // WidgetHelper().textQ("Lampirkan File",10,SiteConfig().darkMode,FontWeight.bold)
                             ],
                           ),
                         ),

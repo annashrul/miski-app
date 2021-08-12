@@ -1,15 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/string_config.dart';
-import 'package:netindo_shop/config/ui_icons.dart';
-import 'package:netindo_shop/helper/detail/function_detail.dart';
-import 'package:netindo_shop/helper/user_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/model/tenant/detail_product_tenant_model.dart';
-import 'package:netindo_shop/pages/widget/product/detail/bottom_bar_detail_product_widget.dart';
-import 'package:netindo_shop/pages/widget/product/detail/tab_detail_product_widget.dart';
 import 'package:netindo_shop/pages/widget/review/form_review_widget.dart';
-import 'package:netindo_shop/pages/widget/user/image_user_widget.dart';
 class DebugPages extends StatefulWidget {
   final List data;
   DebugPages({this.data});
@@ -47,13 +39,7 @@ class _DebugPagesState extends State<DebugPages> {
               child: WidgetHelper().myRating(context:context,rating:res["rating"].toString()),
             ),
           );
-          return WidgetHelper().titleQ(context, res["barang"],
-              image: res["gambar"],
-              subtitle: res["gambar"],
-              callback: (){
-                WidgetHelper().myModal(context, FormReviewWidget(data: res));
-              }
-          );
+         
         },
       ),
     );

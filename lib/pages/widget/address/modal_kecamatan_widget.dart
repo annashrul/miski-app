@@ -50,7 +50,6 @@ class _ModalKecamatanWidgetState extends State<ModalKecamatanWidget> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     isLoading=true;
     getData();

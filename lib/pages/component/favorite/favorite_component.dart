@@ -1,28 +1,18 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/database_helper.dart';
-import 'package:netindo_shop/helper/detail/function_detail.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/model/cart/detail_cart_model.dart';
-import 'package:netindo_shop/model/tenant/detail_product_tenant_model.dart';
-import 'package:netindo_shop/pages/widget/product/detail/bottom_bar_detail_product_widget.dart';
-import 'package:netindo_shop/pages/widget/product/detail/tab_detail_product_widget.dart';
 import 'package:netindo_shop/pages/widget/product/porduct_list_widget.dart';
 import 'package:netindo_shop/pages/widget/product/product_grid_widget.dart';
 import 'package:netindo_shop/pages/widget/searchbar_widget.dart';
-import 'package:netindo_shop/provider/base_provider.dart';
-import 'package:netindo_shop/provider/handle_http.dart';
-import 'package:netindo_shop/views/widget/empty_widget.dart';
-import 'package:netindo_shop/views/widget/loading_widget.dart';
+import '../../widget/empty_widget.dart';
+import '../../widget/loading_widget.dart';
 
 class FavoriteComponent extends StatefulWidget {
   @override
@@ -78,7 +68,6 @@ class _FavoriteComponentState extends State<FavoriteComponent>{
   }
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     controller = new ScrollController()..addListener(_scrollListener);
     isLoading=true;

@@ -17,9 +17,9 @@ class FunctionDetail{
     if(res!=null){
       DetailProductTenantModel result=DetailProductTenantModel.fromJson(res.toJson());
       if(int.parse(result.result.disc1)>0){
-        result.result.harga = FunctionHelper().double_diskon(result.result.harga, ['${result.result.disc1.toString()}','${result.result.disc2.toString()}']).toString();
-        hargaFinish = FunctionHelper().double_diskon(result.result.harga, ['${result.result.disc1.toString()}','${result.result.disc2.toString()}']);
-        hargaMaster = FunctionHelper().double_diskon(result.result.harga, ['${result.result.disc1.toString()}','${result.result.disc2.toString()}']).toString();
+        result.result.harga = FunctionHelper().doubleDiskon(result.result.harga, ['${result.result.disc1.toString()}','${result.result.disc2.toString()}']).toString();
+        hargaFinish = FunctionHelper().doubleDiskon(result.result.harga, ['${result.result.disc1.toString()}','${result.result.disc2.toString()}']);
+        hargaMaster = FunctionHelper().doubleDiskon(result.result.harga, ['${result.result.disc1.toString()}','${result.result.disc2.toString()}']).toString();
       }
 
       hargaMaster = result.result.harga;
@@ -99,7 +99,6 @@ class FunctionDetail{
     };
   }
   Future getQty({dynamic data})async{
-    DetailCartModel detailCartModel;
     var res = await HandleHttp().getProvider('cart/detail/${data["id_tenant"]}/${data["id"]}', detailCartModelFromJson);
     if(res is DetailCartModel){
       DetailCartModel result = DetailCartModel.fromJson(res.toJson());

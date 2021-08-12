@@ -5,7 +5,6 @@ import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/tenant/list_brand_product_model.dart';
-import 'package:netindo_shop/pages/component/brand/brand_component.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
 
 class BrandWidget extends StatefulWidget {
@@ -30,7 +29,6 @@ class _BrandWidgetState extends State<BrandWidget> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     loadData();
   }

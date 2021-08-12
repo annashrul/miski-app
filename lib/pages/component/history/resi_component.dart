@@ -1,20 +1,18 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/site_config.dart';
-import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/checkout/resi_model.dart';
 
-class ResiScreen extends StatefulWidget {
+// ignore: must_be_immutable
+class ResiComponent extends StatefulWidget {
   ResiModel resiModel;
-  ResiScreen({this.resiModel});
+  ResiComponent({this.resiModel});
   @override
-  _ResiScreenState createState() => _ResiScreenState();
+  _ResiComponentState createState() => _ResiComponentState();
 }
 
-class _ResiScreenState extends State<ResiScreen> {
+class _ResiComponentState extends State<ResiComponent> {
   final GlobalKey<AnimatedListState> _listKey = new GlobalKey<AnimatedListState>();
   var scaffoldKey = GlobalKey<ScaffoldState>();
   bool isLoading=false;
@@ -32,7 +30,7 @@ class _ResiScreenState extends State<ResiScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      appBar: WidgetHelper().appBarWithButton(context, "Lacak Resi ${widget.resiModel.result.resi}", (){Navigator.pop(context);},<Widget>[],brightness:Brightness.light),
+      appBar: WidgetHelper().appBarWithButton(context, "Lacak Resi ${widget.resiModel.result.resi}", (){Navigator.pop(context);},<Widget>[]),
       body: Stack(
         children: <Widget>[
           _buildTimeline(),
@@ -154,7 +152,6 @@ class _ResiScreenState extends State<ResiScreen> {
                           padding: const EdgeInsets.only(right: 16.0),
                           child:config.MyFont.subtitle(context: context,text:val.manifestTime,color: Theme.of(context).textTheme.caption.color),
 
-                          // child:WidgetHelper().textQ(val.manifestTime, 12,SiteConfig().secondColor,FontWeight.bold),
                         ),
                       ],
                     ),
@@ -175,10 +172,8 @@ class _ResiScreenState extends State<ResiScreen> {
       left: 20,
       child: new Container(
         width: 1.0,
-        color:SiteConfig().mainColor,
+        color:config.Colors.mainColors,
       ),
     );
   }
 }
-
-

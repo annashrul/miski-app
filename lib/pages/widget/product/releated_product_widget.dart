@@ -6,8 +6,7 @@ import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/tenant/list_product_tenant_model.dart';
 import 'package:netindo_shop/pages/widget/product/porduct_list_widget.dart';
-import 'package:netindo_shop/views/widget/empty_widget.dart';
-import 'package:netindo_shop/views/widget/loading_widget.dart';
+import '../empty_widget.dart';
 
 // ignore: must_be_immutable
 class ReleatedProductWidget extends StatelessWidget {

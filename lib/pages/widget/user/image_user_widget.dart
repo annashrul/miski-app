@@ -13,7 +13,6 @@ class _ImageUserWidgetState extends State<ImageUserWidget> {
   String img="";
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     UserHelper().getDataUser(StringConfig.foto).then((value)=>this.setState(()=>img=value));
 

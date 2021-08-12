@@ -5,10 +5,9 @@ import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/checkout/resi_model.dart';
-import 'package:netindo_shop/pages/component/debug_pages.dart';
+import 'package:netindo_shop/pages/component/history/resi_component.dart';
+import 'package:netindo_shop/pages/widget/review/list_product_review_widget.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
-import 'package:netindo_shop/views/screen/checkout/resi_screen.dart';
-import 'file:///E:/NETINDO/netindo_shop/lib/pages/widget/review/list_product_review_widget.dart';
 
 class HistoryModalOptionWIdget extends StatefulWidget {
   final dynamic val;
@@ -29,7 +28,7 @@ class _HistoryModalOptionWIdgetState extends State<HistoryModalOptionWIdget> {
     if(res!=null){
       Navigator.pop(context);
       setState(() { resiModel = ResiModel.fromJson(res);});
-      WidgetHelper().myPush(context,ResiScreen(resiModel: resiModel));
+      WidgetHelper().myPush(context,ResiComponent(resiModel: resiModel));
     }
   }
   @override
@@ -55,7 +54,7 @@ class _HistoryModalOptionWIdgetState extends State<HistoryModalOptionWIdget> {
             });
           }),
           if(widget.barang.length==1)Divider(),
-          if(val.status==4)buildOption(context: context,title: "Beri ulasan",callback: (){
+          if(val.status!=4)buildOption(context: context,title: "Beri ulasan",callback: (){
             WidgetHelper().myModal(context, ListProductReviewWidget(data: val.toJson()["detail"]));
           }),
           if(val.status==4)Divider(),

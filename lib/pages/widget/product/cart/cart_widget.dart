@@ -7,10 +7,9 @@ import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/cart/cart_model.dart';
 import 'package:netindo_shop/model/general_model.dart';
-import 'package:netindo_shop/provider/base_provider.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
-import 'package:netindo_shop/views/widget/empty_widget.dart';
-import 'package:netindo_shop/views/widget/loading_widget.dart';
+import '../../empty_widget.dart';
+import '../../loading_widget.dart';
 
 class CartWidget extends StatefulWidget {
   @override
@@ -83,7 +82,7 @@ class _CartWidgetState extends State<CartWidget> {
       else{
         url+='cart/$id';
       }
-      final res = await HandleHttp().deleteProvider(url, generalFromJson,context: context);
+      await HandleHttp().deleteProvider(url, generalFromJson,context: context);
       loadCart();
       Navigator.pop(context);
 
@@ -92,7 +91,6 @@ class _CartWidgetState extends State<CartWidget> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     loadCart();
   }
@@ -100,7 +98,6 @@ class _CartWidgetState extends State<CartWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     final scaler = config.ScreenScale(context).scaler;
     return Scaffold(
       appBar: WidgetHelper().appBarWithButton(context, "Keranjang belanja anda",(){}, <Widget>[

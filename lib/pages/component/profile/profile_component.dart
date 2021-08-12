@@ -12,9 +12,7 @@ import 'package:netindo_shop/model/member/detail_member_model.dart';
 import 'package:netindo_shop/pages/component/address/address_component.dart';
 import 'package:netindo_shop/pages/component/help_support/help_support_component.dart';
 import 'package:netindo_shop/pages/widget/profile/form_profile_widget.dart';
-import 'package:netindo_shop/pages/widget/searchbar_widget.dart';
 import 'package:netindo_shop/pages/widget/upload_image_widget.dart';
-import 'package:netindo_shop/pages/widget/user/image_user_widget.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
 
 class ProfileComponent extends StatefulWidget {
@@ -85,7 +83,6 @@ class _ProfileComponentState extends State<ProfileComponent> {
   
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     loadData();
 

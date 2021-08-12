@@ -1,23 +1,16 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/light_color.dart';
 import 'package:netindo_shop/config/string_config.dart';
-import 'package:netindo_shop/config/ui_icons.dart';
-import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/model/history/history_transaction_model.dart';
 import 'package:netindo_shop/model/history/order/history_order_model.dart';
 import 'package:netindo_shop/pages/widget/history/history_modal_option_widget.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
-import 'package:netindo_shop/views/widget/empty_widget.dart';
-import 'package:netindo_shop/views/widget/loading_widget.dart';
-import 'package:netindo_shop/views/widget/review/form_review_widget.dart';
+import '../empty_widget.dart';
+import '../loading_widget.dart';
 
 // ignore: must_be_immutable
 class HistoryOrderWidget extends StatefulWidget {
@@ -83,7 +76,6 @@ class _HistoryOrderWidgetState extends State<HistoryOrderWidget> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     loadHistory();
     initializeDateFormatting('id');
@@ -95,7 +87,6 @@ class _HistoryOrderWidgetState extends State<HistoryOrderWidget> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     controller.removeListener(_scrollListener);
   }

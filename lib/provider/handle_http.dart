@@ -3,12 +3,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' show Client;
-import 'package:netindo_shop/config/site_config.dart';
 import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/user_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/model/general_model.dart';
 
 class HandleHttp{
   Client client = Client();
@@ -22,11 +20,11 @@ class HandleHttp{
       final token= await userRepository.getDataUser(StringConfig.token);
       Map<String, String> head={
         'Authorization':token,
-        'username': SiteConfig().username,
-        'password': SiteConfig().password,
-        'myconnection':SiteConfig().connection,
+        'username': StringConfig.username,
+        'password': StringConfig.password,
+        'myconnection':StringConfig.connection,
       };
-      final response = await client.get("${SiteConfig().baseUrl}$url", headers:head).timeout(Duration(seconds: SiteConfig().timeout));
+      final response = await client.get("${StringConfig.baseUrl}$url", headers:head).timeout(Duration(seconds: StringConfig.timeout));
       final jsonResponse = json.decode(response.body);
       print("=================== SUCCESS $url = ${jsonResponse['result']} ==========================");
       if (response.statusCode == 200) {
@@ -34,12 +32,12 @@ class HandleHttp{
           return param==null?response.body:param(response.body);
         }else{
           print("=================== GET DATA $url = NODATA ============================");
-          return SiteConfig().errNoData;
+          return StringConfig.errNoData;
         }
       }
       else if(response.statusCode == 400){
         if(jsonResponse['msg']=='Invalid Token.'){
-          return WidgetHelper().notifOneBtnDialog(context,SiteConfig().titleErrToken,SiteConfig().descErrToken,()async{
+          return WidgetHelper().notifOneBtnDialog(context,StringConfig.titleErrToken,StringConfig.descErrToken,()async{
             Navigator.pop(context);
             await FunctionHelper().logout(context);
           });
@@ -61,7 +59,7 @@ class HandleHttp{
       print("###################################### GET SocketException $url ");
       return Navigator.pushNamed(context, "error");
     } on Error catch (e) {
-      print("###################################### GET Error $url ");
+      print("###################################### GET Error $url $e ");
       return WidgetHelper().showFloatingFlushbar(context, "failed", StringConfig.errSyntax);
     } catch(_){
       return WidgetHelper().showFloatingFlushbar(context, "failed", StringConfig.errSyntax);
@@ -72,16 +70,16 @@ class HandleHttp{
     try {
       final token= await userRepository.getDataUser(StringConfig.token);
       final request = await client.post(
-          "${SiteConfig().baseUrl}$url",
+          "${StringConfig.baseUrl}$url",
           headers: {
             'Authorization':token,
-            'username': SiteConfig().username,
-            'password': SiteConfig().password,
-            'myconnection':SiteConfig().connection,
+            'username': StringConfig.username,
+            'password': StringConfig.password,
+            'myconnection':StringConfig.connection,
             "HttpHeaders.contentTypeHeader": "application/json"
           },
           body:data
-      ).timeout(Duration(seconds: SiteConfig().timeout));
+      ).timeout(Duration(seconds: StringConfig.timeout));
       if(request.statusCode==200){
         print("=================== POST DATA 200 $url = ${json.decode(request.body)} ============================");
         return json.decode(request.body);
@@ -106,7 +104,7 @@ class HandleHttp{
       return WidgetHelper().showFloatingFlushbar(context, "failed", StringConfig.msgConnection);
     }
     on Error catch (e) {
-      print("###################################### GET Error $url ");
+      print("###################################### GET Error $url $e ");
       Navigator.pop(context);
       return WidgetHelper().showFloatingFlushbar(context, "failed", StringConfig.errSyntax);
     }
@@ -116,12 +114,12 @@ class HandleHttp{
       final token= await userRepository.getDataUser('token');
       Map<String, String> head={
         'Authorization':token,
-        'username': SiteConfig().username,
-        'password': SiteConfig().password,
-        'myconnection':SiteConfig().connection,
+        'username': StringConfig.username,
+        'password': StringConfig.password,
+        'myconnection':StringConfig.connection,
         "HttpHeaders.contentTypeHeader": "application/json"
       };
-      final request = await client.put("${SiteConfig().baseUrl}$url", headers:head, body:data).timeout(Duration(seconds: SiteConfig().timeout));
+      final request = await client.put("${StringConfig.baseUrl}$url", headers:head, body:data).timeout(Duration(seconds: StringConfig.timeout));
       print("=================== PUT DATA $url = ${request.statusCode} ============================");
       if(request.statusCode==200){
         return {"statusCode":request.statusCode,"data":jsonDecode(request.body)};
@@ -150,7 +148,7 @@ class HandleHttp{
       Navigator.pop(context);
       return WidgetHelper().showFloatingFlushbar(context, "failed", StringConfig.msgConnection);
     } on Error catch (e) {
-      print("###################################### GET Error $url ");
+      print("###################################### GET Error $url $e ");
       Navigator.pop(context);
       return WidgetHelper().showFloatingFlushbar(context, "failed", StringConfig.errSyntax);
     }
@@ -160,16 +158,16 @@ class HandleHttp{
       final token= await userRepository.getDataUser('token');
       Map<String, String> head={
         'Authorization':token,
-        'username': SiteConfig().username,
-        'password': SiteConfig().password,
-        'myconnection':SiteConfig().connection,
+        'username': StringConfig.username,
+        'password': StringConfig.password,
+        'myconnection':StringConfig.connection,
         // "HttpHeaders.contentTypeHeader": "application/json"
       };
-      String baseUrl = "${SiteConfig().baseUrl}$url";
+      String baseUrl = "${StringConfig.baseUrl}$url";
       final request = await client.delete(
         baseUrl,
         headers: head,
-      ).timeout(Duration(seconds: SiteConfig().timeout));
+      ).timeout(Duration(seconds: StringConfig.timeout));
       if(request.statusCode==200){
         Navigator.pop(context);
         WidgetHelper().showFloatingFlushbar(context, "success","data berhasil dihapus");
@@ -194,7 +192,7 @@ class HandleHttp{
       Navigator.pop(context);
       return WidgetHelper().showFloatingFlushbar(context, "failed", StringConfig.msgConnection);
     } on Error catch (e) {
-      print("###################################### GET Error $url ");
+      print("###################################### GET Error $url $e ");
       Navigator.pop(context);
       return WidgetHelper().showFloatingFlushbar(context, "failed", StringConfig.errSyntax);
     }
