@@ -9,7 +9,6 @@ import 'package:netindo_shop/model/promo/detail_global_promo_model.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
 import '../empty_widget.dart';
 
-import '../drawer_widget.dart';
 
 class DetailPromoWidget extends StatefulWidget {
   final String id;
@@ -62,7 +61,6 @@ class _DetailPromoWidgetState extends State<DetailPromoWidget>  with SingleTicke
 
     return Scaffold(
       key: _scaffoldKey,
-      drawer: DrawerWidget(),
       bottomNavigationBar:  !isLoading&&detailGlobalPromoModel.result.isVoucher==1?Padding(
       padding: EdgeInsets.all(10),
       child:  Row(

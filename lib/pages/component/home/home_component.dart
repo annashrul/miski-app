@@ -142,7 +142,7 @@ class _HomeComponentState extends State<HomeComponent>{
               padding: scaler.getPadding(1,2),
               child: Wrap(
                 children: [
-                  WidgetHelper().titleQ(context,"Barang pilihan untuk kamu",icon: UiIcons.heart,padding: scaler.getPaddingLTRB(0,0,0,0.5),),
+                  WidgetHelper().titleQ(context,"Barang pilihan untuk kamu",icon: UiIcons.heart,padding: scaler.getPaddingLTRB(0,0,0,1),),
                   isLoadingProduct?LoadingProductTenant(tot: 10,):listProductTenantModel.result.data.length<1?Container(height:scaler.getHeight(30),child:EmptyTenant()):new StaggeredGridView.countBuilder(
                     primary: false,
                     shrinkWrap: true,
@@ -168,9 +168,10 @@ class _HomeComponentState extends State<HomeComponent>{
                     crossAxisSpacing: 15.0,
                   ),
                   isLoadmore?Container(
-                    padding: scaler.getPaddingLTRB(0,0,0,0.5),
-                    child: LoadingProductTenant(tot: 4),
-                  ):Container(),
+                    alignment: Alignment.center,
+                    padding: scaler.getPaddingLTRB(0,0,0,1),
+                    child: CircularProgressIndicator(backgroundColor: config.Colors.mainColors,color:config.Colors.secondColors,),
+                  ):SizedBox(),
                 ],
               ),
             ),
@@ -199,91 +200,76 @@ class _HomeComponentState extends State<HomeComponent>{
           context: context,height: 10,width: 30
       ),
     )): globalPromoModel.result.data.length<1?SizedBox():Container(
-      padding: scaler.getPaddingLTRB(0,0,0,1),
-      height: 200.0,
+      padding: scaler.getPaddingLTRB(2,0,2,1),
+      height: scaler.getHeight(15),
       child: Column(
         children: <Widget>[
-          Padding(
-            padding: scaler.getPaddingLTRB(1,0,1,0),
-            child:  Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                WidgetHelper().icons(ctx: context,icon:Icons.arrow_downward),
-                config.MyFont.title(context: context,text:"Promo spesial untuk kamu"),
-                WidgetHelper().icons(ctx: context,icon:Icons.arrow_downward),
-              ],
-            ),
-          ),
-          SizedBox(height: scaler.getHeight(0.5)),
+          WidgetHelper().titleQ(context,"Promo spesial untuk kamu",icon: UiIcons.speakers,padding: scaler.getPaddingLTRB(0,0,0,1),),
           Flexible(
             child: ListView.builder(
-              padding: EdgeInsets.all(10),
+              padding: EdgeInsets.all(0),
               shrinkWrap: true,
               scrollDirection: Axis.horizontal,
               itemCount: globalPromoModel.result.data.length ,
               itemBuilder: (context, index){
-                return WidgetHelper().myRipple(
-                  callback: (){
-                    WidgetHelper().myPush(context,DetailPromoWidget(id: globalPromoModel.result.data[index].id));
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.only(right: 10.0),
-                    padding: const EdgeInsets.all(10.0),
-                    width: MediaQuery.of(context).size.width / 1.2,
-                    decoration: BoxDecoration(
-                      // color: Colors.orange[100],
-                      border: Border.all(color: config.Colors.mainColors, width: 2.0),
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Flexible(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Padding(
-                                padding:scaler.getPadding(0,0),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    config.MyFont.subtitle(context: context,text:globalPromoModel.result.data[index].title,color: Theme.of(context).textTheme.headline6.color,fontWeight: FontWeight.bold,maxLines: 2),
-                                    config.MyFont.subtitle(context: context,text:globalPromoModel.result.data[index].deskripsi,color: Theme.of(context).textTheme.bodyText1.color,fontSize: 8,maxLines: 2),
-
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding:scaler.getPadding(0,0),
-                                child: WidgetHelper().myRipple(
-                                  callback: (){WidgetHelper().myPush(context,DetailPromoWidget(id: globalPromoModel.result.data[index].id));},
-                                  child: config.MyFont.subtitle(context: context,text:"lihat promo",color: config.Colors.mainColors),
-                                ),
-                              )
-
-                            ],
-                          ),
+                return Container(
+                  margin: scaler.getMarginLTRB(0, 0, 1, 0),
+                  child: WidgetHelper().myRipple(
+                      callback: (){
+                        WidgetHelper().myPush(context,DetailPromoWidget(id: globalPromoModel.result.data[index].id));
+                      },
+                      child: Container(
+                        padding: scaler.getPadding(0, 2),
+                        width: MediaQuery.of(context).size.width / 1.2,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: config.Colors.mainColors, width: 2.0),
+                          borderRadius: BorderRadius.circular(10.0),
                         ),
-                        Hero(
-                          tag: "${globalPromoModel.result.data[index].title}${globalPromoModel.result.data[index].id}",
-                          child:WidgetHelper().baseImage(
-                              globalPromoModel.result.data[index].gambar,
-                              height: scaler.getHeight(9),
-                              width: scaler.getWidth(22),
-                            shape: BoxShape.circle
-                          )
-                          // child: Image.network(
-                          //   StringConfig.noImage,
-                          //   height: 90.0,
-                          //   width: 90.0,
-                          // ),
-                        )
-                      ],
-                    ),
-                  )
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Flexible(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Padding(
+                                    padding:scaler.getPadding(0,0),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        config.MyFont.subtitle(context: context,text:globalPromoModel.result.data[index].title,color: Theme.of(context).textTheme.headline6.color,fontWeight: FontWeight.bold,maxLines: 2),
+                                        config.MyFont.subtitle(context: context,text:globalPromoModel.result.data[index].deskripsi,color: Theme.of(context).textTheme.bodyText1.color,fontSize: 8,maxLines: 2),
+
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding:scaler.getPadding(0,0),
+                                    child: WidgetHelper().myRipple(
+                                      callback: (){WidgetHelper().myPush(context,DetailPromoWidget(id: globalPromoModel.result.data[index].id));},
+                                      child: config.MyFont.subtitle(context: context,text:"lihat promo",color: config.Colors.mainColors),
+                                    ),
+                                  )
+
+                                ],
+                              ),
+                            ),
+                            Hero(
+                                tag: "${globalPromoModel.result.data[index].title}${globalPromoModel.result.data[index].id}",
+                                child:WidgetHelper().baseImage(
+                                    globalPromoModel.result.data[index].gambar,
+                                    height: scaler.getHeight(9),
+                                    width: scaler.getWidth(15),
+                                    shape: BoxShape.circle
+                                )
+
+                            )
+                          ],
+                        ),
+                      )
+                  ),
                 );
               }
             ),

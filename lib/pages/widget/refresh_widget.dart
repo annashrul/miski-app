@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 
+// ignore: must_be_immutable
 class RefreshWidget extends StatefulWidget {
   Widget widget;
   Function() callback;

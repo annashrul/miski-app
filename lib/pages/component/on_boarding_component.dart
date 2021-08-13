@@ -15,10 +15,10 @@ class _OnBoardingComponentState extends State<OnBoardingComponent> {
   List resOnboarding=[];
   Future loadOnboarding()async{
     print("LOAD ONBOARDING");
-    resOnboarding.add({"image": 'img/onboarding0.png', "description": 'Don\'t cry because it\'s over, smile because it happened.'});
-    resOnboarding.add({"image": 'img/onboarding1.png', "description": 'Be yourself, everyone else is already taken.'});
-    resOnboarding.add({"image": 'img/onboarding2.png', "description": 'So many books, so little time.'});
-    resOnboarding.add({"image": 'img/onboarding3.png', "description": 'A room without books is like a body without a soul.'});
+    resOnboarding.add({"image": 'assets/img/onboarding0.png', "description": 'Don\'t cry because it\'s over, smile because it happened.'});
+    resOnboarding.add({"image": 'assets/img/onboarding1.png', "description": 'Be yourself, everyone else is already taken.'});
+    resOnboarding.add({"image": 'assets/img/onboarding2.png', "description": 'So many books, so little time.'});
+    resOnboarding.add({"image": 'assets/img/onboarding3.png', "description": 'A room without books is like a body without a soul.'});
     setState(() {});
   }
 

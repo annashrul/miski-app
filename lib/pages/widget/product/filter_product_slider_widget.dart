@@ -51,7 +51,6 @@ class _FilterProductSliderWidgetState extends State<FilterProductSliderWidget> {
                   itemBuilder: (context, index) {
                     double _marginLeft = 0;
                     (index == 0) ? _marginLeft = 1 : _marginLeft = 0;
-                    print("image ${widget.data}");
                     return CategoryIconWidget(
                         heroTag: widget.heroTag,
                         marginLeft: _marginLeft,

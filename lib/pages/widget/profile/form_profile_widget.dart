@@ -160,7 +160,6 @@ class _FormProfileWidgetState extends State<FormProfileWidget> {
       hintStyle: config.MyFont.fieldStyle(context: context,color: Theme.of(context).textTheme.headline1.color),
       enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Theme.of(context).hintColor.withOpacity(0.2))),
       focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Theme.of(context).hintColor)),
-      hasFloatingPlaceholder: true,
       labelStyle: config.MyFont.fieldStyle(context: context,color: Theme.of(context).textTheme.headline1.color),
     );
   }

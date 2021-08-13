@@ -88,7 +88,7 @@ class _ChatComponentState extends State<ChatComponent> {
                             primary: false,
                             itemCount: listTicketModel.result.data.length,
                             separatorBuilder: (context, index) {
-                              return Divider();
+                              return SizedBox(height: scaler.getHeight(0.5));
                             },
                             itemBuilder: (context, index) {
                               return buildItem(context: context, index: index);

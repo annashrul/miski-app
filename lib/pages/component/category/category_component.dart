@@ -7,7 +7,6 @@ import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/tenant/listGroupProductModel.dart';
 import 'package:netindo_shop/model/tenant/list_category_product_model.dart';
-import 'package:netindo_shop/pages/widget/drawer_widget.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
 
 class CategoryComponent extends StatefulWidget {
@@ -60,7 +59,6 @@ class _CategoryComponentState extends State<CategoryComponent> {
   Widget build(BuildContext context) {
     final scaler = config.ScreenScale(context).scaler;
     return Scaffold(
-      drawer: DrawerWidget(),
       appBar: WidgetHelper().appBarWithButton(context, "Kategori", (){},<Widget>[],param: "default"),
       body: isLoading?WidgetHelper().loadingWidget(context):SingleChildScrollView(
         padding:scaler.getPadding(1,2),
@@ -104,7 +102,11 @@ class _CategoryComponentState extends State<CategoryComponent> {
                   children: <Widget>[
                     Hero(
                       tag: "categoryImage${data[idxCategory]["id"]}",
-                      child: SvgPicture.network(data[idxCategory]["image"],height: scaler.getHeight(2.5), placeholderBuilder: (context) => Icon(Icons.error),),
+                      child: SvgPicture.network(
+                        data[idxCategory]["image"],
+                        height: scaler.getHeight(2.5),
+                        placeholderBuilder: (context) => Icon(Icons.error),
+                      ),
                     ),
                     SizedBox(height: 5),
                     config.MyFont.title(context: context,text:data[idxCategory]["title"],color:Theme.of(context).primaryColor,fontSize: 8 )

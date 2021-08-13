@@ -6,7 +6,6 @@ import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/review/review_model.dart';
 import 'package:netindo_shop/pages/widget/brand/brand_home_tab_widget.dart';
 import 'package:netindo_shop/pages/widget/brand/brand_product_tab_widget.dart';
-import 'package:netindo_shop/pages/widget/drawer_widget.dart';
 import 'package:netindo_shop/pages/widget/review/review_widget.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
 import '../../empty_widget.dart';
@@ -67,7 +66,6 @@ class _ProductByBrandState extends State<ProductByBrand> with SingleTickerProvid
     final scaler=config.ScreenScale(context).scaler;
     return Scaffold(
       key: _scaffoldKey,
-      drawer: DrawerWidget(),
       body: CustomScrollView(slivers: <Widget>[
         SliverAppBar(
           snap: true,

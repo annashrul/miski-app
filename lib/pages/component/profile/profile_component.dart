@@ -132,7 +132,7 @@ class _ProfileComponentState extends State<ProfileComponent> {
                       updateImage({"foto":e});
                     },title: "Ubah foto",));
                   },
-                  // child: Image.network(foto)
+
                   child: WidgetHelper().imageUser(context: context,img: foto,isUpdate: true)
                 )
 

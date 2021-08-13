@@ -42,6 +42,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider.value(value: ManageStateCheckout())
       ],
       child: MaterialApp(
+        // checkerboardRasterCacheImages: true,
         title: 'n-shop',
         initialRoute: '/',
         onGenerateRoute: RouteGenerator.generateRoute,
@@ -80,7 +81,7 @@ class _MyAppState extends State<MyApp> {
           unselectedWidgetColor: Colors.grey[300],
           textTheme: TextTheme(
             button: style.copyWith(color: Colors.white),
-            headline1: style.copyWith(fontSize: 10.0, fontWeight: FontWeight.w400,color: config.Colors().secondColor(1)),
+            headline1: style.copyWith(fontSize: 10.0, fontWeight: FontWeight.bold,color: config.Colors().secondColor(1)),
             headline2: style.copyWith(fontSize: 9.0, fontWeight: FontWeight.w400, color: config.Colors().secondColor(1)),
             headline3: style.copyWith(fontSize: 9.0, fontWeight: FontWeight.w400, color: config.Colors().secondColor(1)),
             headline4: style.copyWith(fontSize: 9.0, fontWeight: FontWeight.w300, color: config.Colors().mainColor(1)),

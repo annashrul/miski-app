@@ -147,7 +147,11 @@ class _DetailHistoryOrderComponentState extends State<DetailHistoryOrderComponen
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Image.network(detailHistoryOrderModel.result.logoKurir,fit: BoxFit.contain,height: scaler.getHeight(2),),
+                              Image.network(
+                                detailHistoryOrderModel.result.logoKurir,
+                                fit: BoxFit.contain,
+                                height: scaler.getHeight(2)
+                              ),
                               // WidgetHelper().baseImage(detailHistoryOrderModel.result.logoKurir,height: scaler.getHeight(2),width: scaler.getWidth(5)),
                               SizedBox(width: scaler.getWidth(1)),
                               config.MyFont.subtitle(context: context,text:"${detailHistoryOrderModel.result.kurir}"),

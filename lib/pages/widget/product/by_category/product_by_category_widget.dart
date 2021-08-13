@@ -100,14 +100,17 @@ class _ProductByCategoryState extends State<ProductByCategory> with SingleTicker
                     children: <Widget>[
                       Hero(
                         tag: "categoryImage${widget.data["id"]}",
-                        child: SvgPicture.network(widget.data["image"],height: scaler.getHeight(2.5),),
+                        child: SvgPicture.network(
+                          widget.data["image"],height: scaler.getHeight(2.5),
+                          placeholderBuilder: (context) => Icon(Icons.error),
+                        ),
                       ),
 
                       SizedBox(height: 5),
                       Text(
                         widget.data["title"],
                         style:
-                        Theme.of(context).textTheme.title.merge(TextStyle(color: Theme.of(context).primaryColor)),
+                        Theme.of(context).textTheme.headline1.merge(TextStyle(color: Theme.of(context).primaryColor)),
                       )
                     ],
                   ),

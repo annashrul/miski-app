@@ -6,6 +6,7 @@ import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
+import 'package:netindo_shop/helper/user_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/pages/component/chat/chat_component.dart';
 import 'package:netindo_shop/pages/component/favorite/favorite_component.dart';
@@ -32,12 +33,24 @@ class MainComponent extends StatefulWidget {
 class _MainComponentState extends State<MainComponent> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   int totalCart=0;
-
+  dynamic dataUser;
+  Future loadDataUser()async{
+    final resImage=await UserHelper().getDataUser(StringConfig.foto);
+    final resName=await UserHelper().getDataUser(StringConfig.nama);
+    final resEmail=await UserHelper().getDataUser(StringConfig.email);
+    final resPhone=await UserHelper().getDataUser(StringConfig.tlp);
+    dataUser={
+      StringConfig.foto:resImage,StringConfig.nama:resName,StringConfig.email:resEmail,StringConfig.tlp:resPhone
+    };
+    if(this.mounted){
+      this.setState(() { });
+    }
+  }
   @override
   initState() {
     _selectTab(widget.currentTab);
     super.initState();
-    print("initstate");
+    loadDataUser();
   }
 
   @override
@@ -92,7 +105,7 @@ class _MainComponentState extends State<MainComponent> {
     return WillPopScope(
         child: Scaffold(
           key: _scaffoldKey,
-          drawer: DrawerWidget(),
+          drawer: DrawerWidget(user: dataUser),
           appBar: AppBar(
             automaticallyImplyLeading: false,
             leading: new IconButton(

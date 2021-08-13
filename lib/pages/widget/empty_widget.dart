@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
-import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/string_config.dart';
 
@@ -76,6 +75,7 @@ class _EmptyTenantState extends State<EmptyTenant> {
   }
 }
 
+// ignore: must_be_immutable
 class EmptyDataWidget extends StatefulWidget {
   IconData iconData;
   String title;
@@ -90,11 +90,10 @@ class EmptyDataWidget extends StatefulWidget {
 class _EmptyDataWidgetState extends State<EmptyDataWidget> {
   @override
   Widget build(BuildContext context) {
-    ScreenScaler scaler = ScreenScaler()..init(context);
-
+    final scale = config.ScreenScale(context).scaler;
     return Container(
       alignment: AlignmentDirectional.center,
-      padding:scaler.getPadding(0,10),
+      padding:scale.getPadding(0,10),
       height: config.AppConfig(context).appHeight(60),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

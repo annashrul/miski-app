@@ -25,20 +25,18 @@ class _RoomChatComponentState extends State<RoomChatComponent> {
   List chat=[];
   DetailTicketModel detailTicketModel;
   bool isLoading=true,isShow=true;
-  String idMember="";
-  String namaMember="";
+  String idMember="",namaMember="",imgMember="";
   Future loadData()async{
-    final tenant=await FunctionHelper().getTenant();
-    final member = await UserHelper().getDataUser(StringConfig.id_user);
+    resTenant = await FunctionHelper().getTenant();
+    idMember = await UserHelper().getDataUser(StringConfig.id_user);
+    imgMember = await UserHelper().getDataUser(StringConfig.foto);
     namaMember = await UserHelper().getDataUser(StringConfig.nama);
-    resTenant = tenant;
     final res=await HandleHttp().getProvider("chat/${widget.data["id"]}", detailTicketModelFromJson,context: context);
     if(res!=null){
       DetailTicketModel result=res;
       for(int i=0;i<result.result.detail.length;i++){
         chat.add({"msg":result.result.detail[i].msg,"id_member":result.result.detail[i].idMember});
       }
-      idMember = member;
       isLoading=false;
       detailTicketModel = DetailTicketModel.fromJson(result.toJson());
       WidgetsBinding.instance.addPostFrameCallback((_){
@@ -238,9 +236,8 @@ class _RoomChatComponentState extends State<RoomChatComponent> {
               child: new Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
-                  config.MyFont.subtitle(context: context,text:"Admin",color: Theme.of(context).textTheme.bodyText2.color,fontSize: 8,fontWeight: FontWeight.bold),
+                  config.MyFont.subtitle(context: context,text:resTenant[StringConfig.namaTenant],color: Theme.of(context).textTheme.bodyText2.color,fontSize: 8,fontWeight: FontWeight.bold),
                   new Container(
-                    // child: new Text(widget.data["msg"]),
                     child: config.MyFont.subtitle(context: context,text:data["msg"],fontSize: 8,color: Theme.of(context).textTheme.bodyText2.color),
                   ),
                 ],
@@ -252,7 +249,7 @@ class _RoomChatComponentState extends State<RoomChatComponent> {
                 new Container(
                     margin: const EdgeInsets.only(left: 8.0),
                     child: new CircleAvatar(
-                      backgroundImage: AssetImage(StringConfig.userImage),
+                      backgroundImage: NetworkImage(resTenant[StringConfig.logoTenant]),
                     )),
               ],
             ),
@@ -282,7 +279,7 @@ class _RoomChatComponentState extends State<RoomChatComponent> {
                 new Container(
                     margin: const EdgeInsets.only(right: 8.0),
                     child: new CircleAvatar(
-                      backgroundImage: AssetImage(StringConfig.userImage),
+                      backgroundImage: NetworkImage(imgMember),
                     )),
               ],
             ),
