@@ -54,7 +54,7 @@ class _HistoryModalOptionWIdgetState extends State<HistoryModalOptionWIdget> {
             });
           }),
           if(widget.barang.length==1)Divider(),
-          if(val.status!=4)buildOption(context: context,title: "Beri ulasan",callback: (){
+          if(val.status==4)buildOption(context: context,title: "Beri ulasan",callback: (){
             WidgetHelper().myModal(context, ListProductReviewWidget(data: val.toJson()["detail"]));
           }),
           if(val.status==4)Divider(),

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/string_config.dart';
@@ -12,16 +13,16 @@ class SplashScreenComponent extends StatefulWidget {
 }
 
 class _SplashScreenComponentState extends State<SplashScreenComponent> {
-  final userHelper=UserHelper();
+  final userHelper = UserHelper();
   final DatabaseConfig _db = new DatabaseConfig();
-  Future loadData() async{
+  Future loadData() async {
     SharedPreferences sess = await SharedPreferences.getInstance();
     await Future.delayed(Duration(seconds: 0, milliseconds: 2000));
     final countTable = await _db.queryRowCount(UserQuery.TABLE_NAME);
-    final result= await FunctionHelper().getConfig();
+    final result = await FunctionHelper().getConfig();
     sess.setString(StringConfig.loginType, result["type"]);
     sess.setBool(StringConfig.isTenant, true);
-    if(!result["multitenant"]){
+    if (!result["multitenant"]) {
       print('##################### TENANT $result ######################');
       sess.setStringList("tenant", [
         result["tenant"]["id"],
@@ -33,40 +34,46 @@ class _SplashScreenComponentState extends State<SplashScreenComponent> {
       ]);
       sess.setBool(StringConfig.isTenant, false);
     }
-    if(countTable==0){
-      Navigator.pushNamedAndRemoveUntil(context, "/${StringConfig.onBoarding}", (route) => false);
-      print('##################### USER BARU INSTALL APLIKASI ######################');
-    }
-    else{
-      final onBoarding= await userHelper.getDataUser(StringConfig.onboarding);
-      final isLogin= await userHelper.getDataUser(StringConfig.is_login);
+    if (countTable == 0) {
+      Navigator.pushNamedAndRemoveUntil(
+          context, "/${StringConfig.onBoarding}", (route) => false);
+      print(
+          '##################### USER BARU INSTALL APLIKASI ######################');
+    } else {
+      final onBoarding = await userHelper.getDataUser(StringConfig.onboarding);
+      final isLogin = await userHelper.getDataUser(StringConfig.is_login);
 
       print("onboarding $onBoarding");
       print("onboarding $isLogin");
 
-      if(onBoarding==null&&isLogin==null){
-        Navigator.pushNamedAndRemoveUntil(context, "/${StringConfig.onBoarding}", (route) => false);
-        print('##################### USER SUDAH INSTALL APLIKASI DAN BELUM LOGIN ######################');
-      }
-      else{
-        if(onBoarding=='0'&&isLogin=='0'){
-        // if(onBoarding!='0'&&isLogin!='0'){
-          Navigator.pushNamedAndRemoveUntil(context, "/${StringConfig.onBoarding}", (route) => false);
-          print('##################### USER SUDAH INSTALL APLIKASI DAN BELUM LOGIN ######################');
-        }
-        else if(onBoarding=='1'&&isLogin=='0'){
-        // else if(onBoarding!='1'&&isLogin!='0'){
-          Navigator.pushNamedAndRemoveUntil(context, "/${StringConfig.signIn}", (route) => false);
-          print('##################### USER MELAKUKAN LOGOUT DAN KEMBALI BUKA APLIKASI ######################');
-        }
-        else{
-          print('##################### USER MASUK KEHALAMAN UTAMA APLIKASI ######################');
-          Navigator.pushNamedAndRemoveUntil(context, "/${StringConfig.main}", (route) => false,arguments: StringConfig.defaultTab);
+      if (onBoarding == null && isLogin == null) {
+        Navigator.pushNamedAndRemoveUntil(
+            context, "/${StringConfig.onBoarding}", (route) => false);
+        print(
+            '##################### USER SUDAH INSTALL APLIKASI DAN BELUM LOGIN ######################');
+      } else {
+        if (onBoarding == '0' && isLogin == '0') {
+          // if(onBoarding!='0'&&isLogin!='0'){
+          Navigator.pushNamedAndRemoveUntil(
+              context, "/${StringConfig.onBoarding}", (route) => false);
+          print(
+              '##################### USER SUDAH INSTALL APLIKASI DAN BELUM LOGIN ######################');
+        } else if (onBoarding == '1' && isLogin == '0') {
+          // else if(onBoarding!='1'&&isLogin!='0'){
+          Navigator.pushNamedAndRemoveUntil(
+              context, "/${StringConfig.signIn}", (route) => false);
+          print(
+              '##################### USER MELAKUKAN LOGOUT DAN KEMBALI BUKA APLIKASI ######################');
+        } else {
+          print(
+              '##################### USER MASUK KEHALAMAN UTAMA APLIKASI ######################');
+          Navigator.pushNamedAndRemoveUntil(
+              context, "/${StringConfig.main}", (route) => false,
+              arguments: StringConfig.defaultTab);
         }
       }
     }
   }
-
 
   AssetImage assetImage;
   @override
@@ -75,6 +82,9 @@ class _SplashScreenComponentState extends State<SplashScreenComponent> {
     loadData();
     assetImage = AssetImage("assets/img/splash.gif");
   }
+
+ 
+
   @override
   void didChangeDependencies() {
     precacheImage(assetImage, context);
@@ -93,4 +103,5 @@ class _SplashScreenComponentState extends State<SplashScreenComponent> {
       ),
     );
   }
+
 }

@@ -22,6 +22,7 @@ class StringConfig{
   static const String productByCategory = "ProductByGroup";
   static const String productByBrand = "ProductByBrand";
   static const String checkout = "Checkout";
+  static const String channel = "Channel";
   static const String successCheckout = "SuccessCheckout";
   static const String historyOrder = "HistoryOrder";
   static const String detailHistoryOrder = "DetailHistoryOrder";
@@ -59,6 +60,9 @@ class StringConfig{
   static const String onboarding = "onboarding";
   static const String exit_app = "exit_app";
   static const String onesignal_id = "onesignal_id";
+  static const String longitude = "longitude";
+  static const String latitude = "latitude";
+  static const String fullAddress = "fullAddress";
 
   // ************************ GENERAL  ************************ //
   static final int noDataNumber = 10000;

@@ -21,7 +21,6 @@ class FunctionCheckout{
     Navigator.of(context).pop(); /*close dialog*/
     WidgetHelper().loadingDialog(context);
     final res = await HandleHttp().postProvider("transaction", data,context: context);
-    print("callback checkout $data");
     if(res!=null){
       Navigator.of(context).pop(); /*close loading*/
       var resposneCheckout = CheckoutModel.fromJson(res);
@@ -59,7 +58,6 @@ class FunctionCheckout{
       if(type=="all"){
         ListAddressModel  address = await FunctionAddress().loadData(context: context,isChecking: true);
         if(address.result.data.length>0){
-          BankModel bank = await FunctionBank().loadData(context: context);
           KurirModel kurir = await loadKurir(context: context);
           final ongkir = await loadOngkir(context: context,kodeKecamatan: address.result.data[0].kdKec,kurir: kurir.result[0].kurir);
           int grandTotal = await loadGrandTotal(cartModel: product,cost: ongkir["cost"]);
@@ -70,7 +68,6 @@ class FunctionCheckout{
             "productDetail":productDetail,
             "grandTotal":grandTotal,
             "subTotal":subTotal,
-            "bank":bank,
             "address":address.result.toJson(),
             "shipping":{
               "kurir":kurir.toJson(),

@@ -263,7 +263,7 @@ class WidgetHelper{
         }
     );
   }
-  titleQ(BuildContext context,String txt,{double radius=10,FontWeight fontWeight=FontWeight.bold,EdgeInsetsGeometry padding,String param="", Function callback,IconData icon,double fontSize,String image="",IconData iconAct=UiIcons.play_button,String subtitle=""}){
+  titleQ(BuildContext context,String txt,{Color colorTitle,double radius=10,FontWeight fontWeight=FontWeight.bold,EdgeInsetsGeometry padding,String param="", Function callback,IconData icon,double fontSize,String image="",IconData iconAct=UiIcons.play_button,String subtitle=""}){
     ScreenScaler scaler = ScreenScaler()..init(context);
     return myRipple(
       radius: radius,
@@ -282,12 +282,14 @@ class WidgetHelper{
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(100)),
                   ),
-                ):icons(ctx: context,icon: icon),
+                ):icons(ctx: context,icon: icon,color: colorTitle),
                 if(image!=""||icon!=null)SizedBox(width: scaler.getWidth(1.5)),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    config.MyFont.title(context: context,text:txt,fontSize: fontSize,fontWeight:fontWeight),
+                    config.MyFont.title(
+                        context: context,text:txt,fontSize: fontSize,fontWeight:fontWeight,color: colorTitle==null?Theme.of(context).textTheme.headline1.color:colorTitle
+                    ),
                     if(subtitle!="") Container(
                       child: config.MyFont.subtitle(context: context,text:subtitle,fontSize: 8,color: Theme.of(context).textTheme.caption.color),
                     )

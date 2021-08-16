@@ -12,12 +12,13 @@ import 'package:netindo_shop/pages/widget/checkout/modal_layanan_widget.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
 
 class SectionShippingWidget extends StatefulWidget {
+  final Map<String, Object> address;
   final dynamic index;
   final dynamic isLoading;
   final dynamic kurir;
   final dynamic layanan;
   final Function(int i,dynamic type) callback;
-  SectionShippingWidget({this.index,this.kurir,this.layanan,this.isLoading,this.callback});
+  SectionShippingWidget({this.address,this.index,this.kurir,this.layanan,this.isLoading,this.callback});
   @override
   _SectionShippingWidgetState createState() => _SectionShippingWidgetState();
 }
@@ -39,6 +40,8 @@ class _SectionShippingWidgetState extends State<SectionShippingWidget> {
 
     dynamic resKurir=widget.kurir["obj"];
     dynamic resLayanan=widget.layanan["obj"];
+
+    print("############### KURIR $resKurir");
     final scaler = config.ScreenScale(context).scaler;
     return Padding(
       padding: scaler.getPadding(0,2),
@@ -52,6 +55,14 @@ class _SectionShippingWidgetState extends State<SectionShippingWidget> {
             WidgetHelper().myModal(
               context,
               ModalKurirWidget(data: widget.kurir["arr"],callback: (i){
+                if(widget.kurir["arr"][i]["kurir"]=="instant"){
+                  if(widget.address["pinpoint"]==null||widget.address["pinpoint"]=="-"){
+                    WidgetHelper().showFloatingFlushbar(context, "failed","silahkan pilih alamat pengiriman instant di tambah alamat");
+                    return;
+                  }
+                }
+
+                print(widget.kurir["arr"][i]);
                 widget.callback(i,"kurir");
                 widget.kurir["obj"] = widget.kurir["arr"][i];
                 if(this.mounted)setState(() {});

@@ -6,9 +6,6 @@ import 'package:netindo_shop/config/database_config.dart';
 import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/route_generator.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
-import 'package:provider/provider.dart';
-
-import 'helper/checkout/function_checkout.dart';
 
 void  main()  {
   runApp( MyApp());
@@ -21,6 +18,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final DatabaseConfig _db = new DatabaseConfig();
+
   @override
   void initState() {
     super.initState();
@@ -37,11 +35,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp,DeviceOrientation.portraitDown]);
     TextStyle style = config.MyFont.textStyle;
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider.value(value: ManageStateCheckout())
-      ],
-      child: MaterialApp(
+    return MaterialApp(
         // checkerboardRasterCacheImages: true,
         title: 'n-shop',
         initialRoute: '/',
@@ -100,8 +94,7 @@ class _MyAppState extends State<MyApp> {
             child: child,
           );
         },
-      ),
-    );
+      );
   }
 }
 

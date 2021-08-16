@@ -96,8 +96,6 @@ class _AddressComponentState extends State<AddressComponent> {
                     if(widget.callback!=null){
                       btn=WidgetHelper().myRipple(
                         child: idx==index?WidgetHelper().icons(ctx: context,icon: UiIcons.checked):Text(""),
-
-                        // child: Icon(Ionicons.ios_checkmark_circle_outline,color:idx==index?LightColor.lightblack:Colors.transparent),
                         callback: (){},
                       );
                     }

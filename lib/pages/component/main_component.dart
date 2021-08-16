@@ -13,6 +13,7 @@ import 'package:netindo_shop/pages/component/favorite/favorite_component.dart';
 import 'package:netindo_shop/pages/component/home/home_component.dart';
 import 'package:netindo_shop/pages/component/notification/notification_component.dart';
 import 'package:netindo_shop/pages/component/profile/profile_component.dart';
+import 'package:netindo_shop/pages/widget/address/maps_widget.dart';
 import 'package:netindo_shop/pages/widget/drawer_widget.dart';
 import 'package:netindo_shop/provider/base_provider.dart';
 
@@ -124,6 +125,9 @@ class _MainComponentState extends State<MainComponent> {
                   });
                 }
               }),
+              WidgetHelper().iconAppbar(context: context,icon: UiIcons.placeholder,callback: (){
+                WidgetHelper().myModal(context, MapsWidget());
+              })
             ],
           ),
           body:widget.currentPage,

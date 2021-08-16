@@ -9,6 +9,7 @@ import 'package:netindo_shop/pages/component/auth/signup_component.dart';
 import 'package:netindo_shop/pages/component/brand/brand_component.dart';
 import 'package:netindo_shop/pages/component/category/category_component.dart';
 import 'package:netindo_shop/pages/component/chat/room_chat_component.dart';
+import 'package:netindo_shop/pages/component/checkout/channel_component.dart';
 import 'package:netindo_shop/pages/component/checkout/checkout_component.dart';
 import 'package:netindo_shop/pages/component/checkout/success_checkout_component.dart';
 import 'package:netindo_shop/pages/component/history/detail_history_order_component.dart';
@@ -49,6 +50,8 @@ class RouteGenerator {
         return CupertinoPageRoute(builder: (_) => CartWidget());
       case '/${StringConfig.checkout}':
         return CupertinoPageRoute(builder: (_) => CheckoutComponent());
+      case '/${StringConfig.channel}':
+        return CupertinoPageRoute(builder: (_) => ChannelComponent(data: args));
       case '/${StringConfig.successCheckout}':
         return CupertinoPageRoute(builder: (_) => SuccessCheckoutComponent(data: args));
       case '/${StringConfig.roomChat}':

@@ -236,6 +236,15 @@ class FunctionHelper{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(key);
   }
+  Future rmSession(key)async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.remove(key);
+  }
+
+  Future rmPinPoint()async{
+    await rmSession(StringConfig.longitude);
+    await rmSession(StringConfig.latitude);
+  }
 
   Future logout(BuildContext context)async{
     WidgetHelper().notifDialog(context,"Perhatian !!","Anda yakin akan keluar dari aplikasi ??", (){Navigator.pop(context);}, ()async{

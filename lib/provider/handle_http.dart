@@ -14,20 +14,20 @@ class HandleHttp{
 
 
 
-  Future getProvider(url,param,{BuildContext context,Function callback})async{
+  Future getProvider(url,dynamic param,{BuildContext context,Function callback})async{
     print(url);
     try{
       final token= await userRepository.getDataUser(StringConfig.token);
       Map<String, String> head={
-        'Authorization':token,
-        'username': StringConfig.username,
-        'password': StringConfig.password,
-        'myconnection':StringConfig.connection,
+        'Authorization':"$token",
+        'username': "${StringConfig.username}",
+        'password': "${StringConfig.password}",
+        'myconnection':"${StringConfig.connection}",
       };
       final response = await client.get("${StringConfig.baseUrl}$url", headers:head).timeout(Duration(seconds: StringConfig.timeout));
-      final jsonResponse = json.decode(response.body);
-      print("=================== SUCCESS $url = ${jsonResponse['result']} ==========================");
+      print("=================== SUCCESS $url  ==========================");
       if (response.statusCode == 200) {
+          final jsonResponse = json.decode(response.body);
         if(jsonResponse['result'].length>0){
           return param==null?response.body:param(response.body);
         }else{
@@ -36,6 +36,7 @@ class HandleHttp{
         }
       }
       else if(response.statusCode == 400){
+          final jsonResponse = json.decode(response.body);
         if(jsonResponse['msg']=='Invalid Token.'){
           return WidgetHelper().notifOneBtnDialog(context,StringConfig.titleErrToken,StringConfig.descErrToken,()async{
             Navigator.pop(context);
@@ -58,10 +59,12 @@ class HandleHttp{
     } on SocketException catch (_) {
       print("###################################### GET SocketException $url ");
       return Navigator.pushNamed(context, "error");
-    } on Error catch (e) {
+    }
+    on Error catch (e) {
       print("###################################### GET Error $url $e ");
       return WidgetHelper().showFloatingFlushbar(context, "failed", StringConfig.errSyntax);
-    } catch(_){
+    }
+    catch(_){
       return WidgetHelper().showFloatingFlushbar(context, "failed", StringConfig.errSyntax);
     }
   }

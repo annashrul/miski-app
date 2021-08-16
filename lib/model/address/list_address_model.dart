@@ -86,6 +86,7 @@ class Datum {
     this.ismain,
     this.createdAt,
     this.updatedAt,
+    this.pinpoint,
   });
 
   String id;
@@ -100,6 +101,7 @@ class Datum {
   int ismain;
   DateTime createdAt;
   DateTime updatedAt;
+  String pinpoint;
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
     id: json["id"],
@@ -114,6 +116,7 @@ class Datum {
     ismain: json["ismain"],
     createdAt: DateTime.parse(json["created_at"]),
     updatedAt: DateTime.parse(json["updated_at"]),
+    pinpoint: json["pinpoint"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -129,5 +132,6 @@ class Datum {
     "ismain": ismain,
     "created_at": createdAt.toIso8601String(),
     "updated_at": updatedAt.toIso8601String(),
+    "pinpoint": pinpoint,
   };
 }

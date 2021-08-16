@@ -48,6 +48,7 @@ class Result {
     this.kecamatan,
     this.kota,
     this.provinsi,
+    this.pinpoint,
   });
 
   String id;
@@ -64,6 +65,7 @@ class Result {
   String kecamatan;
   String kota;
   String provinsi;
+  String pinpoint;
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
     id: json["id"],
@@ -80,6 +82,7 @@ class Result {
     kecamatan: json["kecamatan"],
     kota: json["kota"],
     provinsi: json["provinsi"],
+    pinpoint: json["pinpoint"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -97,5 +100,6 @@ class Result {
     "kecamatan": kecamatan,
     "kota": kota,
     "provinsi": provinsi,
+    "pinpoint": pinpoint,
   };
 }
