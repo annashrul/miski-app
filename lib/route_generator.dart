@@ -12,6 +12,7 @@ import 'package:netindo_shop/pages/component/chat/room_chat_component.dart';
 import 'package:netindo_shop/pages/component/checkout/channel_component.dart';
 import 'package:netindo_shop/pages/component/checkout/checkout_component.dart';
 import 'package:netindo_shop/pages/component/checkout/success_checkout_component.dart';
+import 'package:netindo_shop/pages/component/checkout/success_checkout_virtual_account_component.dart';
 import 'package:netindo_shop/pages/component/history/detail_history_order_component.dart';
 import 'package:netindo_shop/pages/component/history/history_order_component.dart';
 import 'package:netindo_shop/pages/component/home/home_component.dart';
@@ -54,6 +55,8 @@ class RouteGenerator {
         return CupertinoPageRoute(builder: (_) => ChannelComponent(data: args));
       case '/${StringConfig.successCheckout}':
         return CupertinoPageRoute(builder: (_) => SuccessCheckoutComponent(data: args));
+      case '/${StringConfig.successCheckoutVirtualAccount}':
+        return CupertinoPageRoute(builder: (_) => SuccessCheckoutVirtualAccountComponent(detailCheckoutVirtualAccountModel: args));
       case '/${StringConfig.roomChat}':
         return CupertinoPageRoute(builder: (_) => RoomChatComponent(data: args));
       case '/${StringConfig.historyOrder}':

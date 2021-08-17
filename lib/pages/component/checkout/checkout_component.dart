@@ -68,7 +68,6 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
 
   Future handleShipping(i, type) async {
     if (type == "kurir") {
-
       String destination = address["kd_kec"];
       String courier = shippingKurir["arr"][i]["kurir"];
       indexShipping["kurir"] = i;
@@ -211,16 +210,11 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              buildRowBottomBar(
-                  context: context, title: "Subtotal", desc: "$subtotal"),
+              buildRowBottomBar(context: context, title: "Subtotal", desc: "$subtotal"),
               SizedBox(height: scaler.getHeight(0.5)),
-              buildRowBottomBar(
-                  context: context, title: "Ongkos kirim", desc: "$cost"),
+              buildRowBottomBar(context: context, title: "Ongkos kirim", desc: "$cost"),
               SizedBox(height: scaler.getHeight(0.5)),
-              buildRowBottomBar(
-                  context: context,
-                  title: "Diskon voucher",
-                  desc: "$diskonVoucher"),
+              buildRowBottomBar(context: context,title: "Diskon voucher", desc: "$diskonVoucher"),
               SizedBox(height: scaler.getHeight(0.5)),
               WidgetHelper().myRipple(
                 isRadius: true,
@@ -242,7 +236,8 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
                               context: context,
                               text: 'Bayar',
                               fontWeight: FontWeight.bold,
-                              color: Theme.of(context).primaryColor)),
+                              color: Theme.of(context).primaryColor)
+                      ),
                     ),
                     Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),

@@ -23,8 +23,8 @@ class FunctionCheckout{
     final res = await HandleHttp().postProvider("transaction", data,context: context);
     if(res!=null){
       Navigator.of(context).pop(); /*close loading*/
-      var resposneCheckout = CheckoutModel.fromJson(res);
-      Navigator.of(context).pushNamedAndRemoveUntil("/${StringConfig.successCheckout}", (route) => false,arguments: resposneCheckout.result.toJson());
+      // var resposneCheckout = CheckoutModel.fromJson(res);
+      // Navigator.of(context).pushNamedAndRemoveUntil("/${StringConfig.successCheckout}", (route) => false,arguments: resposneCheckout.result.toJson());
     }
   }
 

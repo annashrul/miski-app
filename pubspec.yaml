@@ -40,7 +40,8 @@ dependencies:
   flutter_icons: ^1.1.0
   google_fonts: ^1.1.0
   google_maps_flutter: ^1.2.0
-
+  getwidget: ^2.0.3
+  flutter_html: ^0.11.1
 
 
 dev_dependencies:

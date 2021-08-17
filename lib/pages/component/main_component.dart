@@ -125,9 +125,6 @@ class _MainComponentState extends State<MainComponent> {
                   });
                 }
               }),
-              WidgetHelper().iconAppbar(context: context,icon: UiIcons.placeholder,callback: (){
-                WidgetHelper().myModal(context, MapsWidget());
-              })
             ],
           ),
           body:widget.currentPage,

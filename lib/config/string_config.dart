@@ -11,29 +11,29 @@ class StringConfig{
   static const int timeout           = 60;
 
   // ************************ PAGES  ************************ //
-  static const int defaultTab = 2;
-  static const String onBoarding = "OnBoarding";
-  static const String signIn = "SignIn";
-  static const String signUp = "SignUp";
-  static const String main = "Main";
-  static const String tenantPage = "Tenant";
-  static const String home = "Home";
-  static const String detailProduct = "DetailProduct";
-  static const String productByCategory = "ProductByGroup";
-  static const String productByBrand = "ProductByBrand";
-  static const String checkout = "Checkout";
-  static const String channel = "Channel";
-  static const String successCheckout = "SuccessCheckout";
-  static const String historyOrder = "HistoryOrder";
-  static const String detailHistoryOrder = "DetailHistoryOrder";
-  static const String resi = "Resi";
+  static const int defaultTab       = 2;
+  static const String onBoarding    = "OnBoarding";
+  static const String signIn        = "SignIn";
+  static const String signUp        = "SignUp";
+  static const String main          = "Main";
+  static const String tenantPage    = "Tenant";
+  static const String home          = "Home";
+  static const String detailProduct       = "DetailProduct";
+  static const String productByCategory   = "ProductByGroup";
+  static const String productByBrand      = "ProductByBrand";
+  static const String checkout      = "Checkout";
+  static const String channel       = "Channel";
+  static const String successCheckout     = "SuccessCheckout";
+  static const String successCheckoutVirtualAccount     = "SuccessCheckoutVirtualAccount";
+  static const String historyOrder        = "HistoryOrder";
+  static const String detailHistoryOrder  = "DetailHistoryOrder";
+  static const String resi          = "Resi";
   static const String trackingOrder = "TrackingOrder";
-  static const String address = "Address";
-  static const String roomChat = "RoomChat";
-  static const String category = "Category";
-  static const String brand = "Brand";
-
-  static const String cart = "Cart";
+  static const String address       = "Address";
+  static const String roomChat      = "RoomChat";
+  static const String category      = "Category";
+  static const String brand         = "Brand";
+  static const String cart          = "Cart";
   // ************************ SESSION  ************************ //
   static const String loginType = "loginType";
   static const String isTenant = "isTenant";
