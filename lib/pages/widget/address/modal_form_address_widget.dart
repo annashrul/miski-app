@@ -138,7 +138,7 @@ class _ModalFormAddressWidgetState extends State<ModalFormAddressWidget> {
         String mainAdd = result.result.mainAddress;
         print(result.result.pinpoint);
         if(result.result.pinpoint!='-'){
-          placeholderPinPoint = {StringConfig.fullAddress:"-",StringConfig.latitude:result.result.pinpoint.split(",")[0],StringConfig.longitude:result.result.pinpoint.split(",")[1]};
+          placeholderPinPoint = {StringConfig.fullAddress:"-",StringConfig.latitude:double.parse(result.result.pinpoint.split(",")[0]),StringConfig.longitude:double.parse(result.result.pinpoint.split(",")[1])};
         }
         setState(() {
           detailAddressModel = DetailAddressModel.fromJson(result.toJson());

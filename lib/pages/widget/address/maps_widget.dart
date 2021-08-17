@@ -49,11 +49,11 @@ class _MapsWidgetState extends State<MapsWidget> {
     geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best).then((Position position) async {
       dynamic newPosition = position.toJson();
       if(widget.latlong!=null){newPosition = widget.latlong;}
-      double lat = double.parse(newPosition[StringConfig.latitude]);
-      double lng = double.parse(newPosition[StringConfig.longitude]);
+      double lat = newPosition[StringConfig.latitude];
+      double lng = newPosition[StringConfig.longitude];
       await bodyMarker(latitude: lat,longitude: lng);
-      _currentPosition = {StringConfig.latitude:lat.toString(),StringConfig.longitude:lng.toString()};
-      getAddressFromLatLng(lat.toString(),lng.toString());
+      _currentPosition = {StringConfig.latitude:lat,StringConfig.longitude:lng};
+      getAddressFromLatLng(lat,lng);
       if(this.mounted)setState((){});
     }).catchError((e) {
       print(e);
@@ -75,7 +75,7 @@ class _MapsWidgetState extends State<MapsWidget> {
       List<Placemark> p = await geolocator.placemarkFromCoordinates(lat, lng);
       Placemark place = p[0];
       String fullAddress = "${place.thoroughfare}, ${place.subLocality}, ${place.subAdministrativeArea}, ${place.administrativeArea}";
-      _currentPosition = {StringConfig.latitude:lat.toString(),StringConfig.longitude:lng.toString()};
+      _currentPosition = {StringConfig.latitude:lat,StringConfig.longitude:lng};
       WidgetHelper().myModal(
         context,
         Column(
@@ -115,8 +115,7 @@ class _MapsWidgetState extends State<MapsWidget> {
                       leading: Image.asset(pin, height: scaler.getHeight(2)),
                       title: config.MyFont.subtitle(
                           context: context,
-                          text:
-                              "${place.thoroughfare}, ${place.subLocality}, ${place.subAdministrativeArea}, ${place.administrativeArea}",
+                          text: "${place.thoroughfare}, ${place.subLocality}, ${place.subAdministrativeArea}, ${place.administrativeArea}",
                           fontWeight: FontWeight.normal),
                     ),
                   ],
@@ -153,8 +152,8 @@ class _MapsWidgetState extends State<MapsWidget> {
   Widget build(BuildContext context) {
     createMarker(context);
     return Scaffold(
-      appBar: WidgetHelper().appBarWithButton(context, "Pilih lokasi",(){},<Widget>[],param: "default"),
-      body: _currentPosition == null? WidgetHelper().loadingWidget(context): GoogleMap(
+      appBar: WidgetHelper().appBarWithButton(context, "Lokasi instant kurir",(){},<Widget>[],param:"default"),
+      body: _currentPosition == null ? WidgetHelper().loadingWidget(context): GoogleMap(
         mapType: MapType.normal,
         markers: Set.of((marker != null) ? [marker] : []),
         onTap: (pos) async {
@@ -164,7 +163,7 @@ class _MapsWidgetState extends State<MapsWidget> {
         },
         onMapCreated: (GoogleMapController controller) {},
         initialCameraPosition: CameraPosition(
-          target: LatLng(double.parse(_currentPosition["latitude"]), double.parse(_currentPosition["longitude"])),
+          target: LatLng(_currentPosition["latitude"], _currentPosition["longitude"]),
           zoom: 18
         ),
       ),

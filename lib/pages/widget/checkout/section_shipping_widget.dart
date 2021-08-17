@@ -105,9 +105,9 @@ class _SectionShippingWidgetState extends State<SectionShippingWidget> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                config.MyFont.subtitle(context: context,text:title),
+                config.MyFont.subtitle(context: context,text:title,themeStyle: Theme.of(context).textTheme.headline2),
                 SizedBox(height: 5.0),
-                loading?WidgetHelper().shimmer(context: context,width: 40):config.MyFont.subtitle(context: context,text:desc,color: Theme.of(context).textTheme.caption.color),
+                loading?WidgetHelper().shimmer(context: context,width: 40):config.MyFont.subtitle(context: context,text:desc),
               ],
             ),
             WidgetHelper().icons(ctx:context,icon:UiIcons.play_button),

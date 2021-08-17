@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
@@ -15,6 +16,7 @@ class _BrandHomeTabWidgetState extends State<BrandHomeTabWidget> {
   Widget build(BuildContext context) {
     final scaler=config.ScreenScale(context).scaler;
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Padding(
           padding: scaler.getPadding(1, 2),
@@ -32,7 +34,7 @@ class _BrandHomeTabWidgetState extends State<BrandHomeTabWidget> {
         ),
         Padding(
           padding: scaler.getPadding(0.5, 2),
-          child: config.MyFont.subtitle(context: context,text:widget.data["deskripsi"]),
+          child: config.MyFont.subtitle(context: context,text:widget.data["deskripsi"],fontWeight: FontWeight.normal,color: Theme.of(context).textTheme.caption.color),
         ),
       ],
     );

@@ -57,6 +57,7 @@ class _CategoryComponentState extends State<CategoryComponent> {
 
   @override
   Widget build(BuildContext context) {
+    print(data);
     final scaler = config.ScreenScale(context).scaler;
     return Scaffold(
       appBar: WidgetHelper().appBarWithButton(context, "Kategori", (){},<Widget>[],param: "default"),
@@ -68,7 +69,7 @@ class _CategoryComponentState extends State<CategoryComponent> {
             Wrap(
               runSpacing: 30,
               children: List.generate(data.length, (index) {
-                return index.isEven ? data[index]["kelompok"].length>0?buildEvenCategory(context,index):Text("") : data[index]["kelompok"].length>0?buildOddCategory(context,index):Text("");
+                return index.isEven ? buildEvenCategory(context,index) :buildOddCategory(context,index);
               }),
             ),
           ],
@@ -109,7 +110,7 @@ class _CategoryComponentState extends State<CategoryComponent> {
                       ),
                     ),
                     SizedBox(height: 5),
-                    config.MyFont.title(context: context,text:data[idxCategory]["title"],color:Theme.of(context).primaryColor,fontSize: 8 )
+                    config.MyFont.title(context: context,text:data[idxCategory]["title"],color:Theme.of(context).primaryColor,fontSize: 8,maxLines: 1 )
                   ],
                 ),
               ),
@@ -194,8 +195,7 @@ class _CategoryComponentState extends State<CategoryComponent> {
             width: double.infinity,
             decoration: BoxDecoration(
               color: Theme.of(context).primaryColor,
-              borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(10), bottomRight: Radius.circular(10), bottomLeft: Radius.circular(10)),
+              borderRadius: BorderRadius.only( topRight: Radius.circular(10), bottomRight: Radius.circular(10), bottomLeft: Radius.circular(10)),
               boxShadow: [
                 BoxShadow(color: Theme.of(context).hintColor.withOpacity(0.10), offset: Offset(0, 4), blurRadius: 10)
               ],
@@ -236,7 +236,7 @@ class _CategoryComponentState extends State<CategoryComponent> {
                 padding: scaler.getPadding(1,2),
                 width: double.infinity,
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)),
+                    borderRadius: BorderRadius.only(topRight: Radius.circular(10), bottomRight: Radius.circular(10)),
                     boxShadow: [
                       BoxShadow(color: Theme.of(context).hintColor.withOpacity(0.10), offset: Offset(0, 4), blurRadius: 10)
                     ],
@@ -251,7 +251,7 @@ class _CategoryComponentState extends State<CategoryComponent> {
                       child: SvgPicture.network(data[idxCategory]["image"],height: scaler.getHeight(2.5), placeholderBuilder: (context) => Icon(Icons.error),),
                     ),
                     SizedBox(height: 5),
-                    config.MyFont.title(context: context,text:data[idxCategory]["title"],color:Theme.of(context).primaryColor,fontSize: 8 )
+                    config.MyFont.title(context: context,text:data[idxCategory]["title"],color:Theme.of(context).primaryColor,fontSize: 8,maxLines: 1 )
                   ],
                 ),
               ),

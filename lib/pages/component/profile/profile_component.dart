@@ -101,7 +101,7 @@ class _ProfileComponentState extends State<ProfileComponent> {
           },
           child:  ListTile(
             dense: true,
-            title:config.MyFont.subtitle(context: context,text:historArray[i],fontSize: 9,color: Theme.of(context).textTheme.caption.color),
+            title:config.MyFont.subtitle(context: context,text:historArray[i]),
           )
         ),
       );
@@ -109,10 +109,8 @@ class _ProfileComponentState extends State<ProfileComponent> {
     final scaler=config.ScreenScale(context).scaler;
     print(dataUser);
     return SingleChildScrollView(
-      padding: EdgeInsets.symmetric(vertical: 7),
       child: Column(
         children: <Widget>[
-
           Padding(
             padding: scaler.getPadding(1,2),
             child: Row(
@@ -121,7 +119,7 @@ class _ProfileComponentState extends State<ProfileComponent> {
                   child: Column(
                     children: <Widget>[
                       config.MyFont.title(context: context,text:dataUser==null?"":dataUser[StringConfig.nama]),
-                      config.MyFont.subtitle(context: context,text:dataUser==null?"":dataUser[StringConfig.email],fontSize: 9,color:Theme.of(context).textTheme.caption.color ),
+                      config.MyFont.subtitle(context: context,text:dataUser==null?"":dataUser[StringConfig.email],fontSize: 9),
                     ],
                     crossAxisAlignment: CrossAxisAlignment.start,
                   ),
@@ -248,26 +246,26 @@ class _ProfileComponentState extends State<ProfileComponent> {
                 ListTile(
                   onTap: () {},
                   dense: true,
-                  title: config.MyFont.subtitle(context: context,text:'Nama lengkap',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
-                  trailing: config.MyFont.subtitle(context: context,text:dataUser==null?"":dataUser[StringConfig.nama],fontSize: 9,color: Theme.of(context).focusColor),
+                  title: config.MyFont.subtitle(context: context,text:'Nama lengkap'),
+                  trailing: config.MyFont.subtitle(context: context,text:dataUser==null?"":dataUser[StringConfig.nama]),
                 ),
                 ListTile(
                   onTap: () {},
                   dense: true,
-                  title: config.MyFont.subtitle(context: context,text:'Email',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
-                  trailing: config.MyFont.subtitle(context: context,text:dataUser==null?"":dataUser[StringConfig.email],fontSize: 9,color:Theme.of(context).focusColor),
+                  title: config.MyFont.subtitle(context: context,text:'Email'),
+                  trailing: config.MyFont.subtitle(context: context,text:dataUser==null?"":dataUser[StringConfig.email]),
                 ),
                 ListTile(
                   onTap: () {},
                   dense: true,
-                  title: config.MyFont.subtitle(context: context,text:'Jenis kelamain',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
-                  trailing: config.MyFont.subtitle(context: context,text:dataUser==null?"":dataUser[StringConfig.jenis_kelamin]=="0"?"Wanita":"Pria",fontSize: 9,color:Theme.of(context).focusColor),
+                  title: config.MyFont.subtitle(context: context,text:'Jenis kelamain'),
+                  trailing: config.MyFont.subtitle(context: context,text:dataUser==null?"":dataUser[StringConfig.jenis_kelamin]=="0"?"Wanita":"Pria"),
                 ),
                 ListTile(
                   onTap: () {},
                   dense: true,
-                  title: config.MyFont.subtitle(context: context,text:'tanggal lahir',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
-                  trailing: config.MyFont.subtitle(context: context,text:dataUser==null?"":dataUser[StringConfig.tgl_ultah],fontSize: 9,color:Theme.of(context).focusColor),
+                  title: config.MyFont.subtitle(context: context,text:'tanggal lahir'),
+                  trailing: config.MyFont.subtitle(context: context,text:dataUser==null?"":dataUser[StringConfig.tgl_ultah]),
                 ),
               ],
             ),
@@ -295,7 +293,7 @@ class _ProfileComponentState extends State<ProfileComponent> {
                         WidgetHelper().myPush(context,AddressComponent());
                       },
                       dense: true,
-                      title:config.MyFont.subtitle(context: context,text:'Alamat',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
+                      title:config.MyFont.subtitle(context: context,text:'Alamat'),
 
                     )
                 ),
@@ -307,7 +305,7 @@ class _ProfileComponentState extends State<ProfileComponent> {
                       WidgetHelper().myPush(context,HelpSupportComponent());
                     },
                     dense: true,
-                    title:config.MyFont.subtitle(context: context,text:'Pusat bantuan',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
+                    title:config.MyFont.subtitle(context: context,text:'Pusat bantuan'),
 
                   )
                 ),
@@ -319,7 +317,7 @@ class _ProfileComponentState extends State<ProfileComponent> {
                       FunctionHelper().logout(context);
                     },
                     dense: true,
-                    title:config.MyFont.subtitle(context: context,text:'Keluar',fontSize: 9,color: Theme.of(context).textTheme.caption.color),
+                    title:config.MyFont.subtitle(context: context,text:'Keluar'),
                   ),
                 )
               ],

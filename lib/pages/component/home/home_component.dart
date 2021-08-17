@@ -157,6 +157,7 @@ class _HomeComponentState extends State<HomeComponent>{
                         productPrice: res.harga,
                         productSales: res.stockSales,
                         productRate: res.rating,
+                        productStock: res.stock,
                         heroTag: 'categorized_products_grid_${res.id}',
                         callback: (){
                           // widget.callback("norefresh");
@@ -239,20 +240,11 @@ class _HomeComponentState extends State<HomeComponent>{
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: <Widget>[
-                                        config.MyFont.subtitle(context: context,text:globalPromoModel.result.data[index].title,color: Theme.of(context).textTheme.headline6.color,fontWeight: FontWeight.bold,maxLines: 2),
-                                        config.MyFont.subtitle(context: context,text:globalPromoModel.result.data[index].deskripsi,color: Theme.of(context).textTheme.bodyText1.color,fontSize: 8,maxLines: 2),
-
+                                        config.MyFont.subtitle(context: context,text:globalPromoModel.result.data[index].title,fontWeight: FontWeight.bold,maxLines: 2),
+                                        config.MyFont.subtitle(context: context,text:globalPromoModel.result.data[index].deskripsi,maxLines:3),
                                       ],
                                     ),
                                   ),
-                                  Padding(
-                                    padding:scaler.getPadding(0,0),
-                                    child: WidgetHelper().myRipple(
-                                      callback: (){WidgetHelper().myPush(context,DetailPromoWidget(id: globalPromoModel.result.data[index].id));},
-                                      child: config.MyFont.subtitle(context: context,text:"lihat promo",color: config.Colors.mainColors),
-                                    ),
-                                  )
-
                                 ],
                               ),
                             ),

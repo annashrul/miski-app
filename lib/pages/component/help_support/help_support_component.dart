@@ -59,10 +59,9 @@ class _HelpSupportComponentState extends State<HelpSupportComponent> {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           leading: new IconButton(
-            icon: WidgetHelper().icons(ctx: context,icon: UiIcons.return_icon,color: Theme.of(context).primaryColor),
+            icon: WidgetHelper().icons(ctx: context,icon: UiIcons.return_icon,color: Theme.of(context).hintColor),
             onPressed: () => Navigator.of(context).pop(),
           ),
-          backgroundColor: Theme.of(context).accentColor,
           elevation: 0,
           iconTheme: IconThemeData(color: Theme.of(context).primaryColor),
           bottom: TabBar(
@@ -74,7 +73,7 @@ class _HelpSupportComponentState extends State<HelpSupportComponent> {
             tabs: listHelpSupportCatergoryModel.result.data.map((e) => Tab(child: config.MyFont.subtitle(context: context,text: e.title,color:config.Colors.secondColors),)).toList(),
             labelColor: Theme.of(context).textTheme.caption.color,
           ),
-          title: config.MyFont.title(context: context,text:"Pusat bantuan",color: Theme.of(context).primaryColor),
+          title: config.MyFont.title(context: context,text:"Pusat bantuan",color: Theme.of(context).hintColor),
         ),
         body: TabBarView(
           children: List.generate(listHelpSupportCatergoryModel.result.data.length, (index) {

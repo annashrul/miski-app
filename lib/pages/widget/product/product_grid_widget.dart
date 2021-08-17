@@ -12,6 +12,7 @@ class ProductGridWidget extends StatelessWidget {
     @required this.productPrice,
     @required this.productSales,
     @required this.productRate,
+    @required this.productStock,
     @required this.heroTag,
     this.callback,
   }) : super(key: key);
@@ -21,6 +22,7 @@ class ProductGridWidget extends StatelessWidget {
   final String productPrice;
   final String productSales;
   final String productRate;
+  final String productStock;
   final String heroTag;
   final Function callback;
 
@@ -57,6 +59,25 @@ class ProductGridWidget extends StatelessWidget {
                 children: [
                   config.MyFont.subtitle(context: context,text:productName,color: Theme.of(context).textTheme.bodyText2.color,fontSize: 9),
                   config.MyFont.title(context: context,text:"${config.MyFont.toMoney("$productPrice")}",color: config.Colors.moneyColors,fontWeight: FontWeight.bold,fontSize: 9),
+                  SizedBox(height: scaler.getHeight(0.5)),
+                  config.MyFont.subtitle(context: context,text: int.parse("$productStock")<1?"stok habis":'${config.MyFont.toMoney("$productStock")} tersedia',fontSize: 8,maxLines: 2),
+                  Stack(
+                    children: <Widget>[
+                      Container(
+                        width: double.infinity,
+                        height: scaler.getHeight(0.3),
+                        decoration: BoxDecoration(color: Theme.of(context).focusColor, borderRadius: BorderRadius.circular(6)),
+                      ),
+                      Container(
+                        width: double.parse("$productStock"),
+                        height: scaler.getHeight(0.3),
+                        decoration: BoxDecoration(
+                            color: double.parse("$productStock") > 30 ? Theme.of(context).accentColor : Colors.deepOrange,
+                            borderRadius: BorderRadius.circular(6)),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: scaler.getHeight(0.5)),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[

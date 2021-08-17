@@ -38,7 +38,7 @@ class _HistoryOrderComponentState extends State<HistoryOrderComponent> {
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(50),border: Border.all(color: Theme.of(context).accentColor, width: 1)),
             child: Align(
               alignment: Alignment.center,
-              child: Text(historyArray[i],style: config.MyFont.style(context:context,style: Theme.of(context).textTheme.subtitle1)),
+              child: Text(historyArray[i]),
             ),
           ),
         ),
@@ -59,6 +59,7 @@ class _HistoryOrderComponentState extends State<HistoryOrderComponent> {
             elevation: 0,
             title: config.MyFont.title(context: context,text:"Riwayat belanja"),
             bottom: TabBar(
+              labelStyle: config.MyFont.textStyle,
               labelPadding: scaler.getPadding(0,0.5),
               unselectedLabelColor: Theme.of(context).accentColor,
               labelColor: Theme.of(context).primaryColor,

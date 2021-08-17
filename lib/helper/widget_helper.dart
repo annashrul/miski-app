@@ -286,9 +286,7 @@ class WidgetHelper{
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    config.MyFont.title(
-                        context: context,text:txt,fontSize: fontSize,fontWeight:fontWeight,color: colorTitle==null?Theme.of(context).textTheme.headline1.color:colorTitle
-                    ),
+                    config.MyFont.title(context: context,text:txt,fontSize: fontSize,fontWeight:fontWeight,color: colorTitle==null?Theme.of(context).textTheme.headline1.color:colorTitle),
                     if(subtitle!="") Container(
                       child: config.MyFont.subtitle(context: context,text:subtitle,fontSize: 8,color: Theme.of(context).textTheme.caption.color),
                     )

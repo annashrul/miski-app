@@ -33,7 +33,7 @@ class _HelpSupportWidgetState extends State<HelpSupportWidget> {
             decoration: BoxDecoration(
                 color: Theme.of(context).accentColor,
                 borderRadius: BorderRadius.only(topLeft: Radius.circular(5), topRight: Radius.circular(5))),
-            child: config.MyFont.title(context: context,text: res.question,fontSize: 9),
+            child: config.MyFont.subtitle(context: context,text: res.question,fontSize: 9,color: Theme.of(context).textTheme.bodyText1.color),
           ),
           Container(
             width: double.infinity,

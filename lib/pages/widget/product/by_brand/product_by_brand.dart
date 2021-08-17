@@ -72,7 +72,7 @@ class _ProductByBrandState extends State<ProductByBrand> with SingleTickerProvid
           floating: true,
           automaticallyImplyLeading: false,
           leading: new IconButton(
-            icon: new Icon(UiIcons.return_icon, color: Theme.of(context).primaryColor),
+            icon: new Icon(UiIcons.return_icon, color: Theme.of(context).hintColor),
             onPressed: () => Navigator.of(context).pop(),
           ),
 
@@ -133,18 +133,19 @@ class _ProductByBrandState extends State<ProductByBrand> with SingleTickerProvid
             ),
           ),
           bottom: TabBar(
+            // indicatorWeight: 0,
             controller: _tabController,
-            indicatorWeight: 5,
             indicatorSize: TabBarIndicatorSize.label,
             unselectedLabelColor: config.Colors.mainColors,
             labelColor: config.Colors.mainColors,
-            unselectedLabelStyle: config.MyFont.textStyle.copyWith(fontWeight: FontWeight.bold),
-            labelStyle:  config.MyFont.textStyle.copyWith(fontWeight: FontWeight.bold),
-            indicatorColor: config.Colors.mainColors,
+            unselectedLabelStyle: config.MyFont.textStyle,
+            labelStyle:  config.MyFont.textStyle,
+            // indicatorColor: config.Colors.mainColors,
+            labelPadding: EdgeInsets.symmetric(horizontal: 0),
             tabs: [
-              Tab(text: 'Home'),
-              Tab(text: 'Products'),
-              Tab(text: 'Reviews'),
+              tab(context, "Detail",_tabController.index==0),
+              tab(context, "Produk",_tabController.index==1),
+              tab(context, "Ulasan",_tabController.index==2),
             ],
           ),
         ),
@@ -155,7 +156,6 @@ class _ProductByBrandState extends State<ProductByBrand> with SingleTickerProvid
               child: Column(
                 children: <Widget>[
                   BrandHomeTabWidget(data: widget.data["data"]),
-
                 ],
               ),
             ),
@@ -164,8 +164,7 @@ class _ProductByBrandState extends State<ProductByBrand> with SingleTickerProvid
               child: Column(
                 children: <Widget>[
                   Padding(
-
-                      child: BrandProductTabWidget(data: widget.data["data"]),
+                    child: BrandProductTabWidget(data: widget.data["data"]),
                     padding: scaler.getPadding(0, 2),
                   )
 
@@ -215,6 +214,23 @@ class _ProductByBrandState extends State<ProductByBrand> with SingleTickerProvid
           ]),
         )
       ]),
+    );
+  }
+
+
+  Widget tab(BuildContext context,String label,bool isActive){
+    return Tab(
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 0),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(0),
+            color: Theme.of(context).primaryColor.withOpacity(0.09)
+        ),
+        child: Align(
+          alignment: Alignment.center,
+          child: config.MyFont.title(context: context,text:label,color: Theme.of(context).textTheme.bodyText1.color),
+        ),
+      ),
     );
   }
 }

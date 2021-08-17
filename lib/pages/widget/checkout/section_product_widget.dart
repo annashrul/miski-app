@@ -63,27 +63,35 @@ class _SectionProductWidgetState extends State<SectionProductWidget> {
                          Flexible(
                            child: Row(
                              crossAxisAlignment: CrossAxisAlignment.center,
+                             mainAxisAlignment: MainAxisAlignment.center,
                              children: <Widget>[
                                Expanded(
                                  child: Column(
                                    crossAxisAlignment: CrossAxisAlignment.start,
                                    children: <Widget>[
-                                     config.MyFont.title(context: context,text:res["title"],fontSize: 9),
+                                     config.MyFont.subtitle(context: context,text:res["title"],fontSize: 9),
                                      Row(
-                                       children: <Widget>[
-                                         config.MyFont.subtitle(context: context,text:config.MyFont.toMoney(res["qty"]),color:Theme.of(context).textTheme.caption.color),
-                                         SizedBox(width:scaler.getWidth(0.2)),
-                                         config.MyFont.subtitle(context: context,text:'*',fontSize: 8,color: Theme.of(context).textTheme.caption.color),
-                                         SizedBox(width:scaler.getWidth(0.2)),
-                                         config.MyFont.subtitle(context: context,text:config.MyFont.toMoney(res["harga_jual"]),color: config.Colors.moneyColors),
+                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                       children: [
+                                         Row(
+                                           crossAxisAlignment: CrossAxisAlignment.center,
+                                           children: <Widget>[
+                                             config.MyFont.subtitle(context: context,text:config.MyFont.toMoney(res["qty"]),color:Theme.of(context).textTheme.caption.color),
+                                             SizedBox(width:scaler.getWidth(0.2)),
+                                             config.MyFont.subtitle(context: context,text:'*',fontSize: 8,color: Theme.of(context).textTheme.caption.color),
+                                             SizedBox(width:scaler.getWidth(0.2)),
+                                             config.MyFont.subtitle(context: context,text:config.MyFont.toMoney(res["harga_jual"]),color: config.Colors.moneyColors),
+                                           ],
+                                         ),
+                                         config.MyFont.title(context: context,text:config.MyFont.toMoney(res["subtotal"]),fontSize: 9,color:config.Colors.moneyColors),
+
                                        ],
-                                       crossAxisAlignment: CrossAxisAlignment.center,
-                                     ),
+                                     )
                                    ],
                                  ),
                                ),
-                               SizedBox(width: 8),
-                               config.MyFont.title(context: context,text:config.MyFont.toMoney(res["subtotal"]),fontSize: 9,color:config.Colors.moneyColors),
+                               // SizedBox(width: 8),
+                               // config.MyFont.title(context: context,text:config.MyFont.toMoney(res["subtotal"]),fontSize: 9,color:config.Colors.moneyColors),
                              ],
                            ),
                          )

@@ -39,9 +39,9 @@ class AppConfig {
 
 class Colors {
   static const Color moneyColors = Color(0xFFff5722);
-  static const Color mainColors = Color(0xFF009DB5);
-  static const Color mainDarkColors = Color(0xFF22B7CE);
-  static const Color secondColors = Color(0xFF04526B);
+  static const Color mainColors = Color(0xFF9f8730);
+  static const Color mainDarkColors = Color(0xFF9f8730);
+  static const Color secondColors = Color(0xFF555f5e);
   static const Color secondDarkColors = Color(0xFFD3D3D3);
   static const Color accentColors = Color(0xFFADC4C8);
   static const Color accentDarkColors = Color(0xFFADC4C8);
@@ -142,11 +142,11 @@ class MyFont{
       fontWeight: fontWeight
     );
   }
-  static subtitle({BuildContext context,TextDecoration textDecoration,TextAlign textAlign = TextAlign.left,String text,int maxLines=10,Color color,double fontSize,FontWeight fontWeight=FontWeight.normal}){
+  static subtitle({BuildContext context,TextStyle themeStyle,TextDecoration textDecoration,TextAlign textAlign = TextAlign.left,String text,int maxLines=10,Color color,double fontSize,FontWeight fontWeight=FontWeight.normal}){
     return core(
         textDecoration: textDecoration,
         context: context,
-        themeStyle:  Theme.of(context).textTheme.subtitle1,
+        themeStyle:  themeStyle!=null?themeStyle:Theme.of(context).textTheme.subtitle1,
         fontSize:fontSize,
         textAlign: textAlign,
         maxLines: maxLines,
