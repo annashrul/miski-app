@@ -96,7 +96,6 @@ class WidgetHelper{
   myModal(BuildContext context,Widget child){
     return showModalBottomSheet(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(10.0))),
-        backgroundColor: Theme.of(context).primaryColor,
         context: context,
         isScrollControlled: true,
         builder: (context) => Padding(

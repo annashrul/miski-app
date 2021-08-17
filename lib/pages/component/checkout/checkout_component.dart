@@ -142,38 +142,7 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
                 address = data;
               });
               handleShipping(indexShipping["kurir"], "kurir");
-              // if(shippingKurir["arr"][indexShipping["kurir"]]["kurir"]=="instant"){
-              //   if(data["pinpoint"]==null||data["pinpoint"]=="-"){
-              //     print("PINPOINT ${data["pinpoint"]}");
-              //     WidgetHelper().notifDialog(context,"Informasi", "anda tidak dapat menggunakan alamat ini apablia memilih instant kurir", (){}, (){});
-              //     // WidgetHelper().showFloatingFlushbar(context, "failed","silahkan pilih alamat pengiriman instant di tambah alamat");
-              //
-              //     // Navigator.of(context).pop();
-              //
-              //     // return;
-              //   }
-              //   else{
-              //
-              //   }
-              // }
-              // else{
-              //   setState(() {
-              //     loadingShipping["layanan"] = true;
-              //     address = data;
-              //   });
-              //   handleShipping(indexShipping["kurir"], "kurir");
-              // }
-              // print(shippingKurir["arr"][indexShipping["kurir"]]["kurir"]);
-              // handleShipping(indexShipping["kurir"], "kurir");
-              // final ongkir = await FunctionCheckout().loadOngkir(
-              //     context: context,
-              //     kodeKecamatan: data["kd_kec"],
-              //     kurir: shippingKurir["arr"][indexShipping["kurir"]]["kurir"]);
-              // shippingLayanan["obj"] = ongkir["ongkir"]["ongkir"][0];
-              // cost = shippingLayanan["obj"]["cost"];
-              // grandTotal = subtotal + cost;
-              // loadingShipping["layanan"] = false;
-              // if (this.mounted) this.setState(() {});
+
             },
           ),
           Divider(),

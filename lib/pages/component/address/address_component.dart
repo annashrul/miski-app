@@ -84,8 +84,9 @@ class _AddressComponentState extends State<AddressComponent> {
                   itemCount: listAddressModel.result.data.length,
                   itemBuilder: (context,index){
                     final val=listAddressModel.result.data[index];
+                    print("val ${val.toJson()}");
                     Widget btn=WidgetHelper().myRipple(
-                      child: Icon(Ionicons.ios_close_circle_outline,color: Colors.red),
+                      child:WidgetHelper().icons(ctx: context,icon: UiIcons.trash),
                       callback: (){
                         WidgetHelper().notifDialog(context, "Perhatian !!","anda yakin akan menghapus data ini ??", (){Navigator.pop(context);},()async{
                           Navigator.pop(context);
@@ -149,11 +150,25 @@ class _AddressComponentState extends State<AddressComponent> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  config.MyFont.subtitle(context: context,text:"${val.penerima}",color: Theme.of(context).textTheme.caption.color),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      config.MyFont.subtitle(context: context,text:"${val.penerima}",color: Theme.of(context).textTheme.caption.color),
+                                      Row(
+                                        children: [
+                                          Icon(UiIcons.placeholder,size: scaler.getTextSize(8),),
+                                          SizedBox(width:scaler.getWidth(1)),
+                                          config.MyFont.subtitle(context: context,text:val.pinpoint!="-"?"bisa kurir instant":"pilih lokasi pick up",color: Theme.of(context).textTheme.caption.color,fontSize: 8),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                   SizedBox(height:5.0),
                                   config.MyFont.subtitle(context: context,text:"${val.noHp}",color: Theme.of(context).textTheme.caption.color),
                                   SizedBox(height:5.0),
                                   config.MyFont.subtitle(context: context,text:"${val.mainAddress}",color: Theme.of(context).textTheme.caption.color),
+                                  SizedBox(height:5.0),
+
                                   SizedBox(height:5.0),
                                   WidgetHelper().myRipple(
                                     callback: (){

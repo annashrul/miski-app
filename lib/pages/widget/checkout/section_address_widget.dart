@@ -52,7 +52,15 @@ class _SectionAddressWidgetState extends State<SectionAddressWidget> {
                   ),
                   SizedBox(height: scaler.getHeight(0.5)),
                   widget.isLoading?WidgetHelper().shimmer(context: context,width:30):config.MyFont.subtitle(context: context,text:widget.address["penerima"]),
-                  widget.isLoading?WidgetHelper().shimmer(context: context,width:50):config.MyFont.subtitle(context: context,text:"${widget.address["main_address"]}".toLowerCase(),color: Theme.of(context).textTheme.caption.color)
+                  widget.isLoading?WidgetHelper().shimmer(context: context,width:50):config.MyFont.subtitle(context: context,text:"${widget.address["main_address"]}".toLowerCase(),color: Theme.of(context).textTheme.caption.color),
+                  SizedBox(height: scaler.getHeight(0.5)),
+                  Row(
+                    children: [
+                      Icon(UiIcons.placeholder,size: scaler.getTextSize(8)),
+                      SizedBox(width:scaler.getWidth(1)),
+                      config.MyFont.subtitle(context: context,text:widget.address["pinpoint"]!="-"?"bisa kurir instant":"pilih lokasi pick up",color: Theme.of(context).textTheme.caption.color,fontSize: 8),
+                    ],
+                  ),
                 ],
               )
           ),

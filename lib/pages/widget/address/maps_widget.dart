@@ -153,7 +153,7 @@ class _MapsWidgetState extends State<MapsWidget> {
   Widget build(BuildContext context) {
     createMarker(context);
     return Scaffold(
-      appBar: WidgetHelper().appBarWithButton(context, "Pilih lokasi",(){},<Widget>[]),
+      appBar: WidgetHelper().appBarWithButton(context, "Pilih lokasi",(){},<Widget>[],param: "default"),
       body: _currentPosition == null? WidgetHelper().loadingWidget(context): GoogleMap(
         mapType: MapType.normal,
         markers: Set.of((marker != null) ? [marker] : []),

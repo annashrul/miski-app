@@ -51,6 +51,7 @@ class _MyAppState extends State<MyApp> {
           textSelectionColor: Color(0xFF252525),
           unselectedWidgetColor: Colors.black26,
           dialogBackgroundColor: Color(0xFF2C2C2C),
+          bottomSheetTheme: BottomSheetThemeData(backgroundColor: Color(0xFF252525),modalBackgroundColor: Color(0xFF252525)),
           textTheme: TextTheme(
             button: style.copyWith(color: Color(0xFF252525)),
             headline1: style.copyWith(fontSize: 10.0, fontWeight: FontWeight.bold,color: config.Colors().secondDarkColor(1)),
@@ -73,6 +74,7 @@ class _MyAppState extends State<MyApp> {
           hintColor: config.Colors().secondColor(1),
           textSelectionColor: Colors.grey[200],
           unselectedWidgetColor: Colors.grey[300],
+          bottomSheetTheme: BottomSheetThemeData(backgroundColor:Colors.white,modalBackgroundColor:Colors.white),
           textTheme: TextTheme(
             button: style.copyWith(color: Colors.white),
             headline1: style.copyWith(fontSize: 10.0, fontWeight: FontWeight.bold,color: config.Colors().secondColor(1)),
