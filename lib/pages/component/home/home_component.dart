@@ -128,18 +128,21 @@ class _HomeComponentState extends State<HomeComponent>{
             header: isLoadingGroup?WidgetHelper().baseLoading(context,Container(
               padding: scaler.getPadding(0,2),
               child: WidgetHelper().shimmer(context: context,height: 2,width: MediaQuery.of(context).size.width/1),
-            )):FilterProductSliderWidget(
-                heroTag: 'home_categories_1',
-                data: resFilter,
-                onChanged: (id) {
-                  this.setState(() {
-                    isLoadingProduct=true;
-                    idKelompok=id;
-                  });
-                  loadProduct(id);
-                }),
+            )):resFilter.length>0?Padding(
+              padding: scaler.getPaddingLTRB(0, 0.5, 0, 1),
+              child: FilterProductSliderWidget(
+                  heroTag: 'home_categories_1',
+                  data: resFilter,
+                  onChanged: (id) {
+                    this.setState(() {
+                      isLoadingProduct=true;
+                      idKelompok=id;
+                    });
+                    loadProduct(id);
+                  }),
+            ):SizedBox(),
             content:Container(
-              padding: scaler.getPadding(1,2),
+              padding: scaler.getPadding(0,2),
               child: Wrap(
                 children: [
                   WidgetHelper().titleQ(context,"Barang pilihan untuk kamu",icon: UiIcons.heart,padding: scaler.getPaddingLTRB(0,0,0,1),),
@@ -251,12 +254,11 @@ class _HomeComponentState extends State<HomeComponent>{
                             Hero(
                                 tag: "${globalPromoModel.result.data[index].title}${globalPromoModel.result.data[index].id}",
                                 child:WidgetHelper().baseImage(
-                                    globalPromoModel.result.data[index].gambar,
-                                    height: scaler.getHeight(9),
-                                    width: scaler.getWidth(15),
-                                    shape: BoxShape.circle
+                                  globalPromoModel.result.data[index].gambar,
+                                  height: scaler.getHeight(9),
+                                  width: scaler.getWidth(15),
+                                  shape: BoxShape.circle
                                 )
-
                             )
                           ],
                         ),

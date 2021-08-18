@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:typed_data';
@@ -8,6 +10,8 @@ import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:netindo_shop/provider/handle_http.dart';
+import 'package:http/http.dart' as http;
 
 class MapsWidget extends StatefulWidget {
   final dynamic latlong;
@@ -27,8 +31,8 @@ class _MapsWidgetState extends State<MapsWidget> {
   dynamic _currentPosition;
   StreamSubscription _locationSubscription;
   String currentAddress = "";
+  bool activegps=true;
   Future bodyMarker({latitude,longitude})async {
-    Uint8List imageData = await getMarker();
     LatLng latlng = LatLng(latitude,longitude);
     marker = Marker(
         markerId: MarkerId("home"),
@@ -37,38 +41,33 @@ class _MapsWidgetState extends State<MapsWidget> {
         zIndex: 2,
         flat: true,
         anchor: Offset(0.5, 0.5),
-        icon: BitmapDescriptor.fromBytes(imageData)
     );
     this.setState(() {});
   }
-  Future<Uint8List> getMarker() async {
-    ByteData byteData = await DefaultAssetBundle.of(context).load(pin);
-    return byteData.buffer.asUint8List();
-  }
-  _getCurrentLocation() {
-    geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best).then((Position position) async {
-      dynamic newPosition = position.toJson();
-      if(widget.latlong!=null){newPosition = widget.latlong;}
-      double lat = newPosition[StringConfig.latitude];
-      double lng = newPosition[StringConfig.longitude];
-      await bodyMarker(latitude: lat,longitude: lng);
-      _currentPosition = {StringConfig.latitude:lat,StringConfig.longitude:lng};
-      getAddressFromLatLng(lat,lng);
-      if(this.mounted)setState((){});
-    }).catchError((e) {
-      print(e);
-    });
-  }
-  createMarker(context) {
-    if (customIcon == null) {
-      ImageConfiguration configuration = createLocalImageConfiguration(context);
-      BitmapDescriptor.fromAssetImage(configuration, pin).then((icon) {
-        setState(() {
-          customIcon = icon;
-        });
+
+  _getCurrentLocation() async {
+
+
+    if (!(await Geolocator().isLocationServiceEnabled())){
+      activegps=false;
+    }
+    else{
+      geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high).then((Position position) async {
+        dynamic newPosition = position.toJson();
+        if(widget.latlong!=null){newPosition = widget.latlong;}
+        double lat = newPosition[StringConfig.latitude];
+        double lng = newPosition[StringConfig.longitude];
+        await bodyMarker(latitude: lat,longitude: lng);
+        _currentPosition = {StringConfig.latitude:lat,StringConfig.longitude:lng};
+        getAddressFromLatLng(lat,lng);
+        if(this.mounted)setState((){});
+      }).catchError((e) {
+        print(e);
       });
     }
+
   }
+
   getAddressFromLatLng(lat, lng) async {
     final scaler = config.ScreenScale(context).scaler;
     try {
@@ -136,7 +135,6 @@ class _MapsWidgetState extends State<MapsWidget> {
   void initState() {
     super.initState();
     _getCurrentLocation();
-    assetImage = AssetImage("assets/img/splash.gif");
     markers = Set.from([]);
   }
 
@@ -150,13 +148,49 @@ class _MapsWidgetState extends State<MapsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    createMarker(context);
     return Scaffold(
       appBar: WidgetHelper().appBarWithButton(context, "Lokasi instant kurir",(){},<Widget>[],param:"default"),
-      body: _currentPosition == null ? WidgetHelper().loadingWidget(context): GoogleMap(
+      body:!activegps?Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        padding: EdgeInsets.symmetric(horizontal:50),
+        child: Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                height: 250,
+                width: 250,
+                child: Image.asset('${StringConfig.localAssets}nogps.png'),
+              ),
+              SizedBox(height: 20),
+              config.MyFont.subtitle(context: context,text:"anda harus mengaktifkan gps untuk mendapatkan lokasi",textAlign: TextAlign.center),
+              SizedBox(
+                height:40,
+              ),
+              RaisedButton(onPressed: ()async{
+                if (!(await Geolocator().isLocationServiceEnabled())){
+                  setState(() {
+                    activegps=false;
+                  });
+                }else{
+                  setState(() {
+                    activegps=true;
+                  });
+                  _getCurrentLocation();
+                }
+              },
+                child: config.MyFont.subtitle(context: context,text:"coba lagi",textAlign: TextAlign.center),
+              )
+            ],
+          ),
+        ),
+      ):_currentPosition == null ? WidgetHelper().loadingWidget(context): GoogleMap(
         mapType: MapType.normal,
         markers: Set.of((marker != null) ? [marker] : []),
         onTap: (pos) async {
+          print("${pos.latitude} ${pos.longitude}");
           await bodyMarker(latitude: pos.latitude,longitude: pos.longitude);
           getAddressFromLatLng(pos.latitude, pos.longitude);
           if(this.mounted) setState((){});

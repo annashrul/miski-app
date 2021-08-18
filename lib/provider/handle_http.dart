@@ -25,11 +25,11 @@ class HandleHttp{
         'myconnection':"${StringConfig.connection}",
       };
       final response = await client.get("${StringConfig.baseUrl}$url", headers:head).timeout(Duration(seconds: StringConfig.timeout));
-      print("=================== SUCCESS $url  ==========================");
+      print("=================== SUCCESS $url ${response.body}  ==========================");
       if (response.statusCode == 200) {
-          final jsonResponse = json.decode(response.body);
+        final jsonResponse = json.decode(response.body);
         if(jsonResponse['result'].length>0){
-          return param==null?response.body:param(response.body);
+          return param==null?jsonResponse:param(response.body);
         }else{
           print("=================== GET DATA $url = NODATA ============================");
           return StringConfig.errNoData;

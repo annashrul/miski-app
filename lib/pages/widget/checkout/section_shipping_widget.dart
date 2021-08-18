@@ -37,11 +37,9 @@ class _SectionShippingWidgetState extends State<SectionShippingWidget> {
   }
   @override
   Widget build(BuildContext context) {
-
     dynamic resKurir=widget.kurir["obj"];
     dynamic resLayanan=widget.layanan["obj"];
 
-    print("############### KURIR $resKurir");
     final scaler = config.ScreenScale(context).scaler;
     return Padding(
       padding: scaler.getPadding(0,2),
@@ -61,7 +59,6 @@ class _SectionShippingWidgetState extends State<SectionShippingWidget> {
                     return;
                   }
                 }
-
                 print(widget.kurir["arr"][i]);
                 widget.callback(i,"kurir");
                 widget.kurir["obj"] = widget.kurir["arr"][i];

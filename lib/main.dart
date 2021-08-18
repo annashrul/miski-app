@@ -36,7 +36,6 @@ class _MyAppState extends State<MyApp> {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp,DeviceOrientation.portraitDown]);
     TextStyle style = config.MyFont.textStyle;
     return MaterialApp(
-        // checkerboardRasterCacheImages: true,
         title: 'n-shop',
         initialRoute: '/',
         onGenerateRoute: RouteGenerator.generateRoute,

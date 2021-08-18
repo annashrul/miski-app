@@ -1,12 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
-
+import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:netindo_shop/config/database_config.dart';
-import 'package:netindo_shop/config/string_config.dart';
+import 'package:netindo_shop/config/string_config.dart' as config;
 import 'package:netindo_shop/helper/database_helper.dart';
 import 'package:netindo_shop/helper/user_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
@@ -36,12 +36,12 @@ class FunctionHelper{
     SharedPreferences sess = await SharedPreferences.getInstance();
     List<String> tenant = sess.getStringList("tenant");
     Map<String,Object> setTenant = {
-      StringConfig.idTenant:tenant[0],
-      StringConfig.namaTenant:tenant[1],
-      StringConfig.emailTenant:tenant[2],
-      StringConfig.telpTenant:tenant[3],
-      StringConfig.alamatTenant:tenant[4],
-      StringConfig.logoTenant:tenant[5],
+      config.StringConfig.idTenant:tenant[0],
+      config.StringConfig.namaTenant:tenant[1],
+      config.StringConfig.emailTenant:tenant[2],
+      config.StringConfig.telpTenant:tenant[3],
+      config.StringConfig.alamatTenant:tenant[4],
+      config.StringConfig.logoTenant:tenant[5],
     };
 
     return setTenant;
@@ -64,26 +64,8 @@ class FunctionHelper{
     }
   }
 
-  getCurrentLocation(){
-    final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
-    geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best).then((Position position) async {
-      String _currentAddress;
-      print(position);
-      try {
-        List<Placemark> p = await geolocator.placemarkFromCoordinates(position.latitude, position.longitude);
-        Placemark place = p[0];
-        _currentAddress = "${place.thoroughfare}, ${place.subLocality}, ${place.subAdministrativeArea}, ${place.administrativeArea}";
-        print(_currentAddress);
-        return place;
-      } catch (e) {
-        print(e);
-      }
-    }).catchError((e) {
-      print(e);
-    });
 
 
-  }
 
   Future getImage(param) async {
     ImageSource imageSource;
@@ -242,19 +224,33 @@ class FunctionHelper{
   }
 
   Future rmPinPoint()async{
-    await rmSession(StringConfig.longitude);
-    await rmSession(StringConfig.latitude);
+    await rmSession(config.StringConfig.longitude);
+    await rmSession(config.StringConfig.latitude);
   }
 
   Future logout(BuildContext context)async{
     WidgetHelper().notifDialog(context,"Perhatian !!","Anda yakin akan keluar dari aplikasi ??", (){Navigator.pop(context);}, ()async{
       DatabaseConfig db = DatabaseConfig();
       final id = await UserHelper().getDataUser('id');
-      await db.update(UserQuery.TABLE_NAME, {'id':"${id.toString()}",StringConfig.is_login:"0",StringConfig.onboarding:"1"});
+      await db.update(UserQuery.TABLE_NAME, {'id':"${id.toString()}",config.StringConfig.is_login:"0",config.StringConfig.onboarding:"1"});
       WidgetHelper().myPushRemove(context,SignInComponent());
     });
 
   }
+  static getEncode(val){
+    Codec<String, String> stringToBase64 = utf8.fuse(base64);
+    return stringToBase64.encode(val);
+  }
 
 
+  static statusCheckout(status){
+    if(status==0) return {"title":"PENDING","img":config.StringConfig.localAssets+"pending.png"};
+    if(status==1) return {"title":"SELESAI","img":config.StringConfig.localAssets+"success.png"};
+    if(status==2) return {"title":"DIBATALKAN","img":config.StringConfig.localAssets+"cancel.png"};
+  }
+
+  static toHome(BuildContext context){
+    Navigator.of(context).pushNamedAndRemoveUntil("/${config.StringConfig.main}", (route) => false,arguments: config.StringConfig.defaultTab);
+  }
 }
+

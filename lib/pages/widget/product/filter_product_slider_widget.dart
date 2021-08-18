@@ -26,7 +26,14 @@ class _FilterProductSliderWidgetState extends State<FilterProductSliderWidget> {
         children: <Widget>[
           WidgetHelper().myRipple(
             radius: 0,
-            callback: (){},
+            callback: (){
+              setState(() {
+                widget.data.forEach((filter) {
+                  filter["selected"] = false;
+                });
+                widget.onChanged("");
+              });
+            },
             child: Container(
                 padding: scaler.getPadding(1,2),
                 decoration: BoxDecoration(
@@ -34,7 +41,7 @@ class _FilterProductSliderWidgetState extends State<FilterProductSliderWidget> {
                   borderRadius: BorderRadius.only(bottomRight: Radius.circular(60), topRight: Radius.circular(60)),
                 ),
                 child: Icon(
-                  UiIcons.settings_2,
+                  UiIcons.reload,
                   color: Theme.of(context).primaryColor,
                 )
             )
@@ -116,7 +123,7 @@ class _CategoryIconWidgetState extends State<CategoryIconWidget> with SingleTick
         curve: Curves.easeInOut,
         padding:scaler.getPadding(0,2),
         decoration: BoxDecoration(
-          color: widget.data["selected"] ? Theme.of(context).primaryColor : Colors.transparent,
+          color: widget.data["selected"] ? config.Colors.secondColors : Colors.transparent,
           borderRadius: BorderRadius.circular(50),
         ),
         child: Row(

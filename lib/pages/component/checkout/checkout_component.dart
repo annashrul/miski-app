@@ -24,12 +24,9 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
   dynamic shippingLayanan = {};
   dynamic loadingShipping = {"kurir": true, "layanan": true};
   Map<String, Object> indexShipping = {"kurir": 0, "layanan": 0};
+
   bool isLoading = true;
-  int indexAddress = 0,
-      cost = 0,
-      subtotal = 0,
-      grandTotal = 0,
-      diskonVoucher = 0;
+  int indexAddress = 0,cost = 0,subtotal = 0,grandTotal = 0,diskonVoucher = 0;
   Future loadData(String type) async {
     final resDetail = await FunctionCheckout().loadData(context: context, type: type, ongkos: cost);
     if (resDetail == StringConfig.errNoData) {
@@ -70,14 +67,29 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
     if (type == "kurir") {
       String destination = address["kd_kec"];
       String courier = shippingKurir["arr"][i]["kurir"];
-      indexShipping["kurir"] = i;
-      indexShipping["layanan"] = 0;
       loadingShipping["layanan"] = true;
-      if (courier == "instant") {
+      if(address["pinpoint"]!="-"){
+        shippingKurir["obj"] = shippingKurir["arr"].last;
+        shippingLayanan["obj"] = shippingLayanan["arr"].last;
+        indexShipping = {"kurir": shippingKurir["arr"].length-1, "layanan": shippingLayanan["arr"].length-1};
+        String latitude   = "${address["pinpoint"]}".split(",")[0];
+        String longitude  = "${address["pinpoint"]}".split(",")[1];
+        destination = "$latitude,$longitude";
+        courier = shippingKurir["arr"][shippingKurir["arr"].length-1]["kurir"];
+      }
+      else if (address["pinpoint"]!="-"&&courier == "instant") {
         String latitude   = "${address["pinpoint"]}".split(",")[0];
         String longitude  = "${address["pinpoint"]}".split(",")[1];
         destination = "$latitude,$longitude";
       }
+      else if(address["pinpoint"]=="-"&&courier == "instant"){
+        indexShipping["kurir"] = 0;
+        destination = address["kd_kec"];
+        courier = shippingKurir["arr"][0]["kurir"];
+        shippingKurir["obj"] = shippingKurir["arr"][0];
+        shippingLayanan["obj"] = shippingLayanan["arr"][0];
+      }
+
       final ongkir = await FunctionCheckout().loadOngkir(context: context, kodeKecamatan: destination, kurir: courier);
       loadingShipping["layanan"] = false;
       shippingLayanan["arr"] = ongkir["ongkir"]["ongkir"];
@@ -138,9 +150,18 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
             address: address,
             callback: (data) async {
               setState(() {
-                loadingShipping["layanan"] = true;
                 address = data;
               });
+              // if(data["pinpoint"]!="-"){
+              //   setState(() {
+              //     shippingKurir["obj"] = shippingKurir["arr"].last;
+              //     shippingLayanan["obj"] = shippingLayanan["arr"].last;
+              //     indexShipping = {"kurir": shippingKurir["arr"].length-1, "layanan": shippingLayanan["arr"].length-1};
+              //   });
+              //   print("###############################");
+              //   print(shippingKurir["arr"].length-1);
+              //   handleShipping(shippingKurir["arr"].length-1, "kurir");
+              // }
               handleShipping(indexShipping["kurir"], "kurir");
 
             },

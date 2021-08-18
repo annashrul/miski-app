@@ -9,6 +9,7 @@ class StringConfig{
   static const String password       = "\$2b\$08\$hLMU6rEvNILCMaQbthARK.iCmDRO7jNbUB8CcvyRStqsHD4UQxjDO";
   static const String oneSignalId    = "b1057dd8-ea51-41d2-be3b-a6778ffbf5e4";
   static const int timeout           = 60;
+  static const String apiKey = "AIzaSyDlQpn8WzbxoOPP84i1FHAaM1Kv1_KGbuc";
 
   // ************************ PAGES  ************************ //
   static const int defaultTab       = 2;
@@ -91,7 +92,6 @@ class StringConfig{
   static const  String titleErrTimeout    = 'Terjadi Kesalahan !';
   static const  String descErrTimeout = 'silahkan cobalagi untuk melanjutkan proses ini';
 
-
-
-
 }
+
+

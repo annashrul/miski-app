@@ -62,6 +62,8 @@ class Result {
     this.createdAt,
     this.updatedAt,
     this.oneSignalId,
+    this.mainAddress,
+    this.noHp,
     this.logo,
     this.atasNama,
     this.kodeUnik,
@@ -99,10 +101,12 @@ class Result {
   DateTime createdAt;
   DateTime updatedAt;
   String oneSignalId;
+  String mainAddress;
+  String noHp;
   String logo;
   String atasNama;
   int kodeUnik;
-  String bankCode;
+  dynamic bankCode;
   String logoKurir;
   String logoTenant;
   List<Barang> barang;
@@ -136,6 +140,8 @@ class Result {
     createdAt: DateTime.parse(json["created_at"]),
     updatedAt: DateTime.parse(json["updated_at"]),
     oneSignalId: json["one_signal_id"],
+    mainAddress: json["main_address"],
+    noHp: json["no_hp"],
     logo: json["logo"],
     atasNama: json["atas_nama"],
     kodeUnik: json["kode_unik"],
@@ -174,6 +180,8 @@ class Result {
     "created_at": createdAt.toIso8601String(),
     "updated_at": updatedAt.toIso8601String(),
     "one_signal_id": oneSignalId,
+    "main_address": mainAddress,
+    "no_hp": noHp,
     "logo": logo,
     "atas_nama": atasNama,
     "kode_unik": kodeUnik,
@@ -221,7 +229,7 @@ class Barang {
   DateTime createdAt;
   DateTime updatedAt;
   String totalrecords;
-  double rating;
+  int rating;
 
   factory Barang.fromJson(Map<String, dynamic> json) => Barang(
     id: json["id"],
@@ -240,7 +248,7 @@ class Barang {
     createdAt: DateTime.parse(json["created_at"]),
     updatedAt: DateTime.parse(json["updated_at"]),
     totalrecords: json["totalrecords"],
-    rating: json["rating"].toDouble(),
+    rating: json["rating"],
   );
 
   Map<String, dynamic> toJson() => {

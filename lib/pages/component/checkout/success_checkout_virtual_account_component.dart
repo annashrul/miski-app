@@ -4,8 +4,11 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:getwidget/components/accordion/gf_accordion.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/string_config.dart';
+import 'package:netindo_shop/config/ui_icons.dart';
+import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/checkout/detail_checkout_virtual_account_model.dart';
+import 'package:netindo_shop/provider/handle_http.dart';
 
 // ignore: must_be_immutable
 class SuccessCheckoutVirtualAccountComponent extends StatefulWidget {
@@ -19,11 +22,25 @@ class _SuccessCheckoutVirtualAccountComponentState extends State<SuccessCheckout
   int _counter = 0;
   AnimationController _controller;
   int levelClock = 86400;
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+  dynamic resStatus={"img":"","title":""};
+  loadStatus(status){
+    final funcStatus = FunctionHelper.statusCheckout(status);
+    resStatus.addAll(funcStatus);
+    this.setState(() {});
   }
+ Future checkStatus()async{
+   WidgetHelper().loadingDialog(context);
+   String kdTrx=FunctionHelper.getEncode(widget.detailCheckoutVirtualAccountModel.result.invoiceNo);
+   final res = await HandleHttp().getProvider("transaction/payment/check/$kdTrx", null,context: context);
+   Navigator.of(context).pop();
+   int status = res["result"]["status"];
+   final funcStatus = FunctionHelper.statusCheckout(status);
+   if(status!=0){
+     WidgetHelper().notifOneBtnDialog(context, "Informasi", "Transaksi anda sudah ${funcStatus["title"]}", ()=>FunctionHelper.toHome(context));
+   }else{
+     loadStatus(status);
+   }
+ }
 
   @override
   void dispose() {
@@ -39,12 +56,15 @@ class _SuccessCheckoutVirtualAccountComponentState extends State<SuccessCheckout
         duration: Duration(seconds:levelClock)
     );
     _controller.forward();
+    loadStatus(0);
   }
 
 
   @override
   Widget build(BuildContext context) {
     final scale = config.ScreenScale(context).scaler;
+
+
     return WillPopScope(
         child:  Scaffold(
           appBar: WidgetHelper().appBarWithButton(context, "Virtual account (VA)", (){
@@ -61,6 +81,20 @@ class _SuccessCheckoutVirtualAccountComponentState extends State<SuccessCheckout
                   children: [
                     Center(child: config.MyFont.subtitle(context: context,text:"Sisa waktu pembayaran")),
                     Center(child: Countdown(animation: StepTween(begin: levelClock, end: 0).animate(_controller))),
+                    SizedBox(height: scale.getHeight(1)),
+                    Container(
+                      alignment: Alignment.center,
+                      height: scale.getHeight(3),
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(resStatus["img"])
+                        )
+                      ),
+                    ),
+                    SizedBox(height: scale.getHeight(0.2)),
+                    Center(
+                      child: config.MyFont.title(context:context,text:resStatus["title"],textAlign: TextAlign.center,color: config.Colors.mainColors,fontSize: 12),
+                    ),
                     SizedBox(height: scale.getHeight(1)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -80,7 +114,7 @@ class _SuccessCheckoutVirtualAccountComponentState extends State<SuccessCheckout
                     SizedBox(height: scale.getHeight(1)),
                     Divider(thickness: scale.getHeight(0.5)),
                     SizedBox(height: scale.getHeight(1)),
-                    config.MyFont.subtitle(context: context,text:"Petunjuk pembayaran"),
+                    widget.detailCheckoutVirtualAccountModel.result.instruction.length<1?Text(""):config.MyFont.subtitle(context: context,text:"Petunjuk pembayaran"),
                   ],
                 ),
               ),
@@ -99,7 +133,7 @@ class _SuccessCheckoutVirtualAccountComponentState extends State<SuccessCheckout
                           collapsedTitleBackgroundColor:config.Colors.secondColors,
                           contentBackgroundColor:Colors.transparent ,
                           expandedTitleBackgroundColor: config.Colors.secondColors,
-                          titleChild: config.MyFont.subtitle(context: context,text:resParent.title),
+                          titleChild: config.MyFont.subtitle(context: context,text:resParent.title,color: config.Colors.secondDarkColors),
                           contentChild: ListView.separated(
                             shrinkWrap: true,
                             scrollDirection: Axis.vertical,
@@ -141,6 +175,7 @@ class _SuccessCheckoutVirtualAccountComponentState extends State<SuccessCheckout
             mainAxisSize: MainAxisSize.min,
             children: [
               WidgetHelper().myRipple(
+                callback: ()=>checkStatus(),
                 child: Container(
                     alignment: Alignment.center,
                     padding: EdgeInsets.symmetric(vertical: 14),

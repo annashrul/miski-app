@@ -1,8 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:netindo_shop/config/app_config.dart' as config;
 import 'package:netindo_shop/config/string_config.dart';
+import 'package:netindo_shop/helper/function_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
 import 'package:netindo_shop/model/checkout/resi_model.dart';
 import 'package:netindo_shop/pages/component/history/resi_component.dart';
@@ -31,10 +31,26 @@ class _HistoryModalOptionWIdgetState extends State<HistoryModalOptionWIdget> {
       WidgetHelper().myPush(context,ResiComponent(resiModel: resiModel));
     }
   }
+
+  Future done()async{
+    final result=widget.val.toJson();
+    String kdTrx=FunctionHelper.getEncode(result["kd_trx"]);
+    WidgetHelper().notifDialog(context, "Informasi","Tekan oke untuk menyelesaikan pesanan anda", (){}, ()async{
+      Navigator.of(context).pop();
+      WidgetHelper().loadingDialog(context);
+      final res=await HandleHttp().putProvider("transaction/$kdTrx", {});
+      Navigator.of(context).pop();
+      if(res!=null){
+        WidgetHelper().notifOneBtnDialog(context,"Berhasil", "Terimakasih,pesanan anda sudah selesai", ()=>Navigator.of(context).pushNamedAndRemoveUntil("/${StringConfig.main}", (route) => false,arguments: StringConfig.defaultTab));
+      }
+    });
+
+  }
+
   @override
   Widget build(BuildContext context) {
     final val = widget.val;
-    print(val.toJson());
+    print(FunctionHelper.getEncode(val.kdTrx));
     final scaler=config.ScreenScale(context).scaler;
     return Padding(
       padding: scaler.getPadding(1, 2),
@@ -42,9 +58,7 @@ class _HistoryModalOptionWIdgetState extends State<HistoryModalOptionWIdget> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          buildOption(context: context,title: "Detail pembelian",callback: (){
-            Navigator.of(context).pushNamed("/${StringConfig.detailHistoryOrder}",arguments: base64.encode(utf8.encode(val.kdTrx)));
-          }),
+          buildOption(context: context,title: "Detail pembelian",callback: ()=>Navigator.of(context).pushNamed("/${StringConfig.detailHistoryOrder}",arguments: FunctionHelper.getEncode(val.kdTrx))),
           Divider(),
           if(widget.barang.length==1)buildOption(context: context,title: "Beli lagi",callback: (){
             Navigator.of(context).pushNamed("/${StringConfig.detailProduct}",arguments: {
@@ -54,15 +68,13 @@ class _HistoryModalOptionWIdgetState extends State<HistoryModalOptionWIdget> {
             });
           }),
           if(widget.barang.length==1)Divider(),
-          if(val.status==4)buildOption(context: context,title: "Beri ulasan",callback: (){
-            WidgetHelper().myModal(context, ListProductReviewWidget(data: val.toJson()["detail"]));
-          }),
+
+          if(val.status==4)buildOption(context: context,title: "Beri ulasan",callback: ()=>WidgetHelper().myModal(context, ListProductReviewWidget(data: val.toJson()["detail"]))),
           if(val.status==4)Divider(),
+
           if(val.resi!="-")buildOption(context: context,title: "Lacak resi",callback: (){checkResi();}),
           if(val.resi!="-")Divider(),
-          buildOption(context: context,title: "Tanya penjual",callback: (){
-            Navigator.of(context).pushNamed("/${StringConfig.main}", arguments: 3);
-          }),
+          buildOption(context: context,title: "Tanya penjual",callback: ()=>Navigator.of(context).pushNamed("/${StringConfig.main}", arguments: 3)),
           Divider(),
           if(val.status==0) buildOption(context: context,title: "Upload bukti transfer",callback: (){
             Navigator.of(context).pushNamed("/${StringConfig.successCheckout}",arguments: {
@@ -77,6 +89,8 @@ class _HistoryModalOptionWIdgetState extends State<HistoryModalOptionWIdget> {
               "bank_code":"${val.bankCode}",
             });
           }),
+          if(val.status==3) buildOption(context: context,title: "Selesaikan pesanan",callback: ()=>done()),
+          if(val.status==3) Divider(),
         ],
       ),
     );

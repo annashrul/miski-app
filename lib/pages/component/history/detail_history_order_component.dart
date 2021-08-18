@@ -9,7 +9,6 @@ import 'package:netindo_shop/config/string_config.dart';
 import 'package:netindo_shop/config/ui_icons.dart';
 import 'package:netindo_shop/helper/skeleton_helper.dart';
 import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/model/checkout/resi_model.dart';
 import 'package:netindo_shop/model/history/order/detail_history_order_model.dart';
 import 'package:netindo_shop/pages/widget/history/history_modal_option_widget.dart';
 import 'package:netindo_shop/provider/handle_http.dart';
@@ -25,7 +24,6 @@ class _DetailHistoryOrderComponentState extends State<DetailHistoryOrderComponen
   var scaffoldKey = GlobalKey<ScaffoldState>();
   DetailHistoryOrderModel detailHistoryOrderModel;
   bool isLoading=false;
-  ResiModel resiModel;
   Future loadData()async{
     var res = await HandleHttp().getProvider("transaction/report/${widget.data}", detailHistoryOrderModelFromJson,context: context);
     if(res!=null){
@@ -34,18 +32,7 @@ class _DetailHistoryOrderComponentState extends State<DetailHistoryOrderComponen
       setState(() {});
     }
   }
-  Future checkResi() async{
-    WidgetHelper().loadingDialog(context);
-    var res = await HandleHttp().postProvider("kurir/cek/resi",{
-      "resi":'Jd0098226293',
-      "kurir":'jnt'
-    });
-    if(res!=null){
-      Navigator.pop(context);
-      setState(() { resiModel = ResiModel.fromJson(res);});
-      Navigator.of(context).pushNamed("/${StringConfig.resi}");
-    }
-  }
+
   @override
   void initState() {
     super.initState();
@@ -182,7 +169,7 @@ class _DetailHistoryOrderComponentState extends State<DetailHistoryOrderComponen
                         ),
                       ),
                       Divider(),
-                      config.MyFont.subtitle(context: context,text:"jalan kebon manggu rt 02/04 kelurahan padasuka kecamatan cimahi tengah kota cimahi"),
+                      config.MyFont.subtitle(context: context,text:detailHistoryOrderModel.result.mainAddress),
                     ],
                   ),
                 ),
