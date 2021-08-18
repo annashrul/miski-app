@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:netindo_shop/config/database_config.dart';
-import 'package:netindo_shop/config/string_config.dart';
-import 'package:netindo_shop/helper/database_helper.dart';
-import 'package:netindo_shop/helper/function_helper.dart';
-import 'package:netindo_shop/helper/user_helper.dart';
+import 'package:miski_shop/config/database_config.dart';
+import 'package:miski_shop/config/string_config.dart';
+import 'package:miski_shop/helper/database_helper.dart';
+import 'package:miski_shop/helper/function_helper.dart';
+import 'package:miski_shop/helper/user_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreenComponent extends StatefulWidget {
@@ -80,7 +80,7 @@ class _SplashScreenComponentState extends State<SplashScreenComponent> {
   void initState() {
     super.initState();
     loadData();
-    assetImage = AssetImage("assets/img/splash.gif");
+    assetImage = AssetImage("${StringConfig.localAssets}ic_launcher.png");
   }
 
  
@@ -94,7 +94,6 @@ class _SplashScreenComponentState extends State<SplashScreenComponent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: Container(
         alignment: Alignment.center,
         decoration: BoxDecoration(

@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:netindo_shop/model/bank/bank_model.dart';
-import 'package:netindo_shop/provider/handle_http.dart';
+import 'package:miski_shop/model/bank/bank_model.dart';
+import 'package:miski_shop/provider/handle_http.dart';
 
 class FunctionBank{
   Future loadData({BuildContext context})async{

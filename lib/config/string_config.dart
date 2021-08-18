@@ -67,7 +67,7 @@ class StringConfig{
 
   // ************************ GENERAL  ************************ //
   static final int noDataNumber = 10000;
-  static final int perpage = 15;
+  static final int perpage = 7;
   static final double iconSize = 12;
   static final userImage = localAssets+"user2.jpg";
   static const version = "0.0.1";

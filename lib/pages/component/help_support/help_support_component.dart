@@ -1,12 +1,12 @@
 
 import 'package:flutter/material.dart';
-import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/ui_icons.dart';
-import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/model/help_support/list_help_support_category_model.dart';
-import 'package:netindo_shop/model/help_support/list_help_support_model.dart';
-import 'package:netindo_shop/pages/widget/help_support/help_support_widget.dart';
-import 'package:netindo_shop/provider/handle_http.dart';
+import 'package:miski_shop/config/app_config.dart' as config;
+import 'package:miski_shop/config/ui_icons.dart';
+import 'package:miski_shop/helper/widget_helper.dart';
+import 'package:miski_shop/model/help_support/list_help_support_category_model.dart';
+import 'package:miski_shop/model/help_support/list_help_support_model.dart';
+import 'package:miski_shop/pages/widget/help_support/help_support_widget.dart';
+import 'package:miski_shop/provider/handle_http.dart';
 
 class HelpSupportComponent extends StatefulWidget {
   @override

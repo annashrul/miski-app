@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/ui_icons.dart';
+import 'package:miski_shop/config/app_config.dart' as config;
+import 'package:miski_shop/config/ui_icons.dart';
 
 class SearchBarWidget extends StatelessWidget {
   final Function(String any) callback;

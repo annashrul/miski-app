@@ -1,6 +1,6 @@
 
 
-import 'package:netindo_shop/helper/database_helper.dart';
+import 'package:miski_shop/helper/database_helper.dart';
 import 'package:sqflite/sqflite.dart' as sqlite;
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite/sqlite_api.dart';
@@ -21,7 +21,7 @@ class DatabaseConfig {
 
   Future<Database> openDB() async {
     final dbPath = await sqlite.getDatabasesPath();
-    return sqlite.openDatabase(path.join(dbPath, 'netindo_shop.db'),
+    return sqlite.openDatabase(path.join(dbPath, 'miski_shop.db'),
         onCreate: (db, version) {
           tables.forEach((table) async {
             await db.execute(table).then((value) {

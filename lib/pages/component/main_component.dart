@@ -1,21 +1,26 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/string_config.dart';
-import 'package:netindo_shop/config/ui_icons.dart';
-import 'package:netindo_shop/helper/function_helper.dart';
-import 'package:netindo_shop/helper/user_helper.dart';
-import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/pages/component/chat/chat_component.dart';
-import 'package:netindo_shop/pages/component/favorite/favorite_component.dart';
-import 'package:netindo_shop/pages/component/home/home_component.dart';
-import 'package:netindo_shop/pages/component/notification/notification_component.dart';
-import 'package:netindo_shop/pages/component/profile/profile_component.dart';
-import 'package:netindo_shop/pages/widget/address/maps_widget.dart';
-import 'package:netindo_shop/pages/widget/drawer_widget.dart';
-import 'package:netindo_shop/provider/base_provider.dart';
+import 'package:miski_shop/config/app_config.dart' as config;
+import 'package:miski_shop/config/string_config.dart';
+import 'package:miski_shop/config/ui_icons.dart';
+import 'package:miski_shop/helper/function_helper.dart';
+import 'package:miski_shop/helper/user_helper.dart';
+import 'package:miski_shop/helper/widget_helper.dart';
+import 'package:miski_shop/model/cart/cart_model.dart';
+import 'package:miski_shop/pages/component/chat/chat_component.dart';
+import 'package:miski_shop/pages/component/favorite/favorite_component.dart';
+import 'package:miski_shop/pages/component/home/home_component.dart';
+import 'package:miski_shop/pages/component/notification/notification_component.dart';
+import 'package:miski_shop/pages/component/profile/profile_component.dart';
+import 'package:miski_shop/pages/widget/address/maps_widget.dart';
+import 'package:miski_shop/pages/widget/drawer_widget.dart';
+import 'package:miski_shop/provider/base_provider.dart';
+import 'package:miski_shop/provider/cart_provider.dart';
+import 'package:miski_shop/provider/user_provider.dart';
+import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class MainComponent extends StatefulWidget {
@@ -26,6 +31,7 @@ class MainComponent extends StatefulWidget {
   MainComponent({
     Key key,
     this.currentTab,
+    this.currentPage
   }) : super(key: key);
   @override
   _MainComponentState createState() => _MainComponentState();
@@ -34,24 +40,15 @@ class MainComponent extends StatefulWidget {
 class _MainComponentState extends State<MainComponent> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   int totalCart=0;
-  dynamic dataUser;
-  Future loadDataUser()async{
-    final resImage=await UserHelper().getDataUser(StringConfig.foto);
-    final resName=await UserHelper().getDataUser(StringConfig.nama);
-    final resEmail=await UserHelper().getDataUser(StringConfig.email);
-    final resPhone=await UserHelper().getDataUser(StringConfig.tlp);
-    dataUser={
-      StringConfig.foto:resImage,StringConfig.nama:resName,StringConfig.email:resEmail,StringConfig.tlp:resPhone
-    };
-    if(this.mounted){
-      this.setState(() { });
-    }
-  }
+
   @override
   initState() {
     _selectTab(widget.currentTab);
     super.initState();
-    loadDataUser();
+    final cart = Provider.of<CartProvider>(context, listen: false);
+    final user = Provider.of<UserProvider>(context, listen: false);
+    cart.getCartData(context);
+    user.getUserData(context);
   }
 
   @override
@@ -61,14 +58,6 @@ class _MainComponentState extends State<MainComponent> {
     print("didUpdateWidget");
   }
 
-  Future loadCart()async{
-    final tenant = await FunctionHelper().getTenant();
-    final res = await BaseProvider().countCart(tenant[StringConfig.idTenant]);
-    print("LOAD CART = $res");
-    if(this.mounted) setState(() {
-      totalCart = res;
-    });
-  }
 
   void _selectTab(int tabItem) {
     setState(() {
@@ -84,7 +73,6 @@ class _MainComponentState extends State<MainComponent> {
           widget.currentPage = ProfileComponent();
           break;
         case 2:
-          loadCart();
           widget.currentTitle = 'Beranda';
           widget.currentPage = HomeComponent();
           break;
@@ -103,10 +91,11 @@ class _MainComponentState extends State<MainComponent> {
   @override
   Widget build(BuildContext context) {
     final scaler = config.ScreenScale(context).scaler;
+    final cart = Provider.of<CartProvider>(context);
     return WillPopScope(
         child: Scaffold(
           key: _scaffoldKey,
-          drawer: DrawerWidget(user: dataUser),
+          drawer: DrawerWidget(),
           appBar: AppBar(
             automaticallyImplyLeading: false,
             leading: new IconButton(
@@ -118,13 +107,16 @@ class _MainComponentState extends State<MainComponent> {
             elevation: 0,
             title: config.MyFont.title(context: context,text: widget.currentTitle),
             actions: [
-              WidgetHelper().iconAppBarBadges(context: context,icon:UiIcons.shopping_cart,isActive: totalCart>0,callback: (){
-                if(totalCart>0){
-                  Navigator.of(context).pushNamed("/${StringConfig.cart}").whenComplete((){
-                    loadCart();
-                  });
+              WidgetHelper().iconAppBarBadges(
+                context: context,
+                icon:UiIcons.shopping_cart,
+                isActive: !cart.loading&&cart.dataCart.result.length>0,
+                callback: (){
+                  if(cart.cart.result.length>0){
+                    Navigator.of(context).pushNamed("/${StringConfig.cart}");
+                  }
                 }
-              }),
+              ),
             ],
           ),
           body:widget.currentPage,

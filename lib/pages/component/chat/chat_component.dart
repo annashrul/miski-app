@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/string_config.dart';
-import 'package:netindo_shop/config/ui_icons.dart';
-import 'package:netindo_shop/helper/function_helper.dart';
-import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/model/general_model.dart';
-import 'package:netindo_shop/model/ticket/list_ticket_model.dart';
-import 'package:netindo_shop/pages/widget/chat/modal_form_chat_widget.dart';
-import 'package:netindo_shop/provider/handle_http.dart';
+import 'package:miski_shop/config/app_config.dart' as config;
+import 'package:miski_shop/config/string_config.dart';
+import 'package:miski_shop/config/ui_icons.dart';
+import 'package:miski_shop/helper/function_helper.dart';
+import 'package:miski_shop/helper/widget_helper.dart';
+import 'package:miski_shop/model/general_model.dart';
+import 'package:miski_shop/model/ticket/list_ticket_model.dart';
+import 'package:miski_shop/pages/widget/chat/modal_form_chat_widget.dart';
+import 'package:miski_shop/provider/handle_http.dart';
 import '../../widget/empty_widget.dart';
 import '../../widget/loading_widget.dart';
 import '../../widget/refresh_widget.dart';
@@ -221,7 +221,9 @@ class _ChatComponentState extends State<ChatComponent> {
                           dataTenant[StringConfig.logoTenant],
                           height: scaler.getHeight(4),
                           width: scaler.getWidth(10),
-                          shape: BoxShape.circle)),
+                          shape: BoxShape.circle
+                      )
+                  ),
                   Positioned(
                     bottom: scaler.getHeight(0.3),
                     right: scaler.getWidth(0.3),

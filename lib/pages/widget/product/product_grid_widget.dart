@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/string_config.dart';
-import 'package:netindo_shop/helper/widget_helper.dart';
+import 'package:miski_shop/config/app_config.dart' as config;
+import 'package:miski_shop/config/string_config.dart';
+import 'package:miski_shop/helper/widget_helper.dart';
 
 class ProductGridWidget extends StatelessWidget {
   const ProductGridWidget({
@@ -50,7 +50,7 @@ class ProductGridWidget extends StatelessWidget {
           children: <Widget>[
             Hero(
               tag: this.heroTag + productId,
-              child: Image.network(productImage),
+              child: WidgetHelper().baseImage(productImage),
             ),
             Padding(
               padding:scaler.getPadding(1,2),

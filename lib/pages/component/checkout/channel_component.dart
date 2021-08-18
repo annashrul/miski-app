@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/string_config.dart';
-import 'package:netindo_shop/helper/checkout/function_checkout.dart';
-import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/model/checkout/channel_model.dart';
-import 'package:netindo_shop/model/checkout/detail_checkout_virtual_account_model.dart';
-import 'package:netindo_shop/provider/handle_http.dart';
+import 'package:miski_shop/config/app_config.dart' as config;
+import 'package:miski_shop/config/string_config.dart';
+import 'package:miski_shop/helper/checkout/function_checkout.dart';
+import 'package:miski_shop/helper/widget_helper.dart';
+import 'package:miski_shop/model/checkout/channel_model.dart';
+import 'package:miski_shop/model/checkout/detail_checkout_virtual_account_model.dart';
+import 'package:miski_shop/provider/handle_http.dart';
 
 class ChannelComponent extends StatefulWidget {
   final dynamic data;

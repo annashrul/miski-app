@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/ui_icons.dart';
-import 'package:netindo_shop/helper/home/function_home.dart';
-import 'package:netindo_shop/model/tenant/list_product_tenant_model.dart';
-import 'package:netindo_shop/pages/widget/category_product_tab_widget.dart';
+import 'package:miski_shop/config/app_config.dart' as config;
+import 'package:miski_shop/config/ui_icons.dart';
+import 'package:miski_shop/helper/home/function_home.dart';
+import 'package:miski_shop/model/tenant/list_product_tenant_model.dart';
+import 'package:miski_shop/pages/widget/category_product_tab_widget.dart';
 import '../../empty_widget.dart';
 import '../../loading_widget.dart';
 

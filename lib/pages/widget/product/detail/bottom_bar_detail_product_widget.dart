@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/ui_icons.dart';
-import 'package:netindo_shop/helper/widget_helper.dart';
+import 'package:miski_shop/config/app_config.dart' as config;
+import 'package:miski_shop/config/ui_icons.dart';
+import 'package:miski_shop/helper/widget_helper.dart';
 
 class BottomBarDetailProductWidget extends StatelessWidget {
   final Function(String type) callback;

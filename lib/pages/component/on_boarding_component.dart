@@ -2,8 +2,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
-import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/string_config.dart';
+import 'package:miski_shop/config/app_config.dart' as config;
+import 'package:miski_shop/config/string_config.dart';
 
 class OnBoardingComponent extends StatefulWidget {
   @override
@@ -42,7 +42,7 @@ class _OnBoardingComponentState extends State<OnBoardingComponent> {
               padding:scaler.getPadding(4, 4),
               child: FlatButton(
                 onPressed: () { Navigator.of(context).pushNamed('/${StringConfig.signIn}');},
-                child: config.MyFont.title(context: context,text: 'Skip',color: Theme.of(context).primaryColor),
+                child: config.MyFont.title(context: context,text: 'Lewati',color: Theme.of(context).primaryColor),
                 color: Theme.of(context).accentColor,
                 shape: StadiumBorder(),
               ),
@@ -113,7 +113,7 @@ class _OnBoardingComponentState extends State<OnBoardingComponent> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    config.MyFont.title(context: context,text: 'Sign up',color: Theme.of(context).primaryColor),
+                    config.MyFont.title(context: context,text: 'Daftar',color: Theme.of(context).primaryColor),
                     Icon(
                       AntDesign.arrowright,
                       color: Theme.of(context).primaryColor,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/model/help_support/list_help_support_model.dart';
+import 'package:miski_shop/config/app_config.dart' as config;
+import 'package:miski_shop/model/help_support/list_help_support_model.dart';
 
 // ignore: must_be_immutable
 class HelpSupportWidget extends StatefulWidget {

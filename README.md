@@ -1,6 +1,6 @@
-# netindo_shop
+# miski_shop
 
-Netindo Shop
+Miski shop
 
 ## Getting Started
 

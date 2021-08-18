@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
-import 'package:netindo_shop/config/string_config.dart';
-import 'package:netindo_shop/helper/function_helper.dart';
-import 'package:netindo_shop/model/promo/global_promo_model.dart';
-import 'package:netindo_shop/model/slider/ListSliderModel.dart';
-import 'package:netindo_shop/model/tenant/listGroupProductModel.dart';
-import 'package:netindo_shop/model/tenant/list_product_tenant_model.dart';
-import 'package:netindo_shop/provider/handle_http.dart';
+import 'package:miski_shop/config/string_config.dart';
+import 'package:miski_shop/helper/function_helper.dart';
+import 'package:miski_shop/model/promo/global_promo_model.dart';
+import 'package:miski_shop/model/slider/ListSliderModel.dart';
+import 'package:miski_shop/model/tenant/listGroupProductModel.dart';
+import 'package:miski_shop/model/tenant/list_product_tenant_model.dart';
+import 'package:miski_shop/provider/handle_http.dart';
 
 class FunctionHome{
   Future loadProduct({BuildContext context,String where})async{

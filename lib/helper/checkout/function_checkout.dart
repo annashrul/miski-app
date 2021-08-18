@@ -1,17 +1,17 @@
 import 'package:flutter/cupertino.dart';
-import 'package:netindo_shop/config/string_config.dart';
-import 'package:netindo_shop/helper/address/function_address.dart';
-import 'package:netindo_shop/helper/bank/function_bank.dart';
-import 'package:netindo_shop/helper/function_helper.dart';
-import 'package:netindo_shop/helper/user_helper.dart';
-import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/model/address/kurir_model.dart';
-import 'package:netindo_shop/model/address/list_address_model.dart';
-import 'package:netindo_shop/model/bank/bank_model.dart';
-import 'package:netindo_shop/model/cart/cart_model.dart';
-import 'package:netindo_shop/model/checkout/check_ongkir_model.dart';
-import 'package:netindo_shop/model/checkout/checkout_model.dart';
-import 'package:netindo_shop/provider/handle_http.dart';
+import 'package:miski_shop/config/string_config.dart';
+import 'package:miski_shop/helper/address/function_address.dart';
+import 'package:miski_shop/helper/bank/function_bank.dart';
+import 'package:miski_shop/helper/function_helper.dart';
+import 'package:miski_shop/helper/user_helper.dart';
+import 'package:miski_shop/helper/widget_helper.dart';
+import 'package:miski_shop/model/address/kurir_model.dart';
+import 'package:miski_shop/model/address/list_address_model.dart';
+import 'package:miski_shop/model/bank/bank_model.dart';
+import 'package:miski_shop/model/cart/cart_model.dart';
+import 'package:miski_shop/model/checkout/check_ongkir_model.dart';
+import 'package:miski_shop/model/checkout/checkout_model.dart';
+import 'package:miski_shop/provider/handle_http.dart';
 
 
 class FunctionCheckout{

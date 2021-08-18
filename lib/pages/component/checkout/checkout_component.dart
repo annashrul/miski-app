@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/string_config.dart';
-import 'package:netindo_shop/helper/checkout/function_checkout.dart';
-import 'package:netindo_shop/helper/function_helper.dart';
-import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/pages/component/address/address_component.dart';
-import 'package:netindo_shop/pages/widget/checkout/section_address_widget.dart';
-import 'package:netindo_shop/pages/widget/checkout/section_product_widget.dart';
-import 'package:netindo_shop/pages/widget/checkout/section_shipping_widget.dart';
+import 'package:miski_shop/config/app_config.dart' as config;
+import 'package:miski_shop/config/string_config.dart';
+import 'package:miski_shop/helper/checkout/function_checkout.dart';
+import 'package:miski_shop/helper/function_helper.dart';
+import 'package:miski_shop/helper/widget_helper.dart';
+import 'package:miski_shop/pages/component/address/address_component.dart';
+import 'package:miski_shop/pages/widget/checkout/section_address_widget.dart';
+import 'package:miski_shop/pages/widget/checkout/section_product_widget.dart';
+import 'package:miski_shop/pages/widget/checkout/section_shipping_widget.dart';
 
 class CheckoutComponent extends StatefulWidget {
   @override

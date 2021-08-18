@@ -3,9 +3,9 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
-import 'package:netindo_shop/helper/bezier.dart';
-import 'package:netindo_shop/helper/widget_helper.dart';
-import "package:netindo_shop/config/app_config.dart" as config;
+import 'package:miski_shop/helper/bezier.dart';
+import 'package:miski_shop/helper/widget_helper.dart';
+import "package:miski_shop/config/app_config.dart" as config;
 
 typedef void DeleteCode();
 typedef Future<bool> PassCodeVerify(List<int> passcode);

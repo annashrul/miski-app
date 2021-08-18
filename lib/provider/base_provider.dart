@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' show Client;
-import 'package:netindo_shop/config/string_config.dart';
-import 'package:netindo_shop/helper/user_helper.dart';
-import 'package:netindo_shop/model/cart/cart_model.dart';
-import 'package:netindo_shop/model/cart/harga_bertingkat_model.dart';
-import 'package:netindo_shop/model/general_model.dart';
+import 'package:miski_shop/config/string_config.dart';
+import 'package:miski_shop/helper/user_helper.dart';
+import 'package:miski_shop/model/cart/cart_model.dart';
+import 'package:miski_shop/model/cart/harga_bertingkat_model.dart';
+import 'package:miski_shop/model/general_model.dart';
 
 class BaseProvider{
   Client client = Client();
@@ -20,6 +20,7 @@ class BaseProvider{
   Future<CartModel> getCart(var idTenant,{BuildContext context}) async {
     final token= await userRepository.getDataUser('token');
     final url ="${StringConfig.baseUrl}cart/$idTenant";
+    print("CART URL=$url");
     final response = await client.get(url, headers: {'Authorization':token,'username': StringConfig.username, 'password': StringConfig.password,'myconnection':StringConfig.connection},).timeout(Duration(seconds: StringConfig.timeout));
     if (response.statusCode == 200) {
       return cartModelFromJson(response.body);
@@ -90,8 +91,5 @@ class BaseProvider{
     var res = await getCart(idTenant);
     return res.result.length;
   }
-
-
-
 }
 

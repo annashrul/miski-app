@@ -1,7 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/helper/widget_helper.dart';
+import 'package:miski_shop/config/app_config.dart' as config;
+import 'package:miski_shop/helper/widget_helper.dart';
 
 class SliderWidget extends StatefulWidget {
   final List data;

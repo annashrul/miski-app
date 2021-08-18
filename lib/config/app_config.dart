@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:netindo_shop/helper/function_helper.dart';
+import 'package:miski_shop/helper/function_helper.dart';
 
 class AppConfig {
   BuildContext _context;

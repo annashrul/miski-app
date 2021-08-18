@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/ui_icons.dart';
-import 'package:netindo_shop/helper/function_helper.dart';
-import 'package:netindo_shop/pages/widget/history/history_order_widget.dart';
+import 'package:miski_shop/config/app_config.dart' as config;
+import 'package:miski_shop/config/ui_icons.dart';
+import 'package:miski_shop/helper/function_helper.dart';
+import 'package:miski_shop/pages/widget/history/history_order_widget.dart';
 
 // ignore: must_be_immutable
 class HistoryOrderComponent extends StatefulWidget {

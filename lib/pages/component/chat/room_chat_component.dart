@@ -2,14 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/string_config.dart';
-import 'package:netindo_shop/config/ui_icons.dart';
-import 'package:netindo_shop/helper/function_helper.dart';
-import 'package:netindo_shop/helper/user_helper.dart';
-import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/model/ticket/detail_ticket_model.dart';
-import 'package:netindo_shop/provider/handle_http.dart';
+import 'package:miski_shop/config/app_config.dart' as config;
+import 'package:miski_shop/config/string_config.dart';
+import 'package:miski_shop/config/ui_icons.dart';
+import 'package:miski_shop/helper/function_helper.dart';
+import 'package:miski_shop/helper/user_helper.dart';
+import 'package:miski_shop/helper/widget_helper.dart';
+import 'package:miski_shop/model/ticket/detail_ticket_model.dart';
+import 'package:miski_shop/provider/handle_http.dart';
 
 class RoomChatComponent extends StatefulWidget {
   final Map<String, Object> data;
@@ -107,8 +107,8 @@ class _RoomChatComponentState extends State<RoomChatComponent> {
           if(isShow)Container(
             margin: scaler.getMargin(1,2),
             decoration: BoxDecoration(
-              color: Colors.blueGrey,
-              boxShadow: [BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.1), blurRadius: 5, offset: Offset(0, 2))],
+              color: config.Colors.secondColors,
+              // boxShadow: [BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.1), blurRadius: 5, offset: Offset(0, 2))],
             ),
             padding: scaler.getPadding(0.5,2),
             child: Column(
@@ -248,9 +248,16 @@ class _RoomChatComponentState extends State<RoomChatComponent> {
               children: <Widget>[
                 new Container(
                     margin: const EdgeInsets.only(left: 8.0),
-                    child: new CircleAvatar(
-                      backgroundImage: NetworkImage(resTenant[StringConfig.logoTenant]),
-                    )),
+                    child: WidgetHelper().baseImage(resTenant[StringConfig.logoTenant],height: scaler.getHeight(3),
+                        width: scaler.getWidth(6),
+                        shape: BoxShape.circle),
+                    // child: new CircleAvatar(
+                    //   backgroundImage: NetworkImage(
+                    //       resTenant[StringConfig.logoTenant],
+                    //
+                    //   ),
+                    // )
+                ),
               ],
             ),
           ],

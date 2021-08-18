@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:typed_data';
 import 'package:geolocator/geolocator.dart';
-import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/string_config.dart';
-import 'package:netindo_shop/config/ui_icons.dart';
-import 'package:netindo_shop/helper/function_helper.dart';
-import 'package:netindo_shop/helper/widget_helper.dart';
+import 'package:miski_shop/config/app_config.dart' as config;
+import 'package:miski_shop/config/string_config.dart';
+import 'package:miski_shop/config/ui_icons.dart';
+import 'package:miski_shop/helper/function_helper.dart';
+import 'package:miski_shop/helper/widget_helper.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:netindo_shop/provider/handle_http.dart';
+import 'package:miski_shop/provider/handle_http.dart';
 import 'package:http/http.dart' as http;
 
 class MapsWidget extends StatefulWidget {
@@ -73,6 +73,7 @@ class _MapsWidgetState extends State<MapsWidget> {
     try {
       List<Placemark> p = await geolocator.placemarkFromCoordinates(lat, lng);
       Placemark place = p[0];
+      print(p);
       String fullAddress = "${place.thoroughfare}, ${place.subLocality}, ${place.subAdministrativeArea}, ${place.administrativeArea}";
       _currentPosition = {StringConfig.latitude:lat,StringConfig.longitude:lng};
       WidgetHelper().myModal(

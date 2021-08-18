@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' show Client;
-import 'package:netindo_shop/config/string_config.dart';
-import 'package:netindo_shop/helper/function_helper.dart';
-import 'package:netindo_shop/helper/user_helper.dart';
-import 'package:netindo_shop/helper/widget_helper.dart';
+import 'package:miski_shop/config/string_config.dart';
+import 'package:miski_shop/helper/function_helper.dart';
+import 'package:miski_shop/helper/user_helper.dart';
+import 'package:miski_shop/helper/widget_helper.dart';
 
 class HandleHttp{
   Client client = Client();

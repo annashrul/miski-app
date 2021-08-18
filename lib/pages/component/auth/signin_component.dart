@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:netindo_shop/config/database_config.dart';
-import 'package:netindo_shop/config/string_config.dart';
-import 'package:netindo_shop/helper/bezier.dart';
-import 'package:netindo_shop/helper/database_helper.dart';
-import 'package:netindo_shop/helper/function_helper.dart';
-import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/model/auth/login_model.dart';
-import 'package:netindo_shop/pages/component/auth/signup_component.dart';
-import 'package:netindo_shop/pages/widget/secure_code_widget.dart';
-import 'package:netindo_shop/provider/handle_http.dart';
-import "package:netindo_shop/config/app_config.dart" as config;
+import 'package:miski_shop/config/database_config.dart';
+import 'package:miski_shop/config/string_config.dart';
+import 'package:miski_shop/helper/bezier.dart';
+import 'package:miski_shop/helper/database_helper.dart';
+import 'package:miski_shop/helper/function_helper.dart';
+import 'package:miski_shop/helper/widget_helper.dart';
+import 'package:miski_shop/model/auth/login_model.dart';
+import 'package:miski_shop/pages/component/auth/signup_component.dart';
+import 'package:miski_shop/pages/widget/secure_code_widget.dart';
+import 'package:miski_shop/provider/handle_http.dart';
+import "package:miski_shop/config/app_config.dart" as config;
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 class SignInComponent extends StatefulWidget {
   @override
@@ -244,7 +244,7 @@ class _SignInComponentState extends State<SignInComponent> {
                                 Container(
                                     padding: scaler.getPaddingLTRB(0, 0, 0, 0),
                                     margin: scaler.getMarginLTRB(0, 0, 0, 0),
-                                    width: scaler.getWidth(15),
+                                    // width: scaler.getWidth(15),
                                     height: scaler.getHeight(2),
                                     child: Switch(
                                       activeTrackColor: config.Colors.mainColors,

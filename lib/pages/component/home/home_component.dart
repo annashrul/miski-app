@@ -1,18 +1,19 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/string_config.dart';
-import 'package:netindo_shop/config/ui_icons.dart';
-import 'package:netindo_shop/helper/home/function_home.dart';
-import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/model/promo/global_promo_model.dart';
-import 'package:netindo_shop/model/slider/ListSliderModel.dart';
-import 'package:netindo_shop/model/tenant/list_product_tenant_model.dart';
-import 'package:netindo_shop/pages/widget/product/filter_product_slider_widget.dart';
-import 'package:netindo_shop/pages/widget/product/product_grid_widget.dart';
-import 'package:netindo_shop/pages/widget/promo/detail_promo_widget.dart';
-import 'package:netindo_shop/pages/widget/searchbar_widget.dart';
-import 'package:netindo_shop/pages/widget/slider_widget.dart';
+import 'package:miski_shop/config/app_config.dart' as config;
+import 'package:miski_shop/config/string_config.dart';
+import 'package:miski_shop/config/ui_icons.dart';
+import 'package:miski_shop/helper/home/function_home.dart';
+import 'package:miski_shop/helper/widget_helper.dart';
+import 'package:miski_shop/model/promo/global_promo_model.dart';
+import 'package:miski_shop/model/slider/ListSliderModel.dart';
+import 'package:miski_shop/model/tenant/list_product_tenant_model.dart';
+import 'package:miski_shop/pages/widget/product/filter_product_slider_widget.dart';
+import 'package:miski_shop/pages/widget/product/product_grid_widget.dart';
+import 'package:miski_shop/pages/widget/promo/detail_promo_widget.dart';
+import 'package:miski_shop/pages/widget/searchbar_widget.dart';
+import 'package:miski_shop/pages/widget/slider_widget.dart';
 import '../../widget/empty_widget.dart';
 import '../../widget/loading_widget.dart';
 import '../../widget/refresh_widget.dart';
@@ -128,21 +129,18 @@ class _HomeComponentState extends State<HomeComponent>{
             header: isLoadingGroup?WidgetHelper().baseLoading(context,Container(
               padding: scaler.getPadding(0,2),
               child: WidgetHelper().shimmer(context: context,height: 2,width: MediaQuery.of(context).size.width/1),
-            )):resFilter.length>0?Padding(
-              padding: scaler.getPaddingLTRB(0, 0.5, 0, 1),
-              child: FilterProductSliderWidget(
-                  heroTag: 'home_categories_1',
-                  data: resFilter,
-                  onChanged: (id) {
-                    this.setState(() {
-                      isLoadingProduct=true;
-                      idKelompok=id;
-                    });
-                    loadProduct(id);
-                  }),
-            ):SizedBox(),
+            )):resFilter.length>0?FilterProductSliderWidget(
+                heroTag: 'home_categories_1',
+                data: resFilter,
+                onChanged: (id) {
+                  this.setState(() {
+                    isLoadingProduct=true;
+                    idKelompok=id;
+                  });
+                  loadProduct(id);
+                }):SizedBox(),
             content:Container(
-              padding: scaler.getPadding(0,2),
+              padding: scaler.getPaddingLTRB(2,1,2,0),
               child: Wrap(
                 children: [
                   WidgetHelper().titleQ(context,"Barang pilihan untuk kamu",icon: UiIcons.heart,padding: scaler.getPaddingLTRB(0,0,0,1),),
@@ -174,7 +172,8 @@ class _HomeComponentState extends State<HomeComponent>{
                   isLoadmore?Container(
                     alignment: Alignment.center,
                     padding: scaler.getPaddingLTRB(0,0,0,1),
-                    child: CircularProgressIndicator(backgroundColor: config.Colors.mainColors,color:config.Colors.secondColors,),
+                    child:CupertinoActivityIndicator()
+                    // child: CircularProgressIndicator(backgroundColor: config.Colors.mainColors,color:config.Colors.secondColors,),
                   ):SizedBox(),
                 ],
               ),
@@ -255,7 +254,7 @@ class _HomeComponentState extends State<HomeComponent>{
                                 tag: "${globalPromoModel.result.data[index].title}${globalPromoModel.result.data[index].id}",
                                 child:WidgetHelper().baseImage(
                                   globalPromoModel.result.data[index].gambar,
-                                  height: scaler.getHeight(9),
+                                  height: scaler.getHeight(6),
                                   width: scaler.getWidth(15),
                                   shape: BoxShape.circle
                                 )

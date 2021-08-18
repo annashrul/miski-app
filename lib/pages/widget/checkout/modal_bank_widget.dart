@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:netindo_shop/config/ui_icons.dart';
-import 'package:netindo_shop/helper/checkout/function_checkout.dart';
-import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/model/bank/bank_model.dart';
+import 'package:miski_shop/config/ui_icons.dart';
+import 'package:miski_shop/helper/checkout/function_checkout.dart';
+import 'package:miski_shop/helper/widget_helper.dart';
+import 'package:miski_shop/config/app_config.dart' as config;
+import 'package:miski_shop/model/bank/bank_model.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable

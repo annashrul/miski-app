@@ -1,14 +1,28 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/database_config.dart';
-import 'package:netindo_shop/config/string_config.dart';
-import 'package:netindo_shop/route_generator.dart';
+import 'package:miski_shop/config/app_config.dart' as config;
+import 'package:miski_shop/config/database_config.dart';
+import 'package:miski_shop/config/string_config.dart';
+import 'package:miski_shop/model/cart/cart_model.dart';
+import 'package:miski_shop/provider/cart_provider.dart';
+import 'package:miski_shop/provider/user_provider.dart';
+import 'package:miski_shop/route_generator.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
 
-void  main()  {
-  runApp( MyApp());
+List<SingleChildWidget> providers = [
+  ChangeNotifierProvider<CartProvider>(create: (_) => CartProvider()),
+  ChangeNotifierProvider<UserProvider>(create: (context) => UserProvider()),
+];
+void  main()  async {
+  runApp(
+    MultiProvider(
+      providers:providers,
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -29,12 +43,14 @@ class _MyAppState extends State<MyApp> {
     };
     OneSignal.shared.init(StringConfig.oneSignalId, iOSSettings: settings);
     _db.openDB();
+
   }
 
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp,DeviceOrientation.portraitDown]);
     TextStyle style = config.MyFont.textStyle;
+
     return MaterialApp(
         title: 'n-shop',
         initialRoute: '/',

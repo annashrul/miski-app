@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/pages/widget/brand/brand_widget.dart';
+import 'package:miski_shop/helper/widget_helper.dart';
+import 'package:miski_shop/pages/widget/brand/brand_widget.dart';
 class BrandComponent extends StatefulWidget {
   @override
   _BrandComponentState createState() => _BrandComponentState();

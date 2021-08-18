@@ -3,19 +3,20 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:netindo_shop/config/database_config.dart';
-import 'package:netindo_shop/config/string_config.dart' as config;
-import 'package:netindo_shop/helper/database_helper.dart';
-import 'package:netindo_shop/helper/user_helper.dart';
-import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/model/cart/harga_bertingkat_model.dart';
-import 'package:netindo_shop/model/config/config_auth.dart';
-import 'package:netindo_shop/model/tenant/list_tenant_model.dart';
-import 'package:netindo_shop/pages/component/auth/signin_component.dart';
-import 'package:netindo_shop/provider/base_provider.dart';
-import 'package:netindo_shop/provider/handle_http.dart';
+import 'package:miski_shop/config/database_config.dart';
+import 'package:miski_shop/config/string_config.dart' as config;
+import 'package:miski_shop/helper/database_helper.dart';
+import 'package:miski_shop/helper/user_helper.dart';
+import 'package:miski_shop/helper/widget_helper.dart';
+import 'package:miski_shop/model/cart/harga_bertingkat_model.dart';
+import 'package:miski_shop/model/config/config_auth.dart';
+import 'package:miski_shop/model/tenant/list_tenant_model.dart';
+import 'package:miski_shop/pages/component/auth/signin_component.dart';
+import 'package:miski_shop/provider/base_provider.dart';
+import 'package:miski_shop/provider/handle_http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FunctionHelper{
@@ -30,6 +31,11 @@ class FunctionHelper{
     "Semua"
   ];
 
+
+  static copy(BuildContext context,data){
+    Clipboard.setData(new ClipboardData(text: data));
+    WidgetHelper().showFloatingFlushbar(context,"success","data berhasil disalin");
+  }
 
 
   Future<Map<String,Object>> getTenant()async{

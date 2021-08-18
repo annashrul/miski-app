@@ -1,13 +1,14 @@
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/string_config.dart';
-import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/model/tenant/listGroupProductModel.dart';
-import 'package:netindo_shop/model/tenant/list_category_product_model.dart';
-import 'package:netindo_shop/provider/handle_http.dart';
+import 'package:miski_shop/config/app_config.dart' as config;
+import 'package:miski_shop/config/string_config.dart';
+import 'package:miski_shop/helper/widget_helper.dart';
+import 'package:miski_shop/model/tenant/listGroupProductModel.dart';
+import 'package:miski_shop/model/tenant/list_category_product_model.dart';
+import 'package:miski_shop/provider/handle_http.dart';
 
 class CategoryComponent extends StatefulWidget {
   @override
@@ -17,15 +18,39 @@ class CategoryComponent extends StatefulWidget {
 class _CategoryComponentState extends State<CategoryComponent> {
   ListCategoryProductModel listCategoryProductModel;
   List data=[];
-
-  bool isLoading=true;
+  ScrollController controller;
+  int perpage=1,total=0;
+  bool isLoading=true,isLoadmore=false;
+  void _scrollListener() {
+    if (!isLoading) {
+      if (controller.position.pixels == controller.position.maxScrollExtent) {
+        if(total>data.length){
+          setState((){
+            perpage++;
+            isLoadmore=true;
+          });
+          loadData();
+        }else{
+          setState((){
+            isLoadmore=false;
+          });
+        }
+      }
+    }
+  }
   Future loadData()async{
-    final resCategory=await HandleHttp().getProvider("kategori?page=1&status=1",listCategoryProductModelFromJson,context: context);
-    // final resGroup=await HandleHttp().getProvider("kelomok?page=1&status=1",listGroupProductModelFromJson,context: context);
+
+    final resCategory=await HandleHttp().getProvider("kategori?page=$perpage&status=1&perpage=7",listCategoryProductModelFromJson,context: context);
     if(resCategory!=null){
       if(resCategory==StringConfig.errNoData) return;
       ListCategoryProductModel resultCategory=ListCategoryProductModel.fromJson(resCategory.toJson());
-      for(int iCategory=0;iCategory<resultCategory.result.data.length;iCategory++){
+      total = int.parse(resultCategory.result.total);
+      // if(perpage>0){
+      //   perpage =
+      // }
+      print(resultCategory.result.toJson());
+
+      for(int iCategory=0;iCategory<resultCategory.result.perPage;iCategory++){
         var rowCategory=resultCategory.result.data[iCategory];
         data.add({"id":rowCategory.id,"title":rowCategory.title,"image":rowCategory.image,"kelompok":[]});
         final resGroup = await HandleHttp().getProvider("kelompok?page=1&kategori=${rowCategory.id}",listGroupProductModelFromJson,context: context);
@@ -53,15 +78,23 @@ class _CategoryComponentState extends State<CategoryComponent> {
   void initState() {
     super.initState();
     loadData();
+    controller = new ScrollController()..addListener(_scrollListener);
   }
-
+  @override
+  void dispose() {
+    super.dispose();
+    controller.removeListener(_scrollListener);
+  }
   @override
   Widget build(BuildContext context) {
-    print(data);
+    print(data.length);
+    print(perpage);
+    print(total);
     final scaler = config.ScreenScale(context).scaler;
     return Scaffold(
       appBar: WidgetHelper().appBarWithButton(context, "Kategori", (){},<Widget>[],param: "default"),
       body: isLoading?WidgetHelper().loadingWidget(context):SingleChildScrollView(
+        controller:controller,
         padding:scaler.getPadding(1,2),
         child: Wrap(
           runSpacing: 20,
@@ -72,6 +105,7 @@ class _CategoryComponentState extends State<CategoryComponent> {
                 return index.isEven ? buildEvenCategory(context,index) :buildOddCategory(context,index);
               }),
             ),
+            if(isLoadmore) Center(child: CupertinoActivityIndicator())
           ],
         ),
       ),

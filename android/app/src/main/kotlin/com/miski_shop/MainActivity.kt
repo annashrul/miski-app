@@ -1,4 +1,4 @@
-package com.netindo_shop
+package com.miski_shop
 
 import io.flutter.embedding.android.FlutterActivity
 

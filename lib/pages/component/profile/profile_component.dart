@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/database_config.dart';
-import 'package:netindo_shop/config/string_config.dart';
-import 'package:netindo_shop/config/ui_icons.dart';
-import 'package:netindo_shop/helper/database_helper.dart';
-import 'package:netindo_shop/helper/function_helper.dart';
-import 'package:netindo_shop/helper/user_helper.dart';
-import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/model/member/detail_member_model.dart';
-import 'package:netindo_shop/pages/component/address/address_component.dart';
-import 'package:netindo_shop/pages/component/help_support/help_support_component.dart';
-import 'package:netindo_shop/pages/widget/profile/form_profile_widget.dart';
-import 'package:netindo_shop/pages/widget/upload_image_widget.dart';
-import 'package:netindo_shop/provider/handle_http.dart';
+import 'package:miski_shop/config/app_config.dart' as config;
+import 'package:miski_shop/config/database_config.dart';
+import 'package:miski_shop/config/string_config.dart';
+import 'package:miski_shop/config/ui_icons.dart';
+import 'package:miski_shop/helper/database_helper.dart';
+import 'package:miski_shop/helper/function_helper.dart';
+import 'package:miski_shop/helper/user_helper.dart';
+import 'package:miski_shop/helper/widget_helper.dart';
+import 'package:miski_shop/model/member/detail_member_model.dart';
+import 'package:miski_shop/pages/component/address/address_component.dart';
+import 'package:miski_shop/pages/component/help_support/help_support_component.dart';
+import 'package:miski_shop/pages/widget/drawer_widget.dart';
+import 'package:miski_shop/pages/widget/profile/form_profile_widget.dart';
+import 'package:miski_shop/pages/widget/upload_image_widget.dart';
+import 'package:miski_shop/provider/handle_http.dart';
+import 'package:miski_shop/provider/user_provider.dart';
+import 'package:provider/provider.dart';
+
+import '../main_component.dart';
 
 class ProfileComponent extends StatefulWidget {
   @override
@@ -21,36 +26,37 @@ class ProfileComponent extends StatefulWidget {
 }
 
 class _ProfileComponentState extends State<ProfileComponent> {
-  dynamic dataUser;
+  // dynamic dataUser;
   String foto="";
   DatabaseConfig db = DatabaseConfig();
+  dynamic  resUserFuture;
   Future loadData()async{
-    final img= await UserHelper().getDataUser(StringConfig.foto);
-    final name= await UserHelper().getDataUser(StringConfig.nama);
-    final email= await UserHelper().getDataUser(StringConfig.email);
-    final gender= await UserHelper().getDataUser(StringConfig.jenis_kelamin);
-    final birthDate = await UserHelper().getDataUser(StringConfig.tgl_ultah);
-    DateTime tempDate = new DateFormat("yyyy-MM-dd").parse(birthDate);
-    print(img);
-    foto = img;
-    dataUser = {
-      StringConfig.nama:name,
-      StringConfig.email:email,
-      StringConfig.jenis_kelamin:gender,
-      StringConfig.tgl_ultah:"$tempDate".substring(0,10),
-    };
-    this.setState(() {});
+    // final img= await UserHelper().getDataUser(StringConfig.foto);
+    // final name= await UserHelper().getDataUser(StringConfig.nama);
+    // final email= await UserHelper().getDataUser(StringConfig.email);
+    // final gender= await UserHelper().getDataUser(StringConfig.jenis_kelamin);
+    // final birthDate = await UserHelper().getDataUser(StringConfig.tgl_ultah);
+    // DateTime tempDate = new DateFormat("yyyy-MM-dd").parse(birthDate);
+    // foto = img;
+    // dataUser = {
+    //   StringConfig.nama:name,
+    //   StringConfig.email:email,
+    //   StringConfig.jenis_kelamin:gender,
+    //   StringConfig.tgl_ultah:"$tempDate".substring(0,10),
+    // };
+    // this.setState(() {});
   }
-
   updateImage(data)async{
     WidgetHelper().loadingDialog(context);
     final id= await UserHelper().getDataUser(StringConfig.id_user);
     final res=await HandleHttp().putProvider("member/$id", data,context: context);
-    print(res);
     if(res!=null){
       final getDetail=await HandleHttp().getProvider("member/$id", detailMemberModelFromJson,context: context);
       if(getDetail!=null){
         DetailMemberModel result=DetailMemberModel.fromJson(getDetail.toJson());
+        dynamic updateState = resUserFuture;
+        updateState.update(StringConfig.foto, (value) => result.result.foto);
+        Provider.of<UserProvider>(context, listen: false).setData(updateState);
         await db.update(UserQuery.TABLE_NAME, {StringConfig.foto:result.result.foto});
         if(this.mounted){
           this.setState(() {
@@ -60,36 +66,43 @@ class _ProfileComponentState extends State<ProfileComponent> {
           Navigator.of(context).pop();
           WidgetHelper().showFloatingFlushbar(context, "success", "data berhasil diubah");
         }
-
       }
     }
   }
-  Future update(data)async{
+  Future update(Map<dynamic,dynamic> data)async{
     final id= await UserHelper().getDataUser(StringConfig.id_user);
     final idLocal= await UserHelper().getDataUser(StringConfig.id);
     Navigator.of(context).pop();
     WidgetHelper().loadingDialog(context);
-    data.addAll({"id":idLocal.toString()});
     data[StringConfig.jenis_kelamin] = data[StringConfig.jenis_kelamin]=="Wanita"?"0":"1";
-    await db.update(UserQuery.TABLE_NAME, data);
-    final res=await HandleHttp().putProvider("member/$id", data,context: context);
-    data.remove("id");
+    Provider.of<UserProvider>(context, listen: false).setData(data);
+    dynamic storeData = {
+      StringConfig.nama:data[StringConfig.nama],
+      StringConfig.email:data[StringConfig.email],
+      StringConfig.tgl_ultah:data[StringConfig.tgl_ultah],
+      StringConfig.jenis_kelamin:data[StringConfig.jenis_kelamin]=="Wanita"?"0":"1",
+    };
+    print(storeData);
+    storeData.addAll({"id":idLocal.toString()});
+    await db.update(UserQuery.TABLE_NAME, storeData);
+    storeData.remove("id");
+    final res=await HandleHttp().putProvider("member/$id", storeData,context: context);
     if(res!=null){
       loadData();
       Navigator.of(context).pop();
       WidgetHelper().showFloatingFlushbar(context, "success", "data berhasil diubah");
     }
   }
-  
   @override
   void initState() {
     super.initState();
     loadData();
-
   }
-
   @override
   Widget build(BuildContext context) {
+    final resUserFuture = Provider.of<UserProvider>(context).dataUser;
+
+
     List<Widget> historyWidget = [];
     List historArray =FunctionHelper.arrOptDate;
     for(int i=0;i<historArray.length;i++){
@@ -107,7 +120,6 @@ class _ProfileComponentState extends State<ProfileComponent> {
       );
     }
     final scaler=config.ScreenScale(context).scaler;
-    print(dataUser);
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
@@ -118,8 +130,8 @@ class _ProfileComponentState extends State<ProfileComponent> {
                 Expanded(
                   child: Column(
                     children: <Widget>[
-                      config.MyFont.title(context: context,text:dataUser==null?"":dataUser[StringConfig.nama]),
-                      config.MyFont.subtitle(context: context,text:dataUser==null?"":dataUser[StringConfig.email],fontSize: 9),
+                      config.MyFont.title(context: context,text:resUserFuture[StringConfig.nama]),
+                      config.MyFont.subtitle(context: context,text:resUserFuture[StringConfig.tlp],fontSize: 9),
                     ],
                     crossAxisAlignment: CrossAxisAlignment.start,
                   ),
@@ -127,13 +139,12 @@ class _ProfileComponentState extends State<ProfileComponent> {
                 WidgetHelper().myRipple(
                   callback: (){
                     WidgetHelper().myModal(context, UploadImageWidget(callback: (e){
-                      updateImage({"foto":e});
+
+                      updateImage({StringConfig.foto:e});
                     },title: "Ubah foto",));
                   },
-
-                  child: WidgetHelper().imageUser(context: context,img: foto,isUpdate: true)
+                  child: WidgetHelper().imageUser(context: context,img: resUserFuture[StringConfig.foto],isUpdate: true)
                 )
-
               ],
             ),
           ),
@@ -233,7 +244,7 @@ class _ProfileComponentState extends State<ProfileComponent> {
                     Padding(
                         padding: scaler.getPaddingLTRB(0,1,2,0),
                         child:FormProfileWidget(
-                          user: dataUser,
+                          user: resUserFuture,
                           onChanged: (){this.setState(() {});},
                           onSubmited: (data){
                             update(data);
@@ -247,25 +258,25 @@ class _ProfileComponentState extends State<ProfileComponent> {
                   onTap: () {},
                   dense: true,
                   title: config.MyFont.subtitle(context: context,text:'Nama lengkap'),
-                  trailing: config.MyFont.subtitle(context: context,text:dataUser==null?"":dataUser[StringConfig.nama]),
+                  trailing: config.MyFont.subtitle(context: context,text:resUserFuture[StringConfig.nama]),
                 ),
                 ListTile(
                   onTap: () {},
                   dense: true,
                   title: config.MyFont.subtitle(context: context,text:'Email'),
-                  trailing: config.MyFont.subtitle(context: context,text:dataUser==null?"":dataUser[StringConfig.email]),
+                  trailing: config.MyFont.subtitle(context: context,text:resUserFuture[StringConfig.email]),
                 ),
                 ListTile(
                   onTap: () {},
                   dense: true,
                   title: config.MyFont.subtitle(context: context,text:'Jenis kelamain'),
-                  trailing: config.MyFont.subtitle(context: context,text:dataUser==null?"":dataUser[StringConfig.jenis_kelamin]=="0"?"Wanita":"Pria"),
+                  trailing: config.MyFont.subtitle(context: context,text:resUserFuture[StringConfig.jenis_kelamin]=="0"?"Wanita":"Pria"),
                 ),
                 ListTile(
                   onTap: () {},
                   dense: true,
                   title: config.MyFont.subtitle(context: context,text:'tanggal lahir'),
-                  trailing: config.MyFont.subtitle(context: context,text:dataUser==null?"":dataUser[StringConfig.tgl_ultah]),
+                  trailing: config.MyFont.subtitle(context: context,text:resUserFuture[StringConfig.tgl_ultah]),
                 ),
               ],
             ),

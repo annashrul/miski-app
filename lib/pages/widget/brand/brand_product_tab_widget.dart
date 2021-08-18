@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:netindo_shop/helper/home/function_home.dart';
-import 'package:netindo_shop/model/tenant/list_product_tenant_model.dart';
-import 'package:netindo_shop/pages/widget/product/product_grid_widget.dart';
+import 'package:miski_shop/helper/home/function_home.dart';
+import 'package:miski_shop/model/tenant/list_product_tenant_model.dart';
+import 'package:miski_shop/pages/widget/product/product_grid_widget.dart';
 import '../empty_widget.dart';
 import '../loading_widget.dart';
 

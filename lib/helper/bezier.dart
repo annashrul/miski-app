@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
-import 'package:netindo_shop/config/app_config.dart' as config;
+import 'package:miski_shop/config/app_config.dart' as config;
 
 class BezierContainer extends StatelessWidget {
   const BezierContainer({Key key}) : super(key: key);

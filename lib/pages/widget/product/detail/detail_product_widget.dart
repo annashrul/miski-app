@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/string_config.dart';
-import 'package:netindo_shop/config/ui_icons.dart';
-import 'package:netindo_shop/helper/detail/function_detail.dart';
-import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/model/tenant/detail_product_tenant_model.dart';
-import 'package:netindo_shop/pages/widget/product/detail/bottom_bar_detail_product_widget.dart';
-import 'package:netindo_shop/pages/widget/product/detail/tab_detail_product_widget.dart';
+import 'package:miski_shop/config/app_config.dart' as config;
+import 'package:miski_shop/config/string_config.dart';
+import 'package:miski_shop/config/ui_icons.dart';
+import 'package:miski_shop/helper/detail/function_detail.dart';
+import 'package:miski_shop/helper/widget_helper.dart';
+import 'package:miski_shop/model/tenant/detail_product_tenant_model.dart';
+import 'package:miski_shop/pages/widget/product/detail/bottom_bar_detail_product_widget.dart';
+import 'package:miski_shop/pages/widget/product/detail/tab_detail_product_widget.dart';
 
 class DetailProductWidget extends StatefulWidget {
   final dynamic data;

@@ -9,10 +9,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screen_scaler/flutter_screen_scaler.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/string_config.dart';
-import 'package:netindo_shop/config/ui_icons.dart';
-import 'package:netindo_shop/helper/screen_util_helper.dart';
+import 'package:miski_shop/config/app_config.dart' as config;
+import 'package:miski_shop/config/string_config.dart';
+import 'package:miski_shop/config/ui_icons.dart';
+import 'package:miski_shop/helper/screen_util_helper.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:touch_ripple_effect/touch_ripple_effect.dart';
 
@@ -360,20 +360,70 @@ class WidgetHelper{
 
     );
   }
-  baseImage(String img,{double width, double height,BoxFit fit = BoxFit.cover,BoxShape shape=BoxShape.rectangle}){
-    return CachedNetworkImage(
-      imageUrl:img,
-      imageBuilder: (context, imageProvider) => Container(
-        width: width,
+  baseImage(String img,{double width, double height,BoxFit fit = BoxFit.contain,BoxShape shape}){
+    return shape!=null?ClipOval(
+      child: Image.network(
+        img,
         height: height,
-        decoration: BoxDecoration(
-          shape: shape,
-          image: DecorationImage(image: imageProvider, fit:fit),
-        ),
+        width: width,
+        fit: fit,
+        filterQuality: FilterQuality.high,
+        errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+          return Center(child: Icon(Icons.error));
+        },
+        frameBuilder: (BuildContext context, Widget child, int frame, bool wasSynchronouslyLoaded) {
+          if (wasSynchronouslyLoaded) {
+            return child;
+          }
+          return AnimatedOpacity(
+            child: child,
+            opacity: 1,
+            duration: const Duration(seconds: 3),
+            curve: Curves.easeOut,
+          );
+        },
+        loadingBuilder:(BuildContext context, Widget child,ImageChunkEvent loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Center(
+            child: CircularProgressIndicator(
+              value: loadingProgress.expectedTotalBytes != null ?
+              loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes: null,
+            ),
+          );
+        },
       ),
-      placeholder: (context, url) => CircularProgressIndicator(),
-      errorWidget: (context, url, error) => Icon(Icons.error),
+    ):Image.network(
+      img,
+      height: height,
+      width: width,
+      fit: fit,
+      filterQuality: FilterQuality.high,
+      errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+        return Center(child: Icon(Icons.error));
+      },
+      frameBuilder: (BuildContext context, Widget child, int frame, bool wasSynchronouslyLoaded) {
+        if (wasSynchronouslyLoaded) {
+          return child;
+        }
+        return AnimatedOpacity(
+          child: child,
+          opacity: 1,
+          duration: const Duration(seconds: 3),
+          curve: Curves.easeOut,
+        );
+      },
+      loadingBuilder:(BuildContext context, Widget child,ImageChunkEvent loadingProgress) {
+        if (loadingProgress == null) return child;
+        return Center(
+          child: CircularProgressIndicator(
+            value: loadingProgress.expectedTotalBytes != null ?
+            loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes: null,
+          ),
+        );
+      },
     );
+
+
   }
   iconAppbar({BuildContext context,Function callback,IconData icon,String title='',Color color}){
     ScreenScaler scaler = ScreenScaler()..init(context);
@@ -453,20 +503,7 @@ class WidgetHelper{
     return Stack(
       alignment: Alignment.bottomRight,
       children: [
-        Container(
-            padding: scaler.getPaddingLTRB(0,0,2,0),
-            alignment: Alignment.center,
-            height: scaler.getHeight(2), width: scaler.getWidth(5),
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                fit: BoxFit.cover,
-                image: NetworkImage(img),
-              ),
-                shape: BoxShape.circle
-            ),
-            // child: baseImage(img, height: scaler.getHeight(2), width: scaler.getWidth(5),shape: BoxShape.circle)
-            // child: baseImage(img, height: scaler.getHeight(2), width: scaler.getWidth(5),shape: BoxShape.circle)
-        ),
+        baseImage(img, height: scaler.getHeight(2), width: scaler.getWidth(5),shape: BoxShape.circle),
         if(isUpdate)Icon(Icons.camera_alt,size: 10,)
         // icons(ctx: context,icon: UiIcons.download)
       ],

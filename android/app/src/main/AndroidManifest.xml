@@ -1,17 +1,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.netindo_shop">
-
+    package="com.miski_shop">
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <application
+   <application
         android:allowBackup="false"
         android:name="io.flutter.app.FlutterApplication"
-        android:label="nshop"
-        android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true"
         android:exported="true"
-        >
+        android:label="Miski"
+        android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -20,30 +18,26 @@
             android:hardwareAccelerated="true"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize">
+
             <meta-data
-                android:name="io.flutter.embedding.android.NormalTheme"
-                android:resource="@style/NormalTheme"
-                />
+              android:name="io.flutter.embedding.android.NormalTheme"
+              android:resource="@style/NormalTheme"
+              />
+
             <meta-data
-                android:name="io.flutter.embedding.android.SplashScreenDrawable"
-                android:resource="@drawable/launch_background"
-                />
+              android:name="io.flutter.embedding.android.SplashScreenDrawable"
+              android:resource="@drawable/launch_background"
+              />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-
         </activity>
 
-
-        <!-- Don't delete the meta-data below.
-             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-        <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDlQpn8WzbxoOPP84i1FHAaM1Kv1_KGbuc"/>
-
-
+       <meta-data android:name="com.google.android.geo.API_KEY"
+           android:value="AIzaSyDlQpn8WzbxoOPP84i1FHAaM1Kv1_KGbuc"/>
     </application>
 </manifest>

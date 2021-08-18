@@ -2,13 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:getwidget/components/accordion/gf_accordion.dart';
-import 'package:netindo_shop/config/app_config.dart' as config;
-import 'package:netindo_shop/config/string_config.dart';
-import 'package:netindo_shop/config/ui_icons.dart';
-import 'package:netindo_shop/helper/function_helper.dart';
-import 'package:netindo_shop/helper/widget_helper.dart';
-import 'package:netindo_shop/model/checkout/detail_checkout_virtual_account_model.dart';
-import 'package:netindo_shop/provider/handle_http.dart';
+import 'package:miski_shop/config/app_config.dart' as config;
+import 'package:miski_shop/config/string_config.dart';
+import 'package:miski_shop/helper/function_helper.dart';
+import 'package:miski_shop/helper/widget_helper.dart';
+import 'package:miski_shop/model/checkout/detail_checkout_virtual_account_model.dart';
+import 'package:miski_shop/provider/handle_http.dart';
 
 // ignore: must_be_immutable
 class SuccessCheckoutVirtualAccountComponent extends StatefulWidget {
@@ -19,7 +18,6 @@ class SuccessCheckoutVirtualAccountComponent extends StatefulWidget {
 }
 
 class _SuccessCheckoutVirtualAccountComponentState extends State<SuccessCheckoutVirtualAccountComponent> with TickerProviderStateMixin {
-  int _counter = 0;
   AnimationController _controller;
   int levelClock = 86400;
   dynamic resStatus={"img":"","title":""};
@@ -28,7 +26,7 @@ class _SuccessCheckoutVirtualAccountComponentState extends State<SuccessCheckout
     resStatus.addAll(funcStatus);
     this.setState(() {});
   }
- Future checkStatus()async{
+  Future checkStatus()async{
    WidgetHelper().loadingDialog(context);
    String kdTrx=FunctionHelper.getEncode(widget.detailCheckoutVirtualAccountModel.result.invoiceNo);
    final res = await HandleHttp().getProvider("transaction/payment/check/$kdTrx", null,context: context);
@@ -63,8 +61,6 @@ class _SuccessCheckoutVirtualAccountComponentState extends State<SuccessCheckout
   @override
   Widget build(BuildContext context) {
     final scale = config.ScreenScale(context).scaler;
-
-
     return WillPopScope(
         child:  Scaffold(
           appBar: WidgetHelper().appBarWithButton(context, "Virtual account (VA)", (){
@@ -94,6 +90,24 @@ class _SuccessCheckoutVirtualAccountComponentState extends State<SuccessCheckout
                     SizedBox(height: scale.getHeight(0.2)),
                     Center(
                       child: config.MyFont.title(context:context,text:resStatus["title"],textAlign: TextAlign.center,color: config.Colors.mainColors,fontSize: 12),
+                    ),
+                    SizedBox(height: scale.getHeight(1)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        config.MyFont.subtitle(context: context,text:"No virtual account"),
+                        WidgetHelper().myRipple(
+                          callback: (){
+                            FunctionHelper.copy(context, widget.detailCheckoutVirtualAccountModel.result.payCode);
+                          },
+                          child: Row(
+                            children: [
+                              config.MyFont.subtitle(context: context,text:widget.detailCheckoutVirtualAccountModel.result.payCode),
+                              Icon(Icons.copy,size: scale.getTextSize(8))
+                            ],
+                          )
+                        )
+                      ],
                     ),
                     SizedBox(height: scale.getHeight(1)),
                     Row(
