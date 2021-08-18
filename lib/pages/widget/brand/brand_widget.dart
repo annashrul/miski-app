@@ -3,9 +3,13 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:miski_shop/config/app_config.dart' as config;
 import 'package:miski_shop/config/string_config.dart';
+import 'package:miski_shop/config/ui_icons.dart';
 import 'package:miski_shop/helper/widget_helper.dart';
 import 'package:miski_shop/model/tenant/list_brand_product_model.dart';
+import 'package:miski_shop/pages/widget/loading_widget.dart';
 import 'package:miski_shop/provider/handle_http.dart';
+
+import '../empty_widget.dart';
 
 class BrandWidget extends StatefulWidget {
   @override
@@ -37,26 +41,17 @@ class _BrandWidgetState extends State<BrandWidget> {
   Widget build(BuildContext context) {
     final scaler = config.ScreenScale(context).scaler;
 
-    return StaggeredGridView.countBuilder(
+    return isLoading?LoadingProductTenant(tot: 10):listBrandProductModel.result.data.length<1?EmptyDataWidget(
+      iconData: UiIcons.folder,
+      title: StringConfig.noData,
+      isFunction: false,
+    ):StaggeredGridView.countBuilder(
       primary: false,
       shrinkWrap: true,
       padding: scaler.getPaddingLTRB(2, 1, 2, 0),
       crossAxisCount: MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 4,
-      itemCount: isLoading?10:listBrandProductModel.result.data.length,
+      itemCount:listBrandProductModel.result.data.length,
       itemBuilder: (BuildContext context, int index) {
-        if(isLoading){
-          return WidgetHelper().baseLoading(context, Stack(
-            alignment: AlignmentDirectional.topCenter,
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.all(0),
-                alignment: AlignmentDirectional.topCenter,
-                child: WidgetHelper().shimmer(context: context,width: 100,height: 20),
-              ),
-
-            ],
-          ));
-        }
         final res=listBrandProductModel.result.data[index];
         List<Color> col = [config.hexToColors("${res.color}"),config.hexToColors("${res.color}").withOpacity(double.parse("0.$index"))];
         String image=res.image;
