@@ -36,7 +36,7 @@ class _ProductByCategoryState extends State<ProductByCategory> with SingleTicker
   ListProductTenantModel listProductTenantModel;
   bool isLoadingProduct=true;
   Future loadProduct(id)async{
-    String where="&kelompok=$id";
+    String where="&kelompok=$id&perpage=50";
     if(any!="")where+="&q=$any";
     final res = await FunctionHome().loadProduct(context: context,where: where);
     listProductTenantModel=res;

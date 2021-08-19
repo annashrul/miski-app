@@ -111,6 +111,7 @@ class _CategoryProductTabWidgetState extends State<CategoryProductTabWidget> {
                     productPrice: res.harga,
                     productSales: res.stockSales.toString(),
                     productRate: res.rating,
+                    productStock: res.stock,
                     heroTag: 'category_product_grid',
                     callback: (){},
                   );

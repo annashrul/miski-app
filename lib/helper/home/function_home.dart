@@ -11,7 +11,7 @@ class FunctionHome{
   Future loadProduct({BuildContext context,String where})async{
     ListProductTenantModel listProductTenantModel;
     final tenant = await FunctionHelper().getTenant();
-    String url = "barang?page=1&id_tenant=${tenant[StringConfig.idTenant]}";
+    String url = "barang?id_tenant=${tenant[StringConfig.idTenant]}";
     if(where!="") url+="$where";
     print(where);
     final res = await HandleHttp().getProvider(url, listProductTenantModelFromJson,context: context);

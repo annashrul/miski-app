@@ -22,35 +22,31 @@ class _CategoryComponentState extends State<CategoryComponent> {
   int perpage=1,total=0;
   bool isLoading=true,isLoadmore=false;
   void _scrollListener() {
-    if (!isLoading) {
-      if (controller.position.pixels == controller.position.maxScrollExtent) {
-        if(total>data.length){
-          setState((){
-            perpage++;
-            isLoadmore=true;
-          });
-          loadData();
-        }else{
-          setState((){
-            isLoadmore=false;
-          });
-        }
-      }
-    }
+    // if (!isLoading) {
+    //   if (controller.position.pixels == controller.position.maxScrollExtent) {
+    //     if(total>data.length){
+    //       setState((){
+    //         perpage++;
+    //         isLoadmore=true;
+    //       });
+    //       loadData();
+    //     }else{
+    //       setState((){
+    //         isLoadmore=false;
+    //       });
+    //     }
+    //   }
+    // }
   }
   Future loadData()async{
 
-    final resCategory=await HandleHttp().getProvider("kategori?page=$perpage&status=1&perpage=7",listCategoryProductModelFromJson,context: context);
+    final resCategory=await HandleHttp().getProvider("kategori?page=1&status=1&perpage=50",listCategoryProductModelFromJson,context: context);
     if(resCategory!=null){
       if(resCategory==StringConfig.errNoData) return;
       ListCategoryProductModel resultCategory=ListCategoryProductModel.fromJson(resCategory.toJson());
       total = int.parse(resultCategory.result.total);
-      // if(perpage>0){
-      //   perpage =
-      // }
       print(resultCategory.result.toJson());
-
-      for(int iCategory=0;iCategory<resultCategory.result.perPage;iCategory++){
+      for(int iCategory=0;iCategory<resultCategory.result.data.length;iCategory++){
         var rowCategory=resultCategory.result.data[iCategory];
         data.add({"id":rowCategory.id,"title":rowCategory.title,"image":rowCategory.image,"kelompok":[]});
         final resGroup = await HandleHttp().getProvider("kelompok?page=1&kategori=${rowCategory.id}",listGroupProductModelFromJson,context: context);
@@ -94,7 +90,7 @@ class _CategoryComponentState extends State<CategoryComponent> {
     return Scaffold(
       appBar: WidgetHelper().appBarWithButton(context, "Kategori", (){},<Widget>[],param: "default"),
       body: isLoading?WidgetHelper().loadingWidget(context):SingleChildScrollView(
-        controller:controller,
+        // controller:controller,
         padding:scaler.getPadding(1,2),
         child: Wrap(
           runSpacing: 20,
