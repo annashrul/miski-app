@@ -70,7 +70,7 @@ class _HomeComponentState extends State<HomeComponent>{
       if (controller.position.pixels == controller.position.maxScrollExtent) {
         if(perpage<total){
           setState((){
-            perpage+=perpage;
+            perpage+=StringConfig.perpage;
             isLoadmore=true;
           });
           loadProduct(idKelompok);

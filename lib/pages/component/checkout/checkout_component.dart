@@ -67,28 +67,22 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
     if (type == "kurir") {
       String destination = address["kd_kec"];
       String courier = shippingKurir["arr"][i]["kurir"];
+      indexShipping = {"kurir": i, "layanan": 0};
       loadingShipping["layanan"] = true;
-      if(address["pinpoint"]!="-"){
-        shippingKurir["obj"] = shippingKurir["arr"].last;
-        shippingLayanan["obj"] = shippingLayanan["arr"].last;
-        indexShipping = {"kurir": shippingKurir["arr"].length-1, "layanan": shippingLayanan["arr"].length-1};
+      if (address["pinpoint"]!="-"&&courier == "instant") {
         String latitude   = "${address["pinpoint"]}".split(",")[0];
         String longitude  = "${address["pinpoint"]}".split(",")[1];
         destination = "$latitude,$longitude";
         courier = shippingKurir["arr"][shippingKurir["arr"].length-1]["kurir"];
       }
-      else if (address["pinpoint"]!="-"&&courier == "instant") {
-        String latitude   = "${address["pinpoint"]}".split(",")[0];
-        String longitude  = "${address["pinpoint"]}".split(",")[1];
-        destination = "$latitude,$longitude";
-      }
       else if(address["pinpoint"]=="-"&&courier == "instant"){
-        indexShipping["kurir"] = 0;
+        indexShipping = {"kurir": 0, "layanan": 0};
         destination = address["kd_kec"];
         courier = shippingKurir["arr"][0]["kurir"];
         shippingKurir["obj"] = shippingKurir["arr"][0];
         shippingLayanan["obj"] = shippingLayanan["arr"][0];
       }
+
 
       final ongkir = await FunctionCheckout().loadOngkir(context: context, kodeKecamatan: destination, kurir: courier);
       loadingShipping["layanan"] = false;
@@ -233,9 +227,10 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: config.MyFont.title(
                             context: context,
-                            text:
-                                '${FunctionHelper().formatter.format(grandTotal)}',
-                            color: config.Colors.moneyColors))
+                            text:'${FunctionHelper().formatter.format(grandTotal)}',
+                            color:config.Colors.secondDarkColors
+                        )
+                    )
                   ],
                 ),
               )

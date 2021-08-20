@@ -7,7 +7,9 @@ import 'package:miski_shop/helper/function_helper.dart';
 import 'package:miski_shop/helper/widget_helper.dart';
 import 'package:miski_shop/model/cart/cart_model.dart';
 import 'package:miski_shop/model/general_model.dart';
+import 'package:miski_shop/provider/cart_provider.dart';
 import 'package:miski_shop/provider/handle_http.dart';
+import 'package:provider/provider.dart';
 import '../../empty_widget.dart';
 import '../../loading_widget.dart';
 
@@ -17,97 +19,24 @@ class CartWidget extends StatefulWidget {
 }
 
 class _CartWidgetState extends State<CartWidget> {
-  CartModel cartModel;
-  bool isLoading=true,isError=false;
-  int subtotal=0,qty=0;
-  String idTenant="";
-  Future loadCart()async{
-    final tenant=await FunctionHelper().getTenant();
-    final res = await HandleHttp().getProvider("cart/${tenant[StringConfig.idTenant]}", cartModelFromJson,context: context);
-
-    if(res!=null){
-      if(res==StringConfig.errNoData){
-        isError=true;
-        if(this.mounted) setState(() {});
-        return;
-      }
-      idTenant=tenant["id"];
-      CartModel result=res;
-      cartModel = result;
-      isLoading=false;
-      getSubtotal();
-      if(this.mounted) setState(() {});
-    }
-
-  }
-  getSubtotal(){
-    int st = 0;
-    for(var i=0;i<cartModel.result.length;i++){
-      st = st+int.parse(cartModel.result[i].hargaJual)*int.parse(cartModel.result[i].qty);
-    }
-    subtotal = st;
-  }
-  Future checkingPrice(int index)async{
-    final cart=cartModel.result[index];
-    WidgetHelper().loadingDialog(context,title: 'pengecekan harga bertingkat');
-    var res = await FunctionHelper().checkingPriceComplex(
-        cart.idTenant,
-        cart.idBarang,
-        cart.kodeBarang,
-        cart.idVarian,
-        cart.idSubvarian,
-        cart.qty,
-        cart.hargaJual,
-        cart.disc1,
-        cart.disc2,
-        cart.bertingkat,
-        cart.hargaMaster,
-        cart.varianHarga,
-        cart.subvarianHarga
-    );
-    print(res);
-    loadCart();
-    setState(() {Navigator.pop(context);});
-  }
-  Future deleted(id,param)async{
-    WidgetHelper().notifDialog(context, 'Perhatian', 'Anda yakin akan menghapus data ini ?', ()async{
-      Navigator.pop(context);
-    }, ()async{
-      Navigator.pop(context);
-      WidgetHelper().loadingDialog(context);
-      var url='';
-      if(param=='all'){
-        url+='cart/$id?all=true';
-      }
-      else{
-        url+='cart/$id';
-      }
-      await HandleHttp().deleteProvider(url, generalFromJson,context: context);
-      loadCart();
-      Navigator.pop(context);
-
-    });
-  }
-
   @override
   void initState() {
     super.initState();
-    loadCart();
+    final cart = Provider.of<CartProvider>(context, listen: false);
+    cart.getCartData(context);
   }
 
 
   @override
   Widget build(BuildContext context) {
     final scaler = config.ScreenScale(context).scaler;
+    final cart = Provider.of<CartProvider>(context);
     return Scaffold(
       appBar: WidgetHelper().appBarWithButton(context, "Keranjang belanja anda",(){}, <Widget>[
-        if(!isLoading && !isError)
-          WidgetHelper().iconAppbar(context: context,icon: UiIcons.trash,callback: (){
-            deleted(idTenant,'all');
-          })
-
+        if(!cart.loading && !cart.isError)
+          WidgetHelper().iconAppbar(context: context,icon: UiIcons.trash,callback: ()=>cart.deleteCartData(context, "all",""))
       ],param: "default"),
-      body: isError?EmptyDataWidget(
+      body: cart.isError?EmptyDataWidget(
         iconData: UiIcons.shopping_cart,
         title: "Keranjang kosong",
         callback: (){
@@ -127,12 +56,12 @@ class _CartWidgetState extends State<CartWidget> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
-                  isLoading?LoadingCart(total: 6):ListView.separated(
+                  cart.loading?LoadingCart(total: 6):ListView.separated(
                     padding: EdgeInsets.all(0),
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
                     primary: false,
-                    itemCount: cartModel.result.length,
+                    itemCount: cart.cart.result.length,
                     separatorBuilder: (context, index) {
                       return SizedBox(height: 15);
                     },
@@ -144,18 +73,18 @@ class _CartWidgetState extends State<CartWidget> {
               ),
             ),
           ),
-          if(!isLoading &&  cartModel.result.length>0)Positioned(
+          if(!cart.loading &&  cart.cart.result.length>0)Positioned(
             bottom: 0,
             child: Container(
               height: scaler.getHeight(17),
               padding: scaler.getPadding(1,4),
               decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
-                  borderRadius: BorderRadius.only(topRight: Radius.circular(20), topLeft: Radius.circular(20)),
-                  boxShadow: [
-                    BoxShadow(
-                        color: Theme.of(context).focusColor.withOpacity(0.15), offset: Offset(0, -2), blurRadius: 5.0)
-                  ]),
+                color: Theme.of(context).primaryColor,
+                borderRadius: BorderRadius.only(topRight: Radius.circular(20), topLeft: Radius.circular(20)),
+                boxShadow: [
+                  BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), offset: Offset(0, -2), blurRadius: 5.0)
+                ]
+              ),
               child: SizedBox(
                 width: MediaQuery.of(context).size.width - scaler.getWidth(8),
                 child: Column(
@@ -165,10 +94,9 @@ class _CartWidgetState extends State<CartWidget> {
                     Row(
                       children: <Widget>[
                         Expanded(child:config.MyFont.title(context: context,text:'Subtotal',fontWeight: FontWeight.normal)),
-                        config.MyFont.title(context: context,text:'${FunctionHelper().formatter.format(subtotal)}',fontWeight: FontWeight.normal,color: config.Colors.mainColors),
+                        config.MyFont.title(context: context,text:config.MyFont.toMoney("${cart.subtotal}"),fontWeight: FontWeight.normal,color: config.Colors.mainColors),
                       ],
                     ),
-
                     SizedBox(height: 10),
                     Stack(
                       fit: StackFit.loose,
@@ -188,8 +116,7 @@ class _CartWidgetState extends State<CartWidget> {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child:config.MyFont.title(context: context,text:'${FunctionHelper().formatter.format(subtotal)}',fontWeight: FontWeight.bold,color:  Theme.of(context).primaryColor)
-
+                          child:config.MyFont.title(context: context,text:config.MyFont.toMoney("${cart.subtotal}"),fontWeight: FontWeight.bold,color:  Theme.of(context).primaryColor)
                         )
                       ],
                     ),
@@ -205,17 +132,16 @@ class _CartWidgetState extends State<CartWidget> {
   }
 
   Widget buildItem({BuildContext context,int index}){
-    final res=cartModel.result[index];
+    final cart = Provider.of<CartProvider>(context);
+    final res=cart.cart.result[index];
     int anying=int.parse(res.qty);
     final scaler=config.ScreenScale(context).scaler;
     return Container(
-
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColor.withOpacity(0.9),
         boxShadow: [
           BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.1), blurRadius: 5, offset: Offset(0, 2)),
         ],
-
         borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
       child: ListTile(
@@ -245,19 +171,19 @@ class _CartWidgetState extends State<CartWidget> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
               WidgetHelper().myRipple(
-                callback:()=>deleted(cartModel.result[index].id,''),
+                // callback:()=>deleted(cartModel.result[index].id,''),
+                callback:()=>cart.deleteCartData(context,"item", res.id),
                 child: Icon(Ionicons.ios_close_circle_outline,color: Theme.of(context).hintColor,size: scaler.getTextSize(12)),
               ),
               SizedBox(width: scaler.getWidth(1)),
               WidgetHelper().myRipple(
                   callback: (){
-                    if(int.parse(cartModel.result[index].qty)>1){
+                    if(int.parse(res.qty)>1){
                       anying-=1;
-                      cartModel.result[index].qty = anying.toString();
-                      getSubtotal();
-                      checkingPrice(index);
+                      res.qty = anying.toString();
+                      cart.getSubtotal();
+                      cart.storeCart(context, index);
                     }
-                    setState(() {});
                   },
                   child: Icon(Ionicons.ios_remove_circle_outline,color:Theme.of(context).hintColor,size: scaler.getTextSize(12))
               ),
@@ -267,10 +193,9 @@ class _CartWidgetState extends State<CartWidget> {
               WidgetHelper().myRipple(
                   callback: (){
                     anying+=1;
-                    getSubtotal();
-                    cartModel.result[index].qty = anying.toString();
-                    checkingPrice(index);
-                    setState(() {});
+                    cart.getSubtotal();
+                    res.qty = anying.toString();
+                    cart.storeCart(context, index);
                   },
                   child: Icon(Ionicons.ios_add_circle_outline,color:Theme.of(context).hintColor,size: scaler.getTextSize(12),)
               ),

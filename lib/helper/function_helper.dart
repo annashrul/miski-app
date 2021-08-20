@@ -121,10 +121,12 @@ class FunctionHelper{
 
   Future getConfig({BuildContext context}) async{
     var res = await HandleHttp().getProvider('auth/config', configAuthModelFromJson,context: context);
-    if(res is ConfigAuthModel){
+    print("result config $res");
+    if(res!=null){
       ConfigAuthModel result = res;
       return result.result.toJson();
     }
+
   }
   Future<List> checkingPriceComplex(idTenant,idBarang,kode,idVarian,idSubVarian,qty,harga,disc1,disc2,isTrue,hargaMaster,hargaVarian,hargaSubVarian) async {
     await BaseProvider().postCart(
@@ -255,8 +257,8 @@ class FunctionHelper{
     if(status==2) return {"title":"DIBATALKAN","img":config.StringConfig.localAssets+"cancel.png"};
   }
 
-  static toHome(BuildContext context){
-    Navigator.of(context).pushNamedAndRemoveUntil("/${config.StringConfig.main}", (route) => false,arguments: config.StringConfig.defaultTab);
+  static toHome(BuildContext context,{tab=config.StringConfig.defaultTab}){
+    Navigator.of(context).pushNamedAndRemoveUntil("/${config.StringConfig.main}", (route) => false,arguments: tab);
   }
 }
 

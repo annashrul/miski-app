@@ -20,6 +20,7 @@ class SuccessCheckoutVirtualAccountComponent extends StatefulWidget {
 class _SuccessCheckoutVirtualAccountComponentState extends State<SuccessCheckoutVirtualAccountComponent> with TickerProviderStateMixin {
   AnimationController _controller;
   int levelClock = 86400;
+  int retry=0;
   dynamic resStatus={"img":"","title":""};
   loadStatus(status){
     final funcStatus = FunctionHelper.statusCheckout(status);
@@ -27,17 +28,31 @@ class _SuccessCheckoutVirtualAccountComponentState extends State<SuccessCheckout
     this.setState(() {});
   }
   Future checkStatus()async{
-   WidgetHelper().loadingDialog(context);
-   String kdTrx=FunctionHelper.getEncode(widget.detailCheckoutVirtualAccountModel.result.invoiceNo);
-   final res = await HandleHttp().getProvider("transaction/payment/check/$kdTrx", null,context: context);
-   Navigator.of(context).pop();
-   int status = res["result"]["status"];
-   final funcStatus = FunctionHelper.statusCheckout(status);
-   if(status!=0){
-     WidgetHelper().notifOneBtnDialog(context, "Informasi", "Transaksi anda sudah ${funcStatus["title"]}", ()=>FunctionHelper.toHome(context));
-   }else{
-     loadStatus(status);
-   }
+    if(retry<3){
+      WidgetHelper().loadingDialog(context);
+      String kdTrx=FunctionHelper.getEncode(widget.detailCheckoutVirtualAccountModel.result.invoiceNo);
+      final res = await HandleHttp().getProvider("transaction/payment/check/$kdTrx", null,context: context);
+      Navigator.of(context).pop();
+      int status = res["result"]["status"];
+      final funcStatus = FunctionHelper.statusCheckout(status);
+      if(status!=0){
+        WidgetHelper().notifOneBtnDialog(context, "Informasi", "Transaksi anda sudah ${funcStatus["title"]}", ()=>FunctionHelper.toHome(context));
+      }else{
+        loadStatus(status);
+      }
+      if(this.mounted){
+        retry++;
+        this.setState(() {});
+      }
+    }
+    else{
+      WidgetHelper().notifDialog(context, "Informasi", "percobaan anda sudah lebih dari 3 kali. Silahkan hubungi admin dihalaman pesan", (){
+        FunctionHelper.toHome(context);
+      }, (){
+        FunctionHelper.toHome(context,tab: StringConfig.chatPage);
+      },titleBtn1: "beranda",titleBtn2: "buat pesan");
+    }
+
  }
 
   @override

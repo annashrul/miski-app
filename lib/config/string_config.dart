@@ -13,6 +13,10 @@ class StringConfig{
 
   // ************************ PAGES  ************************ //
   static const int defaultTab       = 2;
+  static const int notifPage       = 0;
+  static const int profilePage       = 1;
+  static const int chatPage       = 3;
+  static const int favoritePage       = 4;
   static const String onBoarding    = "OnBoarding";
   static const String signIn        = "SignIn";
   static const String signUp        = "SignUp";
@@ -67,7 +71,7 @@ class StringConfig{
 
   // ************************ GENERAL  ************************ //
   static final int noDataNumber = 10000;
-  static final int perpage = 7;
+  static final int perpage = 15;
   static final double iconSize = 12;
   static final userImage = localAssets+"user2.jpg";
   static const version = "0.0.1";

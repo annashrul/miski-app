@@ -46,8 +46,8 @@ class _MainComponentState extends State<MainComponent> {
     _selectTab(widget.currentTab);
     super.initState();
     final cart = Provider.of<CartProvider>(context, listen: false);
-    final user = Provider.of<UserProvider>(context, listen: false);
     cart.getCartData(context);
+    final user = Provider.of<UserProvider>(context, listen: false);
     user.getUserData(context);
   }
 
@@ -92,6 +92,7 @@ class _MainComponentState extends State<MainComponent> {
   Widget build(BuildContext context) {
     final scaler = config.ScreenScale(context).scaler;
     final cart = Provider.of<CartProvider>(context);
+
     return WillPopScope(
         child: Scaffold(
           key: _scaffoldKey,
