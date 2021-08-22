@@ -38,7 +38,7 @@ class FunctionDetail{
       // data["total_cart"] = dataCart["totalCart"];
       data["product_by_group"] = await loadProductByGroup(data["kelompok"]);
       data["varian"] = data["varian"];
-      data["harga_bertingkat"] = data["harga_bertingkat"];
+      data["harga_bertingkat"] = data["harga_bertingkat"].length>0?true:false;
       // data["is_varian"] = false;
       return {
         "data":data

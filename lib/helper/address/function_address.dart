@@ -10,8 +10,9 @@ class FunctionAddress{
     if(res is ListAddressModel){
       ListAddressModel result=ListAddressModel.fromJson(res.toJson());
       return result;
-
-
     }
   }
+
+
+
 }

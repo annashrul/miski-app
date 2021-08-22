@@ -82,6 +82,7 @@ class Datum {
     this.image,
     this.createdAt,
     this.updatedAt,
+    this.selected,
   });
 
   String id;
@@ -92,6 +93,7 @@ class Datum {
   String image;
   DateTime createdAt;
   DateTime updatedAt;
+  bool selected;
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
     id: json["id"],
@@ -102,6 +104,7 @@ class Datum {
     image: json["image"],
     createdAt: DateTime.parse(json["created_at"]),
     updatedAt: DateTime.parse(json["updated_at"]),
+    selected: false
   );
 
   Map<String, dynamic> toJson() => {
@@ -113,5 +116,6 @@ class Datum {
     "image": image,
     "created_at": createdAt.toIso8601String(),
     "updated_at": updatedAt.toIso8601String(),
+    "selected":false
   };
 }

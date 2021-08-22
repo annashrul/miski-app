@@ -63,7 +63,7 @@ class _CartWidgetState extends State<CartWidget> {
                     primary: false,
                     itemCount: cart.cart.result.length,
                     separatorBuilder: (context, index) {
-                      return SizedBox(height: 15);
+                      return Divider();
                     },
                     itemBuilder: (context, index) {
                       return buildItem(context: context,index: index);
@@ -73,7 +73,7 @@ class _CartWidgetState extends State<CartWidget> {
               ),
             ),
           ),
-          if(!cart.loading &&  cart.cart.result.length>0)Positioned(
+          if(!cart.loading && !cart.isError)Positioned(
             bottom: 0,
             child: Container(
               height: scaler.getHeight(17),
@@ -136,39 +136,38 @@ class _CartWidgetState extends State<CartWidget> {
     cart.getSubtotal();
     final res=cart.cart.result[index];
     int anying=int.parse(res.qty);
+    dynamic data={};
+    data["id"]=res.idBarang;
+    data["kode"]=res.kodeBarang;
+    data["id_varian"]=res.idVarian;
+    data["id_sub_varian"]=res.idSubvarian;
+    data["harga"]=res.hargaJual;
+    data["disc1"]=res.disc1;
+    data["disc2"]=res.disc2;
+    data["harga_bertingkat"]=res.bertingkat;
+    data["harga_master"]=res.hargaMaster;
+    data["harga_varian"]=res.varianHarga;
+    data["harga_sub_varian"]=res.subvarianHarga;
     final scaler=config.ScreenScale(context).scaler;
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor.withOpacity(0.9),
-        boxShadow: [
-          BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.1), blurRadius: 5, offset: Offset(0, 2)),
-        ],
-        borderRadius: BorderRadius.all(Radius.circular(10)),
+    return ListTile(
+      contentPadding: EdgeInsets.all(0),
+      leading:Hero(
+        tag:"cart" + res.idBarang,
+        child: WidgetHelper().baseImage(res.gambar,height:scaler.getHeight(5),width:  scaler.getHeight(5) ),
       ),
-      child: ListTile(
-        contentPadding: EdgeInsets.all(0),
-        leading:Hero(
-          tag:"cart" + res.idBarang,
-          child: Container(
-            height:  scaler.getHeight(5),
-            width:  scaler.getHeight(5),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(5)),
-              image: DecorationImage(image: NetworkImage(res.gambar), fit: BoxFit.cover),
-            ),
+      title: config.MyFont.subtitle(context: context,text:res.barang),
+      subtitle: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              config.MyFont.subtitle(context: context,text:"${config.MyFont.toMoney("${res.hargaJual}")}", color:config.Colors.moneyColors),
+              SizedBox(width: scaler.getWidth(1)),
+              int.parse(res.hargaCoret)<1?SizedBox():config.MyFont.subtitle(context: context,text:"${FunctionHelper().formatter.format(int.parse(res.hargaCoret))}",textDecoration: TextDecoration.lineThrough,fontSize: 8),
+            ],
           ),
-        ),
-        title: config.MyFont.subtitle(context: context,text:res.barang,fontSize: 9),
-        subtitle: Row(
-          children: [
-            config.MyFont.subtitle(context: context,text:"${config.MyFont.toMoney("${res.hargaJual}")}", color:config.Colors.moneyColors),
-            SizedBox(width: scaler.getWidth(1)),
-            int.parse(res.hargaCoret)<1?SizedBox():config.MyFont.subtitle(context: context,text:"${FunctionHelper().formatter.format(int.parse(res.hargaCoret))}",textDecoration: TextDecoration.lineThrough,fontSize: 8),
-          ],
-        ),
-        trailing: Container(
-          width: scaler.getWidth(30),
-          child: Row(
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
               WidgetHelper().myRipple(
@@ -182,8 +181,9 @@ class _CartWidgetState extends State<CartWidget> {
                     if(int.parse(res.qty)>1){
                       anying-=1;
                       res.qty = anying.toString();
+                      data["qty"]=res.qty;
                       cart.getSubtotal();
-                      cart.storeCart(context, index);
+                      cart.storeCart(context, data);
                     }
                   },
                   child: Icon(Ionicons.ios_remove_circle_outline,color:Theme.of(context).hintColor,size: scaler.getTextSize(12))
@@ -194,109 +194,19 @@ class _CartWidgetState extends State<CartWidget> {
               WidgetHelper().myRipple(
                   callback: (){
                     anying+=1;
-                    cart.getSubtotal();
                     res.qty = anying.toString();
-                    cart.storeCart(context, index);
+                    data["qty"]=res.qty;
+                    cart.getSubtotal();
+                    cart.storeCart(context, data);
                   },
                   child: Icon(Ionicons.ios_add_circle_outline,color:Theme.of(context).hintColor,size: scaler.getTextSize(12),)
               ),
             ],
           ),
-        ),
+
+        ],
       ),
-      // child: WidgetHelper().myRipple(
-      //     callback: (){
-      //       Navigator.of(context).pushNamed("/${StringConfig.detailProduct}",arguments: {
-      //         "heroTag":"cart",
-      //         "id":res.idBarang,
-      //         "image":res.gambar,
-      //       }).whenComplete(() => loadCart());
-      //     },
-      //     child: Container(
-      //
-      //       child: Row(
-      //         children: <Widget>[
-      //           Hero(
-      //             tag:"cart" + res.idBarang,
-      //             child: Container(
-      //               height:  scaler.getHeight(5),
-      //               width:  scaler.getHeight(5),
-      //               decoration: BoxDecoration(
-      //                 borderRadius: BorderRadius.all(Radius.circular(5)),
-      //                 image: DecorationImage(image: NetworkImage(res.gambar), fit: BoxFit.cover),
-      //               ),
-      //             ),
-      //           ),
-      //           SizedBox(width: scaler.getWidth(1)),
-      //           // padding: scaler.getPadding(1,1),
-      //           Padding(
-      //             padding: scaler.getPadding(0.5,1),
-      //             child: Flexible(
-      //               child: Column(
-      //                 mainAxisAlignment: MainAxisAlignment.start,
-      //                 crossAxisAlignment: CrossAxisAlignment.start,
-      //                 children: <Widget>[
-      //                   Column(
-      //                     mainAxisAlignment: MainAxisAlignment.center,
-      //                     crossAxisAlignment: CrossAxisAlignment.start,
-      //                     children: [
-      //                       config.MyFont.subtitle(context: context,text:res.barang,fontSize: 9),
-      //                       Row(
-      //                         children: [
-      //                           config.MyFont.subtitle(context: context,text:"${config.MyFont.toMoney("${res.hargaJual}")}", color:config.Colors.moneyColors),
-      //                           SizedBox(width: scaler.getWidth(1)),
-      //                           int.parse(res.hargaCoret)<1?SizedBox():config.MyFont.subtitle(context: context,text:"${FunctionHelper().formatter.format(int.parse(res.hargaCoret))}",textDecoration: TextDecoration.lineThrough,fontSize: 8),
-      //                         ],
-      //                       ),
-      //                       Row(
-      //                         crossAxisAlignment: CrossAxisAlignment.center,
-      //                         mainAxisAlignment: MainAxisAlignment.end,
-      //                         children: <Widget>[
-      //                           WidgetHelper().myRipple(
-      //                             callback:()=>deleted(cartModel.result[index].id,''),
-      //                             child: Icon(Ionicons.ios_close_circle_outline,color: Theme.of(context).hintColor,size: scaler.getTextSize(15)),
-      //                           ),
-      //                           SizedBox(width: scaler.getWidth(1)),
-      //                           WidgetHelper().myRipple(
-      //                               callback: (){
-      //                                 if(int.parse(cartModel.result[index].qty)>1){
-      //                                   anying-=1;
-      //                                   cartModel.result[index].qty = anying.toString();
-      //                                   getSubtotal();
-      //                                   checkingPrice(index);
-      //                                 }
-      //                                 setState(() {});
-      //                               },
-      //                               child: Icon(Ionicons.ios_remove_circle_outline,color:Theme.of(context).hintColor,size: scaler.getTextSize(15))
-      //                           ),
-      //                           SizedBox(width: scaler.getWidth(1)),
-      //                           config.MyFont.subtitle(context: context,text:"${res.qty}"),
-      //                           SizedBox(width: scaler.getWidth(1)),
-      //                           WidgetHelper().myRipple(
-      //                               callback: (){
-      //                                 anying+=1;
-      //                                 getSubtotal();
-      //                                 cartModel.result[index].qty = anying.toString();
-      //                                 checkingPrice(index);
-      //                                 setState(() {});
-      //                               },
-      //                               child: Icon(Ionicons.ios_add_circle_outline,color:Theme.of(context).hintColor,size: scaler.getTextSize(15),)
-      //                           ),
-      //
-      //                         ],
-      //                       )
-      //                     ],
-      //                   ),
-      //                   // SizedBox(height: scaler.getHeight(0.5)),
-      //
-      //                 ],
-      //               ),
-      //             ),
-      //           )
-      //         ],
-      //       ),
-      //     )
-      // ),
+
     );
 
   }

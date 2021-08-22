@@ -3,10 +3,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:miski_shop/config/app_config.dart' as config;
 import 'package:miski_shop/config/ui_icons.dart';
 import 'package:miski_shop/helper/widget_helper.dart';
+import 'package:miski_shop/model/tenant/listGroupProductModel.dart';
 
 // ignore: must_be_immutable
 class FilterProductSliderWidget extends StatefulWidget {
-  List data;
+  ListGroupProductModel data;
   String heroTag;
   ValueChanged<String> onChanged;
 
@@ -28,8 +29,8 @@ class _FilterProductSliderWidgetState extends State<FilterProductSliderWidget> {
             radius: 0,
             callback: (){
               setState(() {
-                widget.data.forEach((filter) {
-                  filter["selected"] = false;
+                widget.data.result.data.forEach((filter) {
+                  filter.selected=false;
                 });
                 widget.onChanged("");
               });
@@ -53,7 +54,7 @@ class _FilterProductSliderWidgetState extends State<FilterProductSliderWidget> {
                   borderRadius: BorderRadius.only(bottomLeft: Radius.circular(60), topLeft: Radius.circular(60)),
                 ),
                 child: ListView.builder(
-                  itemCount: widget.data.length,
+                  itemCount: widget.data.result.data.length,
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
                     double _marginLeft = 0;
@@ -61,13 +62,13 @@ class _FilterProductSliderWidgetState extends State<FilterProductSliderWidget> {
                     return CategoryIconWidget(
                         heroTag: widget.heroTag,
                         marginLeft: _marginLeft,
-                        data: widget.data.elementAt(index),
+                        data: widget.data.result.data.elementAt(index),
                         onPressed: (String id) {
                           setState(() {
-                            widget.data.forEach((filter) {
-                              filter["selected"] = false;
-                              if (filter["title"] == id) {
-                                filter["selected"] = true;
+                            widget.data.result.data.forEach((filter) {
+                              filter.selected=false;
+                              if (filter.title == id) {
+                                filter.selected = true;
                               }
                             });
                             widget.onChanged(id);
@@ -114,7 +115,7 @@ class _CategoryIconWidgetState extends State<CategoryIconWidget> with SingleTick
       radius: 50,
       callback: (){
         setState(() {
-          widget.onPressed(widget.data["title"]);
+          widget.onPressed(widget.data.title);
         });
       },
       child: AnimatedContainer(
@@ -123,7 +124,7 @@ class _CategoryIconWidgetState extends State<CategoryIconWidget> with SingleTick
         curve: Curves.easeInOut,
         padding:scaler.getPadding(0,2),
         decoration: BoxDecoration(
-          color: widget.data["selected"] ? config.Colors.secondColors : Colors.transparent,
+          color: widget.data.selected ? config.Colors.secondColors : Colors.transparent,
           borderRadius: BorderRadius.circular(50),
         ),
         child: Row(
@@ -134,10 +135,10 @@ class _CategoryIconWidgetState extends State<CategoryIconWidget> with SingleTick
               curve: Curves.easeInOut,
               vsync: this,
               child:Hero(
-                tag: widget.heroTag + widget.data["id"],
+                tag: widget.heroTag + widget.data.id,
                 child: SvgPicture.network(
-                  widget.data["image"],
-                  color: widget.data["selected"] ? Theme.of(context).accentColor : Theme.of(context).primaryColor,
+                  widget.data.image,
+                  color: widget.data.selected ? Theme.of(context).accentColor : Theme.of(context).primaryColor,
                   width: scaler.getWidth(12),
                   placeholderBuilder: (context) => Icon(Icons.error),
                 ),

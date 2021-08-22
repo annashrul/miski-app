@@ -30,13 +30,13 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
   Future loadData(String type) async {
     final resDetail = await FunctionCheckout().loadData(context: context, type: type, ongkos: cost);
     if (resDetail == StringConfig.errNoData) {
-      WidgetHelper().notifOneBtnDialog(
-          context, "Informasi", "Silahkan buat alamat terlebih dahulu", () {
+      WidgetHelper().notifDialog(context, "Informasi", "Silahkan buat alamat terlebih dahulu", ()=>FunctionHelper.toHome(context), (){
         Navigator.of(context).pop();
         WidgetHelper().myPushAndLoad(context, AddressComponent(), () {
           loadData("all");
         });
-      });
+      },titleBtn1: "Beranda",titleBtn2: "Buat alamat");
+
       return;
     }
     print("################## ALAMAT $resDetail");
@@ -116,9 +116,9 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
       "metode_pembayaran": "transfer",
       "kode_voucher": "$codePromo",
       "id_alamat_member": "${address["id"]}",
-     
+
     };
-     Navigator.of(context).pushNamed("/${StringConfig.channel}", arguments: data);
+    Navigator.of(context).pushNamed("/${StringConfig.channel}", arguments: data);
     // FunctionCheckout().storeCheckout(context: context, data: data);
   }
 

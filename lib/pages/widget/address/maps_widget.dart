@@ -10,8 +10,12 @@ import 'package:miski_shop/config/ui_icons.dart';
 import 'package:miski_shop/helper/function_helper.dart';
 import 'package:miski_shop/helper/widget_helper.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:miski_shop/pages/component/address/address_component.dart';
+import 'package:miski_shop/pages/widget/address/modal_form_address_widget.dart';
+import 'package:miski_shop/provider/address_provider.dart';
 import 'package:miski_shop/provider/handle_http.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class MapsWidget extends StatefulWidget {
   final dynamic latlong;
@@ -25,120 +29,16 @@ class MapsWidget extends StatefulWidget {
 class _MapsWidgetState extends State<MapsWidget> {
   BitmapDescriptor customIcon;
   Set<Marker> markers;
-  Marker marker;
   String pin = '${StringConfig.localAssets}bb.png';
-  final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
-  dynamic _currentPosition;
   StreamSubscription _locationSubscription;
-  String currentAddress = "";
-  bool activegps=true;
-  Future bodyMarker({latitude,longitude})async {
-    LatLng latlng = LatLng(latitude,longitude);
-    marker = Marker(
-        markerId: MarkerId("home"),
-        position: latlng,
-        draggable: true,
-        zIndex: 2,
-        flat: true,
-        anchor: Offset(0.5, 0.5),
-    );
-    this.setState(() {});
-  }
-
-  _getCurrentLocation() async {
-
-
-    if (!(await Geolocator().isLocationServiceEnabled())){
-      activegps=false;
-    }
-    else{
-      geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high).then((Position position) async {
-        dynamic newPosition = position.toJson();
-        if(widget.latlong!=null){newPosition = widget.latlong;}
-        double lat = newPosition[StringConfig.latitude];
-        double lng = newPosition[StringConfig.longitude];
-        await bodyMarker(latitude: lat,longitude: lng);
-        _currentPosition = {StringConfig.latitude:lat,StringConfig.longitude:lng};
-        getAddressFromLatLng(lat,lng);
-        if(this.mounted)setState((){});
-      }).catchError((e) {
-        print(e);
-      });
-    }
-
-  }
-
-  getAddressFromLatLng(lat, lng) async {
-    final scaler = config.ScreenScale(context).scaler;
-    try {
-      List<Placemark> p = await geolocator.placemarkFromCoordinates(lat, lng);
-      Placemark place = p[0];
-      print(p);
-      String fullAddress = "${place.thoroughfare}, ${place.subLocality}, ${place.subAdministrativeArea}, ${place.administrativeArea}";
-      _currentPosition = {StringConfig.latitude:lat,StringConfig.longitude:lng};
-      WidgetHelper().myModal(
-        context,
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-                padding: scaler.getPadding(1, 2),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        WidgetHelper().titleQ(context, "alamat anda",icon: UiIcons.information, fontSize: 9),
-                        WidgetHelper().myRipple(
-                          callback: () async {
-                            dynamic dataAddress= {
-                              StringConfig.latitude:lat.toString(),
-                              StringConfig.longitude:lng.toString(),
-                              StringConfig.fullAddress:fullAddress.toString(),
-                            };
-                            print("############################ $dataAddress ###########################");
-                            Navigator.of(context).pop();
-                            widget.callback(dataAddress);
-                          },
-                          child: config.MyFont.subtitle(
-                            context: context,
-                            text: "konfirmasi",
-                            color: config.Colors.mainColors,
-                          )
-                        )
-                      ],
-                    ),
-                    Divider(),
-                    ListTile(
-                      contentPadding: EdgeInsets.all(0),
-                      leading: Image.asset(pin, height: scaler.getHeight(2)),
-                      title: config.MyFont.subtitle(
-                          context: context,
-                          text: "${place.thoroughfare}, ${place.subLocality}, ${place.subAdministrativeArea}, ${place.administrativeArea}",
-                          fontWeight: FontWeight.normal),
-                    ),
-                  ],
-                )),
-          ],
-        )
-      );
-      if (this.mounted) {
-        this.setState(() {});
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
-
   AssetImage assetImage;
   @override
   void initState() {
     super.initState();
-    _getCurrentLocation();
-    markers = Set.from([]);
+    final map = Provider.of<AddressProvider>(context, listen: false);
+    map.getCurrentLocation(widget.latlong);
+    map.checkingGps();
   }
-
   @override
   void dispose() {
     if (_locationSubscription != null) {
@@ -149,9 +49,51 @@ class _MapsWidgetState extends State<MapsWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final map = Provider.of<AddressProvider>(context);
+    print("ISACTIVE GPS ${map.isActiveGps}");
+    print("ADDRESS ${map.addressFromLatLong}");
+    print("RESPONSE WIDGET MAPS ${widget.latlong}");
+    // map.checkingGps();
+    final scaler = config.ScreenScale(context).scaler;
     return Scaffold(
+      bottomNavigationBar: map.isActiveGps&&map.addressFromLatLong!=null?Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+              padding: scaler.getPadding(1, 2),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      WidgetHelper().titleQ(context, "alamat anda",icon: UiIcons.information, fontSize: 9),
+                      WidgetHelper().myRipple(
+                          callback: () async {
+                            dynamic dataAddress= {
+                              StringConfig.latitude:map.addressFromLatLong[StringConfig.latitude].toString(),
+                              StringConfig.longitude:map.addressFromLatLong[StringConfig.longitude].toString(),
+                              StringConfig.fullAddress:map.addressFromLatLong[StringConfig.fullAddress],
+                            };
+                            widget.callback(dataAddress);
+                            Navigator.of(context).pop();
+                          },
+                          child: config.MyFont.subtitle(context: context,text: "konfirmasi",color: config.Colors.mainColors)
+                      )
+                    ],
+                  ),
+                  Divider(),
+                  ListTile(
+                    contentPadding: EdgeInsets.all(0),
+                    leading: Image.asset(pin, height: scaler.getHeight(2)),
+                    title: config.MyFont.subtitle(context: context,text: map.addressFromLatLong[StringConfig.fullAddress],fontWeight: FontWeight.normal),
+                  ),
+                ],
+              )),
+        ],
+      ):SizedBox(),
       appBar: WidgetHelper().appBarWithButton(context, "Lokasi instant kurir",(){},<Widget>[],param:"default"),
-      body:!activegps?Container(
+      body:!map.isActiveGps?Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         padding: EdgeInsets.symmetric(horizontal:50),
@@ -170,35 +112,26 @@ class _MapsWidgetState extends State<MapsWidget> {
               SizedBox(
                 height:40,
               ),
-              RaisedButton(onPressed: ()async{
-                if (!(await Geolocator().isLocationServiceEnabled())){
-                  setState(() {
-                    activegps=false;
-                  });
-                }else{
-                  setState(() {
-                    activegps=true;
-                  });
-                  _getCurrentLocation();
-                }
+              RaisedButton(
+                onPressed: ()async{
+                  map.checkingGps();
+                  map.getCurrentLocation(widget.latlong);
               },
                 child: config.MyFont.subtitle(context: context,text:"coba lagi",textAlign: TextAlign.center),
               )
             ],
           ),
         ),
-      ):_currentPosition == null ? WidgetHelper().loadingWidget(context): GoogleMap(
+      ):map.addressFromLatLong == null ? WidgetHelper().loadingWidget(context): GoogleMap(
         mapType: MapType.normal,
-        markers: Set.of((marker != null) ? [marker] : []),
+        markers: Set.of((map.marker != null) ? [map.marker] : []),
         onTap: (pos) async {
-          print("${pos.latitude} ${pos.longitude}");
-          await bodyMarker(latitude: pos.latitude,longitude: pos.longitude);
-          getAddressFromLatLng(pos.latitude, pos.longitude);
-          if(this.mounted) setState((){});
+          await map.createMarker(latitude: pos.latitude,longitude: pos.longitude);
+          await map.getAddressFromLatLng(pos.latitude, pos.longitude);
         },
         onMapCreated: (GoogleMapController controller) {},
         initialCameraPosition: CameraPosition(
-          target: LatLng(_currentPosition["latitude"], _currentPosition["longitude"]),
+          target: LatLng(map.addressFromLatLong[StringConfig.latitude], map.addressFromLatLong[StringConfig.longitude]),
           zoom: 18
         ),
       ),

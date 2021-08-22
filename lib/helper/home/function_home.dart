@@ -28,6 +28,8 @@ class FunctionHome{
     final res = await HandleHttp().getProvider("kelompok?page=1",listGroupProductModelFromJson,context: context);
     if(res is ListGroupProductModel){
       ListGroupProductModel result=ListGroupProductModel.fromJson(res.toJson());
+      print("ADD SELECTED KELOMPOK ${result.result.toJson()}");
+      
       result.result.data.forEach((element) {
         resFilter.add({"id":element.id,"image":element.image,"title":element.title,"selected":false});
       });

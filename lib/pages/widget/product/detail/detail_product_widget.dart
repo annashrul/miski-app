@@ -29,31 +29,14 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
   Future loadDetail()async{
     final funcData = await FunctionDetail().loadDetail(context: context,idProduct:widget.data["id"]);
     dataDetail = funcData["data"];
-    // qty = funcData["data"]["qty"];
     harga = int.parse(funcData["data"]["harga"]);
     hargaMaster=funcData["data"]["harga_master"];
     hargaFinish=funcData["data"]["harga_finish"];
-    // totalCart = funcData["data"]["total_cart"];
     isFavorite = await FunctionDetail().handleFavorite(context: context,data: dataDetail,method: "get");
     isLoadingDetail=false;
     if(this.mounted) setState(() {});
-
   }
-  Future handleCart()async{
-    if(this.mounted) setState(() {qty+=1;});
-    dynamic data = dataDetail;
-    data["qty"] = qty;
-    data["id_varian"] = idVarian;
-    data["id_sub_varian"] = idSubVarian;
-    data["harga_finish"] =hargaFinish;
-    data["harga_master"] =hargaMaster;
-    data["harga_varian"] =hargaVarian;
-    data["harga_sub_varian"] = hargaSubVarian;
-    final res = await FunctionDetail().addToCart(context: context,data: data);
 
-    print("total cart $res");
-    if(this.mounted) setState(() {});
-  }
 
   Future handleFavorite()async{
     final res = await FunctionDetail().handleFavorite(context: context,data: dataDetail);
@@ -89,23 +72,26 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
   Widget build(BuildContext context) {
     final scaler = config.ScreenScale(context).scaler;
     final cart = Provider.of<CartProvider>(context);
-    print("QTY ${cart.qtyPerProduct}");
+    // print("QTY ${dataDetail["stock"]}");
     qty = cart.qtyPerProduct;
     return Scaffold(
       key: _scaffoldKey,
       bottomNavigationBar: BottomBarDetailProductWidget(callback: (res){
         if(res=="cart"){
-          qty++;
-          print(qty);
-          dynamic data = dataDetail;
-          data["qty"] = qty;
-          data["id_varian"] = idVarian;
-          data["id_sub_varian"] = idSubVarian;
-          data["harga_finish"] =hargaFinish;
-          data["harga_master"] =hargaMaster;
-          data["harga_varian"] =hargaVarian;
-          data["harga_sub_varian"] = hargaSubVarian;
-          cart.storeCart(context,data);
+          if(int.parse(dataDetail["stock"])>0){
+            qty++;
+            dynamic data = dataDetail;
+            data["qty"] = qty;
+            data["id_varian"] = idVarian;
+            data["id_sub_varian"] = idSubVarian;
+            data["harga_finish"] =hargaFinish;
+            data["harga_master"] =hargaMaster;
+            data["harga_varian"] =hargaVarian;
+            data["harga_sub_varian"] = hargaSubVarian;
+            cart.storeCart(context,data);
+          }else{
+            WidgetHelper().showFloatingFlushbar(context, "failed","stok tidak tersedia");
+          }
         }else{
           handleFavorite();
         }
@@ -123,12 +109,11 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
               if(cart.isActiveCart){
                 Navigator.of(context).pushNamed("/${StringConfig.cart}").whenComplete((){
                   cart.isActiveCart = cart.isActiveCart;
-                  // cart.getDetail(context, idProduct)
-
                   cart.getDetail(context, widget.data["id"]);
-
-
                 });
+              }
+              else{
+                WidgetHelper().showFloatingFlushbar(context,"failed", "maaf keranjang kamu kosong");
               }
               // if(totalCart>0){
               //   Navigator.of(context).pushNamed('/${StringConfig.cart}').whenComplete(()async{

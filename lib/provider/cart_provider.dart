@@ -46,9 +46,10 @@ class CartProvider with ChangeNotifier {
   }
 
   storeCart(BuildContext context,data)async{
+    final tenant = await FunctionHelper().getTenant();
     WidgetHelper().loadingDialog(context,title: 'pengecekan harga bertingkat');
     await FunctionHelper().checkingPriceComplex(
-      data["id_tenant"],
+      tenant[StringConfig.idTenant],
       data["id"],
       data["kode"],
       data["id_varian"],
@@ -57,14 +58,14 @@ class CartProvider with ChangeNotifier {
       data["harga"],
       data["disc1"],
       data["disc2"],
-      data["harga_bertingkat"].length>0?true:false,
+      data["harga_bertingkat"],
       data["harga_master"],
       data["harga_varian"],
       data["harga_sub_varian"],
     );
     Navigator.pop(context);
     getCartData(context,loading: false);
-    qtyPerProduct = data["qty"];
+    qtyPerProduct = int.parse(data["qty"].toString());
     notifyListeners();
   }
 

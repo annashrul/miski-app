@@ -4,11 +4,15 @@ import 'package:miski_shop/config/app_config.dart' as config;
 import 'package:miski_shop/config/string_config.dart';
 import 'package:miski_shop/config/ui_icons.dart';
 import 'package:miski_shop/helper/address/function_address.dart';
+import 'package:miski_shop/helper/user_helper.dart';
 import 'package:miski_shop/helper/widget_helper.dart';
 import 'package:miski_shop/model/address/list_address_model.dart';
 import 'package:miski_shop/model/general_model.dart';
+import 'package:miski_shop/pages/widget/address/maps_widget.dart';
 import 'package:miski_shop/pages/widget/address/modal_form_address_widget.dart';
+import 'package:miski_shop/provider/address_provider.dart';
 import 'package:miski_shop/provider/handle_http.dart';
+import 'package:provider/provider.dart';
 import '../../widget/empty_widget.dart';
 import '../../widget/loading_widget.dart';
 
@@ -24,54 +28,31 @@ class AddressComponent extends StatefulWidget {
 class _AddressComponentState extends State<AddressComponent> {
   ScrollController controller;
   var scaffoldKey = GlobalKey<ScaffoldState>();
-  ListAddressModel listAddressModel;
-  bool isLoading=false,isLoadmore=false,isError=false;
   int idx=StringConfig.noDataNumber;
-  Future loadData()async{
-    var res = await FunctionAddress().loadData(context: context,isChecking: false);
-    listAddressModel = res;
-    isLoading=false;
-    this.setState(() {
 
-    });
-  }
-  Future deleteAddress(id)async{
-    WidgetHelper().loadingDialog(context);
-    var res = await HandleHttp().deleteProvider("member_alamat/$id", generalFromJson,context: context);
-    if(res!=null){
-      loadData();
-    }
-  }
   @override
   void initState() {
     super.initState();
-    isLoading=true;
-    loadData();
+    final address = Provider.of<AddressProvider>(context, listen: false);
+    address.readList(context);
     idx=widget.indexArr;
-
   }
 
   @override
   Widget build(BuildContext context) {
+    final address = Provider.of<AddressProvider>(context);
+    print(address.isError);
     final scaler = config.ScreenScale(context).scaler;
     return Scaffold(
       key: scaffoldKey,
       appBar: WidgetHelper().appBarWithButton(context,"Daftar Alamat",(){Navigator.pop(context);},<Widget>[
         WidgetHelper().iconAppbar(context: context,icon: Ionicons.ios_add,callback: (){
-          WidgetHelper().myModal(context, ModalFormAddressWidget(id:"",callback:(String par){
-            if(par=='berhasil'){
-              loadData();
-              WidgetHelper().showFloatingFlushbar(context,"success","data berhasil dikirim");
-            }
-            else{
-              WidgetHelper().showFloatingFlushbar(context,"success","terjadi kesalahan koneksi");
-            }
-          },));
+          WidgetHelper().myModal(context, ModalFormAddressWidget(id:"",callback:(String par)=>address.readList(context)));
         })
       ],brightness: Brightness.light),
       body: Container(
         padding: scaler.getPadding(1,2),
-        child: isLoading?LoadingHistory(tot: 10):listAddressModel.result.data.length>0?Column(
+        child: address.isLoading?LoadingHistory(tot: 10):address.listAddressModel.result.data.length>0?Column(
           children: [
             Expanded(
                 flex:16,
@@ -80,17 +61,15 @@ class _AddressComponentState extends State<AddressComponent> {
                   key: PageStorageKey<String>('AddressScreen'),
                   primary: false,
                   physics: ScrollPhysics(),
-                  controller: controller,
-                  itemCount: listAddressModel.result.data.length,
+                  itemCount: address.listAddressModel.result.data.length,
                   itemBuilder: (context,index){
-                    final val=listAddressModel.result.data[index];
-                    print("val ${val.toJson()}");
+                    final val=address.listAddressModel.result.data[index];
                     Widget btn=WidgetHelper().myRipple(
                       child:WidgetHelper().icons(ctx: context,icon: UiIcons.trash),
                       callback: (){
                         WidgetHelper().notifDialog(context, "Perhatian !!","anda yakin akan menghapus data ini ??", (){Navigator.pop(context);},()async{
                           Navigator.pop(context);
-                          await deleteAddress(val.id);
+                          address.delete(context, val.id);
                         });
                       },
                     );
@@ -109,15 +88,7 @@ class _AddressComponentState extends State<AddressComponent> {
                               widget.callback(val.toJson()..addAll({"index":index}));
                               Navigator.pop(context);
                             }else{
-                              WidgetHelper().myModal(context, ModalFormAddressWidget(id:"${val.id}",callback:(String par){
-                                if(par=='berhasil'){
-                                  loadData();
-                                  WidgetHelper().showFloatingFlushbar(context,"success","data berhasil disimpan");
-                                }
-                                else{
-                                  WidgetHelper().showFloatingFlushbar(context,"failed","terjadi kesalahan koneksi");
-                                }
-                              },));
+                              WidgetHelper().myModal(context, ModalFormAddressWidget(id:"${val.id}",callback:(String par)=>address.readList(context)));
                             }
                           },
                           child:  Column(
@@ -172,16 +143,7 @@ class _AddressComponentState extends State<AddressComponent> {
                                   SizedBox(height:5.0),
                                   WidgetHelper().myRipple(
                                     callback: (){
-                                      WidgetHelper().myModal(context, ModalFormAddressWidget(id:val.id,callback:(String par){
-                                        if(par=='berhasil'){
-                                          loadData();
-                                          WidgetHelper().showFloatingFlushbar(context,"success","data berhasil dikirim");
-                                        }
-                                        else{
-                                          WidgetHelper().showFloatingFlushbar(context,"success","terjadi kesalahan koneksi");
-                                        }
-                                      },));
-
+                                      WidgetHelper().myModal(context, ModalFormAddressWidget(id:val.id,callback:(String par)=>address.readList(context)));
                                     },
                                     child: Container(
                                       padding:EdgeInsets.all(10.0),
@@ -204,7 +166,6 @@ class _AddressComponentState extends State<AddressComponent> {
                   separatorBuilder: (context,index){return SizedBox(height:10.0);},
                 )
             ),
-            // isLoadmore?Expanded(flex:4,child: LoadingHistory(tot: 1)):Container()
           ],
         ):EmptyTenant(),
       ),

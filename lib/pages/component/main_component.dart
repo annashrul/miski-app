@@ -115,6 +115,10 @@ class _MainComponentState extends State<MainComponent> {
                   if(cart.isActiveCart){
                     Navigator.of(context).pushNamed("/${StringConfig.cart}").whenComplete(() => cart.isActiveCart);
                   }
+                  else{
+                    WidgetHelper().showFloatingFlushbar(context,"failed", "maaf keranjang kamu kosong");
+
+                  }
                 }
               ),
             ],

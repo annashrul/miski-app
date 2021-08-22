@@ -15,6 +15,10 @@ import 'package:miski_shop/pages/widget/promo/detail_promo_widget.dart';
 import 'package:miski_shop/pages/widget/searchbar_widget.dart';
 import 'package:miski_shop/pages/widget/slider_widget.dart';
 import 'package:miski_shop/provider/cart_provider.dart';
+import 'package:miski_shop/provider/group_provider.dart';
+import 'package:miski_shop/provider/product_provider.dart';
+import 'package:miski_shop/provider/promo_provider.dart';
+import 'package:miski_shop/provider/slider_provider.dart';
 import 'package:provider/provider.dart';
 import '../../widget/empty_widget.dart';
 import '../../widget/loading_widget.dart';
@@ -31,131 +35,84 @@ class HomeComponent extends StatefulWidget {
 class _HomeComponentState extends State<HomeComponent>{
   Animation animationOpacity;
   AnimationController animationController;
-  ListProductTenantModel listProductTenantModel;
-  ListSliderModel listSliderModel;
-  GlobalPromoModel globalPromoModel;
-  String any="",idKelompok="";
-  List resFilter=[];
-  bool isLoadingSlider=true,isLoadingProduct=true,isLoadingGroup=true,isLoadingPromo=true,isLoadmore=false;
-  ScrollController controller;
-  int perpage=StringConfig.perpage,total=0;
 
-  Future loadProduct(id)async{
-    String where="&perpage=$perpage";
-    if(id!=""){where+="&kelompok=$id";}
-    if(any!=""){where+="&q=$any";}
-    final res = await FunctionHome().loadProduct(context: context,where: where);
-    listProductTenantModel=res;
-    total=res.result.total;
-    isLoadingProduct=false;
-    if(this.mounted){this.setState(() {});}
-  }
-  Future loadGroup()async{
-    final res = await FunctionHome().loadGroup(context: context);
-    resFilter=res;
-    isLoadingGroup=false;
-    if(this.mounted){this.setState(() {});}
-  }
-  Future loadSlider()async{
-    final res = await FunctionHome().loadSlider(context: context);
-    listSliderModel = res;
-    isLoadingSlider=false;
-    if(this.mounted){this.setState(() {});}
-  }
-  Future loadPromo()async{
-    final res = await FunctionHome().loadPromo(context: context);
-    globalPromoModel = res;
-    isLoadingPromo=false;
-    if(this.mounted){this.setState(() {});}
-  }
-  void _scrollListener() {
-    if (!isLoadingProduct) {
-      if (controller.position.pixels == controller.position.maxScrollExtent) {
-        if(perpage<total){
-          setState((){
-            perpage+=StringConfig.perpage;
-            isLoadmore=true;
-          });
-          loadProduct(idKelompok);
-        }else{
-          setState((){
-            isLoadmore=false;
-          });
-        }
-      }
-    }
-  }
+
 
 
 
   @override
   void initState() {
     super.initState();
-    controller = new ScrollController()..addListener(_scrollListener);
-    loadSlider();
-    loadProduct("");
-    loadGroup();
-    loadPromo();
+    final product = Provider.of<ProductProvider>(context, listen: false);
+    final slider = Provider.of<SliderProvider>(context, listen: false);
+    final promo = Provider.of<PromoProvider>(context, listen: false);
+    final group = Provider.of<GroupProvider>(context, listen: false);
+    group.read(context);
+    promo.read(context);
+    slider.read(context);
+    product.read(context: context);
+    product.controller = new ScrollController()..addListener(product.scrollListener);
+
   }
   @override
   void dispose() {
     super.dispose();
-    controller.removeListener(_scrollListener);
+    final product = Provider.of<ProductProvider>(context, listen: false);
+    product.controller.removeListener(product.scrollListener);
   }
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<CartProvider>(context);
-
+    final product = Provider.of<ProductProvider>(context);
+    final slider = Provider.of<SliderProvider>(context);
+    final group = Provider.of<GroupProvider>(context);
+    final promo = Provider.of<PromoProvider>(context);
     final scaler = config.ScreenScale(context).scaler;
     return RefreshWidget(
       widget: ListView(
-        controller: controller,
+        controller: product.controller,
         padding: EdgeInsets.all(0),
         children: <Widget>[
           Padding(
             padding: scaler.getPadding(0,2),
             child: SearchBarWidget(callback: (e){
-              print(e);
-              this.setState(() {
-                any=e;
-              });
-              loadProduct(idKelompok);
+              product.setQ(e);
+              product.read(context: context);
+
             }),
           ),
-          isLoadingSlider?WidgetHelper().baseLoading(context,Container(
+          slider.isLoading?WidgetHelper().baseLoading(context,Container(
             padding: scaler.getPadding(1,2),
             child: WidgetHelper().shimmer(context: context,height: 20,width: MediaQuery.of(context).size.width/1),
           )):Container(
             padding: scaler.getPaddingLTRB(0,0,0,1),
-            child: SliderWidget(data: listSliderModel.result.data),
+            child: SliderWidget(data:slider.listSliderModel.result.data),
           ),
           buildPromo(context),
           StickyHeader(
-            header: isLoadingGroup?WidgetHelper().baseLoading(context,Container(
+            header: group.isLoading?WidgetHelper().baseLoading(context,Container(
               padding: scaler.getPadding(0,2),
               child: WidgetHelper().shimmer(context: context,height: 2,width: MediaQuery.of(context).size.width/1),
-            )):resFilter.length>0?FilterProductSliderWidget(
+            )):group.listGroupProductModel.result.data.length>0?FilterProductSliderWidget(
                 heroTag: 'home_categories_1',
-                data: resFilter,
+                data: group.listGroupProductModel,
                 onChanged: (id) {
-                  this.setState(() {
-                    isLoadingProduct=true;
-                    idKelompok=id;
-                  });
-                  loadProduct(id);
+                  product.perPage=StringConfig.perpage;
+                  product.setKelompok(id);
+                  product.read(context: context);
                 }):SizedBox(),
             content:Container(
               padding: scaler.getPaddingLTRB(2,1,2,0),
               child: Wrap(
                 children: [
                   WidgetHelper().titleQ(context,"Barang pilihan untuk kamu",icon: UiIcons.heart,padding: scaler.getPaddingLTRB(0,0,0,1),),
-                  isLoadingProduct?LoadingProductTenant(tot: 10,):listProductTenantModel.result.data.length<1?Container(height:scaler.getHeight(30),child:EmptyTenant()):new StaggeredGridView.countBuilder(
+                  product.isLoading?LoadingProductTenant(tot: 10,):product.listProductTenantModel.result.data.length<1?Container(height:scaler.getHeight(30),child:EmptyTenant()):new StaggeredGridView.countBuilder(
                     primary: false,
                     shrinkWrap: true,
                     crossAxisCount: 4,
-                    itemCount:listProductTenantModel.result.data.length,
+                    itemCount:product.listProductTenantModel.result.data.length,
                     itemBuilder: (BuildContext context, int index) {
-                      final res=listProductTenantModel.result.data[index];
+                      final res=product.listProductTenantModel.result.data[index];
                       return ProductGridWidget(
                         productId: res.id,
                         productName: res.title,
@@ -175,11 +132,10 @@ class _HomeComponentState extends State<HomeComponent>{
                     mainAxisSpacing: 15.0,
                     crossAxisSpacing: 15.0,
                   ),
-                  isLoadmore?Container(
+                  product.isLoadMore?Container(
                     alignment: Alignment.center,
                     padding: scaler.getPaddingLTRB(0,0,0,1),
                     child:CupertinoActivityIndicator()
-                    // child: CircularProgressIndicator(backgroundColor: config.Colors.mainColors,color:config.Colors.secondColors,),
                   ):SizedBox(),
                 ],
               ),
@@ -188,28 +144,25 @@ class _HomeComponentState extends State<HomeComponent>{
         ],
       ),
       callback: (){
-        this.setState(() {
-          isLoadingSlider=true;
-          isLoadingProduct=true;
-          isLoadingGroup=true;
-        });
-        loadSlider();
-        loadProduct('');
-        loadGroup();
+        slider.reload(context);
+        product.reload(context);
+        group.reload(context);
+        promo.reload(context);
       },
     );
   }
 
 
   Widget buildPromo(BuildContext context) {
+    final promo = Provider.of<PromoProvider>(context);
     final scaler=config.ScreenScale(context).scaler;
-    return isLoadingPromo?WidgetHelper().baseLoading(context,Padding(
+    return promo.isLoading?WidgetHelper().baseLoading(context,Padding(
       padding: scaler.getPadding(1, 2),
       child:  WidgetHelper().shimmer(
           context: context,height: 10,width: 30
       ),
-    )): globalPromoModel.result.data.length<1?SizedBox():Container(
-      padding: scaler.getPaddingLTRB(2,0,2,1),
+    )): promo.globalPromoModel.result.data.length<1?SizedBox():Container(
+      padding: scaler.getPaddingLTRB(2,0,0,1),
       height: scaler.getHeight(15),
       child: Column(
         children: <Widget>[
@@ -219,54 +172,60 @@ class _HomeComponentState extends State<HomeComponent>{
               padding: EdgeInsets.all(0),
               shrinkWrap: true,
               scrollDirection: Axis.horizontal,
-              itemCount: globalPromoModel.result.data.length ,
+              itemCount: promo.globalPromoModel.result.data.length ,
               itemBuilder: (context, index){
+                print(promo.globalPromoModel.result.data.length);
+                print(index);
                 return Container(
-                  margin: scaler.getMarginLTRB(0, 0, 1, 0),
+                  margin: scaler.getMarginLTRB(index==0?0:2, 0,index+1==promo.globalPromoModel.result.data.length?2:0, 0),
                   child: WidgetHelper().myRipple(
                       callback: (){
-                        WidgetHelper().myPush(context,DetailPromoWidget(id: globalPromoModel.result.data[index].id));
+                        WidgetHelper().myPush(context,DetailPromoWidget(id: promo.globalPromoModel.result.data[index].id));
                       },
                       child: Container(
-                        padding: scaler.getPadding(0, 2),
+                        padding: scaler.getPadding(0, 0),
                         width: MediaQuery.of(context).size.width / 1.2,
                         decoration: BoxDecoration(
-                          border: Border.all(color: config.Colors.mainColors, width: 2.0),
+                          // border: Border.all(color: config.Colors.mainColors, width: 2.0),
                           borderRadius: BorderRadius.circular(10.0),
+                          image: DecorationImage(
+                            fit: BoxFit.cover,
+                            image: NetworkImage(promo.globalPromoModel.result.data[index].gambar)
+                          )
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Flexible(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Padding(
-                                    padding:scaler.getPadding(0,0),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        config.MyFont.subtitle(context: context,text:globalPromoModel.result.data[index].title,fontWeight: FontWeight.bold,maxLines: 2),
-                                        config.MyFont.subtitle(context: context,text:globalPromoModel.result.data[index].deskripsi,maxLines:3),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Hero(
-                                tag: "${globalPromoModel.result.data[index].title}${globalPromoModel.result.data[index].id}",
-                                child:WidgetHelper().baseImage(
-                                  globalPromoModel.result.data[index].gambar,
-                                  height: scaler.getHeight(6),
-                                  width: scaler.getWidth(15),
-                                  shape: BoxShape.circle
-                                )
-                            )
-                          ],
-                        ),
+                        // child: Row(
+                        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //   children: <Widget>[
+                        //     Flexible(
+                        //       child: Column(
+                        //         mainAxisAlignment: MainAxisAlignment.center,
+                        //         crossAxisAlignment: CrossAxisAlignment.start,
+                        //         children: <Widget>[
+                        //           Padding(
+                        //             padding:scaler.getPadding(0,0),
+                        //             child: Column(
+                        //               mainAxisAlignment: MainAxisAlignment.center,
+                        //               crossAxisAlignment: CrossAxisAlignment.start,
+                        //               children: <Widget>[
+                        //                 config.MyFont.subtitle(context: context,text:promo.globalPromoModel.result.data[index].title,fontWeight: FontWeight.bold,maxLines: 2),
+                        //                 config.MyFont.subtitle(context: context,text:promo.globalPromoModel.result.data[index].deskripsi,maxLines:3),
+                        //               ],
+                        //             ),
+                        //           ),
+                        //         ],
+                        //       ),
+                        //     ),
+                        //     Hero(
+                        //         tag: "${promo.globalPromoModel.result.data[index].title}${promo.globalPromoModel.result.data[index].id}",
+                        //         child:WidgetHelper().baseImage(
+                        //             promo.globalPromoModel.result.data[index].gambar,
+                        //           height: scaler.getHeight(6),
+                        //           width: scaler.getWidth(15),
+                        //           shape: BoxShape.circle
+                        //         )
+                        //     )
+                        //   ],
+                        // ),
                       )
                   ),
                 );

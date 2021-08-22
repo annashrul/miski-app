@@ -6,7 +6,9 @@ import 'package:miski_shop/helper/checkout/function_checkout.dart';
 import 'package:miski_shop/helper/widget_helper.dart';
 import 'package:miski_shop/model/checkout/channel_model.dart';
 import 'package:miski_shop/model/checkout/detail_checkout_virtual_account_model.dart';
+import 'package:miski_shop/provider/channel_payment_provider.dart';
 import 'package:miski_shop/provider/handle_http.dart';
+import 'package:provider/provider.dart';
 
 class ChannelComponent extends StatefulWidget {
   final dynamic data;
@@ -18,24 +20,12 @@ class ChannelComponent extends StatefulWidget {
 class _ChannelComponentState extends State<ChannelComponent> {
   List data = [];
   bool isLoading = true;
-  Future loadData() async {
-    final res = await HandleHttp().getProvider("transaction/payment/channel", channelModelFromJson,context: context);
-    if (res != null) {
-      ChannelModel result = ChannelModel.fromJson(res.toJson());
-      result.result.data.forEach((element) {
-        if (element.active) data.add(element.toJson());
-      });
-      isLoading = false;
-      if (this.mounted) this.setState(() {});
-    }
-  }
 
   Future checkout(code) async {
     dynamic data = widget.data;
     data.addAll({"channel": code});
     WidgetHelper().loadingDialog(context);
     final res = await HandleHttp().postProvider("transaction", data,context: context);
-    print("res  = $res");
     Navigator.of(context).pop();
     if(res!=null){
       final responseCheckout = DetailCheckoutVirtualAccountModel.fromJson(res);
@@ -51,20 +41,29 @@ class _ChannelComponentState extends State<ChannelComponent> {
   @override
   void initState() {
     super.initState();
-    loadData();
+    final resChannel = Provider.of<ChannelPaymentProvider>(context, listen: false);
+    resChannel.read(context);
   }
 
   @override
   Widget build(BuildContext context) {
+    final resChannel = Provider.of<ChannelPaymentProvider>(context);
     final scale = config.ScreenScale(context).scaler;
     return Scaffold(
       appBar: WidgetHelper().appBarWithButton(context, "Halaman pembayaran", () {}, <Widget>[],param: "default"),
-      body: isLoading? WidgetHelper().loadingWidget(context): ListView.separated(
+      body: resChannel.isLoading? ListView.separated(
         padding: scale.getPadding(1, 2),
-        itemCount: data.length,
+        itemCount: 15,
+        separatorBuilder: (context, index) {return SizedBox(height: scale.getHeight(1));},
+        itemBuilder: (context, index) {
+          return WidgetHelper().baseLoading(context,WidgetHelper().shimmer(context: context,width: 50,height: 3));
+        },
+      ): ListView.separated(
+        padding: scale.getPadding(1, 2),
+        itemCount: resChannel.resChannel.length,
         separatorBuilder: (context, index) {return Divider();},
         itemBuilder: (context, index) {
-          final res = data[index];
+          final res = resChannel.resChannel[index].toJson();
           int fee = int.parse(res["fee_customer"]["flat"].toString());
           return WidgetHelper().titleQ(
             context, res["name"],
