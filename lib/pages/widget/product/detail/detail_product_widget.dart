@@ -7,6 +7,8 @@ import 'package:miski_shop/helper/widget_helper.dart';
 import 'package:miski_shop/model/tenant/detail_product_tenant_model.dart';
 import 'package:miski_shop/pages/widget/product/detail/bottom_bar_detail_product_widget.dart';
 import 'package:miski_shop/pages/widget/product/detail/tab_detail_product_widget.dart';
+import 'package:miski_shop/provider/cart_provider.dart';
+import 'package:provider/provider.dart';
 
 class DetailProductWidget extends StatefulWidget {
   final dynamic data;
@@ -27,11 +29,11 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
   Future loadDetail()async{
     final funcData = await FunctionDetail().loadDetail(context: context,idProduct:widget.data["id"]);
     dataDetail = funcData["data"];
-    qty = funcData["data"]["qty"];
+    // qty = funcData["data"]["qty"];
     harga = int.parse(funcData["data"]["harga"]);
     hargaMaster=funcData["data"]["harga_master"];
     hargaFinish=funcData["data"]["harga_finish"];
-    totalCart = funcData["data"]["total_cart"];
+    // totalCart = funcData["data"]["total_cart"];
     isFavorite = await FunctionDetail().handleFavorite(context: context,data: dataDetail,method: "get");
     isLoadingDetail=false;
     if(this.mounted) setState(() {});
@@ -46,9 +48,9 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
     data["harga_finish"] =hargaFinish;
     data["harga_master"] =hargaMaster;
     data["harga_varian"] =hargaVarian;
-    data["harga_sub_varian"] =hargaSubVarian;
+    data["harga_sub_varian"] = hargaSubVarian;
     final res = await FunctionDetail().addToCart(context: context,data: data);
-    totalCart = res["totalCart"];
+
     print("total cart $res");
     if(this.mounted) setState(() {});
   }
@@ -68,7 +70,8 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
     _tabController.addListener(_handleTabSelection);
     loadDetail();
     super.initState();
-
+    final cart = Provider.of<CartProvider>(context, listen: false);
+    cart.getDetail(context, widget.data["id"]);
   }
   void dispose() {
     _tabController.dispose();
@@ -84,13 +87,25 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
 
   @override
   Widget build(BuildContext context) {
-    print("##################### DEBUG PAGES #######################");
     final scaler = config.ScreenScale(context).scaler;
+    final cart = Provider.of<CartProvider>(context);
+    print("QTY ${cart.qtyPerProduct}");
+    qty = cart.qtyPerProduct;
     return Scaffold(
       key: _scaffoldKey,
       bottomNavigationBar: BottomBarDetailProductWidget(callback: (res){
         if(res=="cart"){
-          handleCart();
+          qty++;
+          print(qty);
+          dynamic data = dataDetail;
+          data["qty"] = qty;
+          data["id_varian"] = idVarian;
+          data["id_sub_varian"] = idSubVarian;
+          data["harga_finish"] =hargaFinish;
+          data["harga_master"] =hargaMaster;
+          data["harga_varian"] =hargaVarian;
+          data["harga_sub_varian"] = hargaSubVarian;
+          cart.storeCart(context,data);
         }else{
           handleFavorite();
         }
@@ -104,14 +119,24 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
               onPressed: () => Navigator.of(context).pop()
           ),
           actions: <Widget>[
-            WidgetHelper().iconAppBarBadges(context: context,icon:UiIcons.shopping_cart,isActive:totalCart>0,callback: (){
-              if(totalCart>0){
-                Navigator.of(context).pushNamed('/${StringConfig.cart}').whenComplete(()async{
-                  final getCountCart = await FunctionDetail().getCountCart(dataDetail);
-                  totalCart = getCountCart["totalCart"];
-                  if(this.mounted)setState(() {});
+            WidgetHelper().iconAppBarBadges(context: context,icon:UiIcons.shopping_cart,isActive:cart.isActiveCart,callback: (){
+              if(cart.isActiveCart){
+                Navigator.of(context).pushNamed("/${StringConfig.cart}").whenComplete((){
+                  cart.isActiveCart = cart.isActiveCart;
+                  // cart.getDetail(context, idProduct)
+
+                  cart.getDetail(context, widget.data["id"]);
+
+
                 });
               }
+              // if(totalCart>0){
+              //   Navigator.of(context).pushNamed('/${StringConfig.cart}').whenComplete(()async{
+              //     final getCountCart = await FunctionDetail().getCountCart(dataDetail);
+              //     totalCart = getCountCart["totalCart"];
+              //     if(this.mounted)setState(() {});
+              //   });
+              // }
             }),
           ],
           backgroundColor: Theme.of(context).primaryColor,

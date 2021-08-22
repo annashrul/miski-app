@@ -33,9 +33,9 @@ class FunctionDetail{
       data["harga_master"] =hargaMaster;
       data["harga_varian"]  =0;
       data["harga_sub_varian"] =0;
-      final dataCart = await getCountCart(data);
-      data["qty"] = dataCart["qty"];
-      data["total_cart"] = dataCart["totalCart"];
+      // final dataCart = await getCountCart(data);
+      // data["qty"] = dataCart["qty"];
+      // data["total_cart"] = dataCart["totalCart"];
       data["product_by_group"] = await loadProductByGroup(data["kelompok"]);
       data["varian"] = data["varian"];
       data["harga_bertingkat"] = data["harga_bertingkat"];
@@ -76,9 +76,9 @@ class FunctionDetail{
         data["harga_varian"],
         data["harga_sub_varian"],
       );
+      print("data cart store $data");
       Navigator.pop(context);
       int hrg = 0;
-      print(res);
       res.forEach((element) {hrg = int.parse(element['harga']);});
       final subtotal = await getSubTotal(data: data);
       final resCart = await BaseProvider().getCart(data["id_tenant"]);

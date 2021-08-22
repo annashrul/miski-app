@@ -133,6 +133,7 @@ class _CartWidgetState extends State<CartWidget> {
 
   Widget buildItem({BuildContext context,int index}){
     final cart = Provider.of<CartProvider>(context);
+    cart.getSubtotal();
     final res=cart.cart.result[index];
     int anying=int.parse(res.qty);
     final scaler=config.ScreenScale(context).scaler;
@@ -199,7 +200,6 @@ class _CartWidgetState extends State<CartWidget> {
                   },
                   child: Icon(Ionicons.ios_add_circle_outline,color:Theme.of(context).hintColor,size: scaler.getTextSize(12),)
               ),
-
             ],
           ),
         ),

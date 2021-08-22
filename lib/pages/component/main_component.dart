@@ -92,7 +92,6 @@ class _MainComponentState extends State<MainComponent> {
   Widget build(BuildContext context) {
     final scaler = config.ScreenScale(context).scaler;
     final cart = Provider.of<CartProvider>(context);
-
     return WillPopScope(
         child: Scaffold(
           key: _scaffoldKey,
@@ -111,10 +110,10 @@ class _MainComponentState extends State<MainComponent> {
               WidgetHelper().iconAppBarBadges(
                 context: context,
                 icon:UiIcons.shopping_cart,
-                isActive: !cart.loading&&cart.dataCart.result.length>0,
+                isActive:cart.isActiveCart,
                 callback: (){
-                  if(cart.cart.result.length>0){
-                    Navigator.of(context).pushNamed("/${StringConfig.cart}");
+                  if(cart.isActiveCart){
+                    Navigator.of(context).pushNamed("/${StringConfig.cart}").whenComplete(() => cart.isActiveCart);
                   }
                 }
               ),

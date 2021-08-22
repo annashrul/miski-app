@@ -14,6 +14,8 @@ import 'package:miski_shop/pages/widget/product/product_grid_widget.dart';
 import 'package:miski_shop/pages/widget/promo/detail_promo_widget.dart';
 import 'package:miski_shop/pages/widget/searchbar_widget.dart';
 import 'package:miski_shop/pages/widget/slider_widget.dart';
+import 'package:miski_shop/provider/cart_provider.dart';
+import 'package:provider/provider.dart';
 import '../../widget/empty_widget.dart';
 import '../../widget/loading_widget.dart';
 import '../../widget/refresh_widget.dart';
@@ -21,6 +23,7 @@ import 'package:sticky_headers/sticky_headers/widget.dart';
 
 // ignore: must_be_immutable
 class HomeComponent extends StatefulWidget {
+
   @override
   _HomeComponentState createState() => _HomeComponentState();
 }
@@ -101,6 +104,8 @@ class _HomeComponentState extends State<HomeComponent>{
   }
   @override
   Widget build(BuildContext context) {
+    final cart = Provider.of<CartProvider>(context);
+
     final scaler = config.ScreenScale(context).scaler;
     return RefreshWidget(
       widget: ListView(
@@ -161,7 +166,8 @@ class _HomeComponentState extends State<HomeComponent>{
                         productStock: res.stock,
                         heroTag: 'categorized_products_grid_${res.id}',
                         callback: (){
-                          // widget.callback("norefresh");
+                          print("callback ${cart.isActiveCart}");
+                          cart.getCartData(context);
                         },
                       );
                     },

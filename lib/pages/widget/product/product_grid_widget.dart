@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:miski_shop/config/app_config.dart' as config;
 import 'package:miski_shop/config/string_config.dart';
 import 'package:miski_shop/helper/widget_helper.dart';
+import 'package:miski_shop/provider/cart_provider.dart';
+import 'package:provider/provider.dart';
 
 class ProductGridWidget extends StatelessWidget {
   const ProductGridWidget({
