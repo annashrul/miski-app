@@ -236,7 +236,8 @@ class _CheckoutComponentState extends State<CheckoutComponent> {
               )
             ],
           ),
-        ));
+        )
+    );
   }
 
   Widget buildRowBottomBar({BuildContext context, String title, var desc}) {

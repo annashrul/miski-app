@@ -15,7 +15,7 @@ class CartProvider with ChangeNotifier {
   bool loading = false,isError=false,isActiveCart=false;
   getCartData(BuildContext context,{loading=true}) async {
     isError=false;
-    loading = loading;
+    if(cart==null)loading=true;
     final tenant = await FunctionHelper().getTenant();
     final url ="cart/${tenant[StringConfig.idTenant]}";
     final res = await HandleHttp().getProvider(url, cartModelFromJson,context: context);
@@ -30,6 +30,7 @@ class CartProvider with ChangeNotifier {
       isError=false;
       notifyListeners();
     }
+
   }
 
   deleteCartData(BuildContext context,param,id)async{

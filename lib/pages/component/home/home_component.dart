@@ -162,11 +162,11 @@ class _HomeComponentState extends State<HomeComponent>{
           context: context,height: 10,width: 30
       ),
     )): promo.globalPromoModel.result.data.length<1?SizedBox():Container(
-      padding: scaler.getPaddingLTRB(2,0,0,1),
+      padding: scaler.getPaddingLTRB(2,0,0,1.5),
       height: scaler.getHeight(15),
       child: Column(
         children: <Widget>[
-          WidgetHelper().titleQ(context,"Promo spesial untuk kamu",icon: UiIcons.speakers,padding: scaler.getPaddingLTRB(0,0,0,1),),
+          WidgetHelper().titleQ(context,"Promo spesial untuk kamu",icon: UiIcons.gift,padding: scaler.getPaddingLTRB(0,0,0,1),),
           Flexible(
             child: ListView.builder(
               padding: EdgeInsets.all(0),
@@ -189,6 +189,9 @@ class _HomeComponentState extends State<HomeComponent>{
                           // border: Border.all(color: config.Colors.mainColors, width: 2.0),
                           borderRadius: BorderRadius.circular(10.0),
                           image: DecorationImage(
+                            onError: (Object exception, StackTrace stackTrace) {
+                              return Center(child: Icon(Icons.error));
+                            },
                             fit: BoxFit.cover,
                             image: NetworkImage(promo.globalPromoModel.result.data[index].gambar)
                           )

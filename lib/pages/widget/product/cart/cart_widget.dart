@@ -24,6 +24,7 @@ class _CartWidgetState extends State<CartWidget> {
     super.initState();
     final cart = Provider.of<CartProvider>(context, listen: false);
     cart.getCartData(context);
+    cart.getSubtotal();
   }
 
 
@@ -36,6 +37,61 @@ class _CartWidgetState extends State<CartWidget> {
         if(!cart.loading && !cart.isError)
           WidgetHelper().iconAppbar(context: context,icon: UiIcons.trash,callback: ()=>cart.deleteCartData(context, "all",""))
       ],param: "default"),
+      bottomNavigationBar: !cart.loading && !cart.isError?WidgetHelper().chip(
+          ctx: context,
+          colors: Theme.of(context).primaryColor,
+          padding: scaler.getPadding(1, 2),
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width - scaler.getWidth(4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Expanded(child:config.MyFont.title(context: context,text:'Subtotal',fontWeight: FontWeight.normal)),
+                    config.MyFont.title(context: context,text:config.MyFont.toMoney("${cart.subtotal}"),fontWeight: FontWeight.normal,color: config.Colors.mainColors),
+                  ],
+                ),
+                SizedBox(height: scaler.getHeight(0.5)),
+                WidgetHelper().myRipple(
+                  isRadius: true,
+                  radius: 100,
+                  callback: ()=>Navigator.of(context).pushNamed('/${StringConfig.checkout}'),
+                  child: Stack(
+                    fit: StackFit.loose,
+                    alignment: AlignmentDirectional.centerEnd,
+                    children: <Widget>[
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width - 30,
+                        child: Container(
+                            alignment: Alignment.center,
+                            padding: EdgeInsets.symmetric(vertical: 14),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).accentColor,
+                            ),
+                            child: config.MyFont.title(
+                                context: context,
+                                text: 'Bayar',
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).primaryColor)
+                        ),
+                      ),
+                      Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: config.MyFont.title(
+                              context: context,
+                              text:config.MyFont.toMoney("${cart.subtotal}"),
+                              color:config.Colors.secondDarkColors
+                          )
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
+          )
+      ):Text(""),
       body: cart.isError?EmptyDataWidget(
         iconData: UiIcons.shopping_cart,
         title: "Keranjang kosong",
@@ -44,96 +100,24 @@ class _CartWidgetState extends State<CartWidget> {
         },
         isFunction: true,
         txtFunction: "Belanja sekarang",
-      ):Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          Container(
+      ): cart.loading?LoadingCart(total: 6):Scrollbar(
+          child: ListView.separated(
             padding:scaler.getPadding(1,2),
-            child: SingleChildScrollView(
-              padding: EdgeInsets.all(0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.max,
-                children: <Widget>[
-                  cart.loading?LoadingCart(total: 6):ListView.separated(
-                    padding: EdgeInsets.all(0),
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                    primary: false,
-                    itemCount: cart.cart.result.length,
-                    separatorBuilder: (context, index) {
-                      return Divider();
-                    },
-                    itemBuilder: (context, index) {
-                      return buildItem(context: context,index: index);
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-          if(!cart.loading && !cart.isError)Positioned(
-            bottom: 0,
-            child: Container(
-              height: scaler.getHeight(17),
-              padding: scaler.getPadding(1,4),
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
-                borderRadius: BorderRadius.only(topRight: Radius.circular(20), topLeft: Radius.circular(20)),
-                boxShadow: [
-                  BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), offset: Offset(0, -2), blurRadius: 5.0)
-                ]
-              ),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width - scaler.getWidth(8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        Expanded(child:config.MyFont.title(context: context,text:'Subtotal',fontWeight: FontWeight.normal)),
-                        config.MyFont.title(context: context,text:config.MyFont.toMoney("${cart.subtotal}"),fontWeight: FontWeight.normal,color: config.Colors.mainColors),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Stack(
-                      fit: StackFit.loose,
-                      alignment: AlignmentDirectional.centerEnd,
-                      children: <Widget>[
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width - 40,
-                          child: FlatButton(
-                            onPressed: () {
-                              Navigator.of(context).pushNamed('/${StringConfig.checkout}');
-                            },
-                            padding: EdgeInsets.symmetric(vertical: 14),
-                            color: Theme.of(context).accentColor,
-                            shape: StadiumBorder(),
-                            child:config.MyFont.title(context: context,text:'Bayar',fontWeight: FontWeight.bold,color:  Theme.of(context).primaryColor)
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child:config.MyFont.title(context: context,text:config.MyFont.toMoney("${cart.subtotal}"),fontWeight: FontWeight.bold,color:  Theme.of(context).primaryColor)
-                        )
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                  ],
-                ),
-              ),
-            ),
+            scrollDirection: Axis.vertical,
+            itemCount: cart.cart.result.length,
+            separatorBuilder: (context, index) {
+              return Divider();
+            },
+            itemBuilder: (context, index) {
+              return buildItem(context: context,index: index);
+            },
           )
-        ],
       ),
     );
   }
 
   Widget buildItem({BuildContext context,int index}){
     final cart = Provider.of<CartProvider>(context);
-    cart.getSubtotal();
     final res=cart.cart.result[index];
     int anying=int.parse(res.qty);
     dynamic data={};
@@ -171,7 +155,6 @@ class _CartWidgetState extends State<CartWidget> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
               WidgetHelper().myRipple(
-                // callback:()=>deleted(cartModel.result[index].id,''),
                 callback:()=>cart.deleteCartData(context,"item", res.id),
                 child: Icon(Ionicons.ios_close_circle_outline,color: Theme.of(context).hintColor,size: scaler.getTextSize(12)),
               ),
@@ -180,8 +163,7 @@ class _CartWidgetState extends State<CartWidget> {
                   callback: (){
                     if(int.parse(res.qty)>1){
                       anying-=1;
-                      res.qty = anying.toString();
-                      data["qty"]=res.qty;
+                      data["qty"]= anying.toString();
                       cart.getSubtotal();
                       cart.storeCart(context, data);
                     }
@@ -189,13 +171,12 @@ class _CartWidgetState extends State<CartWidget> {
                   child: Icon(Ionicons.ios_remove_circle_outline,color:Theme.of(context).hintColor,size: scaler.getTextSize(12))
               ),
               SizedBox(width: scaler.getWidth(1)),
-              config.MyFont.subtitle(context: context,text:"${res.qty}"),
+              config.MyFont.subtitle(context: context,text:"$anying"),
               SizedBox(width: scaler.getWidth(1)),
               WidgetHelper().myRipple(
                   callback: (){
                     anying+=1;
-                    res.qty = anying.toString();
-                    data["qty"]=res.qty;
+                    data["qty"]=anying.toString();
                     cart.getSubtotal();
                     cart.storeCart(context, data);
                   },
@@ -210,5 +191,9 @@ class _CartWidgetState extends State<CartWidget> {
     );
 
   }
+
+
+
+
 
 }
