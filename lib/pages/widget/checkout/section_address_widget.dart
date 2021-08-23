@@ -52,7 +52,13 @@ class _SectionAddressWidgetState extends State<SectionAddressWidget> {
                   ),
                   SizedBox(height: scaler.getHeight(0.5)),
                   widget.isLoading?WidgetHelper().shimmer(context: context,width:30):config.MyFont.subtitle(context: context,text:widget.address["penerima"]),
-                  widget.isLoading?WidgetHelper().shimmer(context: context,width:50):config.MyFont.subtitle(context: context,text:"${widget.address["main_address"]}".toLowerCase()),
+                  widget.isLoading?WidgetHelper().shimmer(context: context,width:50):config.MyFont.subtitle(
+                      context: context,
+                      text:"${widget.address["main_address"]}, "
+                          "kecamatan ${widget.address["kecamatan"]}, "
+                          "kota ${widget.address["kota"]}, "
+                          "provinsi ${widget.address["provinsi"]}".toLowerCase()
+                  ),
                   SizedBox(height: scaler.getHeight(0.5)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,

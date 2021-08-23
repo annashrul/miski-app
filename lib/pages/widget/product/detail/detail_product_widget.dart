@@ -21,7 +21,6 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
   TabController _tabController;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   DetailProductTenantModel detail;
-
   int _tabIndex = 0,qty=0,hargaFinish=0,hargaVarian=0,hargaSubVarian=0,totalCart=0,total=0,harga=0;
   String imageUser="",idVarian="",idSubVarian="",hargaMaster="0";
   bool isLoadingDetail=true,isFavorite=false;
@@ -72,7 +71,6 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
   Widget build(BuildContext context) {
     final scaler = config.ScreenScale(context).scaler;
     final cart = Provider.of<CartProvider>(context);
-    // print("QTY ${dataDetail["stock"]}");
     qty = cart.qtyPerProduct;
     return Scaffold(
       key: _scaffoldKey,
@@ -115,13 +113,6 @@ class _DetailProductWidgetState extends State<DetailProductWidget> with SingleTi
               else{
                 WidgetHelper().showFloatingFlushbar(context,"failed", "maaf keranjang kamu kosong");
               }
-              // if(totalCart>0){
-              //   Navigator.of(context).pushNamed('/${StringConfig.cart}').whenComplete(()async{
-              //     final getCountCart = await FunctionDetail().getCountCart(dataDetail);
-              //     totalCart = getCountCart["totalCart"];
-              //     if(this.mounted)setState(() {});
-              //   });
-              // }
             }),
           ],
           backgroundColor: Theme.of(context).primaryColor,

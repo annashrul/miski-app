@@ -16,7 +16,6 @@ class SliderProvider with ChangeNotifier{
     if(listSliderModel==null) isLoading=true;
     final res = await HandleHttp().getProvider("slider?page=1",listSliderModelFromJson,context: context);
     listSliderModel = ListSliderModel.fromJson(res.toJson());
-    print("======================== RESPONSE SLIDER ${listSliderModel.result.toJson()}");
     isLoading=false;
     notifyListeners();
   }

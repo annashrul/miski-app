@@ -8,7 +8,10 @@ import 'package:miski_shop/config/string_config.dart';
 import 'package:miski_shop/config/ui_icons.dart';
 import 'package:miski_shop/helper/function_helper.dart';
 import 'package:miski_shop/helper/widget_helper.dart';
+import 'package:miski_shop/provider/chat_provider.dart';
 import 'package:miski_shop/provider/handle_http.dart';
+import 'package:miski_shop/provider/tenant_provider.dart';
+import 'package:provider/provider.dart';
 
 class ModalFormChatWidget extends StatefulWidget {
   final Function(bool status) callback;
@@ -22,18 +25,11 @@ class _ModalFormChatWidgetState extends State<ModalFormChatWidget> {
   var messageController = TextEditingController();
   final FocusNode titleFocus = FocusNode();
   final FocusNode messageFocus = FocusNode();
-
-  Map<String,Object> tenant;
   File _image;
   String fileName;
   String base64Image;
-  Future loadData()async{
-    final res = await FunctionHelper().getTenant();
-    this.setState(() {
-      tenant = res;
-    });
-  }
-  Future store()async{
+
+  Future store(idTenant)async{
     if(titleController.text=="") return titleFocus.requestFocus();
     if(messageController.text=="") return;
     if(_image!=null){
@@ -44,6 +40,7 @@ class _ModalFormChatWidgetState extends State<ModalFormChatWidget> {
     else{
       base64Image = "-";
     }
+
     WidgetHelper().loadingDialog(context);
     final data={
       "title":titleController.text,
@@ -52,27 +49,28 @@ class _ModalFormChatWidgetState extends State<ModalFormChatWidget> {
       "layanan":"Barang",
       "prioritas":"0",
       "status":"0",
-      "id_tenant":tenant[StringConfig.idTenant]
+      "id_tenant":idTenant
     };
-    final res = await HandleHttp().postProvider("chat", data,context: context,callback: (){});
-
-    if(res!=null){
-      Navigator.pop(context);
-      Navigator.pop(context);
+    final chat = Provider.of<ChatProvider>(context, listen: false);
+    await chat.create(context, data);
+    if(chat.isSuccess){
       widget.callback(true);
+      // Navigator.of(context).pop();
+      Navigator.of(context).pop();
     }
   }
 
   @override
   void initState() {
     super.initState();
-    loadData();
     titleFocus.requestFocus();
+    Provider.of<TenantProvider>(context, listen: false);
+
   }
 
   @override
   Widget build(BuildContext context) {
-    print(tenant);
+    final tenant = Provider.of<TenantProvider>(context);
     final scaler = config.ScreenScale(context).scaler;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -93,7 +91,7 @@ class _ModalFormChatWidgetState extends State<ModalFormChatWidget> {
                       icon: UiIcons.information,fontSize: 9,
                     ),
                     WidgetHelper().myRipple(
-                      callback: (){store();},
+                      callback: ()=>store(tenant.idTenant),
                       child: config.MyFont.title(context: context,text:"Kirim pesan",fontSize: 9,color: config.Colors.mainColors)
                     )
                   ],
@@ -110,9 +108,9 @@ class _ModalFormChatWidgetState extends State<ModalFormChatWidget> {
                       ctx: context,
                       child: WidgetHelper().titleQ(
                         context,
-                        tenant[StringConfig.namaTenant],
-                        image: tenant[StringConfig.logoTenant],
-                        subtitle: tenant[StringConfig.telpTenant],
+                        tenant.namaTenant,
+                        image: tenant.logoTenant,
+                        subtitle: tenant.telpTenant,
                         fontSize: 9,
                         padding: EdgeInsets.all(0),
                         callback: (){}

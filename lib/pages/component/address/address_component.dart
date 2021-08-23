@@ -137,7 +137,10 @@ class _AddressComponentState extends State<AddressComponent> {
                                   SizedBox(height:5.0),
                                   config.MyFont.subtitle(context: context,text:"${val.noHp}",color: Theme.of(context).textTheme.caption.color),
                                   SizedBox(height:5.0),
-                                  config.MyFont.subtitle(context: context,text:"${val.mainAddress}",color: Theme.of(context).textTheme.caption.color),
+                                  config.MyFont.subtitle(context: context,text:"${val.mainAddress}, "
+                                  "kecamatan ${val.kecamatan}, "
+                                  "kota ${val.kota}, "
+                                  "provinsi ${val.provinsi}".toLowerCase(),color: Theme.of(context).textTheme.caption.color),
                                   SizedBox(height:5.0),
 
                                   SizedBox(height:5.0),

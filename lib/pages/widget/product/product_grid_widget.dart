@@ -3,6 +3,7 @@ import 'package:miski_shop/config/app_config.dart' as config;
 import 'package:miski_shop/config/string_config.dart';
 import 'package:miski_shop/helper/widget_helper.dart';
 import 'package:miski_shop/provider/cart_provider.dart';
+import 'package:miski_shop/provider/product_provider.dart';
 import 'package:provider/provider.dart';
 
 class ProductGridWidget extends StatelessWidget {
@@ -17,6 +18,7 @@ class ProductGridWidget extends StatelessWidget {
     @required this.productStock,
     @required this.heroTag,
     this.callback,
+    this.index,
   }) : super(key: key);
   final String productId;
   final String productName;
@@ -27,10 +29,12 @@ class ProductGridWidget extends StatelessWidget {
   final String productStock;
   final String heroTag;
   final Function callback;
+  final int index;
 
   @override
   Widget build(BuildContext context) {
     final scaler=config.ScreenScale(context).scaler;
+    final product = Provider.of<ProductProvider>(context);
     return WidgetHelper().myRipple(
       callback: (){
         Navigator.of(context).pushNamed("/${StringConfig.detailProduct}",arguments: {

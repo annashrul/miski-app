@@ -85,7 +85,9 @@ class Datum {
     this.noHp,
     this.ismain,
     this.createdAt,
-    this.updatedAt,
+    this.kecamatan,
+    this.kota,
+    this.provinsi,
     this.pinpoint,
   });
 
@@ -100,7 +102,9 @@ class Datum {
   String noHp;
   int ismain;
   DateTime createdAt;
-  DateTime updatedAt;
+  String kecamatan;
+  String kota;
+  String provinsi;
   String pinpoint;
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
@@ -115,7 +119,9 @@ class Datum {
     noHp: json["no_hp"],
     ismain: json["ismain"],
     createdAt: DateTime.parse(json["created_at"]),
-    updatedAt: DateTime.parse(json["updated_at"]),
+    kecamatan: json["kecamatan"],
+    kota: json["kota"],
+    provinsi: json["provinsi"],
     pinpoint: json["pinpoint"],
   );
 
@@ -131,7 +137,9 @@ class Datum {
     "no_hp": noHp,
     "ismain": ismain,
     "created_at": createdAt.toIso8601String(),
-    "updated_at": updatedAt.toIso8601String(),
+    "kecamatan": kecamatan,
+    "kota": kota,
+    "provinsi": provinsi,
     "pinpoint": pinpoint,
   };
 }

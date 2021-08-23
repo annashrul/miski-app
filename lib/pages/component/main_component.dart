@@ -6,19 +6,15 @@ import 'package:flutter/services.dart';
 import 'package:miski_shop/config/app_config.dart' as config;
 import 'package:miski_shop/config/string_config.dart';
 import 'package:miski_shop/config/ui_icons.dart';
-import 'package:miski_shop/helper/function_helper.dart';
-import 'package:miski_shop/helper/user_helper.dart';
 import 'package:miski_shop/helper/widget_helper.dart';
-import 'package:miski_shop/model/cart/cart_model.dart';
 import 'package:miski_shop/pages/component/chat/chat_component.dart';
 import 'package:miski_shop/pages/component/favorite/favorite_component.dart';
 import 'package:miski_shop/pages/component/home/home_component.dart';
 import 'package:miski_shop/pages/component/notification/notification_component.dart';
 import 'package:miski_shop/pages/component/profile/profile_component.dart';
-import 'package:miski_shop/pages/widget/address/maps_widget.dart';
 import 'package:miski_shop/pages/widget/drawer_widget.dart';
-import 'package:miski_shop/provider/base_provider.dart';
 import 'package:miski_shop/provider/cart_provider.dart';
+import 'package:miski_shop/provider/tenant_provider.dart';
 import 'package:miski_shop/provider/user_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -39,7 +35,6 @@ class MainComponent extends StatefulWidget {
 
 class _MainComponentState extends State<MainComponent> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  int totalCart=0;
 
   @override
   initState() {
@@ -49,6 +44,8 @@ class _MainComponentState extends State<MainComponent> {
     cart.getCartData(context);
     final user = Provider.of<UserProvider>(context, listen: false);
     user.getUserData(context);
+    final tenant = Provider.of<TenantProvider>(context, listen: false);
+    tenant.read();
   }
 
   @override

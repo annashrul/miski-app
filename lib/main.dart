@@ -8,10 +8,14 @@ import 'package:miski_shop/model/cart/cart_model.dart';
 import 'package:miski_shop/provider/address_provider.dart';
 import 'package:miski_shop/provider/cart_provider.dart';
 import 'package:miski_shop/provider/channel_payment_provider.dart';
+import 'package:miski_shop/provider/chat_provider.dart';
+import 'package:miski_shop/provider/favorite_provider.dart';
 import 'package:miski_shop/provider/group_provider.dart';
+import 'package:miski_shop/provider/notification_provider.dart';
 import 'package:miski_shop/provider/product_provider.dart';
 import 'package:miski_shop/provider/promo_provider.dart';
 import 'package:miski_shop/provider/slider_provider.dart';
+import 'package:miski_shop/provider/tenant_provider.dart';
 import 'package:miski_shop/provider/user_provider.dart';
 import 'package:miski_shop/route_generator.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
@@ -27,6 +31,10 @@ List<SingleChildWidget> providers = [
   ChangeNotifierProvider<UserProvider>(create: (context) => UserProvider()),
   ChangeNotifierProvider<AddressProvider>(create: (context) => AddressProvider()),
   ChangeNotifierProvider<ChannelPaymentProvider>(create: (context) => ChannelPaymentProvider()),
+  ChangeNotifierProvider<NotificationProvider>(create: (context) => NotificationProvider()),
+  ChangeNotifierProvider<ChatProvider>(create: (context) => ChatProvider()),
+  ChangeNotifierProvider<TenantProvider>(create: (context) => TenantProvider()),
+  ChangeNotifierProvider<FavoriteProvider>(create: (context) => FavoriteProvider()),
 ];
 void  main()  async {
   runApp(

@@ -1,4 +1,5 @@
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:miski_shop/config/app_config.dart' as config;
@@ -11,6 +12,8 @@ import 'package:miski_shop/helper/widget_helper.dart';
 import 'package:miski_shop/pages/widget/product/porduct_list_widget.dart';
 import 'package:miski_shop/pages/widget/product/product_grid_widget.dart';
 import 'package:miski_shop/pages/widget/searchbar_widget.dart';
+import 'package:miski_shop/provider/favorite_provider.dart';
+import 'package:provider/provider.dart';
 import '../../widget/empty_widget.dart';
 import '../../widget/loading_widget.dart';
 
@@ -20,69 +23,32 @@ class FavoriteComponent extends StatefulWidget {
 }
 
 class _FavoriteComponentState extends State<FavoriteComponent>{
-  String layout = 'grid';
-  final DatabaseConfig _helper = new DatabaseConfig();
-  ScrollController controller;
-  List resFavoriteProduct=[];
-  bool isLoading=false,isLoadmore=false;
-  int perpage=StringConfig.perpage;
-  // int perpage=5;
-  int total=0;
-  String q="";
-  Future deleteFavorite(res)async{
-    await _helper.delete(ProductQuery.TABLE_NAME, "id", res["id"]);
-    await getFavorite(q);
-    WidgetHelper().showFloatingFlushbar(context,"success","${res["title"]} berhasil dihapus dari wish list anda");
-  }
 
-  Future getFavorite(any)async{
-    final tenant=await FunctionHelper().getTenant();
-    String where = "is_favorite=? and id_tenant=?";
-    if(any!=""){
-      where+=" and title LIKE '%$any%' or deskripsi LIKE '%$any%'";
-    }
-    var resLocal = await _helper.getRow("SELECT * FROM ${ProductQuery.TABLE_NAME} WHERE $where LIMIT $perpage",["true",tenant[StringConfig.idTenant]]);
-    setState(() {
-      total = resLocal.length;
-      resFavoriteProduct = resLocal;
-      isLoading=false;
-      isLoadmore=false;
-    });
-  }
-  void _scrollListener() {
-    if (controller.position.pixels == controller.position.maxScrollExtent) {
-      if(perpage<=total){
-        setState((){
-          perpage+=perpage;
-          isLoadmore=true;
-        });
-        getFavorite(q);
-      }
-    }
-
-  }
   @override
   void dispose() {
-    controller.removeListener(_scrollListener);
+    final fav = Provider.of<FavoriteProvider>(context, listen: false);
+    fav.controller.removeListener(fav.scrollListener);
     super.dispose();
   }
   @override
   void initState() {
     super.initState();
-    controller = new ScrollController()..addListener(_scrollListener);
-    isLoading=true;
-    getFavorite(q);
+    final fav = Provider.of<FavoriteProvider>(context, listen: false);
+    fav.read();
+    fav.controller = new ScrollController()..addListener(fav.scrollListener);
   }
 
 
   @override
   Widget build(BuildContext context) {
     final scaler=config.ScreenScale(context).scaler;
-    return isLoading?Padding(
+    final fav = Provider.of<FavoriteProvider>(context);
+    return fav.isLoading?Padding(
       padding: scaler.getPadding(0, 2),
       child: LoadingProductTenant(tot: 10),
     ):SingleChildScrollView(
-      controller: controller,
+      controller: fav.controller,
+      physics:AlwaysScrollableScrollPhysics(),
       padding: EdgeInsets.all(0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,15 +58,13 @@ class _FavoriteComponentState extends State<FavoriteComponent>{
           Padding(
             padding: scaler.getPadding(0,2),
             child: SearchBarWidget(callback: (e){
-              setState(() {
-                q=e;
-              });
-              getFavorite(e);
+              fav.setAny(e);
+              fav.read();
             }),
           ),
           SizedBox(height: 10),
           Offstage(
-            offstage: resFavoriteProduct.isEmpty,
+            offstage: fav.resFavoriteProduct.isEmpty,
             child: Padding(
               padding: scaler.getPaddingLTRB(2,0,1,0),
               child: ListTile(
@@ -114,25 +78,17 @@ class _FavoriteComponentState extends State<FavoriteComponent>{
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     IconButton(
-                      onPressed: () {
-                        setState(() {
-                          this.layout = 'list';
-                        });
-                      },
+                      onPressed: () => fav.setLayout("list"),
                       icon: Icon(
                         Icons.format_list_bulleted,
-                        color: this.layout == 'list' ? Theme.of(context).accentColor : Theme.of(context).focusColor,
+                        color: fav.layout == 'list' ? Theme.of(context).accentColor : Theme.of(context).focusColor,
                       ),
                     ),
                     IconButton(
-                      onPressed: () {
-                        setState(() {
-                          this.layout = 'grid';
-                        });
-                      },
+                      onPressed: ()=>fav.setLayout("grid"),
                       icon: Icon(
                         Icons.apps,
-                        color: this.layout == 'grid' ? Theme.of(context).accentColor : Theme.of(context).focusColor,
+                        color:fav.layout == 'grid' ? Theme.of(context).accentColor : Theme.of(context).focusColor,
                       ),
                     )
                   ],
@@ -141,18 +97,18 @@ class _FavoriteComponentState extends State<FavoriteComponent>{
             ),
           ),
           Offstage(
-            offstage: this.layout != 'list' || resFavoriteProduct.isEmpty,
+            offstage: fav.layout != 'list' || fav.resFavoriteProduct.isEmpty,
             child: ListView.separated(
               padding: scaler.getPadding(0,2),
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
               primary: false,
-              itemCount: resFavoriteProduct.length,
+              itemCount: fav.resFavoriteProduct.length,
               separatorBuilder: (context, index) {
                 return SizedBox(height: 10);
               },
               itemBuilder: (context, index) {
-                final res = resFavoriteProduct[index];
+                final res = fav.resFavoriteProduct[index];
                 return Dismissible(
                     key: Key(res["id"].hashCode.toString()),
                     background: Container(
@@ -169,7 +125,7 @@ class _FavoriteComponentState extends State<FavoriteComponent>{
                       ),
                     ),
                     onDismissed: (direction) {
-                      deleteFavorite(res);
+                      fav.delete(res);
                     },
                     child: ProductListWidget(
                       heroTag: 'favorites_list',
@@ -186,22 +142,23 @@ class _FavoriteComponentState extends State<FavoriteComponent>{
             ),
           ),
           Offstage(
-            offstage: this.layout != 'grid' || resFavoriteProduct.isEmpty,
+            offstage: fav.layout != 'grid' || fav.resFavoriteProduct.isEmpty,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: scaler.getPadding(0,2),
               child: new StaggeredGridView.countBuilder(
                 primary: false,
                 shrinkWrap: true,
                 crossAxisCount: 4,
-                itemCount: resFavoriteProduct.length,
+                itemCount: fav.resFavoriteProduct.length,
                 itemBuilder: (BuildContext context, int index) {
-                  final res = resFavoriteProduct[index];
+                  final res = fav.resFavoriteProduct[index];
                   return ProductGridWidget(
                     productId: res["id_product"],
                     productName: res["title"],
                     productImage: res["gambar"],
                     productPrice: res["harga"],
                     productSales: res["stock_sales"],
+                    productStock: res["stock"],
                     productRate: res["rating"],
                     heroTag: 'favorites_grid',
                     callback: (){},
@@ -214,13 +171,15 @@ class _FavoriteComponentState extends State<FavoriteComponent>{
             ),
           ),
           Offstage(
-            offstage: resFavoriteProduct.isNotEmpty,
+            offstage: fav.resFavoriteProduct.isNotEmpty,
             child: EmptyDataWidget(
               iconData: UiIcons.heart,
               title: StringConfig.noData,
               isFunction: false,
             ),
-          )
+          ),
+          if(fav.isLoadMore)Center(child: CupertinoActivityIndicator())
+
         ],
       ),
     );

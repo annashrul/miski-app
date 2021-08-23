@@ -33,9 +33,15 @@ class _CartWidgetState extends State<CartWidget> {
     final scaler = config.ScreenScale(context).scaler;
     final cart = Provider.of<CartProvider>(context);
     return Scaffold(
-      appBar: WidgetHelper().appBarWithButton(context, "Keranjang belanja anda",(){}, <Widget>[
+      appBar: WidgetHelper().appBarWithButton(context, "Keranjang belanja",(){}, <Widget>[
         if(!cart.loading && !cart.isError)
-          WidgetHelper().iconAppbar(context: context,icon: UiIcons.trash,callback: ()=>cart.deleteCartData(context, "all",""))
+          WidgetHelper().iconAppbar(context: context,icon: UiIcons.trash,callback: (){
+            WidgetHelper().notifDialog(context, 'Perhatian', 'Anda yakin akan menghapus semua data ini ?', ()=>Navigator.pop(context), ()async{
+              Navigator.of(context).pop();
+              WidgetHelper().loadingDialog(context);
+              await  cart.deleteCartData(context, "all","");
+            });
+          })
       ],param: "default"),
       bottomNavigationBar: !cart.loading && !cart.isError?WidgetHelper().chip(
           ctx: context,
@@ -119,7 +125,7 @@ class _CartWidgetState extends State<CartWidget> {
   Widget buildItem({BuildContext context,int index}){
     final cart = Provider.of<CartProvider>(context);
     final res=cart.cart.result[index];
-    int anying=int.parse(res.qty);
+    int qty=int.parse(res.qty);
     dynamic data={};
     data["id"]=res.idBarang;
     data["kode"]=res.kodeBarang;
@@ -155,29 +161,34 @@ class _CartWidgetState extends State<CartWidget> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
               WidgetHelper().myRipple(
-                callback:()=>cart.deleteCartData(context,"item", res.id),
+                callback: (){
+                  WidgetHelper().notifDialog(context, 'Perhatian', 'Anda yakin akan menghapus data ini ?', ()=>Navigator.pop(context), ()async{
+                    Navigator.of(context).pop();
+                    WidgetHelper().loadingDialog(context);
+                    await cart.deleteCartData(context,"item", res.id);
+                  });
+                },
+                // callback:()=>cart.deleteCartData(context,"item", res.id),
                 child: Icon(Ionicons.ios_close_circle_outline,color: Theme.of(context).hintColor,size: scaler.getTextSize(12)),
               ),
               SizedBox(width: scaler.getWidth(1)),
               WidgetHelper().myRipple(
                   callback: (){
                     if(int.parse(res.qty)>1){
-                      anying-=1;
-                      data["qty"]= anying.toString();
-                      cart.getSubtotal();
+                      qty-=1;
+                      data["qty"]= qty.toString();
                       cart.storeCart(context, data);
                     }
                   },
                   child: Icon(Ionicons.ios_remove_circle_outline,color:Theme.of(context).hintColor,size: scaler.getTextSize(12))
               ),
               SizedBox(width: scaler.getWidth(1)),
-              config.MyFont.subtitle(context: context,text:"$anying"),
+              config.MyFont.subtitle(context: context,text:"$qty"),
               SizedBox(width: scaler.getWidth(1)),
               WidgetHelper().myRipple(
                   callback: (){
-                    anying+=1;
-                    data["qty"]=anying.toString();
-                    cart.getSubtotal();
+                    qty+=1;
+                    data["qty"]=qty.toString();
                     cart.storeCart(context, data);
                   },
                   child: Icon(Ionicons.ios_add_circle_outline,color:Theme.of(context).hintColor,size: scaler.getTextSize(12),)

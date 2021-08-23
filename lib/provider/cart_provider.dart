@@ -35,15 +35,11 @@ class CartProvider with ChangeNotifier {
 
   deleteCartData(BuildContext context,param,id)async{
     final tenant = await FunctionHelper().getTenant();
-    WidgetHelper().notifDialog(context, 'Perhatian', 'Anda yakin akan menghapus data ini ?', ()=>Navigator.pop(context), ()async{
-      Navigator.pop(context);
-      WidgetHelper().loadingDialog(context);
-      var url=param=='all'?'cart/${tenant[StringConfig.idTenant]}?all=true':'cart/$id';
-      await HandleHttp().deleteProvider(url, generalFromJson,context: context);
-      getCartData(context,loading: false);
-      Navigator.pop(context);
-      notifyListeners();
-    });
+    var url=param=='all'?'cart/${tenant[StringConfig.idTenant]}?all=true':'cart/$id';
+    await HandleHttp().deleteProvider(url, generalFromJson,context: context);
+    getCartData(context,loading: false);
+    notifyListeners();
+
   }
 
   storeCart(BuildContext context,data)async{
@@ -67,6 +63,7 @@ class CartProvider with ChangeNotifier {
     Navigator.pop(context);
     getCartData(context,loading: false);
     qtyPerProduct = int.parse(data["qty"].toString());
+    subtotal = int.parse(data["harga"])*int.parse(data["qty"].toString());
     notifyListeners();
   }
 
@@ -89,7 +86,6 @@ class CartProvider with ChangeNotifier {
     if(res==null){
       qtyPerProduct = 0;
       notifyListeners();
-
     }else{
       detailCart = DetailCartModel.fromJson(res.toJson());
       qtyPerProduct = int.parse(detailCart.result.qty);

@@ -11,6 +11,7 @@ import 'package:miski_shop/provider/handle_http.dart';
 
 class FunctionDetail{
   Future loadDetail({BuildContext context,String idProduct})async{
+
     int hargaFinish=0;
     String hargaMaster="";
     final res = await HandleHttp().getProvider("barang/$idProduct", detailProductTenantModelFromJson,context: context);
@@ -21,12 +22,9 @@ class FunctionDetail{
         hargaFinish = FunctionHelper().doubleDiskon(result.result.harga, ['${result.result.disc1.toString()}','${result.result.disc2.toString()}']);
         hargaMaster = FunctionHelper().doubleDiskon(result.result.harga, ['${result.result.disc1.toString()}','${result.result.disc2.toString()}']).toString();
       }
-
       hargaMaster = result.result.harga;
       hargaFinish = int.parse(result.result.harga);
       dynamic data = result.result.toJson();
-
-
       data["id_varian"] ="";
       data["id_sub_varian"] ="";
       data["harga_finish"] =hargaFinish;

@@ -7,79 +7,56 @@ import 'package:miski_shop/config/ui_icons.dart';
 import 'package:miski_shop/helper/widget_helper.dart';
 import 'package:miski_shop/model/promo/detail_global_promo_model.dart';
 import 'package:miski_shop/provider/handle_http.dart';
+import 'package:miski_shop/provider/promo_provider.dart';
+import 'package:provider/provider.dart';
 import '../empty_widget.dart';
 
 
 class DetailPromoWidget extends StatefulWidget {
-  final String id;
-  DetailPromoWidget({this.id});
+  final dynamic data;
+  DetailPromoWidget({this.data});
   @override
   _DetailPromoWidgetState createState() => _DetailPromoWidgetState();
 }
 
 class _DetailPromoWidgetState extends State<DetailPromoWidget>  with SingleTickerProviderStateMixin{
-  DetailGlobalPromoModel detailGlobalPromoModel;
-  bool isLoading=true;
-  TabController _tabController;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  int _tabIndex = 0;
-  Future loadData()async{
-    final res=await HandleHttp().getProvider("promo/${widget.id}",detailGlobalPromoModelFromJson,context: context);
-    if(res!=null){
-      detailGlobalPromoModel=DetailGlobalPromoModel.fromJson(res.toJson());
-      print(detailGlobalPromoModel.result.toJson());
-      isLoading=false;
-      if(this.mounted){
-        this.setState(() {});
-      }
-    }
-  }
+
   @override
   void initState() {
-    _tabController = TabController(length: 2, initialIndex: _tabIndex, vsync: this);
-    _tabController.addListener(_handleTabSelection);
+    final promo = Provider.of<PromoProvider>(context, listen: false);
+    promo.readDetail(context, widget.data["id"]);
     super.initState();
-    loadData();
   }
 
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
 
-  _handleTabSelection() {
-    if (_tabController.indexIsChanging) {
-      setState(() {
-        _tabIndex = _tabController.index;
-      });
-    }
-  }
+
 
   @override
   Widget build(BuildContext context) {
     final scaler=config.ScreenScale(context).scaler;
-
+    final promo = Provider.of<PromoProvider>(context);
     return Scaffold(
       key: _scaffoldKey,
-      bottomNavigationBar:  !isLoading&&detailGlobalPromoModel.result.isVoucher==1?Padding(
-      padding: EdgeInsets.all(10),
-      child:  Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+      bottomNavigationBar:  !promo.isLoadingDetail&&promo.detailGlobalPromoModel.result.isVoucher==1?Padding(
+        padding: EdgeInsets.all(10),
+        child:  Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
           Container(
             decoration: BoxDecoration(
                 color:Colors.grey,
                 borderRadius: BorderRadius.circular(10.0)
             ),
             padding: EdgeInsets.all(10.0),
-            child: config.MyFont.title(context: context,text:detailGlobalPromoModel.result.kode),
+            child: config.MyFont.title(context: context,text:promo.detailGlobalPromoModel.result.kode),
           ),
           SizedBox(width: 10.0),
           InkWell(
             borderRadius: BorderRadius.circular(10.0),
             onTap: (){
-              Clipboard.setData(new ClipboardData(text: detailGlobalPromoModel.result.kode));
+              Clipboard.setData(new ClipboardData(text: promo.detailGlobalPromoModel.result.kode));
               WidgetHelper().showFloatingFlushbar(context,"success","Kode promo berhasil disalin");
             },
             child: Container(
@@ -93,7 +70,7 @@ class _DetailPromoWidgetState extends State<DetailPromoWidget>  with SingleTicke
           )
         ],
       ),
-    ):Text(""),
+      ):Text(""),
       body: CustomScrollView(slivers: <Widget>[
         SliverAppBar(
           snap: true,
@@ -103,20 +80,19 @@ class _DetailPromoWidgetState extends State<DetailPromoWidget>  with SingleTicke
             icon: new Icon(UiIcons.return_icon, color: Theme.of(context).primaryColor),
             onPressed: () => Navigator.of(context).pop(),
           ),
-
           expandedHeight: 250,
           elevation: 0,
           flexibleSpace: FlexibleSpaceBar(
             collapseMode: CollapseMode.parallax,
             background: Stack(
               children: <Widget>[
-                isLoading?WidgetHelper().baseLoading(context, WidgetHelper().shimmer(context: context,height: 30,width: 100)):Container(
+                Container(
                   width: double.infinity,
                   child: Center(
                     child: Hero(
-                      tag: "${detailGlobalPromoModel.result.title}${detailGlobalPromoModel.result.id}",
+                      tag: widget.data["hero"]+widget.data["id"],
                       child: WidgetHelper().baseImage(
-                        detailGlobalPromoModel.result.gambar,
+                        widget.data["image"],
                         width: double.infinity,
                       ),
                     ),
@@ -153,62 +129,30 @@ class _DetailPromoWidgetState extends State<DetailPromoWidget>  with SingleTicke
         ),
         SliverList(
           delegate: SliverChildListDelegate([
-            Offstage(
-              offstage: 0 != _tabIndex,
-              child: Padding(
-                padding: scaler.getPadding(1,2),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    isLoading?WidgetHelper().baseLoading(context, WidgetHelper().shimmer(context: context,height: 1,width: 80)):config.MyFont.title(context: context,text: detailGlobalPromoModel.result.title,fontSize: 11),
-                    SizedBox(height: scaler.getHeight(1)),
-                    isLoading?WidgetHelper().baseLoading(context, WidgetHelper().shimmer(context: context,height: 1,width: 50)):WidgetHelper().titleQ(context, "Berlaku sampai ${DateFormat("yyyy-MM-dd hh:mm:ss").format(detailGlobalPromoModel.result.periodeEnd)}",icon: UiIcons.alarm_clock,fontSize: 9,fontWeight: FontWeight.normal),
-                    Divider(),
-                    isLoading?WidgetHelper().baseLoading(context, ListView.builder(
-                        padding: scaler.getPadding(0, 0),
-                        cacheExtent: 1.0,
-                        itemCount: 15,
-                        shrinkWrap: true,
-                        primary: true,
-                        itemBuilder: (context,i){
-                          return Container(
+            Padding(
+              padding: scaler.getPadding(1,2),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  promo.isLoadingDetail?WidgetHelper().baseLoading(context, WidgetHelper().shimmer(context: context,height: 1,width: 80)):config.MyFont.title(context: context,text:  promo.detailGlobalPromoModel.result.title,fontSize: 11),
+                  SizedBox(height: scaler.getHeight(1)),
+                  promo.isLoadingDetail?WidgetHelper().baseLoading(context, WidgetHelper().shimmer(context: context,height: 1,width: 50)):WidgetHelper().titleQ(context, "Berlaku sampai ${DateFormat("yyyy-MM-dd hh:mm:ss").format( promo.detailGlobalPromoModel.result.periodeEnd)}",icon: UiIcons.alarm_clock,fontSize: 9,fontWeight: FontWeight.normal),
+                  Divider(),
+                  promo.isLoadingDetail?WidgetHelper().baseLoading(context, ListView.builder(
+                      padding: scaler.getPadding(0, 0),
+                      cacheExtent: 1.0,
+                      itemCount: 15,
+                      shrinkWrap: true,
+                      primary: true,
+                      itemBuilder: (context,i){
+                        return Container(
                             width: MediaQuery.of(context).size.width/2,
                             child: WidgetHelper().shimmer(context: context,width: MediaQuery.of(context).size.width/1)
-                          );
-                        }
-                    )):config.MyFont.subtitle(context: context,text: detailGlobalPromoModel.result.deskripsi,fontWeight: FontWeight.normal,maxLines: 1000),
-                  ],
-                ),
-              ),
-            ),
-            if( !isLoading)Offstage(
-              offstage: 1 != _tabIndex,
-              child: Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                     detailGlobalPromoModel.result.detail.length<1?EmptyTenant():ListView.separated(
-                        padding: scaler.getPadding(1,2),
-                        addRepaintBoundaries: true,
-                        primary: false,
-                        shrinkWrap: true,
-                        itemCount:detailGlobalPromoModel.result.detail.length ,
-                        itemBuilder: (context, index) {
-                          final res = detailGlobalPromoModel.result.detail[index];
-                          return WidgetHelper().titleQ(context, "barang promo",
-                            image: res.gambar,
-                            subtitle: "diskon ${res.disc1.toString()} + ${res.disc2.toString()}",
-                            fontSize: 9,
-                            fontWeight: FontWeight.normal
-                          );
-                        },
-                        separatorBuilder: (context,index){return Divider();},
-                      )
-                    ],
-                  )
+                        );
+                      }
+                  )):config.MyFont.subtitle(context: context,text:  promo.detailGlobalPromoModel.result.deskripsi,fontWeight: FontWeight.normal,maxLines: 1000),
+                ],
               ),
             ),
           ]),

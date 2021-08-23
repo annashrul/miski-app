@@ -72,20 +72,13 @@ class ProductListWidget extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        config.MyFont.title(context: context,text:productName,fontSize: 9),
+                        config.MyFont.subtitle(context: context,text:productName,fontSize: 9),
 
                         Row(
                           children: <Widget>[
-                            config.MyFont.title(context: context,text:'$productSales terjual',fontSize: 8),
+                            config.MyFont.subtitle(context: context,text:'$productSales terjual',fontSize: 8),
                             SizedBox(width: 10),
                             WidgetHelper().myRating(context: context,rating: productRate)
-                            // Icon(
-                            //   Icons.star,
-                            //   color: Colors.amber,
-                            //   size: scaler.getTextSize(10),
-                            // ),
-                            // config.MyFont.title(context: context,text:'${double.parse(productRate).toStringAsFixed(2)}',fontSize: 8),
-
                           ],
                           crossAxisAlignment: CrossAxisAlignment.center,
                         ),
@@ -93,7 +86,7 @@ class ProductListWidget extends StatelessWidget {
                     ),
                   ),
                   SizedBox(width: 8),
-                  config.MyFont.title(context: context,text:'${config.MyFont.toMoney("$productPrice")}',fontSize: 9,color:config.Colors.moneyColors),
+                  config.MyFont.subtitle(context: context,text:'${config.MyFont.toMoney("$productPrice")}',fontSize: 9,color:config.Colors.moneyColors),
                 ],
               ),
             )

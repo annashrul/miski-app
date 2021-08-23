@@ -68,7 +68,7 @@ class WidgetHelper{
  showFloatingFlushbar(BuildContext context,String param, String desc) {
     Flushbar(
       flushbarPosition: FlushbarPosition.TOP,
-      flushbarStyle: FlushbarStyle.FLOATING,
+
       margin:EdgeInsets.only(top: 50),
       borderRadius: 0,
       backgroundGradient: LinearGradient(
@@ -88,9 +88,7 @@ class WidgetHelper{
       ),
       duration: Duration(seconds: 3),
       leftBarIndicatorColor: param=='success'?Colors.blue[300]:Colors.red[300],
-      dismissDirection: FlushbarDismissDirection.HORIZONTAL,
       messageText: config.MyFont.title(context: context,text:desc,color: config.Colors.secondDarkColors,fontSize: 8),
-
     )..show(context);
   }
   myModal(BuildContext context,Widget child){
