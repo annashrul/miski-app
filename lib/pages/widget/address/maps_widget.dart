@@ -50,10 +50,7 @@ class _MapsWidgetState extends State<MapsWidget> {
   @override
   Widget build(BuildContext context) {
     final map = Provider.of<AddressProvider>(context);
-    print("ISACTIVE GPS ${map.isActiveGps}");
-    print("ADDRESS ${map.addressFromLatLong}");
-    print("RESPONSE WIDGET MAPS ${widget.latlong}");
-    // map.checkingGps();
+
     final scaler = config.ScreenScale(context).scaler;
     return Scaffold(
       bottomNavigationBar: map.isActiveGps&&map.addressFromLatLong!=null?Column(
@@ -70,13 +67,15 @@ class _MapsWidgetState extends State<MapsWidget> {
                       WidgetHelper().titleQ(context, "alamat anda",icon: UiIcons.information, fontSize: 9),
                       WidgetHelper().myRipple(
                           callback: () async {
-                            dynamic dataAddress= {
-                              StringConfig.latitude:map.addressFromLatLong[StringConfig.latitude].toString(),
-                              StringConfig.longitude:map.addressFromLatLong[StringConfig.longitude].toString(),
-                              StringConfig.fullAddress:map.addressFromLatLong[StringConfig.fullAddress],
-                            };
-                            widget.callback(dataAddress);
-                            Navigator.of(context).pop();
+
+                            // dynamic dataAddress= {
+                            //   StringConfig.latitude:map.addressFromLatLong[StringConfig.latitude],
+                            //   StringConfig.longitude:map.addressFromLatLong[StringConfig.longitude],
+                            //   StringConfig.fullAddress:map.addressFromLatLong[StringConfig.fullAddress],
+                            // };
+
+                            widget.callback({});
+                            // Navigator.of(context).pop();
                           },
                           child: config.MyFont.subtitle(context: context,text: "konfirmasi",color: config.Colors.mainColors)
                       )

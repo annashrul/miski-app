@@ -163,7 +163,7 @@ class AddressProvider with ChangeNotifier{
     idxProv = 0;
     idxCity = 0;
     idxDistrict = 0;
-    addressFromLatLong=null;
+    // addressFromLatLong=null;
     notifyListeners();
   }
   msgBox(BuildContext context,desc){
@@ -212,4 +212,12 @@ class AddressProvider with ChangeNotifier{
       "pinpoint":addressFromLatLong!=null?"${addressFromLatLong[StringConfig.latitude]},${addressFromLatLong[StringConfig.longitude]}":"-"
     };
   }
+
+  setAddressFromLatLong(input){
+    print("provider $addressFromLatLong");
+    print("provider $input");
+    addressFromLatLong = input;
+    notifyListeners();
+  }
+
 }

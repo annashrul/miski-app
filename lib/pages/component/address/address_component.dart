@@ -41,13 +41,20 @@ class _AddressComponentState extends State<AddressComponent> {
   @override
   Widget build(BuildContext context) {
     final address = Provider.of<AddressProvider>(context);
-    print(address.isError);
+
     final scaler = config.ScreenScale(context).scaler;
     return Scaffold(
       key: scaffoldKey,
       appBar: WidgetHelper().appBarWithButton(context,"Daftar Alamat",(){Navigator.pop(context);},<Widget>[
         WidgetHelper().iconAppbar(context: context,icon: Ionicons.ios_add,callback: (){
-          WidgetHelper().myModal(context, ModalFormAddressWidget(id:"",callback:(String par)=>address.readList(context)));
+          WidgetHelper().myPush(context, MapsWidget(callback: (res){
+            // print(address.addressFromLatLong);
+            // address.addressFromLatLong=res;
+            // address.setAddressFromLatLong(res);
+            Navigator.pop(context);
+            WidgetHelper().myModal(context, ModalFormAddressWidget(id:"",callback:(String par)=>address.readList(context)));
+          },latlong: null));
+
         })
       ],brightness: Brightness.light),
       body: Container(

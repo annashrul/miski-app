@@ -38,6 +38,7 @@ class _ModalFormAddressWidgetState extends State<ModalFormAddressWidget> {
   Widget build(BuildContext context) {
     final scaler = config.ScreenScale(context).scaler;
     final address = Provider.of<AddressProvider>(context);
+    print("address.addressFromLatLong ${address.addressFromLatLong}");
     return Container(
       height: MediaQuery.of(context).size.height / 1.1,
       padding: scaler.getPadding(1, 2),
@@ -192,7 +193,8 @@ class _ModalFormAddressWidgetState extends State<ModalFormAddressWidget> {
                 WidgetHelper().myRipple(
                   callback: (){
                     WidgetHelper().myPush(context, MapsWidget(callback: (res){
-                      address.addressFromLatLong=res;
+                      Navigator.of(context).pop();
+                      // address.addressFromLatLong=res;
                     },latlong: widget.id == ''?null:address.addressFromLatLong));
                   },
                   child: Container(

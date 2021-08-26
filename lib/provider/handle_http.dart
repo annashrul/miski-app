@@ -112,6 +112,7 @@ class HandleHttp{
       return WidgetHelper().showFloatingFlushbar(context, "failed", StringConfig.errSyntax);
     }
   }
+ 
   Future putProvider(url,Map<String, Object> data,{BuildContext context}) async {
     try {
       final token= await userRepository.getDataUser('token');
