@@ -50,20 +50,20 @@ class Result {
     this.msgOtp,
   });
 
-  String id;
-  String token;
-  String nama;
-  String email;
-  String status;
-  String alamat;
-  String jenisKelamin;
+  dynamic id;
+  dynamic token;
+  dynamic nama;
+  dynamic email;
+  dynamic status;
+  dynamic alamat;
+  dynamic jenisKelamin;
   DateTime tglUltah;
-  String tlp;
-  String foto;
-  String biografi;
+  dynamic tlp;
+  dynamic foto;
+  dynamic biografi;
   DateTime lastLogin;
-  String otp;
-  String msgOtp;
+  dynamic otp;
+  dynamic msgOtp;
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
     id: json["id"],

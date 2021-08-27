@@ -90,6 +90,7 @@ class HandleHttp{
       else if(request.statusCode==400){
         final jsonResponse = json.decode(request.body);
         Navigator.pop(context);
+        print("=================== POST DATA 400 $url = ${json.decode(request.body)} ============================");
         return WidgetHelper().showFloatingFlushbar(context, "failed", jsonResponse['msg']);
       }
       else if(request.statusCode==404){

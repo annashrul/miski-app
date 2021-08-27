@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:miski_shop/config/app_config.dart' as config;
+import 'package:miski_shop/config/database_config.dart';
 import 'package:miski_shop/config/string_config.dart';
 import 'package:miski_shop/helper/bezier.dart';
+import 'package:miski_shop/helper/database_helper.dart';
 import 'package:miski_shop/helper/function_helper.dart';
 import 'package:miski_shop/helper/screen_util_helper.dart';
 import 'package:miski_shop/helper/widget_helper.dart';
+import 'package:miski_shop/model/auth/login_model.dart';
 import 'package:miski_shop/pages/component/auth/signin_component.dart';
 import 'package:miski_shop/pages/widget/secure_code_widget.dart';
 import 'package:miski_shop/provider/handle_http.dart';
@@ -17,6 +20,8 @@ class SignUpComponent extends StatefulWidget {
 }
 
 class _SignUpComponentState extends State<SignUpComponent> {
+  final DatabaseConfig _helper = new DatabaseConfig();
+
   var _noHpController = TextEditingController();
   var _nameController = TextEditingController();
   var _emailController = TextEditingController();
@@ -27,12 +32,10 @@ class _SignUpComponentState extends State<SignUpComponent> {
   final FocusNode _emailFocus = FocusNode();
   final FocusNode _passwordFocus = FocusNode();
   final FocusNode _confPasswordFocus = FocusNode();
-
   String isErrorName='',isErrorPhone='',isErrorEmail='',isErrorPassword='',isErrorConfPassword='';
   String type='',jenisKelamin='pria';
   bool _switchValue=true;
   Future create(code) async{
-    print("############################## ANYING ############################");
     var status = await OneSignal.shared.getPermissionSubscriptionState();
     String onesignalUserId = status.subscriptionStatus.userId;
     final data={
@@ -49,14 +52,48 @@ class _SignUpComponentState extends State<SignUpComponent> {
       'kode_otp':code
     };
     var res = await HandleHttp().postProvider("auth/register", data,context: context);
+    print(res);
     if(res!=null){
-      WidgetHelper().notifDialog(context,'Berhasil','Pendaftaran berhasil dilakukan',(){
-        Navigator.pop(context);
-      },(){
-        Navigator.pop(context);
-        WidgetHelper().myPushRemove(context,SignInComponent());
-      });
+      var result = LoginModel.fromJson(res);
+      final dataUser={
+        "id_user":result.result.id.toString(),
+        "token":result.result.token.toString(),
+        "nama":result.result.nama.toString(),
+        "email":result.result.email.toString(),
+        "status":result.result.status.toString(),
+        "alamat":result.result.alamat.toString(),
+        "jenis_kelamin":result.result.jenisKelamin=="Wanita"?"0":"1",
+        "tgl_ultah":result.result.tglUltah.toString(),
+        "tlp":result.result.tlp.toString(),
+        "foto":result.result.foto.toString().replaceAll(' ',''),
+        "biografi":result.result.biografi.toString(),
+        "last_login":result.result.lastLogin.toString(),
+        "is_login":"1",
+        "onboarding":"1",
+        "exit_app":"0",
+        "onesignal_id":onesignalUserId,
+      };
+      print(dataUser);
+      final countTbl = await _helper.queryRowCount(UserQuery.TABLE_NAME);
+      if(countTbl>0){
+        await _helper.deleteAll(UserQuery.TABLE_NAME);
+        print("############################### DELETE USER");
+      }
+      await _helper.insert(UserQuery.TABLE_NAME,dataUser);
+      print("############################### INSERT USER");
+
+      Navigator.pushNamedAndRemoveUntil(context,"/${StringConfig.main}", (route) => false,arguments: StringConfig.defaultTab);
+      // if(res!=null){
+      //   WidgetHelper().notifDialog(context,'Berhasil','Pendaftaran berhasil dilakukan',(){
+      //     Navigator.pop(context);
+      //   },(){
+      //
+      //     Navigator.pop(context);
+      //     WidgetHelper().myPushRemove(context,SignInComponent());
+      //   });
+      // }
     }
+
   }
   Future save() async{
     String nama=_nameController.text;
@@ -110,6 +147,7 @@ class _SignUpComponentState extends State<SignUpComponent> {
         "isRegister":"1"
       };
       var res = await HandleHttp().postProvider('auth/otp', dataOtp,context: context);
+      print(res["result"]);
       if(res!=null){
         Navigator.of(context).pop();
         if(type=='otp'){
@@ -118,8 +156,9 @@ class _SignUpComponentState extends State<SignUpComponent> {
               _callBack(code);
             },
             code:res["result"]["otp_anying"],
-            param: 'otp',
+            param: 'aktivasi',
             desc: _switchValue?'WhatsApp':'SMS',
+            data:dataOtp,
           ));
           // WidgetHelper().myPush(context, SecureCodeScreen(callback:_callBack,code:result.result.otp,param: 'otp',desc: _switchValue?'WhatsApp':'SMS'));
         }
@@ -143,9 +182,12 @@ class _SignUpComponentState extends State<SignUpComponent> {
     isLoading=true;
     super.initState();
     FunctionHelper().getSession(StringConfig.loginType).then((value){
-      setState(() {
-        type = value;
-      });
+      if(value=="otp"){
+        _passwordController.text="-";
+        _confPasswordController.text="-";
+      }
+      type = value;
+      setState(() {});
     });
   }
 
@@ -190,17 +232,17 @@ class _SignUpComponentState extends State<SignUpComponent> {
                   _entryField(context,"Nama Lengkap",TextInputType.name,TextInputAction.next,_nameController,_nameFocus,onSubmitted: (term){WidgetHelper().fieldFocusChange(context, _nameFocus, _noHpFocus);}),
                   _entryField(context,"No Handphone",TextInputType.number,TextInputAction.next,_noHpController,_noHpFocus,onSubmitted: (term){WidgetHelper().fieldFocusChange(context, _noHpFocus, _emailFocus);}),
                   _entryField(context,"Email",TextInputType.emailAddress,TextInputAction.next,_emailController,_emailFocus,onSubmitted: (term){WidgetHelper().fieldFocusChange(context, _emailFocus, _passwordFocus);}),
-                  _entryField(context,"Kata Sandi",TextInputType.visiblePassword,TextInputAction.next,_passwordController,_passwordFocus,isPassword: true,onSubmitted: (term){WidgetHelper().fieldFocusChange(context, _passwordFocus, _confPasswordFocus);}),
-                  _entryField(context,"Ulangi Kata Sandi",TextInputType.visiblePassword,TextInputAction.done,_confPasswordController,_confPasswordFocus,isPassword: true),
+                  if(type!="otp")_entryField(context,"Kata Sandi",TextInputType.visiblePassword,TextInputAction.next,_passwordController,_passwordFocus,isPassword: true,onSubmitted: (term){WidgetHelper().fieldFocusChange(context, _passwordFocus, _confPasswordFocus);}),
+                  if(type!="otp")_entryField(context,"Ulangi Kata Sandi",TextInputType.visiblePassword,TextInputAction.done,_confPasswordController,_confPasswordFocus,isPassword: true),
                   Container(
                     margin: EdgeInsets.symmetric(vertical: 10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        config.MyFont.title(context: context,text:"Jenis kelamin",fontWeight: FontWeight.normal,color: Theme.of(context).textTheme.headline1.color),
-                        SizedBox(
-                          height: 10,
-                        ),
+                        // config.MyFont.title(context: context,text:"Jenis kelamin",fontWeight: FontWeight.normal,color: Theme.of(context).textTheme.headline1.color),
+                        // SizedBox(
+                        //   height: 10,
+                        // ),
                         Container(
                           padding:scaler.getPaddingLTRB(0, 0, 0, 1),
                           decoration: BoxDecoration(

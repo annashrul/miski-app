@@ -48,11 +48,11 @@ class _SecureCodeWidgetState extends State<SecureCodeWidget> {
   bool isLoadingReOtp=false;
   @override
   Widget build(BuildContext context) {
-    String desc = 'Masukan Kode OTP Yang Kami Kirim Melalui Pesan ${widget.desc} Untuk Melanjutkan Ke Halaman Berikutnya ${StringConfig.showCode?widget.code:''}';
+    String desc = 'Masukan kode OTP yang kami kirim melalui pesan ${widget.desc} untuk melanjutkan ke halaman berikutnya ${StringConfig.showCode?widget.code:''}';
     int size = 4;
     if(widget.param!='otp'){
-      desc='Masukan PIN Anda Untuk Melanjutkan Ke Halaman Berikutnya';
-      size=6;
+      desc='Masukan kode aktivasi yang kami kirim melalui pesan ${widget.desc} untuk melanjutkan ke halaman berikutnya ${StringConfig.showCode?widget.code:''}';
+      // size=6;
     }
     return Scaffold(
       key: _scaffoldKey,
@@ -63,7 +63,7 @@ class _SecureCodeWidgetState extends State<SecureCodeWidget> {
               var res = await HandleHttp().postProvider("auth/otp",widget.data,context: context);
               if(res!=null){
                 Navigator.pop(context);
-                WidgetHelper().showFloatingFlushbar(context,"success", "kode otp berhasil dikirim");
+                WidgetHelper().showFloatingFlushbar(context,"success", "kode ${widget.param} berhasil dikirim");
                 if(timeUpFlag){
                   timeUpFlag=!timeUpFlag;
                   timeCounter=10;
@@ -75,7 +75,7 @@ class _SecureCodeWidgetState extends State<SecureCodeWidget> {
             }
 
           },
-          child:config.MyFont.title(context: context,text:"${!timeUpFlag ?'$timeCounter detik':'kirim ulang otp'}",color: config.Colors.mainColors)
+          child:config.MyFont.title(context: context,text:"${!timeUpFlag ?'$timeCounter detik':'kirim ulang kode ${widget.param}'}",color: config.Colors.mainColors)
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SecureCodeHelper(
