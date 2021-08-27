@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:miski_shop/config/app_config.dart' as config;
 import 'package:miski_shop/config/database_config.dart';
@@ -16,6 +17,7 @@ import 'package:miski_shop/pages/widget/profile/form_profile_widget.dart';
 import 'package:miski_shop/pages/widget/upload_image_widget.dart';
 import 'package:miski_shop/provider/handle_http.dart';
 import 'package:miski_shop/provider/user_provider.dart';
+import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:provider/provider.dart';
 
 import '../main_component.dart';
@@ -101,8 +103,6 @@ class _ProfileComponentState extends State<ProfileComponent> {
   @override
   Widget build(BuildContext context) {
     final resUserFuture = Provider.of<UserProvider>(context).dataUser;
-
-
     List<Widget> historyWidget = [];
     List historArray =FunctionHelper.arrOptDate;
     for(int i=0;i<historArray.length;i++){
@@ -123,31 +123,78 @@ class _ProfileComponentState extends State<ProfileComponent> {
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
-          Padding(
-            padding: scaler.getPadding(1,2),
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  child: Column(
-                    children: <Widget>[
-                      config.MyFont.title(context: context,text:resUserFuture[StringConfig.nama]),
-                      config.MyFont.subtitle(context: context,text:resUserFuture[StringConfig.tlp],fontSize: 9),
-                    ],
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                  ),
-                ),
-                WidgetHelper().myRipple(
-                  callback: (){
-                    WidgetHelper().myModal(context, UploadImageWidget(callback: (e){
-
-                      updateImage({StringConfig.foto:e});
-                    },title: "Ubah foto",));
-                  },
-                  child: WidgetHelper().imageUser(context: context,img: resUserFuture[StringConfig.foto],isUpdate: true)
-                )
-              ],
+          ListTile(
+            leading:  WidgetHelper().myRipple(
+                callback: (){
+                  WidgetHelper().myModal(context, UploadImageWidget(callback: (e){
+                    updateImage({StringConfig.foto:e});
+                  },title: "Ubah foto",));
+                },
+                child: WidgetHelper().imageUser(context: context,img: resUserFuture[StringConfig.foto],isUpdate: true)
+            ),
+            title: config.MyFont.title(context: context,text:resUserFuture[StringConfig.nama]),
+            subtitle: config.MyFont.subtitle(context: context,text:resUserFuture[StringConfig.tlp],fontSize: 9),
+            trailing: WidgetHelper().myRipple(
+                callback: (){
+                  WidgetHelper().myModal(
+                      context,
+                      Container(
+                        height: scaler.getHeight(70),
+                        child: Center(
+                          child: WidgetHelper.qr(context: context,data: resUserFuture[StringConfig.id_user]),
+                        ),
+                      )
+                  );
+                },
+                child: Icon(AntDesign.qrcode)
             ),
           ),
+          // Padding(
+          //   padding: scaler.getPadding(1,2),
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //     crossAxisAlignment: CrossAxisAlignment.center,
+          //     children: <Widget>[
+          //       Expanded(
+          //         child: Row(
+          //           children: [
+          //             WidgetHelper().myRipple(
+          //                 callback: (){
+          //                   WidgetHelper().myModal(context, UploadImageWidget(callback: (e){
+          //                     updateImage({StringConfig.foto:e});
+          //                   },title: "Ubah foto",));
+          //                 },
+          //                 child: WidgetHelper().imageUser(context: context,img: resUserFuture[StringConfig.foto],isUpdate: true)
+          //             ),
+          //             SizedBox(width: scaler.getWidth(2)),
+          //             Column(
+          //               children: <Widget>[
+          //                 config.MyFont.title(context: context,text:resUserFuture[StringConfig.nama]),
+          //                 config.MyFont.subtitle(context: context,text:resUserFuture[StringConfig.tlp],fontSize: 9),
+          //               ],
+          //               crossAxisAlignment: CrossAxisAlignment.start,
+          //             )
+          //           ],
+          //         ),
+          //       ),
+          //       WidgetHelper().myRipple(
+          //         callback: (){
+          //           WidgetHelper().myModal(
+          //               context,
+          //               Container(
+          //                 height: scaler.getHeight(70),
+          //                 child: Center(
+          //                   child: WidgetHelper.qr(context: context,data: ""),
+          //                 ),
+          //               )
+          //           );
+          //         },
+          //         child: Icon(AntDesign.qrcode)
+          //       )
+          //      
+          //     ],
+          //   ),
+          // ),
           Container(
             margin: scaler.getMargin(0,2),
             decoration: BoxDecoration(

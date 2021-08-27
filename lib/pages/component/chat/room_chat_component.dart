@@ -10,6 +10,10 @@ import 'package:miski_shop/helper/user_helper.dart';
 import 'package:miski_shop/helper/widget_helper.dart';
 import 'package:miski_shop/model/ticket/detail_ticket_model.dart';
 import 'package:miski_shop/provider/handle_http.dart';
+import 'package:miski_shop/provider/room_chat_provider.dart';
+import 'package:miski_shop/provider/tenant_provider.dart';
+import 'package:miski_shop/provider/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class RoomChatComponent extends StatefulWidget {
   final Map<String, Object> data;
@@ -19,82 +23,42 @@ class RoomChatComponent extends StatefulWidget {
 }
 
 class _RoomChatComponentState extends State<RoomChatComponent> {
-  Map<String,Object> resTenant;
   final myController = TextEditingController();
   String txtLoading="tulis pesan disini ..";
   List chat=[];
   DetailTicketModel detailTicketModel;
-  bool isLoading=true,isShow=true;
-  String idMember="",namaMember="",imgMember="";
-  Future loadData()async{
-    resTenant = await FunctionHelper().getTenant();
-    idMember = await UserHelper().getDataUser(StringConfig.id_user);
-    imgMember = await UserHelper().getDataUser(StringConfig.foto);
-    namaMember = await UserHelper().getDataUser(StringConfig.nama);
-    final res=await HandleHttp().getProvider("chat/${widget.data["id"]}", detailTicketModelFromJson,context: context);
-    if(res!=null){
-      DetailTicketModel result=res;
-      for(int i=0;i<result.result.detail.length;i++){
-        chat.add({"msg":result.result.detail[i].msg,"id_member":result.result.detail[i].idMember});
-      }
-      isLoading=false;
-      detailTicketModel = DetailTicketModel.fromJson(result.toJson());
-      WidgetsBinding.instance.addPostFrameCallback((_){
-        if (_scrollController.hasClients) {
-          _scrollController.jumpTo(
-            _scrollController.position.maxScrollExtent,
+  bool isShow=true;
 
-          );
-        }
-      });
-      if(this.mounted)this.setState(() {});
 
-    }
-  }
-
-  Future replyTicket()async{
-    final idMember = await UserHelper().getDataUser(StringConfig.id_user);
-    final data={
-      "id_master":widget.data["id"],
-      "id_member":idMember,
-      // "id_user":"543f3d34-a5df-4be1-b667-6ed4e53a84b1",
-      "msg":"${myController.text}"
-    };
-    print(data);
-    await HandleHttp().postProvider("chat/reply", data);
-    myController.text="";
-  }
-  ScrollController _scrollController = new ScrollController();
   @override
   void initState() {
     super.initState();
-    loadData();
 
-
-
+    final tenant = Provider.of<TenantProvider>(context, listen: false);
+    final dataChat = Provider.of<RoomChatProvider>(context, listen: false);
+    final dataUser = Provider.of<UserProvider>(context, listen: false);
+    dataUser.getUserData(context);
+    tenant.read();
+    dataChat.read(context: context,idChat: widget.data["id"]);
   }
 
   @override
   Widget build(BuildContext context) {
     final scaler=config.ScreenScale(context).scaler;
-    print(widget.data);
-    if(WidgetsBinding.instance.window.viewInsets.bottom > 0.0)
-    {
-      //Keyboard is visible.
-      print("visible");
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent*2,
-        duration: Duration(seconds: 10),
+    final tenant = Provider.of<TenantProvider>(context);
+    final dataChat = Provider.of<RoomChatProvider>(context);
+    final dataUser = Provider.of<UserProvider>(context);
+    if(WidgetsBinding.instance.window.viewInsets.bottom > 0.0) {
+      dataChat.scrollController.animateTo(
+        dataChat.scrollController.position.maxScrollExtent*2,
+        duration: Duration(seconds: 1),
         curve: Curves.fastOutSlowIn,
       );
     }
-    else
-    {
-      print("not visible");
-      //Keyboard is not visible.
-    }
+
+    print("ECHO ${dataChat.data.length}");
     return Scaffold(
-      appBar: WidgetHelper().appBarWithButton(context, isLoading?"loading ..":resTenant[StringConfig.namaTenant], (){},<Widget>[
+      appBar: WidgetHelper().appBarWithButton(context, tenant.namaTenant, (){},<Widget>[
         WidgetHelper().iconAppbar(context: context,icon: !isShow?Icons.arrow_drop_down:Icons.close,callback: (){
           this.setState(() {
             isShow=!isShow;
@@ -153,15 +117,14 @@ class _RoomChatComponentState extends State<RoomChatComponent> {
           ),
           Expanded(
             child: ListView.builder(
-              controller: _scrollController,
-              // reverse: false,
+              controller: dataChat.scrollController,
               shrinkWrap: true,
               padding: scaler.getPadding(1,2),
-              itemCount: chat.length,
+              itemCount: dataChat.data.length,
               itemBuilder: (context, index) {
                 return buildContent(
                   context,
-                  chat[index],
+                  dataChat.data[index],
                 );
               },
             )
@@ -184,15 +147,13 @@ class _RoomChatComponentState extends State<RoomChatComponent> {
                   padding: EdgeInsets.only(right: 30),
                   onPressed: ()async{
                     if(myController.text!=""){
-                      setState(() {
-                        chat.insert(chat.length, {"msg":myController.text,"id_member":idMember});
-                      });
-                      _scrollController.animateTo(
-                        _scrollController.position.maxScrollExtent*2,
-                        duration: Duration(seconds: 1),
-                        curve: Curves.fastOutSlowIn,
-                      );
-                      await replyTicket();
+                      final data={
+                        "id_master":widget.data["id"],
+                        "id_member":dataUser.data[StringConfig.id_user],
+                        "msg":myController.text,
+                      };
+                      await dataChat.store(context: context,datas: data);
+                      myController.text="";
                     }
                   },
                   icon: Icon(
@@ -213,20 +174,19 @@ class _RoomChatComponentState extends State<RoomChatComponent> {
   }
 
   Widget buildContent(BuildContext context,var data) {
-    return data["id_member"]==null ? getSentMessageLayout(context,data) : getReceivedMessageLayout(context,data);
-    // return new SizeTransition(
-    //   sizeFactor: new CurvedAnimation(parent: animation, curve: Curves.decelerate),
-    //   child:data["id_member"]!=null ? getSentMessageLayout(context,data) : getReceivedMessageLayout(context,data),
-    // );
+    return data["id_member"]!=null ? getSentMessageLayout(context,data) : getReceivedMessageLayout(context,data);
+
   }
   Widget getSentMessageLayout(context,var data) {
+    final tenant = Provider.of<TenantProvider>(context);
     final scaler=config.ScreenScale(context).scaler;
     return Align(
       alignment: Alignment.centerRight,
       child: Container(
         decoration: BoxDecoration(
-            color: Theme.of(context).focusColor.withOpacity(0.2),
-            borderRadius: BorderRadius.only(topLeft: Radius.circular(15), bottomLeft: Radius.circular(15), bottomRight: Radius.circular(15))),
+          color: Theme.of(context).focusColor.withOpacity(0.2),
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(15), bottomLeft: Radius.circular(15), bottomRight: Radius.circular(15))
+        ),
         padding:scaler.getPadding(0.7,1),
         margin: scaler.getMargin(0.5,0),
         child: Row(
@@ -236,7 +196,7 @@ class _RoomChatComponentState extends State<RoomChatComponent> {
               child: new Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
-                  config.MyFont.subtitle(context: context,text:resTenant[StringConfig.namaTenant],color: Theme.of(context).textTheme.bodyText2.color,fontSize: 8,fontWeight: FontWeight.bold),
+                  config.MyFont.subtitle(context: context,text:tenant.namaTenant,color: Theme.of(context).textTheme.bodyText2.color,fontSize: 8,fontWeight: FontWeight.bold),
                   new Container(
                     child: config.MyFont.subtitle(context: context,text:data["msg"],fontSize: 8,color: Theme.of(context).textTheme.bodyText2.color),
                   ),
@@ -247,16 +207,13 @@ class _RoomChatComponentState extends State<RoomChatComponent> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
                 new Container(
-                    margin: const EdgeInsets.only(left: 8.0),
-                    child: WidgetHelper().baseImage(resTenant[StringConfig.logoTenant],height: scaler.getHeight(3),
-                        width: scaler.getWidth(6),
-                        shape: BoxShape.circle),
-                    // child: new CircleAvatar(
-                    //   backgroundImage: NetworkImage(
-                    //       resTenant[StringConfig.logoTenant],
-                    //
-                    //   ),
-                    // )
+                  margin: const EdgeInsets.only(left: 8.0),
+                  child: WidgetHelper().baseImage(
+                    tenant.logoTenant,
+                    height: scaler.getHeight(3),
+                    width: scaler.getWidth(6),
+                    shape: BoxShape.circle
+                  ),
                 ),
               ],
             ),
@@ -267,14 +224,15 @@ class _RoomChatComponentState extends State<RoomChatComponent> {
   }
 
   Widget getReceivedMessageLayout(context,var data) {
+    final dataUser = Provider.of<UserProvider>(context);
+
     final scaler=config.ScreenScale(context).scaler;
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
         decoration: BoxDecoration(
-            color: Theme.of(context).accentColor,
-            borderRadius: BorderRadius.only(
-                topRight: Radius.circular(15), bottomLeft: Radius.circular(15), bottomRight: Radius.circular(15))),
+          color: Theme.of(context).accentColor,
+          borderRadius: BorderRadius.only(topRight: Radius.circular(15), bottomLeft: Radius.circular(15), bottomRight: Radius.circular(15))),
         padding:scaler.getPadding(0.7,1),
         margin: scaler.getMargin(0.5,0),
         child: Row(
@@ -286,15 +244,16 @@ class _RoomChatComponentState extends State<RoomChatComponent> {
                 new Container(
                     margin: const EdgeInsets.only(right: 8.0),
                     child: new CircleAvatar(
-                      backgroundImage: NetworkImage(imgMember),
-                    )),
+                      backgroundImage: NetworkImage(dataUser.data[StringConfig.foto]),
+                    )
+                ),
               ],
             ),
             new Flexible(
               child: new Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  config.MyFont.subtitle(context: context,text:namaMember,color: Theme.of(context).primaryColor,fontSize: 8,fontWeight: FontWeight.bold),
+                  config.MyFont.subtitle(context: context,text:dataUser.data[StringConfig.nama],color: Theme.of(context).primaryColor,fontSize: 8,fontWeight: FontWeight.bold),
                   new Container(
                     child:config.MyFont.subtitle(context: context,text:data["msg"],color: Theme.of(context).primaryColor,fontSize: 8),
                   ),

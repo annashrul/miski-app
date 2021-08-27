@@ -14,6 +14,7 @@ import 'package:miski_shop/provider/group_provider.dart';
 import 'package:miski_shop/provider/notification_provider.dart';
 import 'package:miski_shop/provider/product_provider.dart';
 import 'package:miski_shop/provider/promo_provider.dart';
+import 'package:miski_shop/provider/room_chat_provider.dart';
 import 'package:miski_shop/provider/slider_provider.dart';
 import 'package:miski_shop/provider/tenant_provider.dart';
 import 'package:miski_shop/provider/user_provider.dart';
@@ -33,6 +34,7 @@ List<SingleChildWidget> providers = [
   ChangeNotifierProvider<ChannelPaymentProvider>(create: (context) => ChannelPaymentProvider()),
   ChangeNotifierProvider<NotificationProvider>(create: (context) => NotificationProvider()),
   ChangeNotifierProvider<ChatProvider>(create: (context) => ChatProvider()),
+  ChangeNotifierProvider<RoomChatProvider>(create: (context) => RoomChatProvider()),
   ChangeNotifierProvider<TenantProvider>(create: (context) => TenantProvider()),
   ChangeNotifierProvider<FavoriteProvider>(create: (context) => FavoriteProvider()),
 ];

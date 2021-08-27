@@ -11,7 +11,6 @@ class ChatProvider with ChangeNotifier{
   bool isLoading=true,isLoadMore=false,isSuccess=true;
   int perPage=StringConfig.perpage;
   ScrollController controller;
-
   Future read(BuildContext context)async{
     if(listTicketModel==null) isLoading=true;
     var res = await HandleHttp().getProvider( "chat?page=1&perpage=$perPage", listTicketModelFromJson,context: context);
@@ -20,7 +19,6 @@ class ChatProvider with ChangeNotifier{
     isLoadMore=false;
     notifyListeners();
   }
-
   Future create(BuildContext context,dataStore)async{
     final data={
       "title":dataStore["title"],
@@ -43,7 +41,6 @@ class ChatProvider with ChangeNotifier{
       notifyListeners();
     }
   }
-
   Future delete(BuildContext context,index) async {
     await HandleHttp().deleteProvider("chat/${listTicketModel.result.data[index].id}", generalFromJson,context: context);
     read(context);
@@ -57,8 +54,6 @@ class ChatProvider with ChangeNotifier{
   void scrollListener({BuildContext context}) {
     if (!isLoading) {
       if (controller.position.pixels == controller.position.maxScrollExtent) {
-        print("bus $perPage");
-        print("bus ${listTicketModel.result.total}");
         if(perPage<int.parse(listTicketModel.result.total)){
           isLoadMore=true;
           perPage+=StringConfig.perpage;
@@ -71,4 +66,9 @@ class ChatProvider with ChangeNotifier{
       }
     }
   }
+
+
+
+
+
 }

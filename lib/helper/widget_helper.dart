@@ -13,10 +13,26 @@ import 'package:miski_shop/config/app_config.dart' as config;
 import 'package:miski_shop/config/string_config.dart';
 import 'package:miski_shop/config/ui_icons.dart';
 import 'package:miski_shop/helper/screen_util_helper.dart';
+import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:touch_ripple_effect/touch_ripple_effect.dart';
 
 class WidgetHelper{
+
+  static qr({BuildContext context,String data}){
+    final scale = config.ScreenScale(context).scaler;
+    print(data);
+    return PrettyQr(
+      image: AssetImage(StringConfig.localAssets+"ic_launcher.png"),
+      typeNumber: 3,
+      size: scale.getHeight(30),
+      data: data,
+      errorCorrectLevel: 1,
+      roundEdges: true,
+      elementColor: config.Colors.mainColors,
+    );
+  }
+
   animShakeWidget(BuildContext context,Widget child,{bool enable=true}){
 
     return ShakeAnimatedWidget(
@@ -501,9 +517,12 @@ class WidgetHelper{
     return Stack(
       alignment: Alignment.bottomRight,
       children: [
-        baseImage(img, height: scaler.getHeight(2), width: scaler.getWidth(5),shape: BoxShape.circle),
+        CircleAvatar(
+            radius: 20,
+            backgroundImage: NetworkImage(img)
+        ),
+        // baseImage(img, height: scaler.getHeight(3), width: scaler.getWidth(6),shape: BoxShape.circle),
         if(isUpdate)Icon(Icons.camera_alt,size: 10,)
-        // icons(ctx: context,icon: UiIcons.download)
       ],
     );
   }
