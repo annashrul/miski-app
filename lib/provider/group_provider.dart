@@ -16,7 +16,6 @@ class GroupProvider with ChangeNotifier{
     if(listGroupProductModel==null) isLoading=true;
     final res = await HandleHttp().getProvider("kelompok?page=1&perpage=50",listGroupProductModelFromJson,context: context);
     listGroupProductModel = ListGroupProductModel.fromJson(res.toJson());
-
     isLoading=false;
     notifyListeners();
   }

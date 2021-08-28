@@ -28,7 +28,6 @@ import 'package:miski_shop/pages/widget/product/detail/detail_product_widget.dar
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final args = settings.arguments;
-    print(args);
     switch (settings.name) {
       case '/':
         return CupertinoPageRoute(builder: (_) => SplashScreenComponent());

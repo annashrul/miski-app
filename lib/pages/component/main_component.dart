@@ -13,6 +13,7 @@ import 'package:miski_shop/pages/component/home/home_component.dart';
 import 'package:miski_shop/pages/component/notification/notification_component.dart';
 import 'package:miski_shop/pages/component/profile/profile_component.dart';
 import 'package:miski_shop/pages/widget/drawer_widget.dart';
+import 'package:miski_shop/provider/auth_provider.dart';
 import 'package:miski_shop/provider/cart_provider.dart';
 import 'package:miski_shop/provider/tenant_provider.dart';
 import 'package:miski_shop/provider/user_provider.dart';
@@ -46,6 +47,8 @@ class _MainComponentState extends State<MainComponent> {
     user.getUserData(context);
     final tenant = Provider.of<TenantProvider>(context, listen: false);
     tenant.read();
+    final auth = Provider.of<AuthProvider>(context, listen: false);
+    auth.checkTokenExp(context: context);
   }
 
   @override
@@ -57,6 +60,8 @@ class _MainComponentState extends State<MainComponent> {
 
 
   void _selectTab(int tabItem) {
+    final auth = Provider.of<AuthProvider>(context, listen: false);
+    auth.checkTokenExp(context: context);
     setState(() {
       widget.currentTab = tabItem;
       widget.selectedTab = tabItem;
@@ -89,6 +94,7 @@ class _MainComponentState extends State<MainComponent> {
   Widget build(BuildContext context) {
     final scaler = config.ScreenScale(context).scaler;
     final cart = Provider.of<CartProvider>(context);
+
     return WillPopScope(
         child: Scaffold(
           key: _scaffoldKey,

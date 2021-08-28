@@ -5,6 +5,9 @@ import 'package:miski_shop/config/string_config.dart';
 import 'package:miski_shop/helper/database_helper.dart';
 import 'package:miski_shop/helper/function_helper.dart';
 import 'package:miski_shop/helper/user_helper.dart';
+import 'package:miski_shop/helper/widget_helper.dart';
+import 'package:miski_shop/provider/auth_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreenComponent extends StatefulWidget {
@@ -35,44 +38,31 @@ class _SplashScreenComponentState extends State<SplashScreenComponent> {
       sess.setBool(StringConfig.isTenant, false);
     }
     if (countTable == 0) {
-      Navigator.pushNamedAndRemoveUntil(
-          context, "/${StringConfig.onBoarding}", (route) => false);
-      print(
-          '##################### USER BARU INSTALL APLIKASI ######################');
+      Navigator.pushNamedAndRemoveUntil(context, "/${StringConfig.onBoarding}", (route) => false);
+      print( '##################### USER BARU INSTALL APLIKASI ######################');
     } else {
       final onBoarding = await userHelper.getDataUser(StringConfig.onboarding);
       final isLogin = await userHelper.getDataUser(StringConfig.is_login);
-
       print("onboarding $onBoarding");
       print("onboarding $isLogin");
-
       if (onBoarding == null && isLogin == null) {
-        Navigator.pushNamedAndRemoveUntil(
-            context, "/${StringConfig.onBoarding}", (route) => false);
-        print(
-            '##################### USER SUDAH INSTALL APLIKASI DAN BELUM LOGIN ######################');
+        Navigator.pushNamedAndRemoveUntil(context, "/${StringConfig.onBoarding}", (route) => false);
+        print( '##################### USER SUDAH INSTALL APLIKASI DAN BELUM LOGIN ######################');
       } else {
         if (onBoarding == '0' && isLogin == '0') {
-          // if(onBoarding!='0'&&isLogin!='0'){
-          Navigator.pushNamedAndRemoveUntil(
-              context, "/${StringConfig.onBoarding}", (route) => false);
-          print(
-              '##################### USER SUDAH INSTALL APLIKASI DAN BELUM LOGIN ######################');
+          Navigator.pushNamedAndRemoveUntil(context, "/${StringConfig.onBoarding}", (route) => false);
+          print('##################### USER SUDAH INSTALL APLIKASI DAN BELUM LOGIN ######################');
         } else if (onBoarding == '1' && isLogin == '0') {
           // else if(onBoarding!='1'&&isLogin!='0'){
-          Navigator.pushNamedAndRemoveUntil(
-              context, "/${StringConfig.signIn}", (route) => false);
-          print(
-              '##################### USER MELAKUKAN LOGOUT DAN KEMBALI BUKA APLIKASI ######################');
+          Navigator.pushNamedAndRemoveUntil(context, "/${StringConfig.signIn}", (route) => false);
+          print('##################### USER MELAKUKAN LOGOUT DAN KEMBALI BUKA APLIKASI ######################');
         } else {
-          print(
-              '##################### USER MASUK KEHALAMAN UTAMA APLIKASI ######################');
-          Navigator.pushNamedAndRemoveUntil(
-              context, "/${StringConfig.main}", (route) => false,
-              arguments: StringConfig.defaultTab);
+          print( '##################### USER MASUK KEHALAMAN UTAMA APLIKASI ######################');
+          Navigator.pushNamedAndRemoveUntil(context, "/${StringConfig.main}", (route) => false,arguments: StringConfig.defaultTab);
         }
       }
     }
+
   }
 
   AssetImage assetImage;
@@ -81,6 +71,7 @@ class _SplashScreenComponentState extends State<SplashScreenComponent> {
     super.initState();
     loadData();
     assetImage = AssetImage("${StringConfig.localAssets}ic_launcher.png");
+    Provider.of<AuthProvider>(context, listen: false);
   }
 
  
@@ -93,6 +84,8 @@ class _SplashScreenComponentState extends State<SplashScreenComponent> {
 
   @override
   Widget build(BuildContext context) {
+    final auth = Provider.of<AuthProvider>(context);
+    auth.checkTokenExp(context: context);
     return Scaffold(
       body: Container(
         alignment: Alignment.center,

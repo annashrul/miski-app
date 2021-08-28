@@ -11,6 +11,8 @@ import 'package:miski_shop/pages/widget/checkout/modal_kurir_widget.dart';
 import 'package:miski_shop/pages/widget/checkout/modal_layanan_widget.dart';
 import 'package:miski_shop/provider/handle_http.dart';
 
+import 'modal_voucher_widget.dart';
+
 class SectionShippingWidget extends StatefulWidget {
   final Map<String, Object> address;
   final dynamic index;
@@ -81,7 +83,7 @@ class _SectionShippingWidgetState extends State<SectionShippingWidget> {
           },loading: widget.isLoading["layanan"]),
           SizedBox(height: scaler.getHeight(0.5)),
           jasaPengiriman(context,"Gunakan voucher", codePromo, (){
-            WidgetHelper().myModal(context, ModalVoucher(callback: (data){
+            WidgetHelper().myModal(context, ModalVoucherWidget(callback: (data){
               this.setState(() {codePromo=data["kode"];});
               widget.callback(0,data);
             }));
@@ -116,70 +118,4 @@ class _SectionShippingWidgetState extends State<SectionShippingWidget> {
 }
 
 
-class ModalVoucher extends StatefulWidget {
-  final Function(dynamic data) callback;
-  ModalVoucher({this.callback});
-  @override
-  _ModalVoucherState createState() => _ModalVoucherState();
-}
-
-class _ModalVoucherState extends State<ModalVoucher> {
-  TextEditingController codeController = TextEditingController();
-  final FocusNode codeFocus = FocusNode();
-
-  DetailGlobalPromoModel detailGlobalPromoModel;
-  Future checkPromo()async{
-    if(codeController.text==""){
-      codeFocus.requestFocus();
-      return;
-    }
-    final tenant=await FunctionHelper().getTenant();
-    WidgetHelper().loadingDialog(context);
-    final res=await HandleHttp().getProvider("promo/check/${codeController.text}/${tenant[StringConfig.idTenant]}",null,context: context);
-    // final res=await HandleHttp().getProvider("promo/check/W1K2GEUP/${tenant[StringConfig.idTenant]}",null,context: context);
-    Navigator.pop(context);
-    if(res!=null){
-      final result=jsonDecode(res);
-      widget.callback({"kode":result["result"]["kode"],"disc":result["result"]["disc"],"max_disc":result["result"]["max_disc"]});
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final scaler = config.ScreenScale(context).scaler;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Padding(
-            padding: scaler.getPadding(1,2),
-            child:Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    WidgetHelper().titleQ(context, "masukan kode voucher",icon: UiIcons.information,fontSize: 9,callback: (){}),
-                    WidgetHelper().myRipple(
-                      callback: (){checkPromo();},
-                      child: config.MyFont.title(context: context,text:"kirim",color: config.Colors.mainColors,fontSize: 9)
-                    )
-                  ],
-                ),
-                Divider(),
-                WidgetHelper().field(
-                  context: context,
-                  title: "masukan kode voucher disini ..",
-                  textEditingController: codeController,
-                  focusNode: codeFocus,
-                  submited: (e){
-                    checkPromo();
-                  }
-                )
-              ],
-            )
-        ),
-      ],
-    );
-  }
-}
 

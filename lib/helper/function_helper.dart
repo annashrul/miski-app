@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:miski_shop/config/database_config.dart';
 import 'package:miski_shop/config/string_config.dart' as config;
+import 'package:miski_shop/config/string_config.dart';
 import 'package:miski_shop/helper/database_helper.dart';
 import 'package:miski_shop/helper/user_helper.dart';
 import 'package:miski_shop/helper/widget_helper.dart';
@@ -18,6 +19,7 @@ import 'package:miski_shop/pages/component/auth/signin_component.dart';
 import 'package:miski_shop/provider/base_provider.dart';
 import 'package:miski_shop/provider/handle_http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 class FunctionHelper{
   final userRepository = UserHelper();
@@ -35,6 +37,14 @@ class FunctionHelper{
   static copy(BuildContext context,data){
     Clipboard.setData(new ClipboardData(text: data));
     WidgetHelper().showFloatingFlushbar(context,"success","data berhasil disalin");
+  }
+  Future checkTokenExp()async{
+    final token = await UserHelper().getDataUser(StringConfig.token);
+    Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+    bool isTokenExpired = JwtDecoder.isExpired(token);
+    print("####################### PAYLOAD TOKEN $isTokenExpired ########################################");
+    return isTokenExpired;
+
   }
 
 

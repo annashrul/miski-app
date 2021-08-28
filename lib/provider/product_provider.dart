@@ -90,6 +90,7 @@ class ProductProvider with ChangeNotifier{
     }
   }
   void scrollListener({BuildContext context}) {
+    print("scroll");
     if (!isLoading) {
       if (controller.position.pixels == controller.position.maxScrollExtent) {
         loadMore(context);

@@ -6,6 +6,7 @@ import 'package:miski_shop/config/database_config.dart';
 import 'package:miski_shop/config/string_config.dart';
 import 'package:miski_shop/model/cart/cart_model.dart';
 import 'package:miski_shop/provider/address_provider.dart';
+import 'package:miski_shop/provider/auth_provider.dart';
 import 'package:miski_shop/provider/cart_provider.dart';
 import 'package:miski_shop/provider/channel_payment_provider.dart';
 import 'package:miski_shop/provider/chat_provider.dart';
@@ -24,6 +25,7 @@ import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
 List<SingleChildWidget> providers = [
+  ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
   ChangeNotifierProvider<ProductProvider>(create: (_) => ProductProvider()),
   ChangeNotifierProvider<SliderProvider>(create: (_) => SliderProvider()),
   ChangeNotifierProvider<PromoProvider>(create: (_) => PromoProvider()),

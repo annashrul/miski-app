@@ -39,16 +39,20 @@ class _PromoHomeWidgetState extends State<PromoHomeWidget> {
                 scrollDirection: Axis.horizontal,
                 itemCount: promo.globalPromoModel.result.data.length ,
                 itemBuilder: (context, index){
-
                   return Container(
                     margin: scaler.getMarginLTRB(index==0?0:2, 0,index+1==promo.globalPromoModel.result.data.length?2:0, 0),
                     child: WidgetHelper().myRipple(
                         callback: (){
-                          WidgetHelper().myPush(context,DetailPromoWidget(data: {
-                            "id":promo.globalPromoModel.result.data[index].id,
-                            "image":promo.globalPromoModel.result.data[index].gambar,
-                            "hero":"promo_image_${promo.globalPromoModel.result.data[index].id}",
-                          },));
+                          WidgetHelper().myPush(
+                            context,
+                            DetailPromoWidget(
+                              data: {
+                                "id":promo.globalPromoModel.result.data[index].id,
+                                "image":promo.globalPromoModel.result.data[index].gambar,
+                                "hero":"promo_image_${promo.globalPromoModel.result.data[index].id}",
+                              }
+                            )
+                          );
                         },
                         child: Container(
                           padding: scaler.getPadding(0, 0),
@@ -56,9 +60,9 @@ class _PromoHomeWidgetState extends State<PromoHomeWidget> {
                           child: Hero(
                             tag:"promo_image_${promo.globalPromoModel.result.data[index].id}"+promo.globalPromoModel.result.data[index].id,
                             child: WidgetHelper().baseImage(
-                                promo.globalPromoModel.result.data[index].gambar,
-                                width: MediaQuery.of(context).size.width / 1.2,
-                                fit: BoxFit.cover
+                              promo.globalPromoModel.result.data[index].gambar,
+                              width: MediaQuery.of(context).size.width / 1.2,
+                              fit: BoxFit.cover
                             ),
                           ),
                         )

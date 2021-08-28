@@ -39,7 +39,6 @@ class _CategoryComponentState extends State<CategoryComponent> {
     // }
   }
   Future loadData()async{
-
     final resCategory=await HandleHttp().getProvider("kategori?page=1&status=1&perpage=50",listCategoryProductModelFromJson,context: context);
     if(resCategory!=null){
       if(resCategory==StringConfig.errNoData) return;

@@ -65,8 +65,7 @@ class _CategoryProductTabWidgetState extends State<CategoryProductTabWidget> {
               ],
             ),
           ),
-
-         Offstage(
+          Offstage(
             offstage: this.layout != 'list' || widget.listProductTenantModel.result.data.isEmpty,
             child: ListView.separated(
               padding: scaler.getPadding(1,2),
@@ -122,7 +121,7 @@ class _CategoryProductTabWidgetState extends State<CategoryProductTabWidget> {
               ),
             ),
           ),
-         Offstage(
+          Offstage(
             offstage: widget.listProductTenantModel.result.data.isNotEmpty,
             child: EmptyDataWidget(
               iconData: UiIcons.box,
