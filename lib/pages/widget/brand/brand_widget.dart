@@ -40,7 +40,6 @@ class _BrandWidgetState extends State<BrandWidget> {
   @override
   Widget build(BuildContext context) {
     final scaler = config.ScreenScale(context).scaler;
-
     return isLoading?LoadingProductTenant(tot: 10):listBrandProductModel.result.data.length<1?EmptyDataWidget(
       iconData: UiIcons.folder,
       title: StringConfig.noData,
@@ -81,12 +80,13 @@ class _BrandWidgetState extends State<BrandWidget> {
                     gradient: LinearGradient(begin: Alignment.bottomLeft, end: Alignment.topRight, colors:col)),
                 child: Hero(
                   tag: "brand$index",
-                  child: SvgPicture.network(
-                    image,
-                    color: Theme.of(context).primaryColor,
-                    width: scaler.getWidth(16),
-                    placeholderBuilder: (context) => Icon(Icons.error),
-                  ),
+                  child: WidgetHelper().baseImage(image,width: scaler.getWidth(16)),
+                  // child: SvgPicture.network(
+                  //   image,
+                  //   color: Theme.of(context).primaryColor,
+                  //   width: scaler.getWidth(16),
+                  //   placeholderBuilder: (context) => Icon(Icons.error),
+                  // ),
                 ),
               ),
               Positioned(
@@ -114,7 +114,7 @@ class _BrandWidgetState extends State<BrandWidget> {
                 ),
               ),
               Container(
-                margin:scaler.getMarginLTRB(0, 7, 0, 1),
+                margin:scaler.getMarginLTRB(0, 8, 0, 1),
                 padding: scaler.getPadding(0.5,1.5),
                 width: scaler.getWidth(30),
                 height: scaler.getHeight(6),

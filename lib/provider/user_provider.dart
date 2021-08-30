@@ -20,7 +20,6 @@ Future loadData( ) async {
     StringConfig.email:email,
     StringConfig.jenis_kelamin:gender,
     StringConfig.tgl_ultah:"$tempDate".substring(0,10),
-
   };
   return data;
 }

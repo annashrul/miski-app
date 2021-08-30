@@ -43,6 +43,8 @@ class _HomeComponentState extends State<HomeComponent>{
     group.read(context);
     product.read(context: context);
     product.controller = new ScrollController()..addListener(product.scrollListener);
+    // product.setGroup("");
+    // product.setQ("");
   }
   @override
   void dispose() {
@@ -68,6 +70,7 @@ class _HomeComponentState extends State<HomeComponent>{
                   Padding(
                     padding: scaler.getPadding(0,2),
                     child: SearchBarWidget(callback: (e){
+                      product.isLoading=true;
                       product.setQ(e);
                       product.read(context: context);
                     }),
@@ -82,9 +85,17 @@ class _HomeComponentState extends State<HomeComponent>{
                       heroTag: 'home_categories_1',
                       data: group.listGroupProductModel,
                       onChanged: (id) {
-                        product.perPage=StringConfig.perpage;
-                        product.setGroup(id);
-                        product.read(context: context);
+
+                        if(id==""){
+                          product.perPage=StringConfig.perpage;
+                          product.setGroup("");
+                          product.setQ("");
+                          product.read(context: context);
+                        }else{
+                          product.perPage=StringConfig.perpage;
+                          product.setGroup(id);
+                          product.read(context: context);
+                        }
                       }
                     ):SizedBox(),
                     content:Container(

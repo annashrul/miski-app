@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:miski_shop/config/app_config.dart' as config;
 import 'package:miski_shop/config/ui_icons.dart';
 import 'package:miski_shop/helper/home/function_home.dart';
+import 'package:miski_shop/helper/widget_helper.dart';
 import 'package:miski_shop/model/tenant/list_product_tenant_model.dart';
 import 'package:miski_shop/pages/widget/category_product_tab_widget.dart';
 import '../../empty_widget.dart';
@@ -100,10 +101,11 @@ class _ProductByCategoryState extends State<ProductByCategory> with SingleTicker
                     children: <Widget>[
                       Hero(
                         tag: "categoryImage${widget.data["id"]}",
-                        child: SvgPicture.network(
-                          widget.data["image"],height: scaler.getHeight(2.5),
-                          placeholderBuilder: (context) => Icon(Icons.error),
-                        ),
+                        child:WidgetHelper().baseImage(widget.data["image"],height: scaler.getHeight(2.5))
+                        // child: SvgPicture.network(
+                        //   widget.data["image"],height: scaler.getHeight(2.5),
+                        //   placeholderBuilder: (context) => Icon(Icons.error),
+                        // ),
                       ),
 
                       SizedBox(height: 5),

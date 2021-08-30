@@ -44,6 +44,7 @@ class _BrandProductTabWidgetState extends State<BrandProductTabWidget> {
           productPrice: res.harga,
           productSales: res.stockSales,
           productRate: res.rating,
+          productStock: res.stock,
           heroTag: 'brand_products_grid_${res.id}',
           callback: (){
             // widget.callback("norefresh");

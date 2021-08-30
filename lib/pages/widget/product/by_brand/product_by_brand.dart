@@ -94,14 +94,15 @@ class _ProductByBrandState extends State<ProductByBrand> with SingleTickerProvid
                   child: Center(
                     child: Hero(
                       tag: widget.data["hero"],
-                      child: SvgPicture.network(
-
-                        widget.data["image"],
-                        // StringConfig.imageProduct,
-                        color: Theme.of(context).primaryColor,
-                        width: 130,
-                        placeholderBuilder: (context) => Icon(Icons.error),
-                      ),
+                      child:WidgetHelper().baseImage(widget.data["image"],width: scaler.getWidth(23))
+                      // child: SvgPicture.network(
+                      //
+                      //   widget.data["image"],
+                      //   // StringConfig.imageProduct,
+                      //   color: Theme.of(context).primaryColor,
+                      //   width: 130,
+                      //   placeholderBuilder: (context) => Icon(Icons.error),
+                      // ),
                     ),
                   ),
                 ),

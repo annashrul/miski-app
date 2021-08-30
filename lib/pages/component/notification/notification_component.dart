@@ -31,36 +31,35 @@ class _NotificationComponentState extends State<NotificationComponent> {
     final notif = Provider.of<NotificationProvider>(context, listen: false);
     notif.controller.removeListener(notif.scrollListener);
   }
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     final scaler=config.ScreenScale(context).scaler;
     final notif = Provider.of<NotificationProvider>(context);
 
-    return Scaffold(
-      body: SingleChildScrollView(
-        controller: notif.controller,
-        child: Column(
-          children: <Widget>[
-            notif.isLoading?Padding(padding: scaler.getPadding(0,2),child: LoadingCart(total:7)):notif.listNotificationModel.result.data.length<1?EmptyDataWidget(
-              iconData: UiIcons.bell,
-              title: StringConfig.noData,
-              isFunction: false,
-            ):ListView.separated(
-              padding: scaler.getPadding(1, 2),
-              shrinkWrap: true,
-              primary: false,
-              itemCount: notif.listNotificationModel.result.data.length,
-              separatorBuilder: (context, index) {
-                return SizedBox(height: 7);
-              },
-              itemBuilder: (context, index) {
-                return buildItem(context: context,index: index);
-              },
-            ),
-            notif.isLoadMore?Padding(padding: scaler.getPadding(0,2),child: LoadingCart(total:1)):SizedBox()
-          ],
-        ),
+    return SingleChildScrollView(
+      controller: notif.controller,
+      child: Column(
+        children: <Widget>[
+          notif.isLoading?Padding(padding: scaler.getPadding(0,2),child: LoadingCart(total:7)):notif.listNotificationModel.result.data.length<1?EmptyDataWidget(
+            iconData: UiIcons.bell,
+            title: StringConfig.noData,
+            isFunction: false,
+          ):ListView.separated(
+            padding: scaler.getPadding(1, 2),
+            shrinkWrap: true,
+            primary: false,
+            itemCount: notif.listNotificationModel.result.data.length,
+            separatorBuilder: (context, index) {
+              return SizedBox(height: 7);
+            },
+            itemBuilder: (context, index) {
+              return buildItem(context: context,index: index);
+            },
+          ),
+          notif.isLoadMore?Padding(padding: scaler.getPadding(0,2),child: LoadingCart(total:1)):SizedBox()
+        ],
       ),
     );
   }

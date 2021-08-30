@@ -147,40 +147,38 @@ class _SuccessCheckoutVirtualAccountComponentState extends State<SuccessCheckout
                   ],
                 ),
               ),
-              Expanded(
-                child: ListView.builder(
-                    padding: EdgeInsets.all(0.0),
-                    shrinkWrap: true,
-                    scrollDirection: Axis.vertical,
-                    physics: ScrollPhysics(),
-                    itemCount: widget.detailCheckoutVirtualAccountModel.result.instruction.length,
-                    itemBuilder: (context,index){
-                      final resParent= widget.detailCheckoutVirtualAccountModel.result.instruction[index];
-                      return GFAccordion(
-                          contentBorderRadius: BorderRadius.only(bottomRight: Radius.circular(10),bottomLeft:Radius.circular(10)),
-                          textStyle: config.MyFont.style(context: context,style: Theme.of(context).textTheme.headline1),
-                          collapsedTitleBackgroundColor:config.Colors.secondColors,
-                          contentBackgroundColor:Colors.transparent ,
-                          expandedTitleBackgroundColor: config.Colors.secondColors,
-                          titleChild: config.MyFont.subtitle(context: context,text:resParent.title,color: config.Colors.secondDarkColors),
-                          contentChild: ListView.separated(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.vertical,
-                            physics: ScrollPhysics(),
-                            itemCount: resParent.steps.length,
-                            itemBuilder: (c,i){
-                              final resChild=resParent.steps[i];
-                              return Html(
-                                data: resChild,
-                                defaultTextStyle: config.MyFont.style(context: context,color:Theme.of(context).textTheme.caption.color,style: Theme.of(context).textTheme.subtitle1,fontWeight: FontWeight.normal),
-                                onLinkTap: (String url){},
-                              );
-                            },
-                            separatorBuilder: (c,i){return Divider(color:Theme.of(context).textTheme.caption.color);},
-                          )
-                      );
-                    }
-                ),
+              ListView.builder(
+                  padding: EdgeInsets.all(0.0),
+                  shrinkWrap: true,
+                  scrollDirection: Axis.vertical,
+                  physics: ScrollPhysics(),
+                  itemCount: widget.detailCheckoutVirtualAccountModel.result.instruction.length,
+                  itemBuilder: (context,index){
+                    final resParent= widget.detailCheckoutVirtualAccountModel.result.instruction[index];
+                    return GFAccordion(
+                        contentBorderRadius: BorderRadius.only(bottomRight: Radius.circular(10),bottomLeft:Radius.circular(10)),
+                        textStyle: config.MyFont.style(context: context,style: Theme.of(context).textTheme.headline1),
+                        collapsedTitleBackgroundColor:config.Colors.secondColors,
+                        contentBackgroundColor:Colors.transparent ,
+                        expandedTitleBackgroundColor: config.Colors.secondColors,
+                        titleChild: config.MyFont.subtitle(context: context,text:resParent.title,color: config.Colors.secondDarkColors),
+                        contentChild: ListView.separated(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.vertical,
+                          physics: ScrollPhysics(),
+                          itemCount: resParent.steps.length,
+                          itemBuilder: (c,i){
+                            final resChild=resParent.steps[i];
+                            return Html(
+                              data: resChild,
+                              defaultTextStyle: config.MyFont.style(context: context,color:Theme.of(context).textTheme.caption.color,style: Theme.of(context).textTheme.subtitle1,fontWeight: FontWeight.normal),
+                              onLinkTap: (String url){},
+                            );
+                          },
+                          separatorBuilder: (c,i){return Divider(color:Theme.of(context).textTheme.caption.color);},
+                        )
+                    );
+                  }
               ),
               Padding(
                 padding: scale.getPadding(1,2),

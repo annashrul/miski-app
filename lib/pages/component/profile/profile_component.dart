@@ -149,52 +149,6 @@ class _ProfileComponentState extends State<ProfileComponent> {
                 child: Icon(AntDesign.qrcode)
             ),
           ),
-          // Padding(
-          //   padding: scaler.getPadding(1,2),
-          //   child: Row(
-          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //     crossAxisAlignment: CrossAxisAlignment.center,
-          //     children: <Widget>[
-          //       Expanded(
-          //         child: Row(
-          //           children: [
-          //             WidgetHelper().myRipple(
-          //                 callback: (){
-          //                   WidgetHelper().myModal(context, UploadImageWidget(callback: (e){
-          //                     updateImage({StringConfig.foto:e});
-          //                   },title: "Ubah foto",));
-          //                 },
-          //                 child: WidgetHelper().imageUser(context: context,img: resUserFuture[StringConfig.foto],isUpdate: true)
-          //             ),
-          //             SizedBox(width: scaler.getWidth(2)),
-          //             Column(
-          //               children: <Widget>[
-          //                 config.MyFont.title(context: context,text:resUserFuture[StringConfig.nama]),
-          //                 config.MyFont.subtitle(context: context,text:resUserFuture[StringConfig.tlp],fontSize: 9),
-          //               ],
-          //               crossAxisAlignment: CrossAxisAlignment.start,
-          //             )
-          //           ],
-          //         ),
-          //       ),
-          //       WidgetHelper().myRipple(
-          //         callback: (){
-          //           WidgetHelper().myModal(
-          //               context,
-          //               Container(
-          //                 height: scaler.getHeight(70),
-          //                 child: Center(
-          //                   child: WidgetHelper.qr(context: context,data: ""),
-          //                 ),
-          //               )
-          //           );
-          //         },
-          //         child: Icon(AntDesign.qrcode)
-          //       )
-          //      
-          //     ],
-          //   ),
-          // ),
           Container(
             margin: scaler.getMargin(0,2),
             decoration: BoxDecoration(

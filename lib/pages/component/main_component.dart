@@ -58,7 +58,6 @@ class _MainComponentState extends State<MainComponent> {
     print("didUpdateWidget");
   }
 
-
   void _selectTab(int tabItem) {
     final auth = Provider.of<AuthProvider>(context, listen: false);
     auth.checkTokenExp(context: context);
@@ -94,7 +93,6 @@ class _MainComponentState extends State<MainComponent> {
   Widget build(BuildContext context) {
     final scaler = config.ScreenScale(context).scaler;
     final cart = Provider.of<CartProvider>(context);
-
     return WillPopScope(
         child: Scaffold(
           key: _scaffoldKey,
@@ -185,7 +183,7 @@ class _MainComponentState extends State<MainComponent> {
   Future<bool> _onWillPop() async {
     // return WidgetHelper().showFloatingFlushbar(context, "success", "desc");
     return (
-    WidgetHelper().notifDialog(context,"Information", "tekan oke untuk keluar",()=>Navigator.of(context).pop(false), ()=>SystemNavigator.pop())
+    WidgetHelper().notifDialog(context,"Information", "tekan oke untuk keluar",()=>Navigator.of(context).pop(), ()=>SystemNavigator.pop())
         // UserRepository().notifAlertQ(context, "info ", "Keluar", "Kamu yakin akan keluar dari aplikasi ?", "Ya", "Batal", ()=>SystemNavigator.pop(), ()=>Navigator.of(context).pop(false))
     ) ?? false;
   }

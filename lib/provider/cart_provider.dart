@@ -13,7 +13,7 @@ class CartProvider with ChangeNotifier {
   CartModel get dataCart => cart;
   int subtotal =  0,qtyPerProduct=0;
   bool loading = false,isError=false,isActiveCart=false;
-  getCartData(BuildContext context,{loading=true}) async {
+  getCartData(BuildContext context) async {
     isError=false;
     if(cart==null)loading=true;
     final tenant = await FunctionHelper().getTenant();
@@ -37,7 +37,7 @@ class CartProvider with ChangeNotifier {
     final tenant = await FunctionHelper().getTenant();
     var url=param=='all'?'cart/${tenant[StringConfig.idTenant]}?all=true':'cart/$id';
     await HandleHttp().deleteProvider(url, generalFromJson,context: context);
-    getCartData(context,loading: false);
+    getCartData(context);
     notifyListeners();
 
   }
@@ -61,7 +61,7 @@ class CartProvider with ChangeNotifier {
       data["harga_sub_varian"],
     );
     Navigator.pop(context);
-    getCartData(context,loading: false);
+    getCartData(context);
     qtyPerProduct = int.parse(data["qty"].toString());
     subtotal = int.parse(data["harga"])*int.parse(data["qty"].toString());
     notifyListeners();

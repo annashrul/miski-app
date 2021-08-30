@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:miski_shop/config/app_config.dart' as config;
@@ -136,12 +137,13 @@ class _CategoryIconWidgetState extends State<CategoryIconWidget> with SingleTick
               vsync: this,
               child:Hero(
                 tag: widget.heroTag + widget.data.id,
-                child: SvgPicture.network(
-                  widget.data.image,
-                  color: widget.data.selected ? Theme.of(context).accentColor : Theme.of(context).primaryColor,
-                  width: scaler.getWidth(12),
-                  placeholderBuilder: (context) => Icon(Icons.error),
-                ),
+                child:WidgetHelper().baseImage(widget.data.image,fit: BoxFit.cover)
+                // child: SvgPicture.network(
+                //   widget.data.image,
+                //   color: widget.data.selected ? Theme.of(context).accentColor : Theme.of(context).primaryColor,
+                //   width: scaler.getWidth(12),
+                //   placeholderBuilder: (context) => Icon(Icons.error),
+                // ),
               ),
             )
           ],
