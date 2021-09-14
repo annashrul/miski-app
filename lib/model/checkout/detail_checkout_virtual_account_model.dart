@@ -46,15 +46,15 @@ class Result {
     this.instruction,
   });
 
-  String invoiceNo;
-  String paymentMethod;
-  String paymentName;
-  int amount;
-  int admin;
-  int totalPay;
+  dynamic invoiceNo;
+  dynamic paymentMethod;
+  dynamic paymentName;
+  dynamic amount;
+  dynamic admin;
+  dynamic totalPay;
   dynamic payCode;
   DateTime expiredDate;
-  String expiredTime;
+  dynamic expiredTime;
   List<Instruction> instruction;
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
@@ -90,7 +90,7 @@ class Instruction {
     this.steps,
   });
 
-  String title;
+  dynamic title;
   List<String> steps;
 
   factory Instruction.fromJson(Map<String, dynamic> json) => Instruction(

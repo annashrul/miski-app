@@ -4,8 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:miski_shop/config/app_config.dart' as config;
+import 'package:miski_shop/config/database_config.dart';
 import 'package:miski_shop/config/string_config.dart';
 import 'package:miski_shop/config/ui_icons.dart';
+import 'package:miski_shop/helper/database_helper.dart';
+import 'package:miski_shop/helper/function_helper.dart';
+import 'package:miski_shop/helper/user_helper.dart';
 import 'package:miski_shop/helper/widget_helper.dart';
 import 'package:miski_shop/pages/component/chat/chat_component.dart';
 import 'package:miski_shop/pages/component/favorite/favorite_component.dart';
@@ -18,6 +22,8 @@ import 'package:miski_shop/provider/cart_provider.dart';
 import 'package:miski_shop/provider/tenant_provider.dart';
 import 'package:miski_shop/provider/user_provider.dart';
 import 'package:provider/provider.dart';
+
+import 'auth/signin_component.dart';
 
 // ignore: must_be_immutable
 class MainComponent extends StatefulWidget {
@@ -59,8 +65,7 @@ class _MainComponentState extends State<MainComponent> {
   }
 
   void _selectTab(int tabItem) {
-    final auth = Provider.of<AuthProvider>(context, listen: false);
-    auth.checkTokenExp(context: context);
+
     setState(() {
       widget.currentTab = tabItem;
       widget.selectedTab = tabItem;
@@ -136,8 +141,19 @@ class _MainComponentState extends State<MainComponent> {
             selectedItemColor: Theme.of(context).accentColor,
             unselectedItemColor: Theme.of(context).hintColor.withOpacity(1),
             currentIndex: widget.currentTab,
-            onTap: (int i) {
-              this._selectTab(i);
+            onTap: (int i) async{
+              final checkToken = await FunctionHelper().checkTokenExp();
+              if(checkToken){
+                WidgetHelper().notifOneBtnDialog(context, "Perhatian !!", "Maaf, anda harus login ulang demi keamanan aplikasi", ()async{
+                  await FunctionHelper().processLogout(context);
+                });
+                Future.delayed(Duration(seconds: 2)).whenComplete(()async{
+                  await FunctionHelper().processLogout(context);
+                  print("KELUAR APLIKASI ###############################");
+                });
+              }else{
+                this._selectTab(i);
+              }
             },
             // this will be set when a new tab is tapped
             items: [

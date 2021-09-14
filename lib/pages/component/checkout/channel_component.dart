@@ -72,7 +72,12 @@ class _ChannelComponentState extends State<ChannelComponent> {
             fontSize: 9,
             param: "-",
             padding: scale.getPadding(0.5, 0),
-            callback: () {checkout(res["code"]);}
+            callback: () {
+              WidgetHelper().notifDialog(context,"Informasi !!", "anda yakin akan melakukan proses checkot ?", ()=>Navigator.of(context).pop(), (){
+                Navigator.of(context).pop();
+                checkout(res["code"]);
+              });
+            }
           );
         },
       )

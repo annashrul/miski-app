@@ -38,6 +38,7 @@ class _SuccessCheckoutVirtualAccountComponentState extends State<SuccessCheckout
       if(status!=0){
         WidgetHelper().notifOneBtnDialog(context, "Informasi", "Transaksi anda sudah ${funcStatus["title"]}", ()=>FunctionHelper.toHome(context));
       }else{
+        WidgetHelper().showFloatingFlushbar(context, "failed",res["msg"]);
         loadStatus(status);
       }
       if(this.mounted){

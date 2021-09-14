@@ -246,12 +246,16 @@ class FunctionHelper{
     await rmSession(config.StringConfig.latitude);
   }
 
+  Future processLogout(BuildContext context)async{
+    DatabaseConfig db = DatabaseConfig();
+    final id = await UserHelper().getDataUser('id');
+    await db.update(UserQuery.TABLE_NAME, {'id':"${id.toString()}",config.StringConfig.is_login:"0",config.StringConfig.onboarding:"1"});
+    WidgetHelper().myPushRemove(context,SignInComponent());
+  }
+
   Future logout(BuildContext context)async{
     WidgetHelper().notifDialog(context,"Perhatian !!","Anda yakin akan keluar dari aplikasi ??", (){Navigator.pop(context);}, ()async{
-      DatabaseConfig db = DatabaseConfig();
-      final id = await UserHelper().getDataUser('id');
-      await db.update(UserQuery.TABLE_NAME, {'id':"${id.toString()}",config.StringConfig.is_login:"0",config.StringConfig.onboarding:"1"});
-      WidgetHelper().myPushRemove(context,SignInComponent());
+      await processLogout(context);
     });
 
   }

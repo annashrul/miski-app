@@ -1,7 +1,8 @@
 class StringConfig{
   // ************************ CONFIGURATION  ************************ //
-  static const String siteName        = 'Happy Fresh';
-  static const String baseUrl        = 'http://ptnetindo.com:6698/';
+  static const String siteName       = 'Happy Fresh';
+  // static const String baseUrl        = 'http://ptnetindo.com:6698/';
+  static const String baseUrl        = 'http://ptnetindo.com:6694/';
   static const bool showCode         = true;
   static const String versionCode    = '0.0.1';
   static const String username       = 'netindo';
@@ -9,7 +10,9 @@ class StringConfig{
   static const String password       = "\$2b\$08\$hLMU6rEvNILCMaQbthARK.iCmDRO7jNbUB8CcvyRStqsHD4UQxjDO";
   static const String oneSignalId    = "b1057dd8-ea51-41d2-be3b-a6778ffbf5e4";
   static const int timeout           = 60;
-  static const String apiKey = "AIzaSyDlQpn8WzbxoOPP84i1FHAaM1Kv1_KGbuc";
+  static const String apiKey         = "AIzaSyDlQpn8WzbxoOPP84i1FHAaM1Kv1_KGbuc";
+  static const String tokenExpired   = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiZWEyNDQ0ZC0zZDZiLTQyNGItYTQ3YS00OTBiY2I3NTYwYjgiLCJpYXQiOjE1NzEwNDI0OTEsImV4cCI6MTU3MzYzNDQ5MX0.lvRR9rU3cdLbJ9Gi0Ryucwl_7IMK6NF7BTblIQUDA9Q";
+
 
   // ************************ PAGES  ************************ //
   static const int defaultTab       = 2;
@@ -81,6 +84,7 @@ class StringConfig{
   static const  String lihatSemuaPromo = 'lihat semua promo >>';
   static const  String selesaikanPesananAnda = 'Selesaikan Pesanan Anda';
   static const String lorem = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.";
+
   // ************************ ERROR  ************************ //
   static const  String noData     = 'Data tidak tersedia';
   static const  String errTimeout     = 'TimeoutException';

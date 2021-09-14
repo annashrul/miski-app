@@ -35,6 +35,7 @@ class ProductGridWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final scaler=config.ScreenScale(context).scaler;
     final product = Provider.of<ProductProvider>(context);
+    print(productStock);
     return WidgetHelper().myRipple(
       callback: (){
         Navigator.of(context).pushNamed("/${StringConfig.detailProduct}",arguments: {
@@ -66,7 +67,7 @@ class ProductGridWidget extends StatelessWidget {
                   config.MyFont.subtitle(context: context,text:productName,color: Theme.of(context).textTheme.bodyText2.color,fontSize: 9),
                   config.MyFont.title(context: context,text:"${config.MyFont.toMoney("$productPrice")}",color: config.Colors.moneyColors,fontWeight: FontWeight.bold,fontSize: 9),
                   SizedBox(height: scaler.getHeight(0.5)),
-                  config.MyFont.subtitle(context: context,text: int.parse("$productStock")<1?"stok habis":'${config.MyFont.toMoney("$productStock")} tersedia',fontSize: 8,maxLines: 2),
+                  config.MyFont.subtitle(context: context,text: double.parse("$productStock")>0?'${double.parse(productStock).toStringAsFixed(0)} tersedia':"stok habis",fontSize: 8,maxLines: 2),
                   Stack(
                     children: <Widget>[
                       Container(

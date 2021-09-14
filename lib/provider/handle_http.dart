@@ -3,10 +3,15 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' show Client;
+import 'package:miski_shop/config/database_config.dart';
 import 'package:miski_shop/config/string_config.dart';
+import 'package:miski_shop/helper/database_helper.dart';
 import 'package:miski_shop/helper/function_helper.dart';
 import 'package:miski_shop/helper/user_helper.dart';
 import 'package:miski_shop/helper/widget_helper.dart';
+import 'package:miski_shop/pages/component/auth/signin_component.dart';
+import 'package:miski_shop/provider/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class HandleHttp{
   Client client = Client();
@@ -24,7 +29,6 @@ class HandleHttp{
         'myconnection':"${StringConfig.connection}",
       };
       final response = await client.get("${StringConfig.baseUrl}$url", headers:head).timeout(Duration(seconds: StringConfig.timeout));
-      // print("=================== SUCCESS $url ${response.body}  ==========================");
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
         print("JSON RESPONSE $url =  $jsonResponse");
@@ -36,7 +40,7 @@ class HandleHttp{
         }
       }
       else if(response.statusCode == 400){
-          final jsonResponse = json.decode(response.body);
+        final jsonResponse = json.decode(response.body);
         if(jsonResponse['msg']=='Invalid Token.'){
           return WidgetHelper().notifOneBtnDialog(context,StringConfig.titleErrToken,StringConfig.descErrToken,()async{
             Navigator.pop(context);
@@ -53,6 +57,7 @@ class HandleHttp{
         Navigator.pop(context);
         return WidgetHelper().showFloatingFlushbar(context, "failed", "terjadi kesalahan url");
       }
+
     }on TimeoutException catch (_) {
       print("###################################### GET TimeoutException $url ");
       return Navigator.pushNamed(context, "error");
