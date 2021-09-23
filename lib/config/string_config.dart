@@ -1,9 +1,9 @@
 class StringConfig{
   // ************************ CONFIGURATION  ************************ //
   static const String siteName       = 'Happy Fresh';
-  // static const String baseUrl        = 'http://ptnetindo.com:6698/';
-  static const String baseUrl        = 'http://ptnetindo.com:6694/';
-  static const bool showCode         = true;
+  static const String baseUrl        = 'http://ptnetindo.com:6698/';
+  // static const String baseUrl        = 'http://ptnetindo.com:6694/';
+  static const bool showCode         = false;
   static const String versionCode    = '0.0.1';
   static const String username       = 'netindo';
   static const String connection     = 'nshop';

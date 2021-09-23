@@ -39,7 +39,7 @@ class _SecureCodeWidgetState extends State<SecureCodeWidget> {
   @override
   void initState() {
     super.initState();
-    timeCounter = 10;
+    timeCounter = 120;
     _timerUpdate();
   }
 
@@ -66,14 +66,13 @@ class _SecureCodeWidgetState extends State<SecureCodeWidget> {
                 WidgetHelper().showFloatingFlushbar(context,"success", "kode ${widget.param} berhasil dikirim");
                 if(timeUpFlag){
                   timeUpFlag=!timeUpFlag;
-                  timeCounter=10;
+                  timeCounter=120;
                   widget.code = "${res['result']['otp_anying']}";
                   setState(() {});
                   _timerUpdate();
                 }
               }
             }
-
           },
           child:config.MyFont.title(context: context,text:"${!timeUpFlag ?'$timeCounter detik':'kirim ulang kode ${widget.param}'}",color: config.Colors.mainColors)
       ),
@@ -90,7 +89,7 @@ class _SecureCodeWidgetState extends State<SecureCodeWidget> {
             widget.callback(code);
             return false;
           },
-          onSuccess: () async{
+          onSuccess: () async {
             // widget.callback(context,true);
           }
       ),
