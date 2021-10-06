@@ -76,6 +76,7 @@ class _SuccessCheckoutVirtualAccountComponentState extends State<SuccessCheckout
 
   @override
   Widget build(BuildContext context) {
+    print(widget.detailCheckoutVirtualAccountModel.result.toJson());
     final scale = config.ScreenScale(context).scaler;
     return WillPopScope(
         child:  Scaffold(

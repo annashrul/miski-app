@@ -68,10 +68,10 @@ class Datum {
         this.active,
     });
 
-    String group;
-    String code;
-    String name;
-    String type;
+    var group;
+    var code;
+    var name;
+    var type;
     FeeCustomer feeMerchant;
     FeeCustomer feeCustomer;
     FeeCustomer totalFee;

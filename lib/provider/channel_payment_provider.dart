@@ -8,7 +8,6 @@ class ChannelPaymentProvider with ChangeNotifier{
   bool isLoading=true;
 
   Future read(BuildContext context)async{
-    print(resChannel);
     if(resChannel==null)isLoading=true;
     final res = await HandleHttp().getProvider("transaction/payment/channel", channelModelFromJson,context: context);
     ChannelModel channelModel = ChannelModel.fromJson(res.toJson());

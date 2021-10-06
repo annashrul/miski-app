@@ -4,6 +4,7 @@ import 'package:miski_shop/config/app_config.dart' as config;
 import 'package:miski_shop/config/string_config.dart';
 import 'package:miski_shop/helper/function_helper.dart';
 import 'package:miski_shop/helper/widget_helper.dart';
+import 'package:miski_shop/model/checkout/detail_checkout_virtual_account_model.dart';
 import 'package:miski_shop/model/checkout/resi_model.dart';
 import 'package:miski_shop/pages/component/history/resi_component.dart';
 import 'package:miski_shop/pages/widget/review/list_product_review_widget.dart';
@@ -47,10 +48,18 @@ class _HistoryModalOptionWIdgetState extends State<HistoryModalOptionWIdget> {
 
   }
 
+  Future goToPayment()async{
+    final result=widget.val.toJson();
+    String kdTrx=FunctionHelper.getEncode(result["kd_trx"]);
+    final res=await HandleHttp().getProvider("transaction/checkout/get_payment/$kdTrx",null);
+    final responses =    DetailCheckoutVirtualAccountModel.fromJson(res);
+    Navigator.of(context).pushNamed("/${StringConfig.successCheckoutVirtualAccount}",arguments: responses);
+  }
+
   @override
   Widget build(BuildContext context) {
     final val = widget.val;
-    print(FunctionHelper.getEncode(val.kdTrx));
+    print("##################### $val ##############################");
     final scaler=config.ScreenScale(context).scaler;
     return Padding(
       padding: scaler.getPadding(1, 2),
@@ -58,6 +67,8 @@ class _HistoryModalOptionWIdgetState extends State<HistoryModalOptionWIdget> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
+          buildOption(context: context,title: "Halaman pembayaran",callback: ()=>goToPayment()),
+          Divider(),
           buildOption(context: context,title: "Detail pembelian",callback: ()=>Navigator.of(context).pushNamed("/${StringConfig.detailHistoryOrder}",arguments: FunctionHelper.getEncode(val.kdTrx))),
           Divider(),
           if(widget.barang.length==1)buildOption(context: context,title: "Beli lagi",callback: (){

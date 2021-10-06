@@ -289,7 +289,7 @@ class _SignUpComponentState extends State<SignUpComponent> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            config.MyFont.title(context: context,text: "Kirim otp via ${_switchValue?'whatsapp':'sms'}"),
+                            config.MyFont.title(context: context,text: "Kirim otp"),
                             Container(
                                 padding: scaler.getPaddingLTRB(0, 0, 0, 0),
                                 margin: scaler.getMarginLTRB(0, 0, 0, 0),

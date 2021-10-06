@@ -64,10 +64,16 @@ class _ChannelComponentState extends State<ChannelComponent> {
         separatorBuilder: (context, index) {return Divider();},
         itemBuilder: (context, index) {
           final res = resChannel.resChannel[index].toJson();
-          int fee = int.parse(res["fee_customer"]["flat"].toString());
+
+          // int fee =int.parse(res["fee_customer"]["flat"]);
+          dynamic fee = res["fee_customer"]["flat"];
+          // if(res["fee_customer"]["flat"].runtimeType == int){
+          //   fee =int.parse(res["fee_customer"]["flat"]);
+          // }
+          print(fee);
           return WidgetHelper().titleQ(
             context, res["name"],
-            subtitle: fee > 0 ? fee : "",
+            subtitle: "",
             fontWeight: FontWeight.normal,
             fontSize: 9,
             param: "-",

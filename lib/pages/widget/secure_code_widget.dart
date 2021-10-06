@@ -48,10 +48,10 @@ class _SecureCodeWidgetState extends State<SecureCodeWidget> {
   bool isLoadingReOtp=false;
   @override
   Widget build(BuildContext context) {
-    String desc = 'Masukan kode OTP yang kami kirim melalui pesan ${widget.desc} untuk melanjutkan ke halaman berikutnya ${StringConfig.showCode?widget.code:''}';
+    String desc = 'Masukan kode OTP yang kami kirim untuk melanjutkan ke halaman berikutnya ${StringConfig.showCode?widget.code:''}';
     int size = 4;
     if(widget.param!='otp'){
-      desc='Masukan kode aktivasi yang kami kirim melalui pesan ${widget.desc} untuk melanjutkan ke halaman berikutnya ${StringConfig.showCode?widget.code:''}';
+      desc='Masukan kode aktivasi yang kami kirim untuk melanjutkan ke halaman berikutnya ${StringConfig.showCode?widget.code:''}';
       // size=6;
     }
     return Scaffold(

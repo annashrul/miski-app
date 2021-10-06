@@ -42,10 +42,11 @@ class HandleHttp{
       else if(response.statusCode == 400){
         final jsonResponse = json.decode(response.body);
         if(jsonResponse['msg']=='Invalid Token.'){
-          return WidgetHelper().notifOneBtnDialog(context,StringConfig.titleErrToken,StringConfig.descErrToken,()async{
-            Navigator.pop(context);
-            await FunctionHelper().logout(context);
-          });
+          return  await FunctionHelper().processLogout(context);
+          // return WidgetHelper().notifOneBtnDialog(context,StringConfig.titleErrToken,StringConfig.descErrToken,()async{
+          //   Navigator.pop(context);
+          //   await FunctionHelper().logout(context);
+          // });
         }
         if(context!=null){
           return WidgetHelper().notifOneBtnDialog(context,"Informasi",jsonResponse['msg'],()async{
@@ -96,7 +97,9 @@ class HandleHttp{
         final jsonResponse = json.decode(request.body);
         Navigator.pop(context);
         print("=================== POST DATA 400 $url = ${json.decode(request.body)} ============================");
-        return WidgetHelper().showFloatingFlushbar(context, "failed", jsonResponse['msg']);
+        // WidgetHelper().showFloatingFlushbar(context, "failed", jsonResponse['msg']);
+        WidgetHelper().notifOneBtnDialog(context, "Informasi",jsonResponse['msg'], (){});
+        return  WidgetHelper().notifOneBtnDialog(context, "Informasi",jsonResponse['msg'], ()=>callback!=null?callback():Navigator.of(context).pop());
       }
       else if(request.statusCode==404){
         print("=================== request.statusCode==404  $url = $TimeoutException ============================");
