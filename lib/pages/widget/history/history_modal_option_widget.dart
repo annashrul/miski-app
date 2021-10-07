@@ -67,8 +67,8 @@ class _HistoryModalOptionWIdgetState extends State<HistoryModalOptionWIdget> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          buildOption(context: context,title: "Halaman pembayaran",callback: ()=>goToPayment()),
-          Divider(),
+          if(val.status==0) buildOption(context: context,title: "Halaman pembayaran",callback: ()=>goToPayment()),
+          if(val.status==0) Divider(),
           buildOption(context: context,title: "Detail pembelian",callback: ()=>Navigator.of(context).pushNamed("/${StringConfig.detailHistoryOrder}",arguments: FunctionHelper.getEncode(val.kdTrx))),
           Divider(),
           if(widget.barang.length==1)buildOption(context: context,title: "Beli lagi",callback: (){
