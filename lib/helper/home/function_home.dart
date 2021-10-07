@@ -13,7 +13,7 @@ class FunctionHome{
     final tenant = await FunctionHelper().getTenant();
     String url = "barang?id_tenant=${tenant[StringConfig.idTenant]}";
     if(where!="") url+="$where";
-    print(where);
+    print(url);
     final res = await HandleHttp().getProvider(url, listProductTenantModelFromJson,context: context);
     if(res!=null){
       if(res is ListProductTenantModel){

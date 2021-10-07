@@ -1,9 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:miski_shop/config/app_config.dart' as config;
+import 'package:miski_shop/config/string_config.dart';
 import 'package:miski_shop/config/ui_icons.dart';
+import 'package:miski_shop/helper/home/function_home.dart';
 import 'package:miski_shop/helper/widget_helper.dart';
 import 'package:miski_shop/model/review/review_model.dart';
+import 'package:miski_shop/model/tenant/list_product_tenant_model.dart';
 import 'package:miski_shop/pages/widget/brand/brand_home_tab_widget.dart';
 import 'package:miski_shop/pages/widget/brand/brand_product_tab_widget.dart';
 import 'package:miski_shop/pages/widget/review/review_widget.dart';
@@ -24,6 +28,10 @@ class _ProductByBrandState extends State<ProductByBrand> with SingleTickerProvid
   int _tabIndex = 0;
   ReviewModel reviewModel;
   bool isLoading=true;
+  ListProductTenantModel listProductTenantModel;
+  int perPageProduct=10;
+  ScrollController controller;
+  bool isLoadMoreProduct=false;
   Future loadReview()async{
     final res=await HandleHttp().getProvider("review?brand=${widget.data["data"]["id"]}", reviewModelFromJson,context: context);
     // final res=await HandleHttp().getProvider("review?page=1", reviewModelFromJson,context: context);
@@ -39,20 +47,14 @@ class _ProductByBrandState extends State<ProductByBrand> with SingleTickerProvid
       print("review ${result.result.toJson()}");
     }
   }
-
-  @override
-  void initState() {
-    _tabController = TabController(length: 3, initialIndex: _tabIndex, vsync: this);
-    _tabController.addListener(_handleTabSelection);
-    super.initState();
-    loadReview();
+  bool isLoadingProduct=true;
+  Future loadProduct()async{
+    final res = await FunctionHome().loadProduct(context: context,where: "&brand=${widget.data["data"]["id"]}&perpage=$perPageProduct");
+    listProductTenantModel=res;
+    isLoadingProduct=false;
+    isLoadMoreProduct=false;
+    if(this.mounted){this.setState(() {});}
   }
-
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
   _handleTabSelection() {
     if (_tabController.indexIsChanging) {
       setState(() {
@@ -60,97 +62,133 @@ class _ProductByBrandState extends State<ProductByBrand> with SingleTickerProvid
       });
     }
   }
+  void scrollListener({BuildContext context}) {
+    print("#####################");
+    if (!isLoading) {
+      if (controller.position.pixels == controller.position.maxScrollExtent) {
+        if(perPageProduct<listProductTenantModel.result.total){
+          isLoadMoreProduct=true;
+          perPageProduct+=StringConfig.perpage;
+          loadProduct();
+          if(this.mounted)setState(() {});
+        }else{
+          isLoadMoreProduct=false;
+          if(this.mounted)setState(() {});
+        }
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    _tabController = TabController(length: 3, initialIndex: _tabIndex, vsync: this);
+    _tabController.addListener(_handleTabSelection);
+    controller = new ScrollController()..addListener(scrollListener);
+    super.initState();
+    loadReview();
+    loadProduct();
+  }
+
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+    controller.removeListener(scrollListener);
+
+  }
 
   @override
   Widget build(BuildContext context) {
     final scaler=config.ScreenScale(context).scaler;
     return Scaffold(
       key: _scaffoldKey,
-      body: CustomScrollView(slivers: <Widget>[
-        SliverAppBar(
-          snap: true,
-          floating: true,
-          automaticallyImplyLeading: false,
-          leading: new IconButton(
-            icon: new Icon(UiIcons.return_icon, color: Theme.of(context).hintColor),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
+      body: CustomScrollView(
+        controller: controller,
+        slivers: <Widget>[
+          SliverAppBar(
 
-          backgroundColor: widget.data["color"],
-          expandedHeight: 250,
-          elevation: 0,
-          flexibleSpace: FlexibleSpaceBar(
-            collapseMode: CollapseMode.parallax,
-            background: Stack(
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 5, vertical: 20),
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(begin: Alignment.bottomLeft, end: Alignment.topRight, colors: [
-                        widget.data["color"],
-                        Theme.of(context).primaryColor.withOpacity(0.5),
-                      ])),
-                  child: Center(
-                    child: Hero(
-                      tag: widget.data["hero"],
-                      child:WidgetHelper().baseImage(widget.data["image"],width: scaler.getWidth(23))
-                      // child: SvgPicture.network(
-                      //
-                      //   widget.data["image"],
-                      //   // StringConfig.imageProduct,
-                      //   color: Theme.of(context).primaryColor,
-                      //   width: 130,
-                      //   placeholderBuilder: (context) => Icon(Icons.error),
-                      // ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  right: -60,
-                  bottom: -100,
-                  child: Container(
-                    width: 300,
-                    height: 300,
+            snap: true,
+            floating: true,
+            automaticallyImplyLeading: false,
+            leading: new IconButton(
+              icon: new Icon(UiIcons.return_icon, color: Theme.of(context).hintColor),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+
+            backgroundColor: widget.data["color"],
+            expandedHeight: 250,
+            elevation: 0,
+            flexibleSpace: FlexibleSpaceBar(
+              collapseMode: CollapseMode.parallax,
+              background: Stack(
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 5, vertical: 20),
+                    width: double.infinity,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor.withOpacity(0.05),
-                      borderRadius: BorderRadius.circular(300),
+                        gradient: LinearGradient(begin: Alignment.bottomLeft, end: Alignment.topRight, colors: [
+                          widget.data["color"],
+                          Theme.of(context).primaryColor.withOpacity(0.5),
+                        ])),
+                    child: Center(
+                      child: Hero(
+                        tag: widget.data["hero"],
+                        child:WidgetHelper().baseImage(widget.data["image"],width: scaler.getWidth(23))
+                        // child: SvgPicture.network(
+                        //
+                        //   widget.data["image"],
+                        //   // StringConfig.imageProduct,
+                        //   color: Theme.of(context).primaryColor,
+                        //   width: 130,
+                        //   placeholderBuilder: (context) => Icon(Icons.error),
+                        // ),
+                      ),
                     ),
                   ),
-                ),
-                Positioned(
-                  left: -30,
-                  top: -80,
-                  child: Container(
-                    width: 200,
-                    height: 200,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor.withOpacity(0.09),
-                      borderRadius: BorderRadius.circular(150),
+                  Positioned(
+                    right: -60,
+                    bottom: -100,
+                    child: Container(
+                      width: 300,
+                      height: 300,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor.withOpacity(0.05),
+                        borderRadius: BorderRadius.circular(300),
+                      ),
                     ),
                   ),
-                )
+                  Positioned(
+                    left: -30,
+                    top: -80,
+                    child: Container(
+                      width: 200,
+                      height: 200,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor.withOpacity(0.09),
+                        borderRadius: BorderRadius.circular(150),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+            bottom: TabBar(
+              // indicatorWeight: 0,
+              controller: _tabController,
+              indicatorSize: TabBarIndicatorSize.label,
+              unselectedLabelColor: config.Colors.mainColors,
+              labelColor: config.Colors.mainColors,
+              unselectedLabelStyle: config.MyFont.textStyle,
+              labelStyle:  config.MyFont.textStyle,
+              // indicatorColor: config.Colors.mainColors,
+              labelPadding: EdgeInsets.symmetric(horizontal: 0),
+              tabs: [
+                tab(context, "Detail",_tabController.index==0),
+                tab(context, "Produk",_tabController.index==1),
+                tab(context, "Ulasan",_tabController.index==2),
               ],
             ),
           ),
-          bottom: TabBar(
-            // indicatorWeight: 0,
-            controller: _tabController,
-            indicatorSize: TabBarIndicatorSize.label,
-            unselectedLabelColor: config.Colors.mainColors,
-            labelColor: config.Colors.mainColors,
-            unselectedLabelStyle: config.MyFont.textStyle,
-            labelStyle:  config.MyFont.textStyle,
-            // indicatorColor: config.Colors.mainColors,
-            labelPadding: EdgeInsets.symmetric(horizontal: 0),
-            tabs: [
-              tab(context, "Detail",_tabController.index==0),
-              tab(context, "Produk",_tabController.index==1),
-              tab(context, "Ulasan",_tabController.index==2),
-            ],
-          ),
-        ),
-        SliverList(
+          SliverList(
           delegate: SliverChildListDelegate([
             Offstage(
               offstage: 0 != _tabIndex,
@@ -165,7 +203,7 @@ class _ProductByBrandState extends State<ProductByBrand> with SingleTickerProvid
               child: Column(
                 children: <Widget>[
                   Padding(
-                    child: BrandProductTabWidget(data: widget.data["data"]),
+                    child: isLoadingProduct?LoadingProductTenant(tot: 10,):listProductTenantModel.result.data.length<1?EmptyTenant():BrandProductTabWidget(listProductTenantModel: listProductTenantModel,),
                     padding: scaler.getPadding(0, 2),
                   )
 
@@ -214,7 +252,9 @@ class _ProductByBrandState extends State<ProductByBrand> with SingleTickerProvid
             )
           ]),
         )
-      ]),
+        ]
+      ),
+      bottomNavigationBar: !isLoadingProduct&&isLoadMoreProduct?CupertinoActivityIndicator():SizedBox(),
     );
   }
 

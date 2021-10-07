@@ -55,6 +55,17 @@ class _SuccessCheckoutVirtualAccountComponentState extends State<SuccessCheckout
     }
 
  }
+  Future cancelTransaction()async{
+    WidgetHelper().notifDialog(context,"Informasi","Anda yakin akan membatalkan transaksi ini ?", ()=>Navigator.of(context).pop(),()async{
+      String kdTrx=FunctionHelper.getEncode(widget.detailCheckoutVirtualAccountModel.result.invoiceNo);
+      final res = await HandleHttp().postProvider("transaction/deposit/$kdTrx", {"status":"2"},context: context);
+      if(res!=null){
+        print("#################### $res");
+        WidgetHelper().notifOneBtnDialog(context,"Informasi", "transaksi berhasil dibatalkan", ()=>FunctionHelper.toHome(context));
+      }
+    } );
+
+  }
 
   @override
   void dispose() {
@@ -78,6 +89,7 @@ class _SuccessCheckoutVirtualAccountComponentState extends State<SuccessCheckout
   Widget build(BuildContext context) {
     print(widget.detailCheckoutVirtualAccountModel.result.toJson());
     final scale = config.ScreenScale(context).scaler;
+    // widget.detailCheckoutVirtualAccountModel.result
     return WillPopScope(
         child:  Scaffold(
           appBar: WidgetHelper().appBarWithButton(context, "Virtual account (VA)", (){
@@ -196,29 +208,50 @@ class _SuccessCheckoutVirtualAccountComponentState extends State<SuccessCheckout
                     )
                   ],
                 ),
-              )
+              ),
+
             ],
           ),
-          bottomNavigationBar: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              WidgetHelper().myRipple(
-                callback: ()=>checkStatus(),
-                child: Container(
-                    alignment: Alignment.center,
-                    padding: EdgeInsets.symmetric(vertical: 14),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).accentColor,
-                    ),
-                    child: config.MyFont.title(
-                        context: context,
-                        text: 'Refresh',
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).primaryColor)
+          bottomNavigationBar: Padding(
+            padding: scale.getPadding(1,2),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                WidgetHelper().myRipple(
+
+                  callback: ()=>cancelTransaction(),
+                  child: Container(
+                      alignment: Alignment.center,
+                      padding: EdgeInsets.symmetric(vertical: 14),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                      ),
+                      child: config.MyFont.title(
+                          context: context,
+                          text: 'Batalkan transaksi',
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white)
+                  ),
                 ),
-              )
-            ],
+                SizedBox(height: scale.getHeight(1)),
+                WidgetHelper().myRipple(
+                  callback: ()=>checkStatus(),
+                  child: Container(
+                      alignment: Alignment.center,
+                      padding: EdgeInsets.symmetric(vertical: 14),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).accentColor,
+                      ),
+                      child: config.MyFont.title(
+                          context: context,
+                          text: 'Refresh',
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).primaryColor)
+                  ),
+                )
+              ],
+            ),
           ),
         ),
         onWillPop: (){

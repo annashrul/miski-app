@@ -98,7 +98,7 @@ class HandleHttp{
         Navigator.pop(context);
         print("=================== POST DATA 400 $url = ${json.decode(request.body)} ============================");
         // WidgetHelper().showFloatingFlushbar(context, "failed", jsonResponse['msg']);
-        WidgetHelper().notifOneBtnDialog(context, "Informasi",jsonResponse['msg'], (){});
+        // WidgetHelper().notifOneBtnDialog(context, "Informasi",jsonResponse['msg'], (){});
         return  WidgetHelper().notifOneBtnDialog(context, "Informasi",jsonResponse['msg'], ()=>callback!=null?callback():Navigator.of(context).pop());
       }
       else if(request.statusCode==404){

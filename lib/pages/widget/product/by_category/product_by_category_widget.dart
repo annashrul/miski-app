@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:miski_shop/config/app_config.dart' as config;
+import 'package:miski_shop/config/string_config.dart';
 import 'package:miski_shop/config/ui_icons.dart';
 import 'package:miski_shop/helper/home/function_home.dart';
 import 'package:miski_shop/helper/widget_helper.dart';
@@ -35,27 +37,49 @@ class _ProductByCategoryState extends State<ProductByCategory> with SingleTicker
   }
   String any="";
   ListProductTenantModel listProductTenantModel;
-  bool isLoadingProduct=true;
+  bool isLoadingProduct=true,isLoadMore=false;
+  int perPage=10;
+  ScrollController controller;
+
   Future loadProduct(id)async{
-    String where="&kelompok=$id&perpage=50";
+    String where="&page=1&kelompok=$id&perpage=$perPage";
     if(any!="")where+="&q=$any";
     final res = await FunctionHome().loadProduct(context: context,where: where);
     listProductTenantModel=res;
     isLoadingProduct=false;
+    isLoadMore=false;
     if(this.mounted){this.setState(() {});}
 
   }
-
+  void scrollListener({BuildContext context}) {
+    if (!isLoadingProduct) {
+      if (controller.position.pixels == controller.position.maxScrollExtent) {
+        if(perPage<listProductTenantModel.result.total){
+          isLoadMore=true;
+          perPage+=StringConfig.perpage;
+          loadProduct(widget.data["kelompok"][widget.data["index"]]["title"]);
+          if(this.mounted)setState(() {});
+        }else{
+          isLoadMore=false;
+          if(this.mounted)setState(() {});
+        }
+      }
+    }
+  }
   @override
   void initState() {
     _tabController = TabController(length: widget.data["kelompok"].length, initialIndex: widget.data["index"], vsync: this);
     _tabController.addListener(_handleTabSelection);
     super.initState();
     loadProduct(widget.data["kelompok"][widget.data["index"]]["title"]);
+    controller = new ScrollController()..addListener(scrollListener);
+
   }
 
   void dispose() {
     _tabController.dispose();
+    controller.removeListener(scrollListener);
+
     super.dispose();
   }
 
@@ -66,7 +90,11 @@ class _ProductByCategoryState extends State<ProductByCategory> with SingleTicker
 
     return Scaffold(
       key: _scaffoldKey,
-      body: CustomScrollView(slivers: <Widget>[
+      bottomNavigationBar: !isLoadingProduct&&isLoadMore?CupertinoActivityIndicator():SizedBox(),
+
+      body: CustomScrollView(
+        controller: controller,
+        slivers: <Widget>[
         SliverAppBar(
           pinned: true,
           // snap: true,
